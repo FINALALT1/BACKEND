@@ -24,10 +24,10 @@ public class MyLogAdvice {
     // private final ErrorLogRepository errorLogRepository;
     // private final LogRepository logRepository;
 
-    @Pointcut("@annotation(shop.mtcoding.restend.core.annotation.MyLog)")
+    @Pointcut("@annotation(kr.co.moneybridge.core.annotation.MyLog)")
     public void myLog(){}
 
-    @Pointcut("@annotation(shop.mtcoding.restend.core.annotation.MyErrorLog)")
+    @Pointcut("@annotation(kr.co.moneybridge.core.annotation.MyErrorLog)")
     public void myErrorLog(){}
 
     @AfterReturning("myLog()")

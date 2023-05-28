@@ -10,14 +10,12 @@ public class UserResponse {
         private Long id;
         private String username;
         private String email;
-        private String fullName;
         private String role;
 
         public DetailOutDTO(User user) {
             this.id = user.getId();
             this.username = user.getUsername();
             this.email = user.getEmail();
-            this.fullName = user.getFullName();
             this.role = user.getRole();
         }
     }
@@ -27,12 +25,10 @@ public class UserResponse {
     public static class JoinOutDTO {
         private Long id;
         private String username;
-        private String fullName;
 
         public JoinOutDTO(User user) {
             this.id = user.getId();
             this.username = user.getUsername();
-            this.fullName = user.getFullName();
         }
     }
 }
