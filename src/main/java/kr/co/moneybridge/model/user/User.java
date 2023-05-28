@@ -25,8 +25,6 @@ public class User {
 
     @Column(nullable = false, length = 20)
     private String email;
-    @Column(nullable = false, length = 20)
-    private String fullName;
 
     private String role;
 
