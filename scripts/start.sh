@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PROJECT_ROOT="/home/ubuntu/github_action"
+PROJECT_ROOT="/home/ubuntu/github_action/build/libs"
 JAR_FILE="$PROJECT_ROOT/moneybridge-0.0.1-SNAPSHOT.jar"
 
 APP_LOG="$PROJECT_ROOT/application.log"
