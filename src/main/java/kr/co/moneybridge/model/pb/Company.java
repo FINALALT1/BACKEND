@@ -1,5 +1,6 @@
-package kr.co.moneybridge.model.user;
+package kr.co.moneybridge.model.pb;
 
+import kr.co.moneybridge.model.board.BoardStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,30 +10,35 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "user_agreement_tb")
+@Table(name = "company_tb")
 @Entity
-public class UserAgreement {
+public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
-
     @Column(nullable = false, length = 20)
-    private String title;
+    private String name;
 
     @Column(nullable = false)
-    private UserAgreementType userAgreementType;
-
-    @Column(nullable = false)
-    private Boolean isAgreed;
+    private String logo;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean status;
+    private BoardStatus status;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

@@ -1,5 +1,7 @@
-package kr.co.moneybridge.model.user;
+package kr.co.moneybridge.model.pb;
 
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserAgreementType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,15 +11,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "user_agreement_tb")
+@Table(name = "pb_agreement_tb")
 @Entity
-public class UserAgreement {
+public class PBAgreement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private PB pb;
 
     @Column(nullable = false, length = 20)
     private String title;

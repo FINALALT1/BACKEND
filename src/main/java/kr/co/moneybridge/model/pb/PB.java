@@ -12,13 +12,13 @@ import java.time.LocalDateTime;
 @Table(name = "pb_tb")
 @Entity
 public class PB {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Column(nullable = false)
-//    private Branch branch;      //지점
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
+    private Branch branch;      //지점
 
     @Column(nullable = false, length = 20)
     private String name;        //이름
