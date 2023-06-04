@@ -24,7 +24,7 @@ public class Reply {
     private User user;
 
     @Column(nullable = false)
-    private String content;
+    private String content; // 글자수 제한 몇자?
 
     private Long parentId;
 

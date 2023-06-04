@@ -20,17 +20,16 @@ public class Career {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pb_id")
     private PB pb;
 
-    @Column(nullable = false, length = 20)
-    private String career; // 경력사항
+    @Column(nullable = false, length = 100)
+    private String career; // 경력사항, 최대 25자?
 
     @Column(nullable = false)
-    private int start; // 시작년도
+    private Integer start; // 시작년도
 
     @Column(nullable = false)
-    private int end; // 끝년도
+    private Integer end; // 끝년도
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

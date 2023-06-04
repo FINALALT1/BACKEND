@@ -12,13 +12,12 @@ import java.time.LocalDateTime;
 @Table(name = "user_tb")
 @Entity
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 20)
-    private String name;
+    private String name; // 최대 한글 6자?
 
     @Column(nullable = false, length = 60) // 패스워드 인코딩(BCrypt)
     private String password;
@@ -30,18 +29,19 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
-    private Boolean status; // true, false
-
     @Column(nullable = false, length = 20)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    private UserPropensity userPropensity;
+    private UserPropensity propensity;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private Boolean status; // true, false
 
     @PrePersist
     protected void onCreate() {

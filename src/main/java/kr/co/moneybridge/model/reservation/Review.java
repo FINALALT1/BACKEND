@@ -18,13 +18,16 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private Reservation reservation;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private PB pb;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private User user;
 
     @Column(nullable = false, columnDefinition = "TEXT")

@@ -24,10 +24,10 @@ public class Question {
     private QuestionAuthorRole authorRole;
 
     @Column(nullable = false)
-    private String title;
+    private String title; // 글자수 제한 몇자?
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private String content; // 데이터 크기 초과전에 예외처리 + 초과 오류시 예외처리 해야함
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

@@ -1,6 +1,5 @@
 package kr.co.moneybridge.model.pb;
 
-import kr.co.moneybridge.model.board.BoardStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,20 +16,19 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20)
-    private String name;
+    @Column(nullable = false, length = 60)
+    private String name; // 증권사명, varchar(100), 최대 30자?
 
     @Column(nullable = false)
-    private String logo;
+    private String logo; // 로고 이미지
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BoardStatus status;
+    private Boolean status;
 
     @PrePersist
     protected void onCreate() {

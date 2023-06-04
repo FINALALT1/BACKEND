@@ -21,27 +21,28 @@ public class Board {
     private PB pb;
 
     @Column(nullable = false)
-    private String title;
+    private String title; // 글자수 제한 몇자?
 
     private String thumbnail;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    @Lob
+    @Column(nullable = false)
+    private String content; // 블로그글이니 사이즈크니 longtext, HTML 코드저장.
 
     @Column(nullable = false)
     private Integer like;
 
-    @Column(nullable = false)
-    private String tag1;
+    @Column(nullable = false, length = 40)
+    private String tag1; // 7자이내
+
+    @Column(nullable = false, length = 40)
+    private String tag2; // 7자이내
 
     @Column(nullable = false)
-    private String tag2;
+    private String topic; // 글자수 제한 몇자?
 
     @Column(nullable = false)
-    private String topic;
-
-    @Column(nullable = false)
-    private Integer clickCount;
+    private Long clickCount; // 확장성 생각하면 Long
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

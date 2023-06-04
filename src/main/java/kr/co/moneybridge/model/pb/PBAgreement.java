@@ -19,13 +19,14 @@ public class PBAgreement {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private PB pb;
 
-    @Column(nullable = false, length = 20)
-    private String title;
+    @Column(nullable = false)
+    private String title; // 약관명, 최대 60자?
 
     @Column(nullable = false)
-    private UserAgreementType userAgreementType;
+    private PBAgreementType type; // 약관 종류
 
     @Column(nullable = false)
     private Boolean isAgreed;
@@ -37,4 +38,14 @@ public class PBAgreement {
 
     @Column(nullable = false)
     private Boolean status;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

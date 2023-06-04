@@ -16,11 +16,11 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Question question;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private String content; // 데이터 크기 초과전에 예외처리 + 초과 오류시 예외처리 해야함
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

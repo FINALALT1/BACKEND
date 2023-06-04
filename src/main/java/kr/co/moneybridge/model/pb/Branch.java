@@ -1,6 +1,5 @@
 package kr.co.moneybridge.model.pb;
 
-import kr.co.moneybridge.model.board.BoardStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,29 +20,28 @@ public class Branch {
     @Column(nullable = false)
     private Company company;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 100)
     private String name; // 증권사명(company의 name) + ' ' + 지점명
 
     @Column(nullable = false)
-    private String roadAddress; // 도로명 주소
+    private String roadAddress; // 도로명 주소, 최대 60자?
 
     @Column(nullable = false)
-    private String streetAddress; // 지번 주소
+    private String streetAddress; // 지번 주소, 최대 60자?
 
     @Column(nullable = false)
-    private String latitude; // 위도
+    private String latitude; // 위도, 최대 60자?
 
     @Column(nullable = false)
-    private String longitude; // 경도
+    private String longitude; // 경도, 최대 60자?
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BoardStatus status;
+    private Boolean status;
 
     @PrePersist
     protected void onCreate() {
