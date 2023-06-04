@@ -1,41 +1,44 @@
-package kr.co.moneybridge.model.user;
+package kr.co.moneybridge.model.pb;
 
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "user_invest_info_tb")
+@Table(name = "portfolio_tb")
 @Entity
-public class UserInvestInfo {
+public class Portfolio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    private User user;
+    @JoinColumn(name = "pb_id")
+    private PB pb;
 
     @Column(nullable = false)
-    private int q1; // 복잡(5), 고려(4), 시작(3), 모름(2)
+    private int highestReturn; // 최고수익률
 
     @Column(nullable = false)
-    private int q2; // 손실(4), 여유(3), 소액(2)
+    private LocalDate startDate; // 시작일
 
     @Column(nullable = false)
-    private int q3; // 위험(5), 과감(4), 감수(3), 안정(1)
+    private LocalDate endDate; // 종료일
+
+    @Enumerated(EnumType.STRING)
+    private PBPropensity PBPropensity; // 투자 성향
 
     @Column(nullable = false)
-    private int q4; // 둘다(5), 수익(4), 안배(3), 보호(1)
+    private int dangerRate; // 위험 등급
 
-    @Column(nullable = false)
-    private int q5; // 계속(5), 기간(4), 감소(3), 회수(2)
+    private String file; // 첨부 파일
 
-    @Column(nullable = false)
-    private int q6; // 증가(5), 감소"4), 대기(2), 회수(1)
+    private String award; // 수상 내역
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

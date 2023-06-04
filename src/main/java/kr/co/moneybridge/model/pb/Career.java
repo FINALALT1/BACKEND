@@ -1,5 +1,8 @@
-package kr.co.moneybridge.model.user;
+package kr.co.moneybridge.model.pb;
 
+import kr.co.moneybridge.model.reservation.Reservation;
+import kr.co.moneybridge.model.reservation.ReviewAdherence;
+import kr.co.moneybridge.model.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,33 +12,25 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "user_invest_info_tb")
+@Table(name = "career_tb")
 @Entity
-public class UserInvestInfo {
+public class Career {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    private User user;
+    @JoinColumn(name = "pb_id")
+    private PB pb;
+
+    @Column(nullable = false, length = 20)
+    private String career; // 경력사항
 
     @Column(nullable = false)
-    private int q1; // 복잡(5), 고려(4), 시작(3), 모름(2)
+    private int start; // 시작년도
 
     @Column(nullable = false)
-    private int q2; // 손실(4), 여유(3), 소액(2)
-
-    @Column(nullable = false)
-    private int q3; // 위험(5), 과감(4), 감수(3), 안정(1)
-
-    @Column(nullable = false)
-    private int q4; // 둘다(5), 수익(4), 안배(3), 보호(1)
-
-    @Column(nullable = false)
-    private int q5; // 계속(5), 기간(4), 감소(3), 회수(2)
-
-    @Column(nullable = false)
-    private int q6; // 증가(5), 감소"4), 대기(2), 회수(1)
+    private int end; // 끝년도
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
