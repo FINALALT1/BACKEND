@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.reservation.style;
 
+import kr.co.moneybridge.model.reservation.Review;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,6 +15,8 @@ public class Style {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_id")
     private Review review;
 
     private StyleStyle style;
@@ -24,4 +27,14 @@ public class Style {
     private LocalDateTime updatedAt;
 
     private Boolean status;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
