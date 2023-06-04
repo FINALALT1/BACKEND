@@ -17,18 +17,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 20)
-    private String username;
+    @Column(nullable = false, length = 20)
+    private String name;
 
     @Column(nullable = false, length = 60) // 패스워드 인코딩(BCrypt)
     private String password;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     private String email;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
 
     private Boolean status; // true, false
+
+    @Column(nullable = false, length = 20)
+    private String phoneNumber;
+
+    @Enumerated(EnumType.STRING)
+    private UserPropensity userPropensity;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
