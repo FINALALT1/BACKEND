@@ -65,4 +65,14 @@ public class Reservation {
     private LocalDateTime updatedAt;
 
     private Boolean status;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
