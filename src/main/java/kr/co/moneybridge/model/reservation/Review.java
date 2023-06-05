@@ -21,12 +21,6 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     private Reservation reservation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private PB pb;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
-
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 

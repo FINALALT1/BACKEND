@@ -1,6 +1,7 @@
 package kr.co.moneybridge.dto.user;
 
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,11 +11,11 @@ public class UserResponse {
         private Long id;
         private String username;
         private String email;
-        private String role;
+        private UserRole role;
 
         public DetailOutDTO(User user) {
             this.id = user.getId();
-            this.username = user.getUsername();
+            this.username = user.getName();
             this.email = user.getEmail();
             this.role = user.getRole();
         }
@@ -24,11 +25,11 @@ public class UserResponse {
     @Getter
     public static class JoinOutDTO {
         private Long id;
-        private String username;
+        private String name;
 
         public JoinOutDTO(User user) {
             this.id = user.getId();
-            this.username = user.getUsername();
+            this.name = user.getName();
         }
     }
 }

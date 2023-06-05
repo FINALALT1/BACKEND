@@ -1,6 +1,7 @@
 package kr.co.moneybridge.dto.user;
 
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,7 @@ public class UserRequest {
     public static class LoginInDTO {
         @Pattern(regexp = "^[a-zA-Z0-9]{2,20}$", message = "영문/숫자 2~20자 이내로 작성해주세요")
         @NotEmpty
-        private String username;
+        private String name;
         @NotEmpty
         @Size(min = 4, max = 20)
         private String password;
@@ -38,10 +39,10 @@ public class UserRequest {
 
         public User toEntity() {
             return User.builder()
-                    .username(username)
+                    .name(username)
                     .password(password)
                     .email(email)
-                    .role("USER")
+                    .role(UserRole.USER)
                     .status(true)
                     .build();
         }
