@@ -20,7 +20,7 @@ public class Award {
     private PB pb;
 
     @Column(nullable = false, length = 90)
-    private String content; // 수상내역
+    private String record; // 수상내역
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
