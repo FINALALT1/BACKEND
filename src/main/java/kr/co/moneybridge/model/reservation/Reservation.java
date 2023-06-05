@@ -68,7 +68,8 @@ public class Reservation {
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
-    private Boolean status;
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 
     @PrePersist
     protected void onCreate() { this.createdAt = LocalDateTime.now(); }
