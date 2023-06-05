@@ -17,10 +17,11 @@ public class Answer {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private Question question;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content; // 데이터 크기 초과전에 예외처리 + 초과 오류시 예외처리 해야함
+    private String content;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

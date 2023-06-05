@@ -18,13 +18,15 @@ public class Reply {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private User user;
 
     @Column(nullable = false)
-    private String content; // 글자수 제한 몇자?
+    private String content; // 댓글, varchar(255) - 글자수 제한 몇자? 최대 60자?
 
     private Long parentId;
 

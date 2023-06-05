@@ -20,10 +20,11 @@ public class Career {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private PB pb;
 
-    @Column(nullable = false, length = 100)
-    private String career; // 경력사항, 최대 25자?
+    @Column(nullable = false, length = 60)
+    private String career; // 경력사항, varchar(90) - 최대 30자?
 
     @Column(nullable = false)
     private Integer start; // 시작년도

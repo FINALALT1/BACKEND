@@ -18,9 +18,11 @@ public class UserBookmark {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private PB pb;
 
     @Column(nullable = false)

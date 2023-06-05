@@ -39,7 +39,8 @@ public class Portfolio {
 
     private String file; // 첨부 파일
 
-    private String award; // 수상 내역, 길이 제한 없음, text
+    @Column(columnDefinition = "TEXT")
+    private String award; // 수상 내역
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

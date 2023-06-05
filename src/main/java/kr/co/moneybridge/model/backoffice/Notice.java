@@ -17,10 +17,10 @@ public class Notice {
     private Long id;
 
     @Column(nullable = false)
-    private String title; // 글자수 제한 몇자?
+    private String title; // 제목, varchar(255) - 글자수 제한 몇자? 최대 60자?
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content; // 공지사항도 텍스트 에디터를 사용해서 받을 거 같은데 TEXT면 충분할지?
+    private String content;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

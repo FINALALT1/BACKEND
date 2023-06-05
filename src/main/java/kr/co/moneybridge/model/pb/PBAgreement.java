@@ -23,8 +23,9 @@ public class PBAgreement {
     private PB pb;
 
     @Column(nullable = false)
-    private String title; // 약관명, 최대 60자?
+    private String title; // 약관명, varchar(255) - 글자수 제한 몇자? 최대 60자?
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PBAgreementType type; // 약관 종류
 

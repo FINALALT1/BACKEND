@@ -18,9 +18,11 @@ public class BoardBookmark {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private Board board;
 
     @Column(nullable = false)

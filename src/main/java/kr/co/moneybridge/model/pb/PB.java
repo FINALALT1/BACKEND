@@ -21,7 +21,7 @@ public class PB {
     private Branch branch;      //지점
 
     @Column(nullable = false, length = 20)
-    private String name;        //이름 - 최대 6자 ?
+    private String name;        //이름 - varchar(20) 최대 6자 ?
 
     @Column(nullable = false, length = 60)
     private String password;    //비밀번호
@@ -52,19 +52,19 @@ public class PB {
     private PBSpeciality speciality2;     //전문분야2
 
     @Column(columnDefinition = "TEXT")
-    private String intro;   //자기소개, 글자제한몇자? 자기소개는 기니깐 TEXT가 낫지 않을까
+    private String intro;   //자기소개,
 
-    private String msg;     //한줄메세지, 글자제한몇자? 최대 60자?
+    private String msg;     //한줄메세지, varchar(255) - 글자수 제한 몇자? 최대 60자?
 
-    private String reservationInfo;     //예약 전달사항, 최대 60자?
-
-    @Column(length = 20)
-    private String consultStart;        //상담가능 시작시간, 최대 60자? length 20이어도 될거같음
+    private String reservationInfo;     //예약 전달사항, varchar(255) - 글자수 제한 몇자? 최대 60자?
 
     @Column(length = 20)
-    private String consultEnd;      //상담가능 종료시간, 최대 60자? length 20이어도 될거같음
+    private String consultStart;        //상담가능 시작시간
 
-    private String consultNotice;       //상담불가시간 메세지, 최대 60자?
+    @Column(length = 20)
+    private String consultEnd;      //상담가능 종료시간
+
+    private String consultNotice;       //상담불가시간 메세지, varchar(255) - 글자수 제한 몇자? 최대 60자?
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
