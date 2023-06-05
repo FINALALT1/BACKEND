@@ -1,24 +1,26 @@
-package kr.co.moneybridge.model.reservation.style;
+package kr.co.moneybridge.model.reservation;
 
-import kr.co.moneybridge.model.reservation.Review;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Table(name = "style_tb")
 @Entity
 public class Style {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
     private Review review;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StyleStyle style;
 
     @Column(nullable = false)
@@ -26,6 +28,7 @@ public class Style {
 
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
     private Boolean status;
 
     @PrePersist

@@ -21,11 +21,12 @@ public class PBAgreement {
     @ManyToOne(fetch = FetchType.LAZY)
     private PB pb;
 
-    @Column(nullable = false, length = 20)
-    private String title;
-
     @Column(nullable = false)
-    private UserAgreementType userAgreementType;
+    private String title; // 약관명, varchar(255)
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PBAgreementType type; // 약관 종류
 
     @Column(nullable = false)
     private Boolean isAgreed;
@@ -37,4 +38,14 @@ public class PBAgreement {
 
     @Column(nullable = false)
     private Boolean status;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

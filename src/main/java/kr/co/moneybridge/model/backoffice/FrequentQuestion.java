@@ -17,10 +17,10 @@ public class FrequentQuestion {
     private Long id;
 
     @Column(nullable = false)
-    private String title;
+    private String title; // 제목, varchar(255)
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private String content; // 문의 내용
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

@@ -19,18 +19,17 @@ public class Career {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pb_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private PB pb;
 
-    @Column(nullable = false, length = 20)
-    private String career; // 경력사항
+    @Column(nullable = false, length = 90)
+    private String career; // 경력사항, varchar(90)
 
     @Column(nullable = false)
-    private int start; // 시작년도
+    private Integer start; // 시작년도
 
     @Column(nullable = false)
-    private int end; // 끝년도
+    private Integer end; // 끝년도
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

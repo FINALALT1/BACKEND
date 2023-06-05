@@ -18,11 +18,10 @@ public class Portfolio {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pb_id")
     private PB pb;
 
     @Column(nullable = false)
-    private int highestReturn; // 최고수익률
+    private Integer highestReturn; // 최고수익률
 
     @Column(nullable = false)
     private LocalDate startDate; // 시작일
@@ -31,13 +30,15 @@ public class Portfolio {
     private LocalDate endDate; // 종료일
 
     @Enumerated(EnumType.STRING)
-    private PBPropensity PBPropensity; // 투자 성향
+    @Column(nullable = false)
+    private PBPropensity propensity; // 투자 성향
 
     @Column(nullable = false)
-    private int dangerRate; // 위험 등급
+    private Integer dangerRate; // 위험 등급
 
     private String file; // 첨부 파일
 
+    @Column(columnDefinition = "TEXT")
     private String award; // 수상 내역
 
     @Column(nullable = false)

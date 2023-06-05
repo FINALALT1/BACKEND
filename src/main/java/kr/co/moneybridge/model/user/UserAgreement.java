@@ -19,11 +19,11 @@ public class UserAgreement {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Column(nullable = false, length = 20)
-    private String title;
+    @Column(nullable = false)
+    private String title; // 약관명
 
     @Column(nullable = false)
-    private UserAgreementType userAgreementType;
+    private UserAgreementType type; // 약관 종류
 
     @Column(nullable = false)
     private Boolean isAgreed;
@@ -35,4 +35,14 @@ public class UserAgreement {
 
     @Column(nullable = false)
     private Boolean status;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

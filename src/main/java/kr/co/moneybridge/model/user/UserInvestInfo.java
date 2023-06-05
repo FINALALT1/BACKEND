@@ -20,22 +20,22 @@ public class UserInvestInfo {
     private User user;
 
     @Column(nullable = false)
-    private int q1; // 복잡(5), 고려(4), 시작(3), 모름(2)
+    private Integer q1; // 복잡(5), 고려(4), 시작(3), 모름(2)
 
     @Column(nullable = false)
-    private int q2; // 손실(4), 여유(3), 소액(2)
+    private Integer q2; // 손실(4), 여유(3), 소액(2)
 
     @Column(nullable = false)
-    private int q3; // 위험(5), 과감(4), 감수(3), 안정(1)
+    private Integer q3; // 위험(5), 과감(4), 감수(3), 안정(1)
 
     @Column(nullable = false)
-    private int q4; // 둘다(5), 수익(4), 안배(3), 보호(1)
+    private Integer q4; // 둘다(5), 수익(4), 안배(3), 보호(1)
 
     @Column(nullable = false)
-    private int q5; // 계속(5), 기간(4), 감소(3), 회수(2)
+    private Integer q5; // 계속(5), 기간(4), 감소(3), 회수(2)
 
     @Column(nullable = false)
-    private int q6; // 증가(5), 감소"4), 대기(2), 회수(1)
+    private Integer q6; // 증가(5), 감소"4), 대기(2), 회수(1)
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

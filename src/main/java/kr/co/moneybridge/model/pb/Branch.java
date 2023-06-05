@@ -1,6 +1,5 @@
 package kr.co.moneybridge.model.pb;
 
-import kr.co.moneybridge.model.board.BoardStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,33 +16,31 @@ public class Branch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
 
-    @Column(nullable = false, length = 20)
-    private String name; // 증권사명(company의 name) + ' ' + 지점명
+    @Column(nullable = false, length = 60)
+    private String name; // 증권사명(company의 name) + ' ' + 지점명, varchar(60)
 
     @Column(nullable = false)
-    private String roadAddress; // 도로명 주소
+    private String roadAddress; // 도로명 주소, varchar(255)
 
     @Column(nullable = false)
-    private String streetAddress; // 지번 주소
+    private String streetAddress; // 지번 주소, varchar(255)
 
     @Column(nullable = false)
-    private String latitude; // 위도
+    private String latitude; // 위도, varchar(255)
 
     @Column(nullable = false)
-    private String longitude; // 경도
+    private String longitude; // 경도, varchar(255)
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BoardStatus status;
+    private Boolean status;
 
     @PrePersist
     protected void onCreate() {

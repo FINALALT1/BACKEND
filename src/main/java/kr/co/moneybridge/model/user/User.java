@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Table(name = "user_tb")
 @Entity
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,18 +29,19 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
-    private Boolean status; // true, false
-
     @Column(nullable = false, length = 20)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    private UserPropensity userPropensity;
+    private UserPropensity propensity;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private Boolean status; // true, false
 
     @PrePersist
     protected void onCreate() {

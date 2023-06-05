@@ -24,7 +24,7 @@ public class Question {
     private QuestionAuthorRole authorRole;
 
     @Column(nullable = false)
-    private String title;
+    private String title; // 제목, varchar(255)
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
