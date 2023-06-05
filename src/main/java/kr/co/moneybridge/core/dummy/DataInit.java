@@ -113,13 +113,13 @@ public class DataInit extends DummyEntity{
             reservationRepository.save(newVisitReservation(user1, pb2, ReservationProcess.APPLY));
             reservationRepository.save(newVisitReservation(user2, pb2, ReservationProcess.CONFIRM));
             Reservation reservation2 = reservationRepository.save(newVisitReservation(user2, pb2, ReservationProcess.COMPLETE));
+            reservationRepository.save(newVisitReservationCancel(user1, pb1));
 
             Review review1 = reviewRepository.save(newReview(reservation1));
             Review review2 = reviewRepository.save(newReview(reservation2));
 
             styleRepository.save(newStyle(review1, StyleStyle.FAST));
             styleRepository.save(newStyle(review2, StyleStyle.KIND));
-
 
         };
     }

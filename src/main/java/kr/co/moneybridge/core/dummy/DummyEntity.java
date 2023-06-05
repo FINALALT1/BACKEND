@@ -146,7 +146,28 @@ public class DummyEntity {
                 .investor(user.getName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
-                .status(true)
+                .status(ReservationStatus.ACTIVE)
+                .build();
+    }
+
+    public Reservation newVisitReservationCancel(User user, PB pb) {
+        return Reservation.builder()
+                .user(user)
+                .pb(pb)
+                .type(ReservationType.VISIT)
+                .locationName("kb증권 강남중앙점")
+                .locationAddress("강남구 강남중앙로 10")
+                .candidateTime1(LocalDateTime.now())
+                .candidateTime2(LocalDateTime.now().minusHours(1))
+                .time(LocalDateTime.now())
+                .question("질문입니다...")
+                .process(ReservationProcess.CONFIRM)
+                .goal1(ReservationGoal.PROFIT)
+                .goal2(ReservationGoal.PRESERVATION)
+                .investor(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .status(ReservationStatus.CANCEL)
                 .build();
     }
 
@@ -167,7 +188,7 @@ public class DummyEntity {
                 .investor(user.getName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
-                .status(true)
+                .status(ReservationStatus.ACTIVE)
                 .build();
     }
 
