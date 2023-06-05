@@ -29,8 +29,6 @@ public class Board {
     @Column(nullable = false)
     private String content; // 블로그글이니 사이즈크니 longtext, HTML 코드저장.
 
-    @Column(nullable = false)
-    private Integer like;
 
     @Column(nullable = false, length = 30)
     private String tag1; // 7자 이내
