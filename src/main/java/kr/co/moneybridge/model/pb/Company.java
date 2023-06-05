@@ -1,31 +1,33 @@
-package kr.co.moneybridge.model.reservation.style;
+package kr.co.moneybridge.model.pb;
 
-import kr.co.moneybridge.model.reservation.Review;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "style_tb")
+@Getter
+@Table(name = "company_tb")
 @Entity
-public class Style {
-
+public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    private Review review;
+    @Column(nullable = false, length = 90)
+    private String name; // 증권사명, varchar(90)
 
-    private StyleStyle style;
+    @Column(nullable = false)
+    private String logo; // 로고 이미지
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
     private Boolean status;
 
     @PrePersist

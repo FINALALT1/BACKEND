@@ -1,4 +1,4 @@
-package kr.co.moneybridge.model.backoffice;
+package kr.co.moneybridge.model.reservation;
 
 import lombok.*;
 
@@ -9,18 +9,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "answer_tb")
+@Table(name = "style_tb")
 @Entity
-public class Answer {
+public class Style {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Question question;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Review review;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StyleStyle style;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

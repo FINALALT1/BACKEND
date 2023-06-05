@@ -1,6 +1,7 @@
-package kr.co.moneybridge.model.board;
+package kr.co.moneybridge.model.pb;
 
-import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserAgreementType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,9 +11,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "board_tb")
+@Table(name = "pb_agreement_tb")
 @Entity
-public class Board {
+public class PBAgreement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,37 +22,22 @@ public class Board {
     private PB pb;
 
     @Column(nullable = false)
-    private String title; // 제목, varchar(255)
+    private String title; // 약관명, varchar(255)
 
-    private String thumbnail;
-
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String content; // 블로그글이니 사이즈크니 longtext, HTML 코드저장.
+    private PBAgreementType type; // 약관 종류
 
     @Column(nullable = false)
-    private Integer like;
-
-    @Column(nullable = false, length = 30)
-    private String tag1; // 7자 이내
-
-    @Column(nullable = false, length = 30)
-    private String tag2; // 7자 이내
-
-    @Column(nullable = false)
-    private String topic; // 글 주제, varchar(255)
-
-    @Column(nullable = false)
-    private Long clickCount; // 확장성 생각하면 Long
+    private Boolean isAgreed;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BoardStatus status;
+    private Boolean status;
 
     @PrePersist
     protected void onCreate() {

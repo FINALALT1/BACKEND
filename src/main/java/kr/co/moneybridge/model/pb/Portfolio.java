@@ -1,57 +1,53 @@
-package kr.co.moneybridge.model.board;
+package kr.co.moneybridge.model.pb;
 
-import kr.co.moneybridge.model.pb.PB;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "board_tb")
+@Table(name = "portfolio_tb")
 @Entity
-public class Board {
+public class Portfolio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private PB pb;
 
     @Column(nullable = false)
-    private String title; // 제목, varchar(255)
-
-    private String thumbnail;
-
-    @Lob
-    @Column(nullable = false)
-    private String content; // 블로그글이니 사이즈크니 longtext, HTML 코드저장.
+    private Integer highestReturn; // 최고수익률
 
     @Column(nullable = false)
-    private Integer like;
-
-    @Column(nullable = false, length = 30)
-    private String tag1; // 7자 이내
-
-    @Column(nullable = false, length = 30)
-    private String tag2; // 7자 이내
+    private LocalDate startDate; // 시작일
 
     @Column(nullable = false)
-    private String topic; // 글 주제, varchar(255)
+    private LocalDate endDate; // 종료일
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PBPropensity propensity; // 투자 성향
 
     @Column(nullable = false)
-    private Long clickCount; // 확장성 생각하면 Long
+    private Integer dangerRate; // 위험 등급
+
+    private String file; // 첨부 파일
+
+    @Column(columnDefinition = "TEXT")
+    private String award; // 수상 내역
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BoardStatus status;
+    private Boolean status;
 
     @PrePersist
     protected void onCreate() {

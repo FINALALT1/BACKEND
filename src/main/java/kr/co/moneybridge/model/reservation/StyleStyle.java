@@ -1,4 +1,4 @@
-package kr.co.moneybridge.model.reservation.style;
+package kr.co.moneybridge.model.reservation;
 
 public enum StyleStyle {
     METICULOUS,  //꼼꼼한
