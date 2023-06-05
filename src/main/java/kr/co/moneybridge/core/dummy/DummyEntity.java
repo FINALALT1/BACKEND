@@ -171,11 +171,9 @@ public class DummyEntity {
                 .build();
     }
 
-    public Review newReview(Reservation reservation, PB pb, User user){
+    public Review newReview(Reservation reservation){
         return Review.builder()
                 .reservation(reservation)
-                .user(user)
-                .pb(pb)
                 .content("content 입니다")
                 .adherence(ReviewAdherence.EXCELLENT)
                 .status(true)
