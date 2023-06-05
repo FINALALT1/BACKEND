@@ -25,10 +25,8 @@ public class Board {
 
     private String thumbnail;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content; // 블로그글이니 사이즈크니 longtext, HTML 코드저장.
-
 
     @Column(nullable = false, length = 30)
     private String tag1; // 7자 이내

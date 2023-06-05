@@ -237,8 +237,8 @@ public class DummyEntity {
         return Career.builder()
                 .pb(pb)
                 .career("키움증권")
-                .start(2020)
-                .end(2022)
+                .startYear(2020)
+                .endYear(2022)
                 .status(true)
                 .build();
     }

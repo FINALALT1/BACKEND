@@ -26,10 +26,10 @@ public class Career {
     private String career; // 경력사항, varchar(90)
 
     @Column(nullable = false)
-    private Integer start; // 시작년도
+    private Integer startYear; // 시작년도
 
     @Column(nullable = false)
-    private Integer end; // 끝년도
+    private Integer endYear; // 끝년도
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
