@@ -17,23 +17,22 @@ public class Branch {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private Company company;
 
     @Column(nullable = false, length = 60)
-    private String name; // 증권사명(company의 name) + ' ' + 지점명, varchar(90) - 최대 30자?
+    private String name; // 증권사명(company의 name) + ' ' + 지점명, varchar(60)
 
     @Column(nullable = false)
-    private String roadAddress; // 도로명 주소, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String roadAddress; // 도로명 주소, varchar(255)
 
     @Column(nullable = false)
-    private String streetAddress; // 지번 주소, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String streetAddress; // 지번 주소, varchar(255)
 
     @Column(nullable = false)
-    private String latitude; // 위도, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String latitude; // 위도, varchar(255)
 
     @Column(nullable = false)
-    private String longitude; // 경도, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String longitude; // 경도, varchar(255)
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

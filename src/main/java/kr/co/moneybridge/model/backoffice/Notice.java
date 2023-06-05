@@ -17,7 +17,7 @@ public class Notice {
     private Long id;
 
     @Column(nullable = false)
-    private String title; // 제목, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String title; // 제목, varchar(255)
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;

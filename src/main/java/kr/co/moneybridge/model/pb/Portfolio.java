@@ -18,7 +18,6 @@ public class Portfolio {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private PB pb;
 
     @Column(nullable = false)

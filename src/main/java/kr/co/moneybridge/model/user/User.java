@@ -17,7 +17,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false, length = 20)
-    private String name; // 최대 한글 6자?
+    private String name;
 
     @Column(nullable = false, length = 60) // 패스워드 인코딩(BCrypt)
     private String password;

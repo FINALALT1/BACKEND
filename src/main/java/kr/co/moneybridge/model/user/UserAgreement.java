@@ -17,11 +17,10 @@ public class UserAgreement {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private User user;
 
     @Column(nullable = false)
-    private String title; // 약관명, 최대 60자?
+    private String title; // 약관명
 
     @Column(nullable = false)
     private UserAgreementType type; // 약관 종류

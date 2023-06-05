@@ -17,7 +17,6 @@ public class UserInvestInfo {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private User user;
 
     @Column(nullable = false)

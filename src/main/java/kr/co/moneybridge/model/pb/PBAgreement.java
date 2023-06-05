@@ -19,11 +19,10 @@ public class PBAgreement {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private PB pb;
 
     @Column(nullable = false)
-    private String title; // 약관명, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String title; // 약관명, varchar(255)
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

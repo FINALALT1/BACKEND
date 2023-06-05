@@ -16,8 +16,8 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 60)
-    private String name; // 증권사명, varchar(90) - 최대 30자?
+    @Column(nullable = false, length = 90)
+    private String name; // 증권사명, varchar(90)
 
     @Column(nullable = false)
     private String logo; // 로고 이미지

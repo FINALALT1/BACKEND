@@ -18,11 +18,10 @@ public class Board {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private PB pb;
 
     @Column(nullable = false)
-    private String title; // 제목, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String title; // 제목, varchar(255)
 
     private String thumbnail;
 
@@ -33,14 +32,14 @@ public class Board {
     @Column(nullable = false)
     private Integer like;
 
-    @Column(nullable = false, length = 20)
-    private String tag1; // 7자이내
+    @Column(nullable = false, length = 30)
+    private String tag1; // 7자 이내
 
-    @Column(nullable = false, length = 20)
-    private String tag2; // 7자이내
+    @Column(nullable = false, length = 30)
+    private String tag2; // 7자 이내
 
     @Column(nullable = false)
-    private String topic; // 글 주제, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String topic; // 글 주제, varchar(255)
 
     @Column(nullable = false)
     private Long clickCount; // 확장성 생각하면 Long

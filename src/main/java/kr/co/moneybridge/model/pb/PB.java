@@ -17,11 +17,10 @@ public class PB {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private Branch branch;      //지점
 
     @Column(nullable = false, length = 20)
-    private String name;        //이름 - varchar(20) 최대 6자 ?
+    private String name;        //이름 - varchar(20)
 
     @Column(nullable = false, length = 60)
     private String password;    //비밀번호
@@ -54,9 +53,9 @@ public class PB {
     @Column(columnDefinition = "TEXT")
     private String intro;   //자기소개,
 
-    private String msg;     //한줄메세지, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String msg;     //한줄메세지, varchar(255)
 
-    private String reservationInfo;     //예약 전달사항, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String reservationInfo;     //예약 전달사항, varchar(255)
 
     @Column(length = 20)
     private String consultStart;        //상담가능 시작시간
@@ -64,7 +63,7 @@ public class PB {
     @Column(length = 20)
     private String consultEnd;      //상담가능 종료시간
 
-    private String consultNotice;       //상담불가시간 메세지, varchar(255) - 글자수 제한 몇자? 최대 60자?
+    private String consultNotice;       //상담불가시간 메세지, varchar(255)
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

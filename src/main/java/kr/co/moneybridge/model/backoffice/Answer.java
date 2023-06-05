@@ -17,7 +17,6 @@ public class Answer {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private Question question;
 
     @Column(nullable = false, columnDefinition = "TEXT")

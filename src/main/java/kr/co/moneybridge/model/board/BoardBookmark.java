@@ -17,12 +17,10 @@ public class BoardBookmark {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private Board board;
 
     @Column(nullable = false)

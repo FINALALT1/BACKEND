@@ -17,7 +17,6 @@ public class Style {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private Review review;
 
     @Enumerated(EnumType.STRING)
