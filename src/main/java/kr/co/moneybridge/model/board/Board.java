@@ -39,9 +39,6 @@ public class Board {
     private String tag2; // 7자 이내
 
     @Column(nullable = false)
-    private String topic; // 글 주제, varchar(255)
-
-    @Column(nullable = false)
     private Long clickCount; // 확장성 생각하면 Long
 
     @Column(nullable = false)
