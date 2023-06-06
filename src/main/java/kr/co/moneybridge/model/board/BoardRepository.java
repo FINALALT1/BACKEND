@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardOutDTO(b, p, c) FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c WHERE b.title LIKE CONCAT('%', :title, '%')")
-    Page<BoardResponse.BoardOutDTO> findByTitle(@Param("title") String title, Pageable pageable);
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c WHERE b.title LIKE CONCAT('%', :title, '%') AND b.status = :status")
+    Page<BoardResponse.BoardPageDTO> findByTitle(@Param("title") String title, @Param("status") BoardStatus status, Pageable pageable);
+
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c WHERE b.status = :status")
+    Page<BoardResponse.BoardPageDTO> findAll(@Param("status") BoardStatus status, Pageable pageable);
 }

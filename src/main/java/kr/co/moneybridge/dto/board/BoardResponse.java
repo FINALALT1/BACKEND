@@ -10,7 +10,7 @@ public class BoardResponse {
 
     @Getter
     @Setter
-    public static class BoardOutDTO {
+    public static class BoardPageDTO {
 
         private Long id;
         private String title;
@@ -21,7 +21,7 @@ public class BoardResponse {
         private String tag2;
         private String msg;
 
-        public BoardOutDTO(Board board, PB pb, Company company) {
+        public BoardPageDTO(Board board, PB pb, Company company) {
             this.id = board.getId();
             this.title = board.getTitle();
             this.pbName = pb.getName();
