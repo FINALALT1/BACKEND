@@ -1,7 +1,7 @@
 package kr.co.moneybridge.dto.user;
 
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,7 +42,7 @@ public class UserRequest {
                     .name(username)
                     .password(password)
                     .email(email)
-                    .role(UserRole.USER)
+                    .role(Role.USER)
                     .status(true)
                     .build();
         }

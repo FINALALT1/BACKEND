@@ -1,6 +1,7 @@
 package kr.co.moneybridge.core.dummy;
 
 import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.board.BoardBookmark;
 import kr.co.moneybridge.model.board.BoardStatus;
@@ -21,7 +22,7 @@ public class DummyEntity {
                 .password(passwordEncoder.encode("password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
-                .role(UserRole.USER)
+                .role(Role.USER)
                 .status(true)
                 .build();
     }
@@ -34,7 +35,7 @@ public class DummyEntity {
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .propensity(UserPropensity.AGGRESSIVE)
-                .role(UserRole.USER)
+                .role(Role.USER)
                 .status(true)
                 .build();
     }
@@ -57,7 +58,7 @@ public class DummyEntity {
                 .consultStart(MyDateUtil.StringToLocalTime("09:00"))
                 .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
-                .role(PBRole.PB)
+                .role(Role.PB)
                 .status(PBStatus.ACTIVE)
                 .build();
     }
@@ -81,7 +82,7 @@ public class DummyEntity {
                 .consultStart(MyDateUtil.StringToLocalTime("09:00"))
                 .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
-                .role(PBRole.PB)
+                .role(Role.PB)
                 .status(PBStatus.ACTIVE)
                 .build();
     }
@@ -332,7 +333,7 @@ public class DummyEntity {
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .propensity(UserPropensity.AGGRESSIVE)
-                .role(UserRole.USER)
+                .role(Role.USER)
                 .status(true)
                 .createdAt(LocalDateTime.now())
                 .build();

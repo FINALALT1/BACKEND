@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.pb;
 
+import kr.co.moneybridge.model.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,7 +29,7 @@ public class PB {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PBRole role;
+    private Role role;
 
     @Column(nullable = false, length = 30, unique = true)
     private String email;       //이메일
