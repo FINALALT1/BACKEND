@@ -1,7 +1,7 @@
 package kr.co.moneybridge.dto.user;
 
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +11,7 @@ public class UserResponse {
         private Long id;
         private String username;
         private String email;
-        private UserRole role;
+        private Role role;
 
         public DetailOutDTO(User user) {
             this.id = user.getId();

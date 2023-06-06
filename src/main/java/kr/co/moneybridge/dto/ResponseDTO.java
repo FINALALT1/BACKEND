@@ -16,7 +16,7 @@ public class ResponseDTO<T> {
 
     public ResponseDTO(T data){
         this.status = HttpStatus.OK.value();
-        this.msg = "성공";
+        this.msg = "ok";
         this.data = data; // 응답할 데이터 바디
     }
 
