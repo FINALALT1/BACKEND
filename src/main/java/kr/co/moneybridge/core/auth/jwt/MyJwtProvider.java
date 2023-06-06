@@ -24,9 +24,8 @@ public class MyJwtProvider {
     protected static final Long EXP_REFRESH = 1000 * 60 * 60 * 24 * 14L; // 14일
     public static final String TOKEN_PREFIX = "Bearer "; // 스페이스 필요함
     public static final String HEADER_ACCESS = "Authorization";
-    public static final String SECRET_ACCESS = "originwasdonjul";
-    //private static final String SECRET = System.getenv("HS512_SECRET");
-    public static final String SECRET_REFRESH = "backend";
+    public static final String SECRET_ACCESS = System.getenv("SECRET_ACCESS");
+    public static final String SECRET_REFRESH = System.getenv("SECRET_REFRESH");
 
     // Access 토큰 생성
     @MyLog

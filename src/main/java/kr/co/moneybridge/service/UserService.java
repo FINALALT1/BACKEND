@@ -1,5 +1,6 @@
 package kr.co.moneybridge.service;
 
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nimbusds.jose.util.Pair;
@@ -106,12 +107,7 @@ public class UserService {
         String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
         String accessJwt = accessToken.replace(MyJwtProvider.TOKEN_PREFIX, "");
 
-        DecodedJWT decodedJWT = null;
-        try {
-            decodedJWT = MyJwtProvider.verifyAccess(accessJwt);
-        } catch (SignatureVerificationException sve) {
-            throw new Exception500("액세스 토큰 검증 실패");
-        }
+        DecodedJWT decodedJWT = JWT.decode(accessJwt);
         Long id = decodedJWT.getClaim("id").asLong();
         String role = decodedJWT.getClaim("role").asString().toUpperCase();
         String key = id + role;
@@ -155,11 +151,11 @@ public class UserService {
         String role = decodedJWT.getClaim("role").asString().toUpperCase();
         String key = id + role;
         if (redisUtil.get(key) == null) {
-            log.error("레디스에 없는 리프레시 토큰입니다. key: ", key);
+            log.error("요청받은 리프레시 토큰 레디스에 없음");
         }
         // Redis에서 해당 유저의 refresh token 삭제
         redisUtil.delete(key);
-        log.info("레디스에서 리프레시 토큰을 삭제했습니다. key: ", key);
+        log.info("레디스에서 리프레시 토큰 삭제");
 
         // 해당 access token을 Redis의 블랙리스트로 추가
         String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
@@ -171,7 +167,7 @@ public class UserService {
         }
         Long remainingTimeMillis = decodedJWT.getExpiresAt().getTime() - System.currentTimeMillis();
         redisUtil.setBlackList(accessJwt, "access_token_blacklist", remainingTimeMillis);
-        log.info("레디스에 액세스 토큰을 블랙리스트로 등록했습니다");
+        log.info("로그아웃한 액세스 토큰 블랙리스트로 등록");
     }
 
     @MyLog
