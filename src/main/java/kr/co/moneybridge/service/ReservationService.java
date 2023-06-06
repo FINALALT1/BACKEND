@@ -34,7 +34,7 @@ public class ReservationService {
                     pbPS.getConsultNotice()
             );
         } catch (Exception e) {
-            throw new Exception500("지점 조회 싶패 : " + e.getMessage());
+            throw new Exception500("지점 조회 실패 : " + e.getMessage());
         }
     }
 }
