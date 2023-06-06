@@ -4,8 +4,8 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,7 +41,7 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
             DecodedJWT decodedJWT = MyJwtProvider.verify(jwt);
             Long id = decodedJWT.getClaim("id").asLong();
             String role = decodedJWT.getClaim("role").asString();
-            UserRole userRole = UserRole.valueOf(role.toUpperCase());
+            Role userRole = Role.valueOf(role.toUpperCase());
 
             User user = User.builder().id(id).role(userRole).build();
             MyUserDetails myUserDetails = new MyUserDetails(user);
