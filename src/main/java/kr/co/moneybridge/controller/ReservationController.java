@@ -23,7 +23,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RestController
 public class ReservationController {
-    private ReservationService reservationService;
+    private final ReservationService reservationService;
 
     // PB 상담 예약 가능 시간 정보 + 지점 위치 불러오기 API
     @MyLog
