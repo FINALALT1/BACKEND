@@ -29,8 +29,8 @@ public class ReservationService {
                     pbPS.getBranch().getRoadAddress(),
                     pbPS.getBranch().getLatitude(),
                     pbPS.getBranch().getLongitude(),
-                    MyDateUtil.toStringFormat(pbPS.getConsultStart()),
-                    MyDateUtil.toStringFormat(pbPS.getConsultEnd()),
+                    MyDateUtil.localTimeToString(pbPS.getConsultStart()),
+                    MyDateUtil.localTimeToString(pbPS.getConsultEnd()),
                     pbPS.getConsultNotice()
             );
         } catch (Exception e) {

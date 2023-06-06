@@ -20,9 +20,6 @@ public class PB {
     @ManyToOne(fetch = FetchType.LAZY)
     private Branch branch;      //지점
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Company company;
-
     @Column(nullable = false, length = 20)
     private String name;        //이름 - varchar(20)
 
