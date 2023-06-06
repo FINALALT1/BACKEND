@@ -28,9 +28,14 @@ public class UserController {
     @MyErrorLog
     @PostMapping("/join/user")
     public ResponseEntity<?> join(@RequestBody @Valid UserRequest.JoinUserInDTO joinUserInDTO, Errors errors) {
+        String password = joinUserInDTO.getPassword();
         UserResponse.JoinUserOutDTO joinUserOutDTO = userService.회원가입(joinUserInDTO);
+        Pair<String, String> tokens = userService.토큰발급(joinUserInDTO.getEmail(), password);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(joinUserOutDTO);
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok()
+                .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header(MyJwtProvider.HEADER_REFRESH, tokens.getRight())
+                .body(responseDTO);
     }
 
     // 로그인 성공시 access 토큰과 refresh 토큰 둘 다 발급.
@@ -38,10 +43,9 @@ public class UserController {
     @MyErrorLog
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors){
-//        String jwt = userService.로그인(loginInDTO);
-        Pair<String, String> tokens = userService.로그인(loginInDTO);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-//        return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(responseDTO);
+        Pair<String, String> tokens = userService.토큰발급(loginInDTO.getEmail(), loginInDTO.getPassword());
+        UserResponse.LoginOutDTO loginOutDTO = userService.로그인(loginInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(loginOutDTO);
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .header(MyJwtProvider.HEADER_REFRESH, tokens.getRight())

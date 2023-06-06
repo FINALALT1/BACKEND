@@ -9,23 +9,23 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 public class UserRequest {
     @Setter
     @Getter
     public static class LoginInDTO {
-        @NotEmpty
-        private String role;
+        @NotNull
+        private Role role;
 
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         private String email;
 
         @NotEmpty
-        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "이메일 형식으로 작성해주세요")
+        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
         private String password;
     }
 
@@ -80,10 +80,10 @@ public class UserRequest {
         public User toEntity() {
             return User.builder()
                     .email(email)
-                    .role(Role.USER)
                     .password(password)
                     .name(name)
                     .phoneNumber(phoneNumber)
+                    .role(Role.ROLE_USER)
                     .status(true)
                     .build();
         }

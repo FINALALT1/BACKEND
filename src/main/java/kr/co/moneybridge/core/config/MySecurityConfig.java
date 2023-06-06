@@ -4,6 +4,7 @@ import kr.co.moneybridge.core.auth.jwt.MyJwtAuthorizationFilter;
 import kr.co.moneybridge.core.exception.Exception401;
 import kr.co.moneybridge.core.exception.Exception403;
 import kr.co.moneybridge.core.util.MyFilterResponseUtil;
+import kr.co.moneybridge.core.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Slf4j
 @Configuration
 public class MySecurityConfig {
+    private final RedisUtil redisUtil;
+
+    public MySecurityConfig(RedisUtil redisUtil) {
+        this.redisUtil = redisUtil;
+    }
 
     @Bean
     BCryptPasswordEncoder passwordEncoder(){
@@ -37,7 +43,7 @@ public class MySecurityConfig {
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager));
+            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager, redisUtil));
             // 시큐리티 관련 필터
             super.configure(builder);
         }
@@ -80,9 +86,9 @@ public class MySecurityConfig {
 
         // 11. 인증, 권한 필터 설정
         http.authorizeRequests(
-                authorize -> authorize.antMatchers("/s/**").authenticated()
-                        .antMatchers("/manager/**")
-                        .access("hasRole('ADMIN') or hasRole('MANAGER')")
+                authorize -> authorize.antMatchers("/auth/**").authenticated()
+                        .antMatchers("/user/**").hasRole("USER")
+                        .antMatchers("/pb/**").hasRole("PB")
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
         );

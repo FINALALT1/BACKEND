@@ -20,10 +20,10 @@ public class DummyEntity {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return User.builder()
                 .name(username)
-                .password(passwordEncoder.encode("password1234"))
+                .password(passwordEncoder.encode("Password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .status(true)
                 .build();
     }
@@ -32,11 +32,11 @@ public class DummyEntity {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return User.builder()
                 .name(username)
-                .password(passwordEncoder.encode("password1234"))
+                .password(passwordEncoder.encode("Password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .propensity(UserPropensity.AGGRESSIVE)
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .status(true)
                 .build();
     }
@@ -45,7 +45,7 @@ public class DummyEntity {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return PB.builder()
                 .name(username)
-                .password(passwordEncoder.encode("password1234"))
+                .password(passwordEncoder.encode("Password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .branch(branch)
@@ -59,7 +59,7 @@ public class DummyEntity {
                 .consultStart(MyDateUtil.StringToLocalTime("09:00"))
                 .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
-                .role(Role.PB)
+                .role(Role.ROLE_PB)
                 .status(PBStatus.ACTIVE)
                 .build();
     }
@@ -68,7 +68,7 @@ public class DummyEntity {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return PB.builder()
                 .name(username)
-                .password(passwordEncoder.encode("password1234"))
+                .password(passwordEncoder.encode("Password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .branch(branch)
@@ -83,7 +83,7 @@ public class DummyEntity {
                 .consultStart(MyDateUtil.StringToLocalTime("09:00"))
                 .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
-                .role(Role.PB)
+                .role(Role.ROLE_PB)
                 .status(PBStatus.ACTIVE)
                 .build();
     }
@@ -330,11 +330,11 @@ public class DummyEntity {
         return User.builder()
                 .id(id)
                 .name(username)
-                .password(passwordEncoder.encode("password1234"))
+                .password(passwordEncoder.encode("Password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .propensity(UserPropensity.AGGRESSIVE)
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .status(true)
                 .createdAt(LocalDateTime.now())
                 .build();

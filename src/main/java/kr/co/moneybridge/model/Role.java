@@ -1,5 +1,5 @@
 package kr.co.moneybridge.model;
 
 public enum Role {
-    USER, PB, ADMIN
+    ROLE_USER, ROLE_PB, ROLE_ADMIN
 }

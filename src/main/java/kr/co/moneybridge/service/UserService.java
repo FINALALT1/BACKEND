@@ -1,5 +1,6 @@
 package kr.co.moneybridge.service;
 
+import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
@@ -33,6 +34,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserAgreementRepository userAgreementRepository;
 
+    private final MyJwtProvider myJwtProvider;
+
     @MyLog
     @MyErrorLog
     @Transactional
@@ -61,16 +64,30 @@ public class UserService {
     }
 
     @MyLog
-    public String 로그인(UserRequest.LoginInDTO loginInDTO) {
+    @MyErrorLog
+    public Pair<String, String> 토큰발급(String email, String password) {
         try {
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                    = new UsernamePasswordAuthenticationToken(loginInDTO.getName(), loginInDTO.getPassword());
+                    = new UsernamePasswordAuthenticationToken(email, password);
             Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
             MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-            return MyJwtProvider.create(myUserDetails.getUser());
+
+            //로그인 성공하면 액세스 토큰, 리프레시 토큰 발급.
+            String accessjwt = myJwtProvider.createAccess(myUserDetails.getUser());
+            String refreshjwt = myJwtProvider.createRefresh(myUserDetails.getUser());
+            return Pair.of(accessjwt, refreshjwt);
         }catch (Exception e){
-            throw new Exception401("인증되지 않았습니다");
+            throw new Exception500("토큰발급 실패");
         }
+    }
+
+    @MyLog
+    @MyErrorLog
+    public UserResponse.LoginOutDTO 로그인(UserRequest.LoginInDTO loginInDTO) {
+        User userPS = userRepository.findByEmail(loginInDTO.getEmail()).orElseThrow(
+                () -> new Exception404("사용자가 존재하지 않습니다")
+        );
+        return new UserResponse.LoginOutDTO(userPS);
     }
 
     @MyLog
