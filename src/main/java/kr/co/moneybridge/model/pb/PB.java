@@ -19,6 +19,9 @@ public class PB {
     @ManyToOne(fetch = FetchType.LAZY)
     private Branch branch;      //지점
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private Company company;
+
     @Column(nullable = false, length = 20)
     private String name;        //이름 - varchar(20)
 
@@ -29,7 +32,7 @@ public class PB {
     @Column(nullable = false)
     private PBRole role;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 30, unique = true)
     private String email;       //이메일
 
     @Column(nullable = false, length = 20)
