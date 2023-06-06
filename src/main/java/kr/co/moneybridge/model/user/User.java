@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.user;
 
+import kr.co.moneybridge.model.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,7 +28,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role;
+    private Role role;
 
     @Column(nullable = false, length = 20)
     private String phoneNumber;

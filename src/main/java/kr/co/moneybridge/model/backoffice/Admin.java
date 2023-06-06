@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.backoffice;
 
+import kr.co.moneybridge.model.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,7 +25,7 @@ public class Admin {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AdminRole role;
+    private Role role;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
