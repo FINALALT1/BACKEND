@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class DummyEntity {
     public User newUser(String username){
@@ -52,8 +53,8 @@ public class DummyEntity {
                 .intro(username+" 입니다")
                 .msg("한줄메시지..")
                 .reservationInfo("10분 미리 도착해주세요")
-                .consultStart("09:00")
-                .consultEnd("18:00")
+                .consultStart(LocalTime.now())
+                .consultEnd(LocalTime.now().plusHours(1))
                 .consultNotice("월요일 불가능합니다")
                 .role(PBRole.PB)
                 .status(PBStatus.ACTIVE)
@@ -76,8 +77,8 @@ public class DummyEntity {
                 .intro(username+" 입니다")
                 .msg("한줄메시지..")
                 .reservationInfo("10분 미리 도착해주세요")
-                .consultStart("09:00")
-                .consultEnd("18:00")
+                .consultStart(LocalTime.now())
+                .consultEnd(LocalTime.now().plusHours(1))
                 .consultNotice("월요일 불가능합니다")
                 .role(PBRole.PB)
                 .status(PBStatus.ACTIVE)

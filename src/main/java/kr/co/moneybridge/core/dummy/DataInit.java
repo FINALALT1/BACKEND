@@ -57,7 +57,7 @@ public class DataInit extends DummyEntity{
             branchRepository.save(newBranch(c5, 4));
 
             PB pb1 = pbRepository.save(newPB("김pb", b1));
-            PB pb2 = pbRepository.save(newPBWithSpeciality("김pb", b1));
+            PB pb2 = pbRepository.save(newPBWithSpeciality("이pb", b1));
             PB pb3 = pbRepository.save(newPBWithSpeciality("박pb", b2));
 
             portfolioRepository.save(newPortfolio(pb1));

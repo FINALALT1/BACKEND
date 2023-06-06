@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Builder
 @AllArgsConstructor
@@ -18,9 +19,6 @@ public class PB {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Branch branch;      //지점
-
-    @OneToOne(fetch = FetchType.LAZY)
-    private Company company;
 
     @Column(nullable = false, length = 20)
     private String name;        //이름 - varchar(20)
@@ -60,11 +58,9 @@ public class PB {
 
     private String reservationInfo;     //예약 전달사항, varchar(255)
 
-    @Column(length = 20)
-    private String consultStart;        //상담가능 시작시간
+    private LocalTime consultStart;        //상담가능 시작시간
 
-    @Column(length = 20)
-    private String consultEnd;      //상담가능 종료시간
+    private LocalTime consultEnd;      //상담가능 종료시간
 
     private String consultNotice;       //상담불가시간 메세지, varchar(255)
 
