@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.backoffice;
 
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "admin_tb")
 @Entity
-public class Admin {
+public class Admin implements Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

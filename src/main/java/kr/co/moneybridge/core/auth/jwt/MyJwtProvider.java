@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.util.RedisUtil;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -30,28 +31,28 @@ public class MyJwtProvider {
     // Access 토큰 생성
     @MyLog
     @MyErrorLog
-    public static String createAccess(User user) {
+    public static String createAccess(Member member) {
         return TOKEN_PREFIX + JWT.create()
                 .withSubject(SUBJECT)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXP_ACCESS))
-                .withClaim("id", user.getId())
-                .withClaim("role", user.getRole().name())
+                .withClaim("id", member.getId())
+                .withClaim("role", member.getRole().toString())
                 .sign(Algorithm.HMAC512(SECRET_ACCESS));
     }
 
     // Refresh 토큰 생성
     @MyLog
     @MyErrorLog
-    public String createRefresh(User user) {
-        String refreshToken = TOKEN_PREFIX + JWT.create()
+    public String createRefresh(Member member) {
+        String refreshToken = JWT.create()
                 .withSubject(SUBJECT)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXP_REFRESH))
-                .withClaim("id", user.getId())
-                .withClaim("role", user.getRole().name())
+                .withClaim("id", member.getId())
+                .withClaim("role", member.getRole().toString())
                 .sign(Algorithm.HMAC512(SECRET_REFRESH));
         // Redis에 refresh token을 저장
         redisUtil.set(
-                user.getId() + user.getRole().name(),
+                member.getId() + member.getRole().toString(),
                 refreshToken,
                 EXP_REFRESH
         );

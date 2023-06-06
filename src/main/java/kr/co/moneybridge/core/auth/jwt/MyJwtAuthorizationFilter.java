@@ -35,14 +35,14 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
     // 헤더(Authorization)에 있는 토큰을 꺼내 이상이 없는 경우 SecurityContext에 저장
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String accessPrefixJwt = request.getHeader(MyJwtProvider.HEADER_ACCESS);
+        String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
 
-        if (accessPrefixJwt == null) {
+        if (accessToken == null) {
             chain.doFilter(request, response);
             return;
         }
 
-        String accessJwt = accessPrefixJwt.replace(MyJwtProvider.TOKEN_PREFIX, "");
+        String accessJwt = accessToken.replace(MyJwtProvider.TOKEN_PREFIX, "");
         try {
             log.debug("토큰 있음");
             DecodedJWT decodedJWT = MyJwtProvider.verifyAccess(accessJwt);

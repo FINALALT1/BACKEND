@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.pb;
 
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.time.LocalTime;
 @Getter
 @Table(name = "pb_tb")
 @Entity
-public class PB {
+public class PB implements Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
