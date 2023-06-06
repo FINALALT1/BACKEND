@@ -1,12 +1,7 @@
 package kr.co.moneybridge.dto.reservation;
 
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserRole;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class ReservationResponse {
     @Getter
