@@ -1,5 +1,6 @@
 package kr.co.moneybridge.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
@@ -32,11 +33,19 @@ public class UserController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    // 로그인 성공시 access 토큰과 refresh 토큰 둘 다 발급.
+    @MyLog
+    @MyErrorLog
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserRequest.LoginInDTO loginInDTO){
-        String jwt = userService.로그인(loginInDTO);
+    public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors){
+//        String jwt = userService.로그인(loginInDTO);
+        Pair<String, String> tokens = userService.로그인(loginInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(responseDTO);
+//        return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(responseDTO);
+        return ResponseEntity.ok()
+                .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header(MyJwtProvider.HEADER_REFRESH, tokens.getRight())
+                .body(responseDTO);
     }
 
     @GetMapping("/s/user/{id}")
