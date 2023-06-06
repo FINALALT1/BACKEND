@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c WHERE b.title LIKE CONCAT('%', :title, '%') AND b.status = :status")
@@ -14,4 +16,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c WHERE b.status = :status")
     Page<BoardResponse.BoardPageDTO> findAll(@Param("status") BoardStatus status, Pageable pageable);
+
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c WHERE b.status = :status ORDER BY b.id DESC")
+    List<BoardResponse.BoardPageDTO> findTop2ByNew(@Param("status") BoardStatus status, Pageable pageable);
+
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c WHERE b.status = :status ORDER BY b.clickCount DESC")
+    List<BoardResponse.BoardPageDTO> findTop2ByHot(@Param("status") BoardStatus status, Pageable pageable);
 }
