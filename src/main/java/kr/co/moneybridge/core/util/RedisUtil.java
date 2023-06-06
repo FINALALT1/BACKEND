@@ -21,8 +21,8 @@ public class RedisUtil {
     public boolean delete(String key) {
         return redisTemplate.delete(key);
     }
-    public void setBlackList(String key, String accessToken, Long milliSeconds) {
-        redisBlackListTemplate.opsForValue().set(key, accessToken, milliSeconds, TimeUnit.MILLISECONDS);
+    public void setBlackList(String accessToken, String message, Long milliSeconds) {
+        redisBlackListTemplate.opsForValue().set(accessToken, message, milliSeconds, TimeUnit.MILLISECONDS);
     }
     public boolean hasKeyBlackList(String key) {
         return redisBlackListTemplate.hasKey(key);

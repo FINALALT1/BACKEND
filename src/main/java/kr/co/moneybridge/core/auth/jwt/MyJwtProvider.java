@@ -67,4 +67,13 @@ public class MyJwtProvider {
                 .build().verify(accessJwt);
         return decodedJWT;
     }
+
+    // Refresh 토큰을 검증
+    @MyLog
+    @MyErrorLog
+    public static DecodedJWT verifyRefresh(String jwt) throws SignatureVerificationException, TokenExpiredException {
+        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET_REFRESH))
+                .build().verify(jwt);
+        return decodedJWT;
+    }
 }

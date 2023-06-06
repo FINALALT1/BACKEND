@@ -129,7 +129,7 @@ public class UserService {
         redisUtil.delete(key);
         log.info("레디스에서 리프레시 토큰을 삭제했습니다. key: ", key);
 
-        //액세스 토큰, 리프레시 토큰 발급.
+        // 액세스 토큰, 리프레시 토큰 발급.
         try {
             Member memberPS = myMemberUtil.findById(id, Role.valueOf(role));
             String accessjwt = myJwtProvider.createAccess(memberPS);
@@ -138,6 +138,40 @@ public class UserService {
         } catch (Exception e){
             throw new Exception500("토큰 재발급 실패");
         }
+    }
+
+    @MyLog
+    @MyErrorLog
+    @Transactional
+    public void logout(HttpServletRequest request, String refreshToken) {
+        // 요청받은 refresh token에서 나온 사용자 정보로 redis에서 refresh token을 조회
+        DecodedJWT decodedJWT = null;
+        try {
+            decodedJWT = MyJwtProvider.verifyRefresh(refreshToken);
+        } catch (SignatureVerificationException sve) {
+            log.error("리프레시 토큰 검증 실패");
+        }
+        Long id = decodedJWT.getClaim("id").asLong();
+        String role = decodedJWT.getClaim("role").asString().toUpperCase();
+        String key = id + role;
+        if (redisUtil.get(key) == null) {
+            log.error("레디스에 없는 리프레시 토큰입니다. key: ", key);
+        }
+        // Redis에서 해당 유저의 refresh token 삭제
+        redisUtil.delete(key);
+        log.info("레디스에서 리프레시 토큰을 삭제했습니다. key: ", key);
+
+        // 해당 access token을 Redis의 블랙리스트로 추가
+        String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
+        String accessJwt = accessToken.replace(MyJwtProvider.TOKEN_PREFIX, "");
+        try {
+            decodedJWT = MyJwtProvider.verifyAccess(accessJwt);
+        } catch (SignatureVerificationException sve) {
+            log.error("액세스 토큰 검증 실패");
+        }
+        Long remainingTimeMillis = decodedJWT.getExpiresAt().getTime() - System.currentTimeMillis();
+        redisUtil.setBlackList(accessJwt, "access_token_blacklist", remainingTimeMillis);
+        log.info("레디스에 액세스 토큰을 블랙리스트로 등록했습니다");
     }
 
     @MyLog

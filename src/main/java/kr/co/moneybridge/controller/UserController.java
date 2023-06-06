@@ -38,7 +38,7 @@ public class UserController {
         UserResponse.JoinUserOutDTO joinUserOutDTO = userService.join(joinUserInDTO);
         Pair<String, String> tokens = userService.issue(joinUserInDTO.getEmail(), password);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(joinUserOutDTO);
-
+        // 회원가입 완료시 자동로그인
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
@@ -53,7 +53,6 @@ public class UserController {
         Pair<String, String> tokens = userService.issue(loginInDTO.getEmail(), loginInDTO.getPassword());
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(loginOutDTO);
-
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
         return ResponseEntity.ok()
@@ -66,6 +65,24 @@ public class UserController {
     @MyErrorLog
     @PostMapping("/reissue")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        Pair<String, String> tokens = userService.reissue(request, getRefreshToken(request));
+        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok()
+                .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .body(responseDTO);
+    }
+
+    @MyLog
+    @MyErrorLog
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request){
+        userService.logout(request, getRefreshToken(request));
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    private String getRefreshToken(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             throw new Exception400("Cookie", "쿠키에 값이 없습니다");
@@ -75,14 +92,7 @@ public class UserController {
         if (cookieOP.isEmpty()) {
             throw new Exception400("Cookie", "리프레시 토큰이 없습니다");
         }
-        String refreshToken = cookieOP.get().getValue();
-
-        Pair<String, String> tokens = userService.reissue(request, refreshToken);
-        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok()
-                .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
-                .body(responseDTO);
+        return cookieOP.get().getValue();
     }
 
     @GetMapping("/s/user/{id}")
