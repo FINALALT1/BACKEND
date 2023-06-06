@@ -23,13 +23,13 @@ public class UserResponse {
 
     @Setter
     @Getter
-    public static class JoinOutDTO {
+    public static class JoinUserOutDTO {
         private Long id;
-        private String name;
+        private Role role;
 
-        public JoinOutDTO(User user) {
+        public JoinUserOutDTO(User user) {
             this.id = user.getId();
-            this.name = user.getName();
+            this.role = user.getRole();
         }
     }
 }

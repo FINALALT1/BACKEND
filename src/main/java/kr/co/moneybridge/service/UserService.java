@@ -1,5 +1,6 @@
 package kr.co.moneybridge.service;
 
+import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
@@ -10,6 +11,7 @@ import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserAgreementRepository;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -26,25 +29,32 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final UserAgreementRepository userAgreementRepository;
 
     @MyLog
+    @MyErrorLog
     @Transactional
-    public UserResponse.JoinOutDTO 회원가입(UserRequest.JoinInDTO joinInDTO){
-        Optional<User> userOP =userRepository.findByEmail(joinInDTO.getUsername());
+    public UserResponse.JoinUserOutDTO 회원가입(UserRequest.JoinUserInDTO joinUserInDTO){
+        Optional<User> userOP =userRepository.findByEmail(joinUserInDTO.getEmail());
         if(userOP.isPresent()){
-            // 이 부분이 try catch 안에 있으면 Exception500에게 제어권을 뺏긴다.
-            throw new Exception400("username", "유저네임이 존재합니다");
+            throw new Exception400("email", "이미 등록된 이메일입니다");
         }
-        String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte
-        joinInDTO.setPassword(encPassword);
-        System.out.println("encPassword : "+encPassword);
+        if(!joinUserInDTO.getPassword().equals(joinUserInDTO.getCheckPassword())){
+            throw new Exception400("checkPassword", "비밀번호와 비밀번호 재입력이 다릅니다");
+        }
+        String encPassword = passwordEncoder.encode(joinUserInDTO.getPassword()); // 60Byte
+        joinUserInDTO.setPassword(encPassword);
 
-        // 디비 save 되는 쪽만 try catch로 처리하자.
         try {
-            User userPS = userRepository.save(joinInDTO.toEntity());
-            return new UserResponse.JoinOutDTO(userPS);
+            User userPS = userRepository.save(joinUserInDTO.toEntity());
+            List<UserRequest.AgreementDTO> agreements = joinUserInDTO.getAgreements();
+            if(agreements != null){
+                agreements.stream().forEach(agreement ->
+                        userAgreementRepository.save(agreement.toEntity(userPS)));
+            }
+            return new UserResponse.JoinUserOutDTO(userPS);
         }catch (Exception e){
             throw new Exception500("회원가입 실패 : "+e.getMessage());
         }

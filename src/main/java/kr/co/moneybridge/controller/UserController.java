@@ -21,15 +21,14 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RestController
 public class UserController {
-
     private final UserService userService;
 
-    @MyErrorLog
     @MyLog
-    @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody @Valid UserRequest.JoinInDTO joinInDTO, Errors errors) {
-        UserResponse.JoinOutDTO joinOutDTO = userService.회원가입(joinInDTO);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(joinOutDTO);
+    @MyErrorLog
+    @PostMapping("/join/user")
+    public ResponseEntity<?> join(@RequestBody @Valid UserRequest.JoinUserInDTO joinUserInDTO, Errors errors) {
+        UserResponse.JoinUserOutDTO joinUserOutDTO = userService.회원가입(joinUserInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(joinUserOutDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
