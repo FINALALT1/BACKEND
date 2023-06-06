@@ -23,8 +23,7 @@ public class MyJwtProvider {
     protected static final Long EXP_REFRESH = 1000 * 60 * 60 * 24 * 14L; // 14일
     public static final String TOKEN_PREFIX = "Bearer "; // 스페이스 필요함
     public static final String HEADER_ACCESS = "Authorization";
-    public static final String HEADER_REFRESH = "RefreshToken";
-    public static final String SECRET_ACCESS = "5b/ziuLkoHT3aHeL+jFhzSwGEWx/bFvO1vW34z1htkZkzl3kObYOxKot8ceMPiCk3WInzzK6JGMy1TTZJ9Z3DpTgh5Hcyegq8rTgT91BKt5TzQtBG29Is4OSY5NL6vzZ";
+    public static final String SECRET_ACCESS = "originwasdonjul";
     //private static final String SECRET = System.getenv("HS512_SECRET");
     public static final String SECRET_REFRESH = "backend";
 

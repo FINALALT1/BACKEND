@@ -17,6 +17,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
@@ -27,14 +29,18 @@ public class UserController {
     @MyLog
     @MyErrorLog
     @PostMapping("/join/user")
-    public ResponseEntity<?> join(@RequestBody @Valid UserRequest.JoinUserInDTO joinUserInDTO, Errors errors) {
+    public ResponseEntity<?> join(@RequestBody @Valid UserRequest.JoinUserInDTO joinUserInDTO, Errors errors,  HttpServletResponse response) {
         String password = joinUserInDTO.getPassword();
         UserResponse.JoinUserOutDTO joinUserOutDTO = userService.회원가입(joinUserInDTO);
         Pair<String, String> tokens = userService.토큰발급(joinUserInDTO.getEmail(), password);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(joinUserOutDTO);
+
+        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; SameSite=strict; Path=/");
+        // 개발 완료 후 https로 연결하면 아래코드로 변경
+        // response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; SameSite=strict; Path=/; Secure");
+
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
-                .header(MyJwtProvider.HEADER_REFRESH, tokens.getRight())
                 .body(responseDTO);
     }
 
@@ -42,13 +48,18 @@ public class UserController {
     @MyLog
     @MyErrorLog
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors){
+    public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
         Pair<String, String> tokens = userService.토큰발급(loginInDTO.getEmail(), loginInDTO.getPassword());
         UserResponse.LoginOutDTO loginOutDTO = userService.로그인(loginInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(loginOutDTO);
+
+        // HttpOnly(XSS 방지 - 자바스크립트로 쿠키 접근 불가), SameSite=strict(CSRF 방지- 쿠키는 동일한 사이트로만 전송), Secure(중간자 공격(MITM) 방지 - https로만 쿠키 전송)
+        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; SameSite=strict; Path=/");
+        // 개발 완료 후 https로 연결하면 아래코드로 변경
+        // response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; SameSite=strict; Path=/; Secure");
+
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
-                .header(MyJwtProvider.HEADER_REFRESH, tokens.getRight())
                 .body(responseDTO);
     }
 
