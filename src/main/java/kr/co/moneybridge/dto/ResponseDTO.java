@@ -11,7 +11,7 @@ public class ResponseDTO<T> {
 
     public ResponseDTO(){
         this.status = HttpStatus.OK.value();
-        this.msg = "성공";
+        this.msg = "ok";
     }
 
     public ResponseDTO(T data){
