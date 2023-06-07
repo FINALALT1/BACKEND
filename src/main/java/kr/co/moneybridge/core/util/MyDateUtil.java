@@ -1,14 +1,16 @@
 package kr.co.moneybridge.core.util;
 
-import net.bytebuddy.asm.Advice;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class MyDateUtil {
-    public static String toStringFormat(LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//    public static String LocalDateTimeToString(LocalDateTime localDateTime) {
+//        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//    }
+
+    public static LocalDateTime StringToLocalDateTime(String string) {
+        return LocalDateTime.parse(string);
     }
 
     public static String localTimeToString(LocalTime localTime) {

@@ -5,7 +5,6 @@ import kr.co.moneybridge.model.user.User;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
