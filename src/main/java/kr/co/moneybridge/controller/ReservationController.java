@@ -9,13 +9,9 @@ import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.reservation.ReservationType;
 import kr.co.moneybridge.service.ReservationService;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 import static kr.co.moneybridge.core.util.EnumUtil.*;
 
@@ -27,8 +23,9 @@ public class ReservationController {
     // PB 상담 예약 사전 정보 조회 API
     @MyLog
     @GetMapping("/user/reservation/{pbId}")
-    public ResponseEntity<?> getReservationBase(@PathVariable Long pbId) {
-        ReservationResponse.ReservationBaseOutDTO reservationBaseOutDTO = reservationService.getReservationBase(pbId);
+    public ResponseEntity<?> getReservationBase(@PathVariable Long pbId,
+                                                @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.ReservationBaseOutDTO reservationBaseOutDTO = reservationService.getReservationBase(pbId, myUserDetails);
 
         ResponseDTO<?> responseDTO = new ResponseDTO<>(reservationBaseOutDTO);
         return ResponseEntity.ok(responseDTO);
@@ -79,6 +76,18 @@ public class ReservationController {
 
         if (!applyReservationInDTO.getQuestion().matches("^.{0,100}$")) {
             throw new Exception400(applyReservationInDTO.getQuestion(), "최대 100자까지 입력 가능합니다.");
+        }
+
+        if (applyReservationInDTO.getUserName().isBlank()) {
+            throw new Exception400(applyReservationInDTO.getUserName(), "이름을 입력해주세요.");
+        }
+
+        if (!applyReservationInDTO.getUserPhoneNumber().matches("^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$")) {
+            throw new Exception400(applyReservationInDTO.getUserPhoneNumber(), "유효하지 않은 휴대폰 번호 형식입니다.");
+        }
+
+        if (!applyReservationInDTO.getUserEmail().matches("^(?=.{1,30}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new Exception400(applyReservationInDTO.getUserEmail(), "유효하지 않은 이메일 형식입니다.");
         }
 
         reservationService.applyReservation(pbId, applyReservationInDTO, myUserDetails);

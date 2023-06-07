@@ -20,5 +20,8 @@ public class ReservationRequest {
         private String candidateTime1;
         private String candidateTime2;
         private String question;
+        private String userName;
+        private String userPhoneNumber;
+        private String userEmail;
     }
 }

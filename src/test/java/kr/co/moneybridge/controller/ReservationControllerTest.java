@@ -106,6 +106,10 @@ public class ReservationControllerTest {
         applyReservationInDTO.setCandidateTime1("2023-05-15T09:00:00");
         applyReservationInDTO.setCandidateTime2("2023-05-15T12:00:00");
         applyReservationInDTO.setQuestion("잘 부탁드립니다.");
+        applyReservationInDTO.setUserName("이승민");
+        applyReservationInDTO.setUserPhoneNumber("01012345678");
+        applyReservationInDTO.setUserEmail("asdf1234@nate.com");
+
         String requestBody = om.writeValueAsString(applyReservationInDTO);
 
         // when

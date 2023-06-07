@@ -30,12 +30,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
 
     @MyLog
-    public ReservationResponse.ReservationBaseOutDTO getReservationBase(Long pbId) {
+    public ReservationResponse.ReservationBaseOutDTO getReservationBase(Long pbId, MyUserDetails myUserDetails) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
         if (!pbPS.getStatus().equals(PBStatus.ACTIVE)) {
             throw new Exception403("탈퇴했거나 승인 대기 중인 PB입니다.");
+        }
+        User userPS = userRepository.findById(myUserDetails.getUser().getId()).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+        if (!userPS.getStatus()) {
+            throw new Exception403("탈퇴한 투자자입니다.");
         }
 
         try {
@@ -46,6 +52,9 @@ public class ReservationService {
                     pbPS.getBranch().getLongitude(),
                     MyDateUtil.localTimeToString(pbPS.getConsultStart()),
                     MyDateUtil.localTimeToString(pbPS.getConsultEnd()),
+                    userPS.getName(),
+                    userPS.getPhoneNumber(),
+                    userPS.getEmail(),
                     pbPS.getConsultNotice()
             );
         } catch (Exception e) {
@@ -84,9 +93,9 @@ public class ReservationService {
                     .goal1(applyReservationInDTO.getGoal1())
                     .goal2(applyReservationInDTO.getGoal2())
                     .process(ReservationProcess.APPLY)
-                    .investor(userPS.getName())
-                    .phoneNumber(userPS.getPhoneNumber())
-                    .email(userPS.getEmail())
+                    .investor(applyReservationInDTO.getUserName())
+                    .phoneNumber(applyReservationInDTO.getUserPhoneNumber())
+                    .email(applyReservationInDTO.getUserEmail())
                     .status(ReservationStatus.ACTIVE)
                     .build());
         } catch (Exception e) {
