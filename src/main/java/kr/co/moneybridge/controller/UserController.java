@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.servlet.http.Cookie;
@@ -32,10 +33,20 @@ public class UserController {
 
     @MyLog
     @MyErrorLog
+    @PostMapping("/join/pb")
+    public ResponseEntity<?> joinPB(@RequestPart(value = "businessCard") MultipartFile businessCard,
+                                    @RequestPart(value = "joinPBInDTO") @Valid UserRequest.JoinPBInDTO joinPBInDTO, Errors errors) {
+        UserResponse.JoinPBOutDTO joinPBOutDTO = userService.joinPB(joinPBInDTO, businessCard);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(joinPBOutDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @MyLog
+    @MyErrorLog
     @PostMapping("/join/user")
-    public ResponseEntity<?> join(@RequestBody @Valid UserRequest.JoinUserInDTO joinUserInDTO, Errors errors,  HttpServletResponse response) {
+    public ResponseEntity<?> joinUser(@RequestBody @Valid UserRequest.JoinUserInDTO joinUserInDTO, Errors errors,  HttpServletResponse response) {
         String rawPassword = joinUserInDTO.getPassword();
-        UserResponse.JoinUserOutDTO joinUserOutDTO = userService.join(joinUserInDTO);
+        UserResponse.JoinUserOutDTO joinUserOutDTO = userService.joinUser(joinUserInDTO);
         Pair<String, String> tokens = userService.issue(joinUserInDTO.getEmail(), rawPassword);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(joinUserOutDTO);
         // 회원가입 완료시 자동로그인

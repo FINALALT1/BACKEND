@@ -17,6 +17,7 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreementRepository;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -28,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -45,14 +47,52 @@ public class UserService {
     private final MyJwtProvider myJwtProvider;
     private final RedisUtil redisUtil;
     private final MyMemberUtil myMemberUtil;
+    private final BranchRepository branchRepository;
+    private final PBRepository pbRepository;
+    private final PBAgreementRepository pbAgreementRepository;
 
     @MyLog
     @MyErrorLog
     @Transactional
-    public UserResponse.JoinUserOutDTO join(UserRequest.JoinUserInDTO joinUserInDTO){
+    public UserResponse.JoinPBOutDTO joinPB(UserRequest.JoinPBInDTO joinPBInDTO, MultipartFile businessCard){
+        Optional<PB> pbOP = userRepository.findPBByEmail(joinPBInDTO.getEmail());
+        if(pbOP.isPresent()){
+            throw new Exception400("email", "이미 pb로 회원가입된 이메일입니다");
+        }
+        if(!joinPBInDTO.getPassword().equals(joinPBInDTO.getCheckPassword())){
+            throw new Exception400("checkPassword", "비밀번호와 비밀번호 재입력이 다릅니다");
+        }
+        String encPassword = passwordEncoder.encode(joinPBInDTO.getPassword()); // 60Byte
+        joinPBInDTO.setPassword(encPassword);
+
+        Branch branchPS = branchRepository.findById(joinPBInDTO.getBranchId()).orElseThrow(
+                () -> new Exception400("branchId", "해당하는 지점이 존재하지 않습니다")
+        );
+        if (businessCard == null || businessCard.isEmpty()) {
+            new Exception400("businessCard", "명함 사진이 없습니다");
+        }
+        // 추가 필요함 - 압축해서 S3에 사진 저장
+        String fileName = businessCard.getOriginalFilename();
+        try {
+            PB pbPS = pbRepository.save(joinPBInDTO.toEntity(branchPS, fileName));
+            List<UserRequest.AgreementPBDTO> agreements = joinPBInDTO.getAgreements();
+            if(agreements != null){
+                agreements.stream().forEach(agreement ->
+                        pbAgreementRepository.save(agreement.toEntity(pbPS)));
+            }
+            return new UserResponse.JoinPBOutDTO(pbPS);
+        }catch (Exception e){
+            throw new Exception500("회원가입 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @MyErrorLog
+    @Transactional
+    public UserResponse.JoinUserOutDTO joinUser(UserRequest.JoinUserInDTO joinUserInDTO){
         Optional<User> userOP =userRepository.findByEmail(joinUserInDTO.getEmail());
         if(userOP.isPresent()){
-            throw new Exception400("email", "이미 등록된 이메일입니다");
+            throw new Exception400("email", "이미 투자자로 등록된 이메일입니다");
         }
         if(!joinUserInDTO.getPassword().equals(joinUserInDTO.getCheckPassword())){
             throw new Exception400("checkPassword", "비밀번호와 비밀번호 재입력이 다릅니다");
@@ -69,7 +109,7 @@ public class UserService {
             }
             return new UserResponse.JoinUserOutDTO(userPS);
         }catch (Exception e){
-            throw new Exception500("회원가입 실패 : "+e.getMessage());
+            throw new Exception500("회원가입 실패 : " + e.getMessage());
         }
     }
 

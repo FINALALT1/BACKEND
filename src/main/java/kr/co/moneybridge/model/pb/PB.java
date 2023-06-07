@@ -38,6 +38,7 @@ public class PB implements Member {
     @Column(nullable = false, length = 20)
     private String phoneNumber;     //전화번호
 
+    @Setter
     @Column(nullable = false)
     private String businessCard;        //명함
 
