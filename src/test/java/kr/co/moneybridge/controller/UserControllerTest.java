@@ -5,18 +5,14 @@ import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,11 +22,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import javax.persistence.EntityManager;
 import javax.servlet.http.Cookie;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -40,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class UserControllerTest {
-
     private DummyEntity dummy = new DummyEntity();
 
     @Autowired
