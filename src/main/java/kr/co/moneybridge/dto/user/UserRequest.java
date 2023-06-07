@@ -85,7 +85,7 @@ public class UserRequest {
                     .password(password)
                     .name(name)
                     .phoneNumber(phoneNumber)
-                    .role(Role.ROLE_USER)
+                    .role(Role.USER)
                     .status(true)
                     .build();
         }
