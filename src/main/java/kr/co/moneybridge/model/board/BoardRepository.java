@@ -32,9 +32,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "WHERE b.status = :status ORDER BY b.clickCount DESC")
     List<BoardResponse.BoardPageDTO> findTop2ByHot(@Param("status") BoardStatus status, Pageable pageable);
 
-    @Query("SELECT NEW kr.co.moneybridge.dto.board.BoardResponse$BoardDetailDTO(b, pb, r) " +
+    @Query("SELECT NEW kr.co.moneybridge.dto.board.BoardResponse$BoardDetailDTO(b, pb) " +
             "FROM Board b " +
-            "JOIN Reply r ON b.id = r.board.id JOIN PB pb ON b.pb.id = pb.id " +
-            "WHERE b.id = :boardId")
-    BoardResponse.BoardDetailDTO findBoardWithPBReply(@Param("boardId") Long boardId);
+            "JOIN PB pb ON b.pb.id = pb.id " +
+            "WHERE b.id = :boardId AND b.status = :status")
+    BoardResponse.BoardDetailDTO findBoardWithPBReply(@Param("boardId") Long boardId, @Param("status") BoardStatus status);
+
+
 }

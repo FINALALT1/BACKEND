@@ -5,9 +5,11 @@ import kr.co.moneybridge.model.board.Reply;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
+import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -54,9 +56,9 @@ public class BoardResponse {
         private PBSpeciality speciality2;
         private int career;
         private String content;
-        private List<Reply> reply;
+        private List<ReplyOutDTO> reply;
 
-        public BoardDetailDTO(Board board, PB pb, List<Reply> reply) {
+        public BoardDetailDTO(Board board, PB pb) {
             this.id = board.getId();
             this.thumbnail = board.getThumbnail();
             this.tag1 = board.getTag1();
@@ -69,7 +71,27 @@ public class BoardResponse {
             this.speciality2 = pb.getSpeciality2();
             this.career = pb.getCareer();
             this.content = board.getContent();
-            this.reply = reply;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class ReplyOutDTO {
+
+        private Long id;
+        private String name;
+        private String profile;
+        private String replyContent;
+        private LocalDateTime createdAt;
+        private Long parentId;
+
+        public ReplyOutDTO(Reply reply, User user) {
+            this.id = reply.getId();
+            this.name = user.getName();
+            this.profile = user.getProfile();
+            this.replyContent = reply.getContent();
+            this.createdAt = reply.getCreatedAt();
+            this.parentId = reply.getParentId();
         }
     }
 }

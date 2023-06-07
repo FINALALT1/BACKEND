@@ -37,6 +37,9 @@ public class User {
     private UserPropensity propensity;
 
     @Column(nullable = false)
+    private String profile;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

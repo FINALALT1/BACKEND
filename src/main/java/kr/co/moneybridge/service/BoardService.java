@@ -29,6 +29,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final UserRepository userRepository;
+    private final ReplyRepository replyRepository;
 
     //컨텐츠검색
     public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithTitle(String title, Pageable pageable) {
@@ -69,7 +70,10 @@ public class BoardService {
     //컨텐츠 상세 가져오기
     public BoardResponse.BoardDetailDTO getBoardDetail(Long id) {
 
-        return boardRepository.findBoardWithPBReply(id);
+        BoardResponse.BoardDetailDTO boardDetailDTO = boardRepository.findBoardWithPBReply(id, BoardStatus.ACTIVE);
+        List<BoardResponse.ReplyOutDTO> replyList = replyRepository.findRepliesByBoardId(id, true);
+        boardDetailDTO.setReply(replyList);
+        return boardDetailDTO;
     }
 
 
