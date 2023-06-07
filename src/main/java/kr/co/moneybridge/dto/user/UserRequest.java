@@ -86,6 +86,7 @@ public class UserRequest {
                     .name(name)
                     .phoneNumber(phoneNumber)
                     .role(Role.USER)
+                    .profile("profile.png")
                     .status(true)
                     .build();
         }
