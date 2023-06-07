@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    // PB 상담 예약 가능 시간 정보 + 지점 위치 불러오기 API
+    // PB 상담 예약 사전 정보 조회 API
     @MyLog
     @GetMapping("/user/reservation/{pbId}")
     public ResponseEntity<?> getReservationBase(@PathVariable Long pbId) {
