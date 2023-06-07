@@ -11,6 +11,7 @@ import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -24,8 +25,12 @@ public class MyJwtProvider {
     protected static final Long EXP_REFRESH = 1000 * 60 * 60 * 24 * 14L; // 14일
     public static final String TOKEN_PREFIX = "Bearer "; // 스페이스 필요함
     public static final String HEADER_ACCESS = "Authorization";
-    public static final String SECRET_ACCESS = System.getenv("SECRET_ACCESS");
-    public static final String SECRET_REFRESH = System.getenv("SECRET_REFRESH");
+    public static String SECRET_ACCESS;
+    public static String SECRET_REFRESH;
+    @Value("${SECRET_ACCESS}")
+    public void setSecretAccess(String secret){ SECRET_ACCESS = secret; }
+    @Value("${SECRET_REFRESH}")
+    public void setSecretRefresh(String secret){ SECRET_REFRESH = secret; }
 
     // Access 토큰 생성
     @MyLog
