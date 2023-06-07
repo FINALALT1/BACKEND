@@ -66,6 +66,14 @@ public class BoardService {
         return boardList;
     }
 
+    //컨텐츠 상세 가져오기
+    public BoardResponse.BoardDetailDTO getBoardDetail(Long id) {
+
+        return boardRepository.findBoardWithPBReply(id);
+    }
+
+
+
     //북마크 저장하기
     public void bookmarkBoard(Long boardId, Long userId) {
 
@@ -99,4 +107,7 @@ public class BoardService {
 
         boardBookmark.resign();
     }
+
+
+
 }

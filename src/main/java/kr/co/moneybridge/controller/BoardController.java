@@ -63,6 +63,9 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public ResponseEntity<?> getBoardDetail(@PathVariable Long id) {
 
+        BoardResponse.BoardDetailDTO boardDetailDTO = boardService.getBoardDetail(id);
+        ResponseDTO<BoardResponse.BoardDetailDTO> responseDTO = new ResponseDTO<>(boardDetailDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping("/user/bookmark/board/{id}")
