@@ -1,10 +1,16 @@
 package kr.co.moneybridge.controller;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
+import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.board.BoardResponse;
+import kr.co.moneybridge.dto.board.ReplyRequest;
+import kr.co.moneybridge.model.board.Board;
+import kr.co.moneybridge.model.board.BoardRepository;
+import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.BoardService;
+import kr.co.moneybridge.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +26,8 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final ReplyService replyService;
+    private final BoardRepository boardRepository;
 
     @GetMapping("/lounge/boards")
     public ResponseEntity<?> getBoardsWithTitle(@RequestParam(value = "title") String title) {
@@ -68,5 +76,15 @@ public class BoardController {
         boardService.DeleteBookmarkBoard(id, userId);
 
         return ResponseEntity.ok(new ResponseDTO<>());
+    }
+
+    @PostMapping("/user/board/{id}/reply")
+    public ResponseEntity<?> postReply(@PathVariable Long id,
+                                       @AuthenticationPrincipal MyUserDetails myUserDetails,
+                                       @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
+
+        Board board = boardRepository.findById(id).orElseThrow(() -> new Exception400("board", "해당 컨텐츠 존재하지 않습니다"));
+        User user = myUserDetails.getUser();
+        replyService.postReply(replyInDTO, user, board);
     }
 }
