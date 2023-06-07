@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class BoardController {
-
     private final BoardService boardService;
 
     @GetMapping("/lounge/boards")

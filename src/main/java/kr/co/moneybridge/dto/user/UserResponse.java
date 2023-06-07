@@ -23,13 +23,21 @@ public class UserResponse {
 
     @Setter
     @Getter
-    public static class JoinOutDTO {
+    public static class LoginOutDTO {
         private Long id;
-        private String name;
 
-        public JoinOutDTO(User user) {
+        public LoginOutDTO(User user) {
             this.id = user.getId();
-            this.name = user.getName();
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class JoinUserOutDTO {
+        private Long id;
+
+        public JoinUserOutDTO(User user) {
+            this.id = user.getId();
         }
     }
 }
