@@ -40,4 +40,8 @@ public class BoardBookmark {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void resign() { // 퇴사
+        this.status = false;
+    }
 }

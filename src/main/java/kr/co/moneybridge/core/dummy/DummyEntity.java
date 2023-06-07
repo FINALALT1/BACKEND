@@ -24,6 +24,7 @@ public class DummyEntity {
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .role(Role.USER)
+                .profile("프로필.png")
                 .status(true)
                 .build();
     }
@@ -37,6 +38,7 @@ public class DummyEntity {
                 .phoneNumber("01012345678")
                 .propensity(UserPropensity.AGGRESSIVE)
                 .role(Role.USER)
+                .profile("프로필.png")
                 .status(true)
                 .build();
     }

@@ -38,6 +38,9 @@ public class User implements Member {
     private UserPropensity propensity;
 
     @Column(nullable = false)
+    private String profile;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
