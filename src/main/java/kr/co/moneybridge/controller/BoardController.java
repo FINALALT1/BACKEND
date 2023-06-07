@@ -86,5 +86,7 @@ public class BoardController {
         Board board = boardRepository.findById(id).orElseThrow(() -> new Exception400("board", "해당 컨텐츠 존재하지 않습니다"));
         User user = myUserDetails.getUser();
         replyService.postReply(replyInDTO, user, board);
+
+        return ResponseEntity.ok(new ResponseDTO<>());
     }
 }
