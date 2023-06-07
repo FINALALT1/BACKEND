@@ -15,11 +15,15 @@ public class MyValidAdvice {
     public void postMapping() {
     }
 
+    @Pointcut("@annotation(org.springframework.web.bind.annotation.PatchMapping)")
+    public void patchMapping() {
+    }
+
     @Pointcut("@annotation(org.springframework.web.bind.annotation.PutMapping)")
     public void putMapping() {
     }
 
-    @Before("postMapping() || putMapping()")
+    @Before("postMapping() || patchMapping() || putMapping()")
     public void validationAdvice(JoinPoint jp) {
         Object[] args = jp.getArgs();
         for (Object arg : args) {

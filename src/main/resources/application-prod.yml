@@ -6,6 +6,9 @@ server:
       force: true
 
 spring:
+  redis:
+    host: localhost # 서버주소 넣어야 함.
+    port: 6379
   datasource:
     url: jdbc:mysql://finalproject.cdd2oclmksvc.ap-northeast-2.rds.amazonaws.com:3306/finalproject?allowPublicKeyRetrieval=true&useSSL=false
     driver-class-name: org.mariadb.jdbc.Driver
@@ -25,3 +28,6 @@ logging:
 
 file:
   path: ./upload/ # UPLOAD 폴더 상대경로 / AWS에 S3 사용하는게 좋음
+
+SECRET_ACCESS: ${SECRET_ACCESS}
+SECRET_REFRESH: ${SECRET_REFRESH}

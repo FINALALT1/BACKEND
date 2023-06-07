@@ -1,4 +1,4 @@
-package kr.co.moneybridge.reservation;
+package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;

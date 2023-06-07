@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.user;
 
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "user_tb")
 @Entity
-public class User {
+public class User implements Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +36,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserPropensity propensity;
+
+    @Column(nullable = false)
+    private String profile;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
