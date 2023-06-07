@@ -19,13 +19,13 @@ public class MyMemberUtil {
 
     public Member findById(Long id, Role role) {
         Member member = null;
-        if(role.equals(Role.ROLE_USER)){
+        if(role.equals(Role.USER)){
             member = userRepository.findById(id)
                     .orElseThrow(() -> new Exception500("해당하는 사용자가 없습니다"));
-        } else if(role.equals(Role.ROLE_PB)){
+        } else if(role.equals(Role.PB)){
             member = pbRepository.findById(id)
                     .orElseThrow(() -> new Exception500("해당하는 사용자가 없습니다"));
-        } else if(role.equals(Role.ROLE_ADMIN)){
+        } else if(role.equals(Role.ADMIN)){
             member = adminRepository.findById(id)
                     .orElseThrow(() -> new Exception500("해당하는 사용자가 없습니다"));
         }

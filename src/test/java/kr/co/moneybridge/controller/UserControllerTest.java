@@ -99,7 +99,7 @@ public class UserControllerTest {
     public void login_test() throws Exception {
         // given
         UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
-        loginInDTO.setRole(Role.ROLE_USER);
+        loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("로그인@nate.com");
         loginInDTO.setPassword("password1234");
         String requestBody = om.writeValueAsString(loginInDTO);
@@ -123,7 +123,7 @@ public class UserControllerTest {
         // given
         // 로그인을 통해 액세스 토큰과 리프레시 토큰을 얻습니다.
         UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
-        loginInDTO.setRole(Role.ROLE_USER);
+        loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("로그인@nate.com");
         loginInDTO.setPassword("password1234");
         String loginRequestBody = om.writeValueAsString(loginInDTO);
@@ -158,7 +158,7 @@ public class UserControllerTest {
         // given
         // 로그인을 통해 액세스 토큰과 리프레시 토큰을 얻습니다.
         UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
-        loginInDTO.setRole(Role.ROLE_USER);
+        loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("로그인@nate.com");
         loginInDTO.setPassword("password1234");
         String loginRequestBody = om.writeValueAsString(loginInDTO);
