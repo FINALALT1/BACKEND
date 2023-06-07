@@ -60,6 +60,11 @@ public class BoardController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @GetMapping("/board/{id}")
+    public ResponseEntity<?> getBoardDetail(@PathVariable Long id) {
+
+    }
+
     @PostMapping("/user/bookmark/board/{id}")
     public ResponseEntity<?> addBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
@@ -83,9 +88,8 @@ public class BoardController {
                                        @AuthenticationPrincipal MyUserDetails myUserDetails,
                                        @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
 
-        Board board = boardRepository.findById(id).orElseThrow(() -> new Exception400("board", "해당 컨텐츠 존재하지 않습니다"));
-        User user = myUserDetails.getUser();
-        replyService.postReply(replyInDTO, user, board);
+        Long userId = myUserDetails.getUser().getId();
+        replyService.postReply(replyInDTO, userId, id);
 
         return ResponseEntity.ok(new ResponseDTO<>());
     }
