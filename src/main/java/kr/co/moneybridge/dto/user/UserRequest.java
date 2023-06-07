@@ -4,9 +4,7 @@ import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreement;
 import kr.co.moneybridge.model.user.UserAgreementType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -33,6 +31,8 @@ public class UserRequest {
     @Setter
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class AgreementDTO {
         @NotEmpty
         private String title;
