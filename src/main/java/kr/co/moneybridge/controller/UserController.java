@@ -34,9 +34,9 @@ public class UserController {
     @MyErrorLog
     @PostMapping("/join/user")
     public ResponseEntity<?> join(@RequestBody @Valid UserRequest.JoinUserInDTO joinUserInDTO, Errors errors,  HttpServletResponse response) {
-        String password = joinUserInDTO.getPassword();
+        String rawPassword = joinUserInDTO.getPassword();
         UserResponse.JoinUserOutDTO joinUserOutDTO = userService.join(joinUserInDTO);
-        Pair<String, String> tokens = userService.issue(joinUserInDTO.getEmail(), password);
+        Pair<String, String> tokens = userService.issue(joinUserInDTO.getEmail(), rawPassword);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(joinUserOutDTO);
         // 회원가입 완료시 자동로그인
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");

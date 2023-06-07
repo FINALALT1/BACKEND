@@ -4,6 +4,7 @@ import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreement;
 import kr.co.moneybridge.model.user.UserAgreementType;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,7 @@ public class UserRequest {
 
     @Setter
     @Getter
+    @Builder
     public static class AgreementDTO {
         @NotEmpty
         private String title;

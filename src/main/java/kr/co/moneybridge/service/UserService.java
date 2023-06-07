@@ -87,7 +87,7 @@ public class UserService {
             String refreshjwt = myJwtProvider.createRefresh(myUserDetails.getUser());
             return Pair.of(accessjwt, refreshjwt);
         }catch (Exception e){
-            throw new Exception500("토큰발급 실패");
+            throw new Exception500("토큰발급 실패" + e.getMessage());
         }
     }
 
