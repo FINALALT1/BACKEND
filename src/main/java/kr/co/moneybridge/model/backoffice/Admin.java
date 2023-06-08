@@ -45,4 +45,8 @@ public class Admin implements Member {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void withdraw(){
+        this.status = false;
+    }
 }

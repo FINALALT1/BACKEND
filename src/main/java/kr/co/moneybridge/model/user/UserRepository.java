@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.user;
 
+import kr.co.moneybridge.model.pb.PB;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -15,7 +15,12 @@ public class MyFilterResponseUtil {
         ResponseDTO<?> responseDto = new ResponseDTO<>(HttpStatus.UNAUTHORIZED, "unAuthorized", e.getMessage());
         ObjectMapper om = new ObjectMapper();
         String responseBody = om.writeValueAsString(responseDto);
-        resp.getWriter().println(responseBody);
+//        resp.getWriter().println(responseBody);
+
+        PrintWriter writer = resp.getWriter();
+        writer.println(responseBody);
+        writer.flush();
+        writer.close();
     }
 
     public static void forbidden(HttpServletResponse resp, Exception e) throws IOException {

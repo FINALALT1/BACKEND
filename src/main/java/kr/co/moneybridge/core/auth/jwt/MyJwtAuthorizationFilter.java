@@ -4,11 +4,13 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
+import kr.co.moneybridge.core.exception.Exception401;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.MyFilterResponseUtil;
+import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,9 +28,11 @@ import java.io.IOException;
 @Slf4j
 public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final RedisUtil redisUtil;
-    public MyJwtAuthorizationFilter(AuthenticationManager authenticationManager, RedisUtil redisUtil) {
+    private final MyMemberUtil myMemberUtil;
+    public MyJwtAuthorizationFilter(AuthenticationManager authenticationManager, RedisUtil redisUtil, MyMemberUtil myMemberUtil) {
         super(authenticationManager);
         this.redisUtil = redisUtil;
+        this.myMemberUtil = myMemberUtil;
     }
 
     // SecurityConfig 에 인증을 설정한 API에 대한 request 요청은 모두 이 필터를 거치기 때문에 토큰 정보가 없거나 유효하지 않은 경우 정상적으로 수행되지 않음
@@ -45,20 +49,24 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
         String accessJwt = accessToken.replace(MyJwtProvider.TOKEN_PREFIX, "");
         try {
             log.debug("토큰 있음");
-            DecodedJWT decodedJWT = MyJwtProvider.verifyAccess(accessJwt);
-
             // access token이 Blacklist에 등록되었는지 Redis를 조회하여 확인
             if(redisUtil.hasKeyBlackList(accessJwt)) {
                 // 블랙리스트에 저장된 토큰이라면 에러를 반환
                 log.error("블랙리스트에 등록된 액세스 토큰");
                 MyFilterResponseUtil.serverError(response, new Exception500("이미 로그아웃한 액세스 토큰입니다"));
             }
-
+            DecodedJWT decodedJWT = MyJwtProvider.verifyAccess(accessJwt);
             Long id = decodedJWT.getClaim("id").asLong();
             Role role = Role.valueOf(decodedJWT.getClaim("role").asString().toUpperCase());
-
-            User user = User.builder().id(id).role(role).build();
-            MyUserDetails myUserDetails = new MyUserDetails(user);
+            // 사용자 조회 - 탈퇴 여부 체크
+            Member member = null;
+            try{
+                member = myMemberUtil.findByIdAndStatus(id, role);
+            }catch (Exception e){
+                log.error("토큰 정보에서 에러");
+                MyFilterResponseUtil.unAuthorized(response, new Exception401("인증 실패: " + e.getMessage()));
+            }
+            MyUserDetails myUserDetails = new MyUserDetails(member);
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(
                             myUserDetails,
@@ -74,6 +82,9 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
             log.error("토큰 검증 실패");
         } catch (TokenExpiredException tee) {
             log.error("토큰 만료됨");
+            if(!request.getRequestURI().equals("/reissue")){
+                MyFilterResponseUtil.unAuthorized(response, new Exception401("Access token expired"));
+            }
         } finally {
             chain.doFilter(request, response);
         }

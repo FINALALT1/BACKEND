@@ -13,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class DummyEntity {
     public User newUser(String username) {
@@ -26,6 +25,19 @@ public class DummyEntity {
                 .role(Role.USER)
                 .profile("프로필.png")
                 .status(true)
+                .build();
+    }
+
+    public User newUserStatusFalse(String username) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return User.builder()
+                .name(username)
+                .password(passwordEncoder.encode("password1234"))
+                .email(username + "@nate.com")
+                .phoneNumber("01012345678")
+                .role(Role.USER)
+                .profile("프로필.png")
+                .status(false)
                 .build();
     }
 
@@ -63,6 +75,29 @@ public class DummyEntity {
                 .consultNotice("월요일 불가능합니다")
                 .role(Role.PB)
                 .status(PBStatus.ACTIVE)
+                .build();
+    }
+
+    public PB newPBwithStatus(String username, Branch branch, PBStatus pbStatus) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return PB.builder()
+                .name(username)
+                .password(passwordEncoder.encode("password1234"))
+                .email(username + "@nate.com")
+                .phoneNumber("01012345678")
+                .branch(branch)
+                .profile("profile.png")
+                .businessCard("card.png")
+                .career(10)
+                .speciality1(PBSpeciality.BOND)
+                .intro(username + " 입니다")
+                .msg("한줄메시지..")
+                .reservationInfo("10분 미리 도착해주세요")
+                .consultStart(MyDateUtil.StringToLocalTime("09:00"))
+                .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
+                .consultNotice("월요일 불가능합니다")
+                .role(Role.PB)
+                .status(pbStatus)
                 .build();
     }
 

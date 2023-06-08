@@ -1,24 +1,35 @@
 package kr.co.moneybridge.core.auth.session;
 
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserRepository;
+import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.model.Member;
+import kr.co.moneybridge.model.Role;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MyUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final MyMemberUtil myMemberUtil;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User userPS = userRepository.findByEmail(username).orElseThrow(
-                () -> new InternalAuthenticationServiceException("인증 실패"));
-        return new MyUserDetails(userPS);
+        Role role = Role.valueOf(username.split("-")[0]);
+        String email = username.split("-")[1];
+
+        Member member = null;
+        try{
+            member = myMemberUtil.findByEmailAndStatus(email, role);
+        }catch (Exception e){
+            log.error("회원 인증 실패 : " + e.getMessage());
+            throw new InternalAuthenticationServiceException("인증 실패" + e.getMessage());
+        }
+
+        return new MyUserDetails(member);
     }
 }

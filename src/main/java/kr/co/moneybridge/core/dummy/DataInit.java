@@ -35,6 +35,7 @@ public class DataInit extends DummyEntity{
         return args -> {
             User user1 = userRepository.save(newUser("김투자"));
             User user2 = userRepository.save(newUser("이투자"));
+            User user3 = userRepository.save(newUserStatusFalse("윤투자"));
 
             userAgreementRepository.save(newUserAgreement(user1, UserAgreementType.REQUIRED));
             userAgreementRepository.save(newUserAgreement(user1, UserAgreementType.OPTIONAL));
@@ -59,6 +60,8 @@ public class DataInit extends DummyEntity{
             PB pb1 = pbRepository.save(newPB("김pb", b1));
             PB pb2 = pbRepository.save(newPBWithSpeciality("이pb", b1));
             PB pb3 = pbRepository.save(newPBWithSpeciality("박pb", b2));
+            PB pb4 = pbRepository.save(newPBwithStatus("윤pb", b1, PBStatus.INACTIVE));
+            PB pb5 = pbRepository.save(newPBwithStatus("나pb", b2, PBStatus.PENDING));
 
             portfolioRepository.save(newPortfolio(pb1));
             portfolioRepository.save(newPortfolio(pb2));
