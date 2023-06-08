@@ -1,5 +1,6 @@
 package kr.co.moneybridge.dto.user;
 
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.User;
@@ -24,20 +25,10 @@ public class UserResponse {
 
     @Setter
     @Getter
-    public static class JoinPBOutDTO {
+    public static class JoinOutDTO {
         private Long id;
 
-        public JoinPBOutDTO(PB pb) {
-            this.id = pb.getId();
-        }
-    }
-
-    @Setter
-    @Getter
-    public static class JoinUserOutDTO {
-        private Long id;
-
-        public JoinUserOutDTO(User user) {
+        public JoinOutDTO(User user) {
             this.id = user.getId();
         }
     }
@@ -47,8 +38,8 @@ public class UserResponse {
     public static class LoginOutDTO {
         private Long id;
 
-        public LoginOutDTO(User user) {
-            this.id = user.getId();
+        public LoginOutDTO(Member member) {
+            this.id = member.getId();
         }
     }
 }

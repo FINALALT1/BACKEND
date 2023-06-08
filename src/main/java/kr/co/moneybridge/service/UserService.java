@@ -17,7 +17,7 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreementRepository;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -29,7 +29,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -47,67 +46,41 @@ public class UserService {
     private final MyJwtProvider myJwtProvider;
     private final RedisUtil redisUtil;
     private final MyMemberUtil myMemberUtil;
-    private final BranchRepository branchRepository;
-    private final PBRepository pbRepository;
-    private final PBAgreementRepository pbAgreementRepository;
 
     @MyLog
     @MyErrorLog
     @Transactional
-    public UserResponse.JoinPBOutDTO joinPB(UserRequest.JoinPBInDTO joinPBInDTO, MultipartFile businessCard){
-        Optional<PB> pbOP = userRepository.findPBByEmail(joinPBInDTO.getEmail());
-        if(pbOP.isPresent()){
-            throw new Exception400("email", "이미 pb로 회원가입된 이메일입니다");
+    public void withdraw(UserRequest.WithdrawInDTO withdrawInDTO, MyUserDetails myUserDetails) {
+        if(!passwordEncoder.matches(withdrawInDTO.getPassword(), myUserDetails.getPassword())){
+            throw new Exception400("password", "비밀번호가 틀렸습니다");
         }
-        if(!joinPBInDTO.getPassword().equals(joinPBInDTO.getCheckPassword())){
-            throw new Exception400("checkPassword", "비밀번호와 비밀번호 재입력이 다릅니다");
-        }
-        String encPassword = passwordEncoder.encode(joinPBInDTO.getPassword()); // 60Byte
-        joinPBInDTO.setPassword(encPassword);
-
-        Branch branchPS = branchRepository.findById(joinPBInDTO.getBranchId()).orElseThrow(
-                () -> new Exception400("branchId", "해당하는 지점이 존재하지 않습니다")
-        );
-        if (businessCard == null || businessCard.isEmpty()) {
-            new Exception400("businessCard", "명함 사진이 없습니다");
-        }
-        // 추가 필요함 - 압축해서 S3에 사진 저장
-        String fileName = businessCard.getOriginalFilename();
-        try {
-            PB pbPS = pbRepository.save(joinPBInDTO.toEntity(branchPS, fileName));
-            List<UserRequest.AgreementPBDTO> agreements = joinPBInDTO.getAgreements();
-            if(agreements != null){
-                agreements.stream().forEach(agreement ->
-                        pbAgreementRepository.save(agreement.toEntity(pbPS)));
-            }
-            return new UserResponse.JoinPBOutDTO(pbPS);
-        }catch (Exception e){
-            throw new Exception500("회원가입 실패 : " + e.getMessage());
-        }
+        Member memberPS = myMemberUtil.findByIdAndStatus(myUserDetails.getMember().getId(),
+                myUserDetails.getMember().getRole());
+        memberPS.withdraw();
     }
 
     @MyLog
     @MyErrorLog
     @Transactional
-    public UserResponse.JoinUserOutDTO joinUser(UserRequest.JoinUserInDTO joinUserInDTO){
-        Optional<User> userOP =userRepository.findByEmail(joinUserInDTO.getEmail());
+    public UserResponse.JoinOutDTO joinUser(UserRequest.JoinInDTO joinInDTO){
+        Optional<User> userOP = userRepository.findByEmail(joinInDTO.getEmail());
         if(userOP.isPresent()){
-            throw new Exception400("email", "이미 투자자로 등록된 이메일입니다");
+            if(!userOP.get().getStatus()){
+                throw new Exception400("email", "탈퇴한 투자자 계정입니다"); // 일단 회원가입 못하게 막음. 추후에 어떻게 할지 정하기
+            }
+            throw new Exception400("email", "이미 투자자로 회원가입된 이메일입니다");
         }
-        if(!joinUserInDTO.getPassword().equals(joinUserInDTO.getCheckPassword())){
-            throw new Exception400("checkPassword", "비밀번호와 비밀번호 재입력이 다릅니다");
-        }
-        String encPassword = passwordEncoder.encode(joinUserInDTO.getPassword()); // 60Byte
-        joinUserInDTO.setPassword(encPassword);
+        String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte
+        joinInDTO.setPassword(encPassword);
 
         try {
-            User userPS = userRepository.save(joinUserInDTO.toEntity());
-            List<UserRequest.AgreementDTO> agreements = joinUserInDTO.getAgreements();
+            User userPS = userRepository.save(joinInDTO.toEntity());
+            List<UserRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if(agreements != null){
                 agreements.stream().forEach(agreement ->
                         userAgreementRepository.save(agreement.toEntity(userPS)));
             }
-            return new UserResponse.JoinUserOutDTO(userPS);
+            return new UserResponse.JoinOutDTO(userPS);
         }catch (Exception e){
             throw new Exception500("회원가입 실패 : " + e.getMessage());
         }
@@ -115,17 +88,18 @@ public class UserService {
 
     @MyLog
     @MyErrorLog
-    public Pair<String, String> issue(String email, String password) {
+    public Pair<String, String> issue(Role role, String email, String password) {
         try {
+            String username = role + "-" + email;
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                    = new UsernamePasswordAuthenticationToken(email, password);
-            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-            MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+                    = new UsernamePasswordAuthenticationToken(username, password); // username과 password는 사용자가 제공한 인증 정보
+            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken); // 인증 매니저(authenticationManager)를 통해 인증되고, Authentication 객체를 반환
+            MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal(); //  인증된 사용자의 주체(Principal)를 반환 - 주체는 보통 UserDetails 인터페이스를 구현한 사용자 정보 객체
 
             //로그인 성공하면 액세스 토큰, 리프레시 토큰 발급.
-            String accessjwt = myJwtProvider.createAccess(myUserDetails.getUser());
-            String refreshjwt = myJwtProvider.createRefresh(myUserDetails.getUser());
-            return Pair.of(accessjwt, refreshjwt);
+            String accessToken = myJwtProvider.createAccess(myUserDetails.getMember());
+            String refreshToken = myJwtProvider.createRefresh(myUserDetails.getMember());
+            return Pair.of(accessToken, refreshToken);
         }catch (Exception e){
             throw new Exception500("토큰발급 실패" + e.getMessage());
         }
@@ -134,10 +108,8 @@ public class UserService {
     @MyLog
     @MyErrorLog
     public UserResponse.LoginOutDTO login(UserRequest.LoginInDTO loginInDTO) {
-        User userPS = userRepository.findByEmail(loginInDTO.getEmail()).orElseThrow(
-                () -> new Exception404("사용자가 존재하지 않습니다")
-        );
-        return new UserResponse.LoginOutDTO(userPS);
+        Member memberPS = myMemberUtil.findByEmailAndStatus(loginInDTO.getEmail(), loginInDTO.getRole());
+        return new UserResponse.LoginOutDTO(memberPS);
     }
 
     @MyLog
@@ -153,11 +125,13 @@ public class UserService {
         String key = id + role;
 
         String RefreshTokenValid = redisUtil.get(key);
-        if (refreshToken == null) {
+        if (RefreshTokenValid == null) {
+            log.error("액세스 토큰 정보로 만든 키를 가진 리프레시 토큰이 레디스에 없음");
             throw new Exception500("토큰을 재발급할 수 없습니다. 다시 로그인 해주세요");
         }
         // Redis에 저장된 refresh token이 사용자가 요청한 refresh token과 같아야 함.
         if(!refreshToken.equals(RefreshTokenValid)){
+            log.error("레디스에 저장된 리프레시 토큰이 사용자가 요청한 리프레시 토큰이 다름");
             throw new Exception500("사용할 수 없는 리프레시 토큰입니다. 다시 로그인 해주세요");
         }
 
@@ -167,18 +141,17 @@ public class UserService {
 
         // 액세스 토큰, 리프레시 토큰 발급.
         try {
-            Member memberPS = myMemberUtil.findById(id, Role.valueOf(role));
-            String accessjwt = myJwtProvider.createAccess(memberPS);
-            String refreshjwt = myJwtProvider.createRefresh(memberPS);
-            return Pair.of(accessjwt, refreshjwt);
+            Member memberPS = myMemberUtil.findByIdAndStatus(id, Role.valueOf(role));
+            String newAccessToken = myJwtProvider.createAccess(memberPS);
+            String newRefreshToken = myJwtProvider.createRefresh(memberPS);
+            return Pair.of(newAccessToken, newRefreshToken);
         } catch (Exception e){
-            throw new Exception500("토큰 재발급 실패");
+            throw new Exception500("토큰 재발급 실패 " + e.getMessage());
         }
     }
 
     @MyLog
     @MyErrorLog
-    @Transactional
     public void logout(HttpServletRequest request, String refreshToken) {
         // 요청받은 refresh token에서 나온 사용자 정보로 redis에서 refresh token을 조회
         DecodedJWT decodedJWT = null;

@@ -10,6 +10,7 @@ import kr.co.moneybridge.core.exception.Exception403;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,23 +34,23 @@ public class UserController {
 
     @MyLog
     @MyErrorLog
-    @PostMapping("/join/pb")
-    public ResponseEntity<?> joinPB(@RequestPart(value = "businessCard") MultipartFile businessCard,
-                                    @RequestPart(value = "joinPBInDTO") @Valid UserRequest.JoinPBInDTO joinPBInDTO, Errors errors) {
-        UserResponse.JoinPBOutDTO joinPBOutDTO = userService.joinPB(joinPBInDTO, businessCard);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(joinPBOutDTO);
+    @DeleteMapping("/auth/account") // 탈퇴 API
+    public ResponseEntity<?> withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
+                                      @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        userService.withdraw(withdrawInDTO, myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
         return ResponseEntity.ok().body(responseDTO);
     }
 
     @MyLog
     @MyErrorLog
     @PostMapping("/join/user")
-    public ResponseEntity<?> joinUser(@RequestBody @Valid UserRequest.JoinUserInDTO joinUserInDTO, Errors errors,  HttpServletResponse response) {
-        String rawPassword = joinUserInDTO.getPassword();
-        UserResponse.JoinUserOutDTO joinUserOutDTO = userService.joinUser(joinUserInDTO);
-        Pair<String, String> tokens = userService.issue(joinUserInDTO.getEmail(), rawPassword);
+    public ResponseEntity<?> joinUser(@RequestBody @Valid UserRequest.JoinInDTO joinInDTO, Errors errors, HttpServletResponse response) {
+        String rawPassword = joinInDTO.getPassword();
+        UserResponse.JoinOutDTO joinUserOutDTO = userService.joinUser(joinInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(joinUserOutDTO);
         // 회원가입 완료시 자동로그인
+        Pair<String, String> tokens = userService.issue(Role.USER, joinInDTO.getEmail(), rawPassword);
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
@@ -61,9 +62,9 @@ public class UserController {
     @MyErrorLog
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
-        Pair<String, String> tokens = userService.issue(loginInDTO.getEmail(), loginInDTO.getPassword());
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(loginOutDTO);
+        Pair<String, String> tokens = userService.issue(loginInDTO.getRole(), loginInDTO.getEmail(), loginInDTO.getPassword());
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
         return ResponseEntity.ok()
@@ -75,7 +76,7 @@ public class UserController {
     @MyLog
     @MyErrorLog
     @PostMapping("/reissue")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         Pair<String, String> tokens = userService.reissue(request, getRefreshToken(request));
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
@@ -101,14 +102,14 @@ public class UserController {
         Optional<Cookie> cookieOP = Arrays.stream(cookies).filter(cookie ->
                 cookie.getName().equals("refreshToken")).findFirst();
         if (cookieOP.isEmpty()) {
-            throw new Exception400("Cookie", "리프레시 토큰이 없습니다");
+            throw new Exception400("Cookie", "쿠키에 리프레시 토큰이 없습니다");
         }
         return cookieOP.get().getValue();
     }
 
     @GetMapping("/s/user/{id}")
     public ResponseEntity<?> detail(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) throws JsonProcessingException {
-        if(id.longValue() != myUserDetails.getUser().getId()){
+        if(id.longValue() != myUserDetails.getMember().getId()){
             throw new Exception403("권한이 없습니다");
         }
         UserResponse.DetailOutDTO detailOutDTO = userService.회원상세보기(id);

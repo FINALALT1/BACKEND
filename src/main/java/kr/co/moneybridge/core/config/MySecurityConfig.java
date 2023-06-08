@@ -4,6 +4,7 @@ import kr.co.moneybridge.core.auth.jwt.MyJwtAuthorizationFilter;
 import kr.co.moneybridge.core.exception.Exception401;
 import kr.co.moneybridge.core.exception.Exception403;
 import kr.co.moneybridge.core.util.MyFilterResponseUtil;
+import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -23,9 +24,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class MySecurityConfig {
     private final RedisUtil redisUtil;
+    private final MyMemberUtil myMemberUtil;
 
-    public MySecurityConfig(RedisUtil redisUtil) {
+    public MySecurityConfig(RedisUtil redisUtil, MyMemberUtil myMemberUtil) {
+
         this.redisUtil = redisUtil;
+        this.myMemberUtil = myMemberUtil;
     }
 
     @Bean
@@ -43,7 +47,7 @@ public class MySecurityConfig {
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager, redisUtil));
+            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager, redisUtil, myMemberUtil));
             // 시큐리티 관련 필터
             super.configure(builder);
         }
