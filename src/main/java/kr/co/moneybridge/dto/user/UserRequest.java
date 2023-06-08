@@ -20,9 +20,6 @@ public class UserRequest {
 
     @Setter
     @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class AgreementDTO {
         @NotEmpty
         private String title;

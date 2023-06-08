@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -85,15 +84,15 @@ public class UserControllerTest {
         joinUserInDTO.setName("강투자");
         joinUserInDTO.setPhoneNumber("01012345678");
         List<UserRequest.AgreementDTO> agreements = new ArrayList<>();
-        UserRequest.AgreementDTO agreement1 = UserRequest.AgreementDTO.builder()
-                .title("돈줄 이용약관 동의")
-                .type(UserAgreementType.REQUIRED)
-                .isAgreed(true).build();
+        UserRequest.AgreementDTO agreement1 = new UserRequest.AgreementDTO();
+        agreement1.setTitle("돈줄 이용약관 동의");
+        agreement1.setType(UserAgreementType.REQUIRED);
+        agreement1.setIsAgreed(true);
         agreements.add(agreement1);
-        UserRequest.AgreementDTO agreement2 = UserRequest.AgreementDTO.builder()
-                .title("마케팅 정보 수신 동의")
-                .type(UserAgreementType.OPTIONAL)
-                .isAgreed(true).build();
+        UserRequest.AgreementDTO agreement2 = new UserRequest.AgreementDTO();
+        agreement2.setTitle("마케팅 정보 수신 동의");
+        agreement2.setType(UserAgreementType.OPTIONAL);
+        agreement2.setIsAgreed(true);
         agreements.add(agreement2);
         joinUserInDTO.setAgreements(agreements);
         String requestBody = om.writeValueAsString(joinUserInDTO);

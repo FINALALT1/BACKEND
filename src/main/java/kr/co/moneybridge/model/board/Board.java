@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.board;
 
+import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.model.pb.PB;
 import lombok.*;
 
@@ -55,4 +56,21 @@ public class Board {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void increaseCount() {
+        this.clickCount++;
+    }
+
+    public void modifyBoard(BoardRequest.BoardInDTO boardInDTO) {
+        this.title = boardInDTO.getTitle();
+        this.thumbnail = boardInDTO.getThumbnail();
+        this.content = boardInDTO.getContent();
+        this.tag1 = boardInDTO.getTag1();
+        this.tag2 = boardInDTO.getTag2();
+    }
+
+    public void delete() {
+        this.status = BoardStatus.INACTIVE;
+    }
+
 }
