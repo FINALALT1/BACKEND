@@ -12,7 +12,6 @@ import java.util.List;
 public class PBRequest {
     @Setter
     @Getter
-    @Builder
     public static class AgreementDTO {
         @NotEmpty
         private String title;
