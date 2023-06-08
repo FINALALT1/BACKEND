@@ -1,5 +1,6 @@
 package kr.co.moneybridge.controller;
 
+import ch.qos.logback.core.joran.spi.NoAutoStart;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.PageDTO;
@@ -7,10 +8,8 @@ import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.dto.board.ReplyRequest;
-import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.board.BoardRepository;
 import kr.co.moneybridge.model.board.BoardStatus;
-import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.BoardService;
 import kr.co.moneybridge.service.ReplyService;
 import lombok.RequiredArgsConstructor;
@@ -130,5 +129,23 @@ public class BoardController {
         ResponseDTO<List<BoardResponse.BoardTempDTO>> responseDTO = new ResponseDTO<>(tempBoards);
 
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("/pb/board/{id}")
+    public ResponseEntity<?> getTempBoard(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
+
+        BoardResponse.BoardOutDTO boardOutDTO = boardService.getBoard(myUserDetails, id);
+        ResponseDTO<BoardResponse.BoardOutDTO> responseDTO = new ResponseDTO<>(boardOutDTO);
+
+        return ResponseEntity.ok(responseDTO);
+
+    }
+
+    @PutMapping("/pb/board/{id}")
+    public ResponseEntity<?> putBoard(@AuthenticationPrincipal MyUserDetails myUserDetails,
+                                      @RequestBody BoardRequest.BoardInDTO boardInDTO,
+                                      @PathVariable Long id) {
+
+        boardService.putBoard(myUserDetails, boardInDTO, id);
     }
 }

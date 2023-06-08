@@ -174,4 +174,35 @@ public class BoardService {
 
         return dtoList;
     }
+
+    //저장,임시저장 컨텐츠 가져오기(수정용)
+    public BoardResponse.BoardOutDTO getBoard(MyUserDetails myUserDetails, Long boardId) {
+
+        PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 PB 입니다"));
+        Board board = boardRepository.findByIdAndPbId(boardId, pb.getId()).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다"));
+        BoardResponse.BoardOutDTO boardOutDTO = new BoardResponse.BoardOutDTO();
+
+        boardOutDTO.setTitle(board.getTitle());
+        boardOutDTO.setContent(board.getContent());
+        boardOutDTO.setTag1(board.getTag1());
+        boardOutDTO.setTag2(board.getTag2());
+        boardOutDTO.setThumbnail(board.getThumbnail());
+        boardOutDTO.setStatus(board.getStatus());
+
+        return boardOutDTO;
+    }
+
+    //컨텐츠 수정하기/임시저장컨텐츠 업로드하기
+    @Transactional
+    public void putBoard(MyUserDetails myUserDetails, BoardRequest.BoardInDTO boardInDTO, Long boardId) {
+
+        PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 PB 입니다"));
+        Board board = boardRepository.findByIdAndPbId(boardId, pb.getId()).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다"));
+
+        try {
+            board.modifyBoard(boardInDTO);
+        } catch (Exception e) {
+            throw new Exception500("컨텐츠 업데이트 실패");
+        }
+    }
 }

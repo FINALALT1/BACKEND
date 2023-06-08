@@ -1,6 +1,7 @@
 package kr.co.moneybridge.dto.board;
 
 import kr.co.moneybridge.model.board.Board;
+import kr.co.moneybridge.model.board.BoardStatus;
 import kr.co.moneybridge.model.board.Reply;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
@@ -103,6 +104,19 @@ public class BoardResponse {
         private String content;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+
+    }
+
+    @Getter
+    @Setter
+    public static class BoardOutDTO {
+
+        private String title;
+        private String content;
+        private String tag1;
+        private String tag2;
+        private String thumbnail;
+        private BoardStatus status;
 
     }
 }
