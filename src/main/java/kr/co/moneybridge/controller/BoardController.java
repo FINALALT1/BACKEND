@@ -108,13 +108,18 @@ public class BoardController {
         if (boardInDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
         if (boardInDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
 
-        boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE);
+        Long id = boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE);
+        ResponseDTO<Long> responseDTO = new ResponseDTO<>(id);
+
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping("/pb/board/temp")
     public ResponseEntity<?> saveTempBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE);
+        boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.TEMP);
+
+        return ResponseEntity.ok(new ResponseDTO<>());
     }
 }

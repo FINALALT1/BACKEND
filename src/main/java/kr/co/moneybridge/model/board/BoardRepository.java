@@ -38,5 +38,4 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "WHERE b.id = :boardId AND b.status = :status")
     BoardResponse.BoardDetailDTO findBoardWithPBReply(@Param("boardId") Long boardId, @Param("status") BoardStatus status);
 
-
 }
