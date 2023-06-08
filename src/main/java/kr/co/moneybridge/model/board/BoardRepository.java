@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
@@ -36,7 +37,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "FROM Board b " +
             "JOIN PB pb ON b.pb.id = pb.id " +
             "WHERE b.id = :boardId AND b.status = :status")
-    BoardResponse.BoardDetailDTO findBoardWithPBReply(@Param("boardId") Long boardId, @Param("status") BoardStatus status);
+    Optional<BoardResponse.BoardDetailDTO> findBoardWithPBReply(@Param("boardId") Long boardId, @Param("status") BoardStatus status);
 
+    @Query("SELECT b FROM Board b WHERE b.pb.id = :pbId AND b.status = :status")
+    List<Board> findBoardsByPbId(@Param("pbId") Long pbId, @Param("status") BoardStatus status);
 
+    @Query("SELECT b FROM Board b JOIN PB pb ON b.pb.id = pb.id WHERE b.id = :boardId AND pb.id = :pbId")
+    Optional<Board> findByIdAndPbId(@Param("boardId") Long boardId, @Param("pbId") Long pbId);
 }
