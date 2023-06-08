@@ -1,10 +1,16 @@
 package kr.co.moneybridge.service;
 
+import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
+import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.board.*;
+import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +35,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final UserRepository userRepository;
+    private final PBRepository pbRepository;
     private final ReplyRepository replyRepository;
 
     //컨텐츠검색
@@ -112,6 +119,25 @@ public class BoardService {
         boardBookmark.resign();
     }
 
+    //컨텐츠 저장하기
+    @Transactional
+    public void saveBoard(BoardRequest.BoardInDTO boardInDTO, MyUserDetails myUserDetails, BoardStatus boardStatus) {
 
+        PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 PB 입니다"));
 
+        try {
+            boardRepository.save(Board.builder()
+                    .pb(pb)
+                    .title(boardInDTO.getTitle())
+                    .thumbnail(boardInDTO.getThumbnail())
+                    .content(boardInDTO.getContent())
+                    .tag1(boardInDTO.getTag1())
+                    .tag2(boardInDTO.getTag2())
+                    .clickCount(0L)
+                    .status(boardStatus)
+                    .build());
+        } catch (Exception e) {
+            throw new Exception500("컨텐츠 저장 실패 : " + e.getMessage());
+        }
+    }
 }

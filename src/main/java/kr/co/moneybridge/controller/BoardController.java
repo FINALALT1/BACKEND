@@ -4,10 +4,12 @@ import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
+import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.dto.board.ReplyRequest;
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.board.BoardRepository;
+import kr.co.moneybridge.model.board.BoardStatus;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.BoardService;
 import kr.co.moneybridge.service.ReplyService;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -94,5 +97,19 @@ public class BoardController {
         replyService.postReply(replyInDTO, userId, id);
 
         return ResponseEntity.ok(new ResponseDTO<>());
+    }
+
+    @PostMapping("/pb/board")
+    public ResponseEntity<?> saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
+                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE);
+    }
+
+    @PostMapping("/pb/board/temp")
+    public ResponseEntity<?> saveTempBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
+                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE);
     }
 }
