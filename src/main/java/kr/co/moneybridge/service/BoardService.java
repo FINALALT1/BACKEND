@@ -75,11 +75,23 @@ public class BoardService {
     }
 
     //컨텐츠 상세 가져오기
+    @Transactional
     public BoardResponse.BoardDetailDTO getBoardDetail(Long id) {
 
-        BoardResponse.BoardDetailDTO boardDetailDTO = boardRepository.findBoardWithPBReply(id, BoardStatus.ACTIVE);
+        BoardResponse.BoardDetailDTO boardDetailDTO = boardRepository.findBoardWithPBReply(id, BoardStatus.ACTIVE).orElseThrow(
+                () -> new Exception404("존재하지 않는 컨텐츠입니다.")
+        );
+
+        try {
+            Board board = boardRepository.findById(boardDetailDTO.getId()).get();
+            board.increaseCount();  //호출 시 클릭수 증가 로직
+        } catch (Exception e) {
+            throw new Exception500("클릭수 증가 에러");
+        }
+
         List<BoardResponse.ReplyOutDTO> replyList = replyRepository.findRepliesByBoardId(id, true);
         boardDetailDTO.setReply(replyList);
+
         return boardDetailDTO;
     }
 
