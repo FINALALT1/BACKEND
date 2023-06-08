@@ -78,15 +78,15 @@ public class PBControllerTest {
         joinInDTO.setSpeciality1(PBSpeciality.BOND);
         joinInDTO.setSpeciality2(PBSpeciality.US_STOCK);
         List<PBRequest.AgreementDTO> agreements = new ArrayList<>();
-        PBRequest.AgreementDTO agreement1 = PBRequest.AgreementDTO.builder()
-                .title("돈줄 이용약관 동의")
-                .type(PBAgreementType.REQUIRED)
-                .isAgreed(true).build();
+        PBRequest.AgreementDTO agreement1 = new PBRequest.AgreementDTO();
+        agreement1.setTitle("돈줄 이용약관 동의");
+        agreement1.setType(PBAgreementType.REQUIRED);
+        agreement1.setIsAgreed(true);
         agreements.add(agreement1);
-        PBRequest.AgreementDTO agreement2 = PBRequest.AgreementDTO.builder()
-                .title("마케팅 정보 수신 동의")
-                .type(PBAgreementType.OPTIONAL)
-                .isAgreed(true).build();
+        PBRequest.AgreementDTO agreement2 = new PBRequest.AgreementDTO();
+        agreement2.setTitle("마케팅 정보 수신 동의");
+        agreement2.setType(PBAgreementType.OPTIONAL);
+        agreement2.setIsAgreed(true);
         agreements.add(agreement2);
         joinInDTO.setAgreements(agreements);
 
