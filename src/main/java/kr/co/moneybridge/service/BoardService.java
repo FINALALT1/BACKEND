@@ -123,19 +123,20 @@ public class BoardService {
     @Transactional
     public void saveBoard(BoardRequest.BoardInDTO boardInDTO, MyUserDetails myUserDetails, BoardStatus boardStatus) {
 
-        PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 PB 입니다"));
+        PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB 입니다"));
 
         try {
             boardRepository.save(Board.builder()
-                    .pb(pb)
-                    .title(boardInDTO.getTitle())
-                    .thumbnail(boardInDTO.getThumbnail())
-                    .content(boardInDTO.getContent())
-                    .tag1(boardInDTO.getTag1())
-                    .tag2(boardInDTO.getTag2())
-                    .clickCount(0L)
-                    .status(boardStatus)
-                    .build());
+                            .pb(pb)
+                            .title(boardInDTO.getTitle())
+                            .thumbnail(boardInDTO.getThumbnail())
+                            .content(boardInDTO.getContent())
+                            .tag1(boardInDTO.getTag1())
+                            .tag2(boardInDTO.getTag2())
+                            .clickCount(0L)
+                            .status(boardStatus)
+                            .build());
         } catch (Exception e) {
             throw new Exception500("컨텐츠 저장 실패 : " + e.getMessage());
         }

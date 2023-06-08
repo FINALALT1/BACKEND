@@ -103,6 +103,11 @@ public class BoardController {
     public ResponseEntity<?> saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
+        if (boardInDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
+        if (boardInDTO.getThumbnail().isEmpty()) throw new Exception400("thumbnail", "썸네일 없음");
+        if (boardInDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
+        if (boardInDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
+
         boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE);
     }
 
