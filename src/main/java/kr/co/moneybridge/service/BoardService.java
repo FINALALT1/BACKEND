@@ -205,4 +205,18 @@ public class BoardService {
             throw new Exception500("컨텐츠 업데이트 실패");
         }
     }
+
+    //컨텐츠 삭제하기
+    @Transactional
+    public void deleteBoard(MyUserDetails myUserDetails, Long boardId) {
+
+        PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 PB 입니다"));
+        Board board = boardRepository.findByIdAndPbId(boardId, pb.getId()).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다"));
+
+        try {
+            board.delete();
+        } catch (Exception e) {
+            throw new Exception500("컨텐츠 삭제 실패");
+        }
+    }
 }

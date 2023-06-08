@@ -147,5 +147,15 @@ public class BoardController {
                                       @PathVariable Long id) {
 
         boardService.putBoard(myUserDetails, boardInDTO, id);
+
+        return ResponseEntity.ok(new ResponseDTO<>());
+    }
+
+    @DeleteMapping("/pb/board/{id}")
+    public ResponseEntity<?> deleteBoard(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
+
+        boardService.deleteBoard(myUserDetails, id);
+
+        return ResponseEntity.ok(new ResponseDTO<>());
     }
 }
