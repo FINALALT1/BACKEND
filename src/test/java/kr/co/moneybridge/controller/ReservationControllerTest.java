@@ -65,7 +65,7 @@ public class ReservationControllerTest {
     }
 
     @DisplayName("상담 예약 사전 정보 조회 성공")
-    @WithUserDetails(value = "이승민@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-이승민@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void get_reservation_base_test() throws Exception {
         // given
@@ -91,7 +91,7 @@ public class ReservationControllerTest {
     }
 
     @DisplayName("상담 예약 신청하기 성공")
-    @WithUserDetails(value = "이승민@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-이승민@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void apply_reservation_test() throws Exception {
         // given

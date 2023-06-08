@@ -1,41 +1,30 @@
-package kr.co.moneybridge.dto.user;
+package kr.co.moneybridge.dto.pb;
 
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserAgreement;
-import kr.co.moneybridge.model.user.UserAgreementType;
-import lombok.*;
+import kr.co.moneybridge.model.pb.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.*;
 import java.util.List;
 
-public class UserRequest {
-    @Setter
-    @Getter
-    public static class WithdrawInDTO {
-        @NotEmpty
-        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
-        private String password;
-    }
-
+public class PBRequest {
     @Setter
     @Getter
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class AgreementDTO {
         @NotEmpty
         private String title;
 
         @NotNull
-        private UserAgreementType type;
+        private PBAgreementType type;
 
-        @NotNull
         private Boolean isAgreed;
 
-        public UserAgreement toEntity(User user) {
-            return UserAgreement.builder()
-                    .user(user)
+        public PBAgreement toEntity(PB pb) {
+            return PBAgreement.builder()
+                    .pb(pb)
                     .title(title)
                     .type(type)
                     .isAgreed(isAgreed)
@@ -65,33 +54,35 @@ public class UserRequest {
                 message = "유효하지 않은 휴대폰 번호 형식입니다")
         private String phoneNumber;
 
+        @NotNull
+        private Long branchId;
+
+        @NotNull
+        @PositiveOrZero(message = "값은 양수 또는 0이어야 합니다")
+        private Integer career;
+
+        @NotNull
+        private PBSpeciality speciality1;
+
+        private PBSpeciality speciality2;
+
         private List<AgreementDTO> agreements;
 
-        public User toEntity() {
-            return User.builder()
+        public PB toEntity(Branch branch, String businessCard) {
+            return PB.builder()
                     .email(email)
                     .password(password)
                     .name(name)
                     .phoneNumber(phoneNumber)
-                    .role(Role.USER)
-                    .profile("profile.png")
-                    .status(true)
+                    .branch(branch)
+                    .career(career)
+                    .speciality1(speciality1)
+                    .speciality2(speciality2)
+                    .businessCard(businessCard)
+                    .profile("person.png") // 기본 이미지
+                    .role(Role.PB)
+                    .status(PBStatus.PENDING)
                     .build();
         }
-    }
-
-    @Setter
-    @Getter
-    public static class LoginInDTO {
-        @NotNull
-        private Role role;
-
-        @NotEmpty
-        @Email(message = "이메일 형식으로 작성해주세요")
-        private String email;
-
-        @NotEmpty
-        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
-        private String password;
     }
 }

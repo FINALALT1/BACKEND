@@ -70,7 +70,7 @@ public class BoardController {
     @PostMapping("/user/bookmark/board/{id}")
     public ResponseEntity<?> addBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        Long userId = myUserDetails.getUser().getId();
+        Long userId = myUserDetails.getMember().getId();
         boardService.bookmarkBoard(id, userId);
 
         return ResponseEntity.ok(new ResponseDTO<>());
@@ -79,7 +79,7 @@ public class BoardController {
     @DeleteMapping("/user/bookmark/board/{id}")
     public ResponseEntity<?> deleteBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        Long userId = myUserDetails.getUser().getId();
+        Long userId = myUserDetails.getMember().getId();
         boardService.DeleteBookmarkBoard(id, userId);
 
         return ResponseEntity.ok(new ResponseDTO<>());
@@ -90,7 +90,7 @@ public class BoardController {
                                        @AuthenticationPrincipal MyUserDetails myUserDetails,
                                        @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
 
-        Long userId = myUserDetails.getUser().getId();
+        Long userId = myUserDetails.getMember().getId();
         replyService.postReply(replyInDTO, userId, id);
 
         return ResponseEntity.ok(new ResponseDTO<>());

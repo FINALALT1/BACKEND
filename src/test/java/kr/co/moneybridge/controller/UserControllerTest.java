@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +28,7 @@ import javax.servlet.http.Cookie;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -51,14 +55,33 @@ public class UserControllerTest {
         em.clear();
     }
 
+    @DisplayName("탈퇴 성공")
+    @WithUserDetails(value = "USER-로그인@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void withdraw_test() throws Exception {
+        // given
+        UserRequest.WithdrawInDTO withdrawInDTO = new UserRequest.WithdrawInDTO();
+        withdrawInDTO.setPassword("password1234");
+        String requestBody = om.writeValueAsString(withdrawInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(delete("/auth/account").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+    }
+
     @DisplayName("투자자 회원가입 성공")
     @Test
     public void join_user_test() throws Exception {
         // given
-        UserRequest.JoinUserInDTO joinUserInDTO = new UserRequest.JoinUserInDTO();
+        UserRequest.JoinInDTO joinUserInDTO = new UserRequest.JoinInDTO();
         joinUserInDTO.setEmail("investor@naver.com");
         joinUserInDTO.setPassword("kang1234");
-        joinUserInDTO.setCheckPassword("kang1234");
         joinUserInDTO.setName("강투자");
         joinUserInDTO.setPhoneNumber("01012345678");
         List<UserRequest.AgreementDTO> agreements = new ArrayList<>();

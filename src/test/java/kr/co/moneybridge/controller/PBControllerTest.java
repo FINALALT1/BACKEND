@@ -1,0 +1,114 @@
+package kr.co.moneybridge.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
+import kr.co.moneybridge.core.dummy.DummyEntity;
+import kr.co.moneybridge.dto.pb.PBRequest;
+import kr.co.moneybridge.dto.user.UserRequest;
+import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserAgreementType;
+import kr.co.moneybridge.model.user.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+
+import javax.persistence.EntityManager;
+import javax.servlet.http.Cookie;
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@DisplayName("PB 관련 API")
+@ActiveProfiles("test")
+@Sql("classpath:db/teardown.sql")
+@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+public class PBControllerTest {
+    private DummyEntity dummy = new DummyEntity();
+
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper om;
+    @Autowired
+    private EntityManager em;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private BranchRepository branchRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    @BeforeEach
+    public void setUp() {
+        User user1 = userRepository.save(dummy.newUser("로그인"));
+        Company company1 = companyRepository.save(dummy.newCompany("미래에셋증권"));
+        Branch branch1 = branchRepository.save(dummy.newBranch(company1, 0));
+        em.clear();
+    }
+
+    @DisplayName("PB 회원가입 성공")
+    @Test
+    public void join_pb_test() throws Exception {
+        // given
+        PBRequest.JoinInDTO joinInDTO = new PBRequest.JoinInDTO();
+        joinInDTO.setEmail("kangpb@naver.com");
+        joinInDTO.setPassword("kang1234");
+        joinInDTO.setName("강투자");
+        joinInDTO.setPhoneNumber("01012345678");
+        joinInDTO.setBranchId(1L);
+        joinInDTO.setCareer(1);
+        joinInDTO.setSpeciality1(PBSpeciality.BOND);
+        joinInDTO.setSpeciality2(PBSpeciality.US_STOCK);
+        List<PBRequest.AgreementDTO> agreements = new ArrayList<>();
+        PBRequest.AgreementDTO agreement1 = PBRequest.AgreementDTO.builder()
+                .title("돈줄 이용약관 동의")
+                .type(PBAgreementType.REQUIRED)
+                .isAgreed(true).build();
+        agreements.add(agreement1);
+        PBRequest.AgreementDTO agreement2 = PBRequest.AgreementDTO.builder()
+                .title("마케팅 정보 수신 동의")
+                .type(PBAgreementType.OPTIONAL)
+                .isAgreed(true).build();
+        agreements.add(agreement2);
+        joinInDTO.setAgreements(agreements);
+
+        MockMultipartFile businessCard = new MockMultipartFile(
+                "businessCard", "businessCard.png", "image/png"
+                , new FileInputStream("./src/main/resources/businessCard.png"));
+        // joinInJson 객체를 JSON 문자열로 변환
+        String joinInJson = om.writeValueAsString(joinInDTO);
+        MockMultipartFile json = new MockMultipartFile("joinInDTO", "joinInDTO",
+                "application/json", joinInJson.getBytes(StandardCharsets.UTF_8));
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(multipart("/join/pb")
+                        .file(businessCard)
+                        .file(json));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(status().isOk());
+    }
+}
