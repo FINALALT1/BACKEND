@@ -7,7 +7,6 @@ import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
-import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
@@ -154,5 +153,25 @@ public class BoardService {
         } catch (Exception e) {
             throw new Exception500("컨텐츠 저장 실패 : " + e.getMessage());
         }
+    }
+
+    //임시저장 컨텐츠들 가져오기
+    public List<BoardResponse.BoardTempDTO> getTempBoards(MyUserDetails myUserDetails) {
+
+        List<BoardResponse.BoardTempDTO> dtoList = new ArrayList<>();
+        PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB 입니다"));
+
+        List<Board> tempBoards = boardRepository.findBoardsByPbId(pb.getId(), BoardStatus.TEMP);
+        for (Board board : tempBoards) {
+            BoardResponse.BoardTempDTO dto = new BoardResponse.BoardTempDTO();
+            dto.setId(board.getId());
+            dto.setTitle(board.getTitle());
+            dto.setContent(board.getContent());
+            dto.setCreatedAt(board.getCreatedAt());
+            dtoList.add(dto);
+        }
+
+        return dtoList;
     }
 }

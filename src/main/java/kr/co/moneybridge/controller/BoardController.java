@@ -122,4 +122,13 @@ public class BoardController {
 
         return ResponseEntity.ok(new ResponseDTO<>());
     }
+
+    @GetMapping("/pb/boards/temp")
+    public ResponseEntity<?> getTempBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        List<BoardResponse.BoardTempDTO> tempBoards = boardService.getTempBoards(myUserDetails);
+        ResponseDTO<List<BoardResponse.BoardTempDTO>> responseDTO = new ResponseDTO<>(tempBoards);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 }
