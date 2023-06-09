@@ -34,7 +34,7 @@ public class ReservationService {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
-        if (!pbPS.getStatus().equals(PBStatus.PENDING)) {
+        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
             throw new Exception403("승인 대기 중인 PB입니다.");
         }
         User userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
@@ -74,7 +74,7 @@ public class ReservationService {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
-        if (!pbPS.getStatus().equals(PBStatus.PENDING)) {
+        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
             throw new Exception403("승인 대기 중인 PB입니다.");
         }
         User userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
