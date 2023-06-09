@@ -4,7 +4,7 @@ import kr.co.moneybridge.model.reservation.LocationType;
 import kr.co.moneybridge.model.reservation.ReservationGoal;
 import kr.co.moneybridge.model.reservation.ReservationType;
 
-public class EnumUtil {
+public class MyEnumUtil {
     public static boolean isValidReservationGoal(ReservationGoal goal) {
         for (ReservationGoal valid : ReservationGoal.values()) {
             if (valid == goal) {
