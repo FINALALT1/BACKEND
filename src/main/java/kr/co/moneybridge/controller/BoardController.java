@@ -158,4 +158,14 @@ public class BoardController {
 
         return ResponseEntity.ok(new ResponseDTO<>());
     }
+
+    @GetMapping("/user/bookmarks/boards")
+    public ResponseEntity<?> getBookmarkBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getBookmarkBoards(myUserDetails, pageable);
+        ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 }
