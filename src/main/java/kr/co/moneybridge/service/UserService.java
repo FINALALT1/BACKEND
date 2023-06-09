@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nimbusds.jose.util.Pair;
-import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
@@ -17,12 +16,12 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreementRepository;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,9 +29,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -46,6 +48,59 @@ public class UserService {
     private final MyJwtProvider myJwtProvider;
     private final RedisUtil redisUtil;
     private final MyMemberUtil myMemberUtil;
+    private final JavaMailSender javaMailSender;
+
+    @MyLog
+    public UserResponse.EmailOutDTO email(String email) throws Exception {
+        String code = createCode();
+        MimeMessage message = createMessage(email, code);
+        try {
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            throw new Exception500("인증 이메일 전송 실패");
+        }
+        UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
+        return emailOutDTO;
+    }
+
+    private MimeMessage createMessage(String email, String code) throws Exception {
+        System.out.println("인증 번호 : " + code);
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.addRecipients(MimeMessage.RecipientType.TO, email); // 메일 받을 사용자
+        message.setSubject("[Money Bridge] 이메일 인증코드 입니다"); // 이메일 제목
+
+        String msg = "";
+        // msg += "<img src=../resources/static/image/emailheader.jpg />"; // header image
+        msg += "<div style='margin:20px;'>";
+        msg += "<h1> 안녕하세요. </h1>";
+        msg += "<br>";
+        msg += "<h1> Money Bridge 입니다</h1>";
+        msg += "<br>";
+        msg += "<p>아래 인증코드를 Money Bridge 페이지의 입력 칸에 입력해주세요</p>";
+        msg += "<br>";
+        msg += "<br>";
+        msg += "<div align='center' style='border:1px solid black; font-family:verdana';>";
+        msg += "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
+        msg += "<div style='font-size:130%'>";
+        msg += "CODE : <strong>";
+        msg += code + "</strong><div><br/> ";
+        msg += "</div>";
+        // msg += "<img src=../resources/static/image/emailfooter.jpg />"; // footer image
+        message.setText(msg, "utf-8", "html"); // 메일 내용, charset타입, subtype
+        message.setFrom(new InternetAddress("moneybridge@naver.com", "Money-Bridge")); // 보내는 사람의 이메일 주소, 보내는 사람 이름
+
+        return message;
+    }
+
+    public String createCode() {
+        Random random = new Random();
+        return random.ints('0', 'z' + 1)
+                .filter(i -> (i <= '9' || i >= 'A') && (i <= 'Z' || i >= 'z'))
+                .limit(8) // 인증코드 8자리
+                .collect(StringBuffer::new, StringBuffer::appendCodePoint, StringBuffer::append)
+                .toString();
+    }
 
     @MyLog
     @Transactional

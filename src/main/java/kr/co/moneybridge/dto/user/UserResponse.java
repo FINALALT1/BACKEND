@@ -3,7 +3,6 @@ package kr.co.moneybridge.dto.user;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +42,15 @@ public class UserResponse {
 
         public LoginOutDTO(Member member) {
             this.id = member.getId();
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class EmailOutDTO {
+        private String code;
+        public EmailOutDTO(String code){
+            this.code = code;
         }
     }
 }

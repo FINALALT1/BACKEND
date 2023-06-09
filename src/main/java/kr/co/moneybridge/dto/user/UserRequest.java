@@ -13,6 +13,14 @@ import java.util.List;
 public class UserRequest {
     @Setter
     @Getter
+    public static class EmailInDTO {
+        @NotEmpty
+        @Email(message = "이메일 형식으로 작성해주세요")
+        private String email;
+    }
+
+    @Setter
+    @Getter
     public static class WithdrawInDTO {
         @ApiModelProperty(example = "01012345678")
         @NotEmpty
