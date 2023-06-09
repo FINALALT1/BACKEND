@@ -36,7 +36,6 @@ public class UserRequest {
                     .title(title)
                     .type(type)
                     .isAgreed(isAgreed)
-                    .status(true)
                     .build();
         }
     }
@@ -72,7 +71,6 @@ public class UserRequest {
                     .phoneNumber(phoneNumber)
                     .role(Role.USER)
                     .profile("profile.png")
-                    .status(true)
                     .build();
         }
     }

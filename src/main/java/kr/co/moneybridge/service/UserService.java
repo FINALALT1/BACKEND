@@ -56,7 +56,7 @@ public class UserService {
         }
         Member memberPS = myMemberUtil.findByIdAndStatus(myUserDetails.getMember().getId(),
                 myUserDetails.getMember().getRole());
-        memberPS.withdraw();
+//        memberPS.withdraw();
     }
 
     @MyLog
@@ -65,9 +65,6 @@ public class UserService {
     public UserResponse.JoinOutDTO joinUser(UserRequest.JoinInDTO joinInDTO){
         Optional<User> userOP = userRepository.findByEmail(joinInDTO.getEmail());
         if(userOP.isPresent()){
-            if(!userOP.get().getStatus()){
-                throw new Exception400("email", "탈퇴한 투자자 계정입니다"); // 일단 회원가입 못하게 막음. 추후에 어떻게 할지 정하기
-            }
             throw new Exception400("email", "이미 투자자로 회원가입된 이메일입니다");
         }
         String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte

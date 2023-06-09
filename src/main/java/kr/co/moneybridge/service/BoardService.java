@@ -88,7 +88,7 @@ public class BoardService {
             throw new Exception500("클릭수 증가 에러");
         }
 
-        List<BoardResponse.ReplyOutDTO> replyList = replyRepository.findRepliesByBoardId(id, true);
+        List<BoardResponse.ReplyOutDTO> replyList = replyRepository.findRepliesByBoardId(id);
         boardDetailDTO.setReply(replyList);
 
         return boardDetailDTO;
@@ -112,7 +112,6 @@ public class BoardService {
                     .user(user)
                     .board(board)
                     .createdAt(LocalDateTime.now())
-                    .status(true)
                     .build();
             boardBookmarkRepository.save(boardBookmark);
         } catch (Exception e) {
@@ -127,7 +126,7 @@ public class BoardService {
         BoardBookmark boardBookmark = boardBookmarkRepository.findWithUserAndBoard(userId, boardId).orElseThrow(
                 () -> new Exception400("boardBookmark", "북마크되지않은 컨텐츠입니다"));
 
-        boardBookmark.resign();
+//        boardBookmark.resign();
     }
 
     //컨텐츠 저장하기
@@ -214,7 +213,7 @@ public class BoardService {
         Board board = boardRepository.findByIdAndPbId(boardId, pb.getId()).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다"));
 
         try {
-            board.delete();
+//            board.delete();
         } catch (Exception e) {
             throw new Exception500("컨텐츠 삭제 실패");
         }

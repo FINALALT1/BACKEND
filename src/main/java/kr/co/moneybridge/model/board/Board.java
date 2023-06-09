@@ -68,9 +68,4 @@ public class Board {
         this.tag1 = boardInDTO.getTag1();
         this.tag2 = boardInDTO.getTag2();
     }
-
-    public void delete() {
-        this.status = BoardStatus.INACTIVE;
-    }
-
 }

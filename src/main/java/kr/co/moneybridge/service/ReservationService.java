@@ -40,9 +40,6 @@ public class ReservationService {
         User userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")
         );
-        if (!userPS.getStatus()) {
-            throw new Exception403("탈퇴한 투자자입니다.");
-        }
 
         try {
             return new ReservationResponse.ReservationBaseOutDTO(
@@ -76,9 +73,6 @@ public class ReservationService {
         User userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")
         );
-        if (!userPS.getStatus()) {
-            throw new Exception403("탈퇴한 투자자입니다.");
-        }
 
         try {
             reservationRepository.save(Reservation.builder()

@@ -40,16 +40,10 @@ public class MyMemberUtil {
         if(role.equals(Role.USER)){
             User userPS = userRepository.findByEmail(email)
                     .orElseThrow(() -> new Exception404("해당하는 투자자 계정이 없습니다"));
-            if(!userPS.getStatus()){
-                throw new Exception404("탈퇴한 투자자 계정입니다");
-            }
             member = userPS;
         } else if(role.equals(Role.PB)){
             PB pbPS = pbRepository.findByEmail(email)
                     .orElseThrow(() -> new Exception404("해당하는 PB 계정이 없습니다"));
-            if(pbPS.getStatus().equals(PBStatus.INACTIVE)){
-                throw new Exception404("탈퇴한 PB 계정입니다");
-            }
             if(pbPS.getStatus().equals(PBStatus.PENDING)){
                 throw new Exception404("아직 승인되지 않은 PB 계정입니다");
             }
@@ -57,9 +51,6 @@ public class MyMemberUtil {
         } else if(role.equals(Role.ADMIN)){
             Admin adminPS = adminRepository.findByEmail(email)
                     .orElseThrow(() -> new Exception404("해당하는 관리자 계정이 없습니다"));
-            if(!adminPS.getStatus()){
-                throw new Exception404("탈퇴한 관리자 계정입니다");
-            }
             member = adminPS;
         }
         return member;
@@ -70,16 +61,10 @@ public class MyMemberUtil {
         if(role.equals(Role.USER)){
             User userPS = userRepository.findById(id)
                     .orElseThrow(() -> new Exception404("해당하는 투자자 계정이 없습니다"));
-            if(!userPS.getStatus()){
-                throw new Exception404("탈퇴한 투자자 계정입니다");
-            }
             member = userPS;
         } else if(role.equals(Role.PB)){
             PB pbPS = pbRepository.findById(id)
                     .orElseThrow(() -> new Exception404("해당하는 PB 계정이 없습니다"));
-            if(pbPS.getStatus().equals(PBStatus.INACTIVE)){
-                throw new Exception404("탈퇴한 PB 계정입니다");
-            }
             if(pbPS.getStatus().equals(PBStatus.PENDING)){
                 throw new Exception404("아직 승인되지 않은 PB 계정입니다");
             }
@@ -87,9 +72,6 @@ public class MyMemberUtil {
         } else if(role.equals(Role.ADMIN)){
             Admin adminPS = adminRepository.findById(id)
                     .orElseThrow(() -> new Exception404("해당하는 관리자 계정이 없습니다"));
-            if(!adminPS.getStatus()){
-                throw new Exception404("탈퇴한 관리자 계정입니다");
-            }
             member = adminPS;
         }
         return member;
