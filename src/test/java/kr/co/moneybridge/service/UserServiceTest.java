@@ -14,7 +14,6 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

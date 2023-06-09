@@ -13,6 +13,18 @@ import java.util.List;
 public class UserRequest {
     @Setter
     @Getter
+    public static class PasswordInDTO {
+        @NotNull
+        private Role role;
+        @NotEmpty
+        private String name;
+        @NotEmpty
+        @Email(message = "이메일 형식으로 작성해주세요")
+        private String email;
+    }
+
+    @Setter
+    @Getter
     public static class EmailInDTO {
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")

@@ -24,6 +24,9 @@ public class ReReply {
     @Column(nullable = false)
     private Long authorId;
 
+    private String name;
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReplyAuthorRole authorRole;

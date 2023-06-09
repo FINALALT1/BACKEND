@@ -31,6 +31,14 @@ public class UserController {
     private final UserService userService;
 
     @MyLog
+    @PostMapping("/password")
+    public ResponseEntity<?> password(@RequestBody UserRequest.PasswordInDTO passwordInDTO) throws Exception {
+        UserResponse.PasswordOutDTO passwordOutDTO = userService.password(passwordInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(passwordOutDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @MyLog
     @PostMapping("/email/authentication")
     public ResponseEntity<?> email(@RequestBody UserRequest.EmailInDTO emailInDTO) throws Exception {
         UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO.getEmail());

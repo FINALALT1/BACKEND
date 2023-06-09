@@ -51,7 +51,24 @@ public class UserService {
     private final JavaMailSender javaMailSender;
 
     @MyLog
+    public UserResponse.PasswordOutDTO password(UserRequest.PasswordInDTO passwordInDTO) throws Exception {
+        Member member = myMemberUtil.findByEmail(passwordInDTO.getEmail(), passwordInDTO.getRole());
+        if(!member.getName().equals(passwordInDTO.getName())){
+            throw new Exception404("이름이 틀렸습니다");
+        }
+        String code = sendEmail(passwordInDTO.getEmail());
+        UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(member, code);
+        return passwordOutDTO;
+    }
+
+    @MyLog
     public UserResponse.EmailOutDTO email(String email) throws Exception {
+        String code = sendEmail(email);
+        UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
+        return emailOutDTO;
+    }
+
+    private String sendEmail(String email) throws Exception{
         String code = createCode();
         MimeMessage message = createMessage(email, code);
         try {
@@ -59,8 +76,7 @@ public class UserService {
         } catch (Exception e) {
             throw new Exception500("인증 이메일 전송 실패");
         }
-        UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
-        return emailOutDTO;
+        return code;
     }
 
     private MimeMessage createMessage(String email, String code) throws Exception {

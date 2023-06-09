@@ -25,6 +25,35 @@ public class UserResponse {
 
     @Setter
     @Getter
+    public static class PasswordOutDTO {
+        private Long id;
+        private Role role;
+        private String name;
+        private String phoneNumber;
+        private String email;
+        private String code;
+
+        public PasswordOutDTO(Member member, String code) {
+            this.id = member.getId();
+            this.role = member.getRole();
+            this.name = member.getName();
+            this.email = member.getEmail();
+            this.phoneNumber = member.getPhoneNumber();
+            this.code = code;
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class EmailOutDTO {
+        private String code;
+        public EmailOutDTO(String code){
+            this.code = code;
+        }
+    }
+
+    @Setter
+    @Getter
     public static class JoinOutDTO {
         @ApiModelProperty(example = "1")
         private Long id;
@@ -42,15 +71,6 @@ public class UserResponse {
 
         public LoginOutDTO(Member member) {
             this.id = member.getId();
-        }
-    }
-
-    @Setter
-    @Getter
-    public static class EmailOutDTO {
-        private String code;
-        public EmailOutDTO(String code){
-            this.code = code;
         }
     }
 }
