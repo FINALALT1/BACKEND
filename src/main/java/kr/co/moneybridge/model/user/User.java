@@ -45,9 +45,6 @@ public class User implements Member {
 
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private Boolean status; // true, false
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -56,9 +53,5 @@ public class User implements Member {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public void withdraw(){
-        this.status = false;
     }
 }

@@ -21,7 +21,6 @@ public class ReplyRequest {
                     .board(board)
                     .parentId(parentId)
                     .content(content)
-                    .status(true)
                     .build();
         }
     }

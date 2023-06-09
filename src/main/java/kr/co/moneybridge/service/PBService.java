@@ -42,9 +42,6 @@ public class PBService {
     public PBResponse.JoinOutDTO joinPB(MultipartFile businessCard, PBRequest.JoinInDTO joinInDTO){
         Optional<PB> pbOP = pbRepository.findByEmail(joinInDTO.getEmail());
         if(pbOP.isPresent()){
-            if(pbOP.get().getStatus().equals(PBStatus.INACTIVE)){
-                throw new Exception400("email", "탈퇴한 PB 계정입니다"); // 일단 회원가입 못하게 막음. 추후에 어떻게 할지 정하기
-            }
             if(pbOP.get().getStatus().equals(PBStatus.PENDING)){
                 throw new Exception400("email", "회원가입 후 승인을 기다리고 있는 PB 계정입니다");
             }

@@ -86,7 +86,4 @@ public class PB implements Member {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void withdraw(){
-        this.status = PBStatus.INACTIVE;
-    }
 }

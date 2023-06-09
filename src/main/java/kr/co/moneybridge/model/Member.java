@@ -5,5 +5,4 @@ public interface Member {
     Role getRole();
     String getPassword();
     String getEmail();
-    void withdraw();
 }
