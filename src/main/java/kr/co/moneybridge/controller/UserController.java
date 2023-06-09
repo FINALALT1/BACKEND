@@ -31,10 +31,19 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    // 비밀번호 재설정
+    @MyLog
+    @PatchMapping("/password")
+    public ResponseEntity<?> rePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) throws Exception {
+        userService.rePassword(rePasswordInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
     // 이메일 찾기
     @MyLog
     @PostMapping("/email")
-    public ResponseEntity<?> emailFind(@RequestBody UserRequest.EmailFindInDTO emailFindInDTO) throws Exception {
+    public ResponseEntity<?> emailFind(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) throws Exception {
         List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = userService.emailFind(emailFindInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(emailFindOutDTOs);
         return ResponseEntity.ok().body(responseDTO);
@@ -45,7 +54,7 @@ public class UserController {
     @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/password")
-    public ResponseEntity<?> password(@RequestBody UserRequest.PasswordInDTO passwordInDTO) throws Exception {
+    public ResponseEntity<?> password(@RequestBody @Valid UserRequest.PasswordInDTO passwordInDTO, Errors errors) throws Exception {
         UserResponse.PasswordOutDTO passwordOutDTO = userService.password(passwordInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(passwordOutDTO);
         return ResponseEntity.ok().body(responseDTO);
@@ -55,7 +64,7 @@ public class UserController {
     @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/email/authentication")
-    public ResponseEntity<?> email(@RequestBody UserRequest.EmailInDTO emailInDTO) throws Exception {
+    public ResponseEntity<?> email(@RequestBody @Valid UserRequest.EmailInDTO emailInDTO, Errors errors) throws Exception {
         UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO.getEmail());
         ResponseDTO<?> responseDTO = new ResponseDTO<>(emailOutDTO);
         return ResponseEntity.ok().body(responseDTO);

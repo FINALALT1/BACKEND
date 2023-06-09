@@ -53,7 +53,15 @@ public class UserService {
 
     @MyLog
     @Transactional
-    public List<UserResponse.EmailFindOutDTO> emailFind(UserRequest.EmailFindInDTO emailFindInDTO) throws Exception {
+    public void rePassword(UserRequest.RePasswordInDTO rePasswordInDTO) {
+        Member member = myMemberUtil.findById(rePasswordInDTO.getId(), rePasswordInDTO.getRole());
+        String encPassword = passwordEncoder.encode(rePasswordInDTO.getPassword()); // 60Byte
+        member.updatePassword(encPassword);
+    }
+
+    @MyLog
+    @Transactional
+    public List<UserResponse.EmailFindOutDTO> emailFind(UserRequest.EmailFindInDTO emailFindInDTO) {
         List<Member> members = myMemberUtil.findByNameAndPhoneNumber(emailFindInDTO.getName(),
             emailFindInDTO.getPhoneNumber(), emailFindInDTO.getRole());
         List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = new ArrayList<>();

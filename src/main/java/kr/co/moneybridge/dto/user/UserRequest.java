@@ -13,6 +13,18 @@ import java.util.List;
 public class UserRequest {
     @Setter
     @Getter
+    public static class RePasswordInDTO {
+        @NotNull
+        private Long id;
+        @NotNull
+        private Role role;
+        @NotEmpty
+        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
+        private String password;
+    }
+
+    @Setter
+    @Getter
     public static class EmailFindInDTO {
         @NotNull
         private Role role;
@@ -23,6 +35,7 @@ public class UserRequest {
                 message = "유효하지 않은 휴대폰 번호 형식입니다")
         private String phoneNumber;
     }
+
     @Setter
     @Getter
     public static class PasswordInDTO {

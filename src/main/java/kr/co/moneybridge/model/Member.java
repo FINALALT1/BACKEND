@@ -7,4 +7,5 @@ public interface Member {
     String getEmail();
     String getName();
     String getPhoneNumber();
+    void updatePassword(String password);
 }

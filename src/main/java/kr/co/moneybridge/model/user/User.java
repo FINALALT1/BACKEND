@@ -54,4 +54,7 @@ public class User implements Member {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+    public void updatePassword(String password){
+        this.password = password;
+    }
 }
