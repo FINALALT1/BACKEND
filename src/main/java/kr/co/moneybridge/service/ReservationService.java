@@ -34,8 +34,8 @@ public class ReservationService {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
-        if (!pbPS.getStatus().equals(PBStatus.ACTIVE)) {
-            throw new Exception403("탈퇴했거나 승인 대기 중인 PB입니다.");
+        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
+            throw new Exception403("승인 대기 중인 PB입니다.");
         }
         User userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")
@@ -43,16 +43,23 @@ public class ReservationService {
 
         try {
             return new ReservationResponse.ReservationBaseOutDTO(
-                    pbPS.getBranch().getName(),
-                    pbPS.getBranch().getRoadAddress(),
-                    pbPS.getBranch().getLatitude(),
-                    pbPS.getBranch().getLongitude(),
-                    MyDateUtil.localTimeToString(pbPS.getConsultStart()),
-                    MyDateUtil.localTimeToString(pbPS.getConsultEnd()),
-                    userPS.getName(),
-                    userPS.getPhoneNumber(),
-                    userPS.getEmail(),
-                    pbPS.getConsultNotice()
+                    new ReservationResponse.pbInfoDTO(
+                            pbPS.getName(),
+                            pbPS.getBranch().getName(),
+                            pbPS.getBranch().getRoadAddress(),
+                            pbPS.getBranch().getLatitude(),
+                            pbPS.getBranch().getLongitude()
+                    ),
+                    new ReservationResponse.consultInfoDTO(
+                            MyDateUtil.localTimeToString(pbPS.getConsultStart()),
+                            MyDateUtil.localTimeToString(pbPS.getConsultEnd()),
+                            pbPS.getConsultNotice()
+                    ),
+                    new ReservationResponse.userInfoDTO(
+                            userPS.getName(),
+                            userPS.getPhoneNumber(),
+                            userPS.getEmail()
+                    )
             );
         } catch (Exception e) {
             throw new Exception500("지점 조회 실패 : " + e.getMessage());
@@ -67,8 +74,8 @@ public class ReservationService {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
-        if (!pbPS.getStatus().equals(PBStatus.ACTIVE)) {
-            throw new Exception403("탈퇴했거나 승인 대기 중인 PB입니다.");
+        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
+            throw new Exception403("승인 대기 중인 PB입니다.");
         }
         User userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")

@@ -20,7 +20,6 @@ import java.util.List;
 @EnableSwagger2
 @Configuration
 public class MySwaggerConfig {
-
     @Bean
     public Docket commonApi() {
         return new Docket(DocumentationType.SWAGGER_2)

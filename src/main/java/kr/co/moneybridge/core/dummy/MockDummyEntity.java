@@ -14,47 +14,40 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class DummyEntity {
-    public User newUser(String username) {
+public class MockDummyEntity {
+    public User newMockUser(Long id, String username) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return User.builder()
+                .id(id)
                 .name(username)
                 .password(passwordEncoder.encode("password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .role(Role.USER)
-                .profile("프로필.png")
+                .profile("profile.png")
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public User newUserStatusFalse(String username) {
+    public User newMockUserWithPropensity(Long id, String username) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return User.builder()
-                .name(username)
-                .password(passwordEncoder.encode("password1234"))
-                .email(username + "@nate.com")
-                .phoneNumber("01012345678")
-                .role(Role.USER)
-                .profile("프로필.png")
-                .build();
-    }
-
-    public User newUserWithPropensity(String username) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        return User.builder()
+                .id(id)
                 .name(username)
                 .password(passwordEncoder.encode("password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
                 .propensity(UserPropensity.AGGRESSIVE)
                 .role(Role.USER)
-                .profile("프로필.png")
+                .profile("profile.png")
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public PB newPB(String username, Branch branch) {
+    public PB newMockPB(Long id, String username, Branch branch) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return PB.builder()
+                .id(id)
                 .name(username)
                 .password(passwordEncoder.encode("password1234"))
                 .email(username + "@nate.com")
@@ -72,12 +65,14 @@ public class DummyEntity {
                 .consultNotice("월요일 불가능합니다")
                 .role(Role.PB)
                 .status(PBStatus.ACTIVE)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public PB newPBwithStatus(String username, Branch branch, PBStatus pbStatus) {
+    public PB newMockPBWithStatus(Long id, String username, Branch branch, PBStatus pbStatus) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return PB.builder()
+                .id(id)
                 .name(username)
                 .password(passwordEncoder.encode("password1234"))
                 .email(username + "@nate.com")
@@ -95,12 +90,14 @@ public class DummyEntity {
                 .consultNotice("월요일 불가능합니다")
                 .role(Role.PB)
                 .status(pbStatus)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public PB newPBWithSpeciality(String username, Branch branch) {
+    public PB newPBWithSpeciality(Long id, String username, Branch branch) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return PB.builder()
+                .id(id)
                 .name(username)
                 .password(passwordEncoder.encode("password1234"))
                 .email(username + "@nate.com")
@@ -119,11 +116,13 @@ public class DummyEntity {
                 .consultNotice("월요일 불가능합니다")
                 .role(Role.PB)
                 .status(PBStatus.ACTIVE)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Board newBoard(String title, PB pb) {
+    public Board newMockBoard(Long id, String title, PB pb) {
         return Board.builder()
+                .id(id)
                 .pb(pb)
                 .title(title)
                 .thumbnail("thumbnail.png")
@@ -132,11 +131,13 @@ public class DummyEntity {
                 .tag2("쉽게읽혀요")
                 .clickCount(0L)
                 .status(BoardStatus.ACTIVE)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Board newTempBoard(String title, PB pb) {
+    public Board newMockTempBoard(Long id, String title, PB pb) {
         return Board.builder()
+                .id(id)
                 .pb(pb)
                 .title(title)
                 .thumbnail("thumbnail.png")
@@ -145,28 +146,34 @@ public class DummyEntity {
                 .tag2("쉽게읽혀요")
                 .clickCount(0L)
                 .status(BoardStatus.TEMP)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Reply newReply(Board board, User user) {
+    public Reply newMockReply(Long id, Board board, User user) {
         return Reply.builder()
+                .id(id)
                 .board(board)
                 .user(user)
                 .content("댓글입니다")
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Reply newParentReply(Board board, User user, Reply reply) {
+    public Reply newMockParentReply(Long id, Board board, User user, Reply reply) {
         return Reply.builder()
+                .id(id)
                 .board(board)
                 .user(user)
                 .content("댓글입니다")
                 .parentId(reply.getId())
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Reservation newVisitReservation(User user, PB pb, ReservationProcess process) {
+    public Reservation newMockVisitReservation(Long id, User user, PB pb, ReservationProcess process) {
         return Reservation.builder()
+                .id(id)
                 .user(user)
                 .pb(pb)
                 .type(ReservationType.VISIT)
@@ -183,11 +190,13 @@ public class DummyEntity {
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .status(ReservationStatus.ACTIVE)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Reservation newVisitReservationCancel(User user, PB pb) {
+    public Reservation newMockVisitReservationCancel(Long id, User user, PB pb) {
         return Reservation.builder()
+                .id(id)
                 .user(user)
                 .pb(pb)
                 .type(ReservationType.VISIT)
@@ -204,11 +213,13 @@ public class DummyEntity {
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .status(ReservationStatus.CANCEL)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Reservation newCallReservation(User user, PB pb, ReservationProcess process) {
+    public Reservation newMockCallReservation(Long id, User user, PB pb, ReservationProcess process) {
         return Reservation.builder()
+                .id(id)
                 .user(user)
                 .pb(pb)
                 .type(ReservationType.CALL)
@@ -225,72 +236,90 @@ public class DummyEntity {
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .status(ReservationStatus.ACTIVE)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Review newReview(Reservation reservation) {
+    public Review newMockReview(Long id, Reservation reservation) {
         return Review.builder()
+                .id(id)
                 .reservation(reservation)
                 .content("content 입니다")
                 .adherence(ReviewAdherence.EXCELLENT)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Style newStyle(Review review, StyleStyle styleStyle) {
+    public Style newMockStyle(Long id, Review review, StyleStyle styleStyle) {
         return Style.builder()
+                .id(id)
                 .review(review)
                 .style(styleStyle)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public UserBookmark newUserBookmark(User user, PB pb) {
+    public UserBookmark newMockUserBookmark(Long id, User user, PB pb) {
         return UserBookmark.builder()
+                .id(id)
                 .user(user)
                 .pb(pb)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public PBBookmark newPBBookmark(PB pb, User user) {
+    public PBBookmark newPBBookmark(Long id, PB pb, User user) {
         return PBBookmark.builder()
+                .id(id)
                 .user(user)
                 .pb(pb)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public BoardBookmark newBoardBookmark(User user, Board board) {
+    public BoardBookmark newMockBoardBookmark(Long id, User user, Board board) {
         return BoardBookmark.builder()
+                .id(id)
                 .user(user)
                 .board(board)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Career newCareer(PB pb) {
+    public Career newMockCareer(Long id, PB pb) {
         return Career.builder()
+                .id(id)
                 .pb(pb)
                 .career("키움증권")
                 .startYear(2020)
                 .endYear(2022)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Award newAward(PB pb) {
+    public Award newMockAward(Long id, PB pb) {
         return Award.builder()
+                .id(id)
                 .pb(pb)
                 .record("수상이력입니다.")
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public PBAgreement newPBAgreement(PB pb, PBAgreementType type) {
+    public PBAgreement newMockPBAgreement(Long id, PB pb, PBAgreementType type) {
         return PBAgreement.builder()
+                .id(id)
                 .pb(pb)
                 .title("약관1")
                 .isAgreed(true)
                 .type(type)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Portfolio newPortfolio(PB pb) {
+    public Portfolio newMockPortfolio(Long id, PB pb) {
         return Portfolio.builder()
+                .id(id)
                 .pb(pb)
                 .highestReturn(90)
                 .startDate(LocalDate.now().minusYears(1))
@@ -298,42 +327,50 @@ public class DummyEntity {
                 .propensity(PBPropensity.AGGRESSIVE)
                 .dangerRate(1)
                 .file("file1.pdf")
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Company newCompany(String name) {
+    public Company newMockCompany(Long id, String name) {
         return Company.builder()
+                .id(id)
                 .name(name)
                 .logo("logo.png")
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Branch newBranch(Company company, int num) {
+    public Branch newMockBranch(Long id, Company company, int num) {
         String latitude = "36.36671";
         String longitude = "127.34451";
         double lat = Double.parseDouble(latitude) + num;
         double lon = Double.parseDouble(longitude) + num;
         return Branch.builder()
+                .id(id)
                 .company(company)
                 .name(company.getName() + " 여의도점")
                 .roadAddress(company.getName() + " 도로명주소")
                 .streetAddress(company.getName() + " 지번주소")
                 .latitude(String.valueOf(lat))
                 .longitude(String.valueOf(lon))
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public UserAgreement newUserAgreement(User user, UserAgreementType type) {
+    public UserAgreement newMockUserAgreement(Long id, User user, UserAgreementType type) {
         return UserAgreement.builder()
+                .id(id)
                 .user(user)
                 .title("약관1")
                 .type(type)
                 .isAgreed(true)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public UserInvestInfo newUserInvestInfo(User user) {
+    public UserInvestInfo newMockUserInvestInfo(Long id, User user) {
         return UserInvestInfo.builder()
+                .id(id)
                 .user(user)
                 .q1(5)
                 .q2(4)
@@ -341,7 +378,7 @@ public class DummyEntity {
                 .q4(5)
                 .q5(5)
                 .q6(5)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
-
 }

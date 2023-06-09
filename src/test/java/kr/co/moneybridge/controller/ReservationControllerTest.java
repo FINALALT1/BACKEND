@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class ReservationControllerTest {
-
     private DummyEntity dummy = new DummyEntity();
 
     @Autowired
@@ -56,7 +55,7 @@ public class ReservationControllerTest {
 
     @BeforeEach
     public void setUp() {
-        User userPS = userRepository.save(dummy.newUser("이승민"));
+        User userPS = userRepository.save(dummy.newUser("lee"));
         Company companyPS = companyRepository.save(dummy.newCompany("미래에셋증권"));
         Branch branchPS = branchRepository.save(dummy.newBranch(companyPS, 1));
         PB pbPS = pbRepository.save(dummy.newPB("이피비", branchPS));
@@ -65,7 +64,7 @@ public class ReservationControllerTest {
     }
 
     @DisplayName("상담 예약 사전 정보 조회 성공")
-    @WithUserDetails(value = "USER-이승민@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-lee@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void get_reservation_base_test() throws Exception {
         // given
@@ -80,18 +79,22 @@ public class ReservationControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.branchName").value("미래에셋증권 여의도점"));
-        resultActions.andExpect(jsonPath("$.data.branchAddress").value("미래에셋증권 도로명주소"));
-        resultActions.andExpect(jsonPath("$.data.branchLatitude").value("37.36671"));
-        resultActions.andExpect(jsonPath("$.data.branchLongitude").value("128.34451"));
-        resultActions.andExpect(jsonPath("$.data.consultStart").value("09:00"));
-        resultActions.andExpect(jsonPath("$.data.consultEnd").value("18:00"));
-        resultActions.andExpect(jsonPath("$.data.notice").value("월요일 불가능합니다"));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.pbName").value("이피비"));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.branchAddress").value("미래에셋증권 도로명주소"));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.branchLatitude").value("37.36671"));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.branchLongitude").value("128.34451"));
+        resultActions.andExpect(jsonPath("$.data.consultInfo.consultStart").value("09:00"));
+        resultActions.andExpect(jsonPath("$.data.consultInfo.consultEnd").value("18:00"));
+        resultActions.andExpect(jsonPath("$.data.consultInfo.notice").value("월요일 불가능합니다"));
+        resultActions.andExpect(jsonPath("$.data.userInfo.userName").value("lee"));
+        resultActions.andExpect(jsonPath("$.data.userInfo.userPhoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.userInfo.userEmail").value("lee@nate.com"));
         resultActions.andExpect(status().isOk());
     }
 
     @DisplayName("상담 예약 신청하기 성공")
-    @WithUserDetails(value = "USER-이승민@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-lee@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void apply_reservation_test() throws Exception {
         // given
@@ -106,7 +109,7 @@ public class ReservationControllerTest {
         applyReservationInDTO.setCandidateTime1("2023-05-15T09:00:00");
         applyReservationInDTO.setCandidateTime2("2023-05-15T12:00:00");
         applyReservationInDTO.setQuestion("잘 부탁드립니다.");
-        applyReservationInDTO.setUserName("이승민");
+        applyReservationInDTO.setUserName("lee");
         applyReservationInDTO.setUserPhoneNumber("01012345678");
         applyReservationInDTO.setUserEmail("asdf1234@nate.com");
 

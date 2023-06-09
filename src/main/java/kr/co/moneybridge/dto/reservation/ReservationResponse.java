@@ -9,6 +9,28 @@ public class ReservationResponse {
     @Getter
     @Setter
     public static class ReservationBaseOutDTO{
+        @ApiModelProperty
+        private pbInfoDTO pbInfo;
+
+        @ApiModelProperty
+        private consultInfoDTO consultInfo;
+
+        @ApiModelProperty
+        private userInfoDTO userInfo;
+
+        public ReservationBaseOutDTO(pbInfoDTO pbInfo, consultInfoDTO consultInfo, userInfoDTO userInfo) {
+            this.pbInfo = pbInfo;
+            this.consultInfo = consultInfo;
+            this.userInfo = userInfo;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class pbInfoDTO{
+        @ApiModelProperty(example = "김피비")
+        private String pbName;
+
         @ApiModelProperty(example = "미래에셋증권 용산wm점")
         private String branchName;
 
@@ -21,12 +43,37 @@ public class ReservationResponse {
         @ApiModelProperty(example = "126.97037")
         private String branchLongitude;
 
+        public pbInfoDTO(String pbName, String branchName, String branchAddress, String branchLatitude, String branchLongitude) {
+            this.pbName = pbName;
+            this.branchName = branchName;
+            this.branchAddress = branchAddress;
+            this.branchLatitude = branchLatitude;
+            this.branchLongitude = branchLongitude;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class consultInfoDTO{
         @ApiModelProperty(example = "09:00")
         private String consultStart;
 
         @ApiModelProperty(example = "10:00")
         private String consultEnd;
 
+        @ApiModelProperty(example = "월요일 13시 제외")
+        private String notice;
+
+        public consultInfoDTO(String consultStart, String consultEnd, String notice) {
+            this.consultStart = consultStart;
+            this.consultEnd = consultEnd;
+            this.notice = notice;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class userInfoDTO{
         @ApiModelProperty(example = "홍길동")
         private String userName;
 
@@ -36,20 +83,10 @@ public class ReservationResponse {
         @ApiModelProperty(example = "asdf1234@gmail.")
         private String userEmail;
 
-        @ApiModelProperty(example = "월요일 13시 제외")
-        private String notice;
-
-        public ReservationBaseOutDTO(String branchName, String branchAddress, String branchLatitude, String branchLongitude, String consultStart, String consultEnd, String userName, String userPhoneNumber, String userEmail, String notice) {
-            this.branchName = branchName;
-            this.branchAddress = branchAddress;
-            this.branchLatitude = branchLatitude;
-            this.branchLongitude = branchLongitude;
-            this.consultStart = consultStart;
-            this.consultEnd = consultEnd;
+        public userInfoDTO(String userName, String userPhoneNumber, String userEmail) {
             this.userName = userName;
             this.userPhoneNumber = userPhoneNumber;
             this.userEmail = userEmail;
-            this.notice = notice;
         }
     }
 }
