@@ -34,8 +34,8 @@ public class ReservationService {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
-        if (!pbPS.getStatus().equals(PBStatus.ACTIVE)) {
-            throw new Exception403("탈퇴했거나 승인 대기 중인 PB입니다.");
+        if (!pbPS.getStatus().equals(PBStatus.PENDING)) {
+            throw new Exception403("승인 대기 중인 PB입니다.");
         }
         User userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")
@@ -74,8 +74,8 @@ public class ReservationService {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
-        if (!pbPS.getStatus().equals(PBStatus.ACTIVE)) {
-            throw new Exception403("탈퇴했거나 승인 대기 중인 PB입니다.");
+        if (!pbPS.getStatus().equals(PBStatus.PENDING)) {
+            throw new Exception403("승인 대기 중인 PB입니다.");
         }
         User userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")

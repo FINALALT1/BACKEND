@@ -13,15 +13,15 @@ public class ReservationResponse {
         private pbInfoDTO pbInfo;
 
         @ApiModelProperty
-        private consultInfoDTO consultInfoDTO;
+        private consultInfoDTO consultInfo;
 
         @ApiModelProperty
-        private userInfoDTO userInfoDTO;
+        private userInfoDTO userInfo;
 
-        public ReservationBaseOutDTO(pbInfoDTO pbInfo, ReservationResponse.consultInfoDTO consultInfoDTO, ReservationResponse.userInfoDTO userInfoDTO) {
+        public ReservationBaseOutDTO(pbInfoDTO pbInfo, consultInfoDTO consultInfo, userInfoDTO userInfo) {
             this.pbInfo = pbInfo;
-            this.consultInfoDTO = consultInfoDTO;
-            this.userInfoDTO = userInfoDTO;
+            this.consultInfo = consultInfo;
+            this.userInfo = userInfo;
         }
     }
 
