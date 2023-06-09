@@ -2,6 +2,7 @@ package kr.co.moneybridge.model.board;
 
 import kr.co.moneybridge.dto.board.BoardResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,5 +15,9 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "INNER JOIN User u ON r.user.id = u.id " +
             "WHERE r.board.id = :boardId")
     List<BoardResponse.ReplyOutDTO> findRepliesByBoardId(@Param("boardId") Long boardId);
+
+    @Modifying
+    @Query("DELETE FROM Reply r WHERE r.board.id = :boardId")
+    void deleteByBoardId(@Param("boardId") Long boardId);
 
 }

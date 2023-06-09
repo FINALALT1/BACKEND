@@ -126,7 +126,11 @@ public class BoardService {
         BoardBookmark boardBookmark = boardBookmarkRepository.findWithUserAndBoard(userId, boardId).orElseThrow(
                 () -> new Exception400("boardBookmark", "북마크되지않은 컨텐츠입니다"));
 
-//        boardBookmark.resign();
+        try {
+            boardBookmarkRepository.deleteById(boardBookmark.getId());
+        } catch (Exception e) {
+            throw new Exception500("북마킄 취소 실패");
+        }
     }
 
     //컨텐츠 저장하기
@@ -213,7 +217,9 @@ public class BoardService {
         Board board = boardRepository.findByIdAndPbId(boardId, pb.getId()).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다"));
 
         try {
-//            board.delete();
+            replyRepository.deleteByBoardId(board.getId());
+            boardBookmarkRepository.deleteByBoardId(board.getId());
+            boardRepository.deleteById(board.getId());
         } catch (Exception e) {
             throw new Exception500("컨텐츠 삭제 실패");
         }

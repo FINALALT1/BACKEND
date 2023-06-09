@@ -4,6 +4,7 @@ import kr.co.moneybridge.dto.board.BoardResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -53,4 +54,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "JOIN BoardBookmark bb ON bb.board = b " +
             "WHERE bb.user.id = :userId")
     Page<BoardResponse.BoardPageDTO> findBookmarkBoardsWithUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Modifying
+    void deleteById(Long boardId);
 }
