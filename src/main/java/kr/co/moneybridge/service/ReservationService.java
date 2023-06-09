@@ -43,16 +43,23 @@ public class ReservationService {
 
         try {
             return new ReservationResponse.ReservationBaseOutDTO(
-                    pbPS.getBranch().getName(),
-                    pbPS.getBranch().getRoadAddress(),
-                    pbPS.getBranch().getLatitude(),
-                    pbPS.getBranch().getLongitude(),
-                    MyDateUtil.localTimeToString(pbPS.getConsultStart()),
-                    MyDateUtil.localTimeToString(pbPS.getConsultEnd()),
-                    userPS.getName(),
-                    userPS.getPhoneNumber(),
-                    userPS.getEmail(),
-                    pbPS.getConsultNotice()
+                    new ReservationResponse.pbInfoDTO(
+                            pbPS.getName(),
+                            pbPS.getBranch().getName(),
+                            pbPS.getBranch().getRoadAddress(),
+                            pbPS.getBranch().getLatitude(),
+                            pbPS.getBranch().getLongitude()
+                    ),
+                    new ReservationResponse.consultInfoDTO(
+                            MyDateUtil.localTimeToString(pbPS.getConsultStart()),
+                            MyDateUtil.localTimeToString(pbPS.getConsultEnd()),
+                            pbPS.getConsultNotice()
+                    ),
+                    new ReservationResponse.userInfoDTO(
+                            userPS.getName(),
+                            userPS.getPhoneNumber(),
+                            userPS.getEmail()
+                    )
             );
         } catch (Exception e) {
             throw new Exception500("지점 조회 실패 : " + e.getMessage());
