@@ -41,24 +41,24 @@ public class BoardService {
     public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithTitle(String title, Pageable pageable) {
 
         Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findByTitle(title, BoardStatus.ACTIVE, pageable);
-        List<BoardResponse.BoardPageDTO> content = boardPG.getContent().stream().collect(Collectors.toList());
-        return new PageDTO<>(content, boardPG);
+        List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+        return new PageDTO<>(list, boardPG);
     }
 
     //최신컨텐츠순으로 가져오기
     public PageDTO<BoardResponse.BoardPageDTO> getBoardWithNew(Pageable pageable) {
 
         Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findAll(BoardStatus.ACTIVE, pageable);
-        List<BoardResponse.BoardPageDTO> content = boardPG.getContent().stream().collect(Collectors.toList());
-        return new PageDTO<>(content, boardPG);
+        List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+        return new PageDTO<>(list, boardPG);
     }
 
     //핫한컨테츠순으로 가져오기
     public PageDTO<BoardResponse.BoardPageDTO> getBoardWithHot(Pageable pageable) {
 
         Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findAll(BoardStatus.ACTIVE, pageable);
-        List<BoardResponse.BoardPageDTO> content = boardPG.getContent().stream().collect(Collectors.toList());
-        return new PageDTO<>(content, boardPG);
+        List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+        return new PageDTO<>(list, boardPG);
     }
 
     //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기
@@ -218,5 +218,15 @@ public class BoardService {
         } catch (Exception e) {
             throw new Exception500("컨텐츠 삭제 실패");
         }
+    }
+
+    //북마크한 컨텐츠 목록 가져오기
+    public PageDTO<BoardResponse.BoardPageDTO> getBookmarkBoards(MyUserDetails myUserDetails, Pageable pageable) {
+
+        User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 유저입니다."));
+
+        Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithUserId(user.getId(), pageable);
+        List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+        return new PageDTO<>(list, boardPG);
     }
 }

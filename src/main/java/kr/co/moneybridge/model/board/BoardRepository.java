@@ -44,4 +44,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT b FROM Board b JOIN PB pb ON b.pb.id = pb.id WHERE b.id = :boardId AND pb.id = :pbId")
     Optional<Board> findByIdAndPbId(@Param("boardId") Long boardId, @Param("pbId") Long pbId);
+
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, pb, c) " +
+            "FROM Board b " +
+            "JOIN PB pb ON b.pb = pb " +
+            "JOIN Branch br ON pb.branch = br " +
+            "JOIN Company c ON br.company = c " +
+            "JOIN BoardBookmark bb ON bb.board = b " +
+            "WHERE bb.user.id = :userId")
+    Page<BoardResponse.BoardPageDTO> findBookmarkBoardsWithUserId(@Param("userId") Long userId, Pageable pageable);
 }

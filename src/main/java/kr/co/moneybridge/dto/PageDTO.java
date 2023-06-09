@@ -15,8 +15,8 @@ public class PageDTO<T> {
     private Boolean last;
     private Boolean empty;
 
-    public PageDTO(List<T> content, Page<T> page) {
-        this.list = content;
+    public PageDTO(List<T> list, Page<T> page) {
+        this.list = list;
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
         this.curPage = page.getNumber();
