@@ -33,7 +33,6 @@ public class UserController {
     @ApiOperation(value = "비밀번호 찾기시 이메일 인증")
     @SwaggerResponses.DefaultApiResponses
     @MyLog
-<<<<<<< HEAD
     @PostMapping("/password")
     public ResponseEntity<?> password(@RequestBody UserRequest.PasswordInDTO passwordInDTO) throws Exception {
         UserResponse.PasswordOutDTO passwordOutDTO = userService.password(passwordInDTO);
@@ -44,9 +43,6 @@ public class UserController {
     @ApiOperation(value = "이메일 인증")
     @SwaggerResponses.DefaultApiResponses
     @MyLog
-=======
-    @MyErrorLog
->>>>>>> 2b58bfa (Feat: 회원가입시 이메일 인증 API)
     @PostMapping("/email/authentication")
     public ResponseEntity<?> email(@RequestBody UserRequest.EmailInDTO emailInDTO) throws Exception {
         UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO.getEmail());
@@ -54,16 +50,10 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-<<<<<<< HEAD
     @ApiOperation(value = "탈퇴")
     @SwaggerResponses.DefaultApiResponses
     @MyLog
     @DeleteMapping("/auth/account")
-=======
-    @MyLog
-    @MyErrorLog
-    @DeleteMapping("/auth/account") // 탈퇴 API
->>>>>>> 2b58bfa (Feat: 회원가입시 이메일 인증 API)
     public ResponseEntity<?> withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.withdraw(withdrawInDTO, myUserDetails);
