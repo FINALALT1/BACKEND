@@ -27,13 +27,12 @@ public class MySecurityConfig {
     private final MyMemberUtil myMemberUtil;
 
     public MySecurityConfig(RedisUtil redisUtil, MyMemberUtil myMemberUtil) {
-
         this.redisUtil = redisUtil;
         this.myMemberUtil = myMemberUtil;
     }
 
     @Bean
-    BCryptPasswordEncoder passwordEncoder(){
+    BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -78,13 +77,13 @@ public class MySecurityConfig {
 
         // 8. 인증 실패 처리
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
-            log.warn("인증되지 않은 사용자가 자원에 접근하려 합니다 : "+authException.getMessage());
+            log.warn("인증되지 않은 사용자가 자원에 접근하려 합니다 : " + authException.getMessage());
             MyFilterResponseUtil.unAuthorized(response, new Exception401("인증되지 않았습니다"));
         });
 
         // 10. 권한 실패 처리
         http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
-            log.warn("권한이 없는 사용자가 자원에 접근하려 합니다 : "+accessDeniedException.getMessage());
+            log.warn("권한이 없는 사용자가 자원에 접근하려 합니다 : " + accessDeniedException.getMessage());
             MyFilterResponseUtil.forbidden(response, new Exception403("권한이 없습니다"));
         });
 
