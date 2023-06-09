@@ -80,4 +80,13 @@ public class UserResponse {
             this.id = member.getId();
         }
     }
+
+    @Setter
+    @Getter
+    public static class EmailOutDTO {
+        private String code;
+        public EmailOutDTO(String code){
+            this.code = code;
+        }
+    }
 }

@@ -31,7 +31,6 @@ public class UserRequest {
     @Setter
     @Getter
     public static class EmailInDTO {
-        @ApiModelProperty(example = "jisu3148496@naver.com")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         private String email;
