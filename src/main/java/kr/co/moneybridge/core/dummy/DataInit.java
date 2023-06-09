@@ -60,7 +60,7 @@ public class DataInit extends DummyEntity{
             PB pb1 = pbRepository.save(newPB("김pb", b1));
             PB pb2 = pbRepository.save(newPBWithSpeciality("이pb", b1));
             PB pb3 = pbRepository.save(newPBWithSpeciality("박pb", b2));
-            PB pb4 = pbRepository.save(newPBwithStatus("윤pb", b1, PBStatus.INACTIVE));
+            PB pb4 = pbRepository.save(newPBwithStatus("윤pb", b1, PBStatus.PENDING));
             PB pb5 = pbRepository.save(newPBwithStatus("나pb", b2, PBStatus.PENDING));
 
             portfolioRepository.save(newPortfolio(pb1));

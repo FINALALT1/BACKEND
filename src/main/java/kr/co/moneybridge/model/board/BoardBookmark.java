@@ -28,9 +28,6 @@ public class BoardBookmark {
 
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private Boolean status;
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -41,7 +38,4 @@ public class BoardBookmark {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void resign() { // 퇴사
-        this.status = false;
-    }
 }

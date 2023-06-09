@@ -28,9 +28,6 @@ public class Style {
 
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private Boolean status;
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

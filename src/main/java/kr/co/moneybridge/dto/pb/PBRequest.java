@@ -27,7 +27,6 @@ public class PBRequest {
                     .title(title)
                     .type(type)
                     .isAgreed(isAgreed)
-                    .status(true)
                     .build();
         }
     }

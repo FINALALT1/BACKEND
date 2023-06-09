@@ -24,7 +24,6 @@ public class DummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.USER)
                 .profile("프로필.png")
-                .status(true)
                 .build();
     }
 
@@ -37,7 +36,6 @@ public class DummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.USER)
                 .profile("프로필.png")
-                .status(false)
                 .build();
     }
 
@@ -51,7 +49,6 @@ public class DummyEntity {
                 .propensity(UserPropensity.AGGRESSIVE)
                 .role(Role.USER)
                 .profile("프로필.png")
-                .status(true)
                 .build();
     }
 
@@ -156,7 +153,6 @@ public class DummyEntity {
                 .board(board)
                 .user(user)
                 .content("댓글입니다")
-                .status(true)
                 .build();
     }
 
@@ -166,7 +162,6 @@ public class DummyEntity {
                 .user(user)
                 .content("댓글입니다")
                 .parentId(reply.getId())
-                .status(true)
                 .build();
     }
 
@@ -238,7 +233,6 @@ public class DummyEntity {
                 .reservation(reservation)
                 .content("content 입니다")
                 .adherence(ReviewAdherence.EXCELLENT)
-                .status(true)
                 .build();
     }
 
@@ -246,7 +240,6 @@ public class DummyEntity {
         return Style.builder()
                 .review(review)
                 .style(styleStyle)
-                .status(true)
                 .build();
     }
 
@@ -254,7 +247,6 @@ public class DummyEntity {
         return UserBookmark.builder()
                 .user(user)
                 .pb(pb)
-                .status(true)
                 .build();
     }
 
@@ -262,7 +254,6 @@ public class DummyEntity {
         return PBBookmark.builder()
                 .user(user)
                 .pb(pb)
-                .status(true)
                 .build();
     }
 
@@ -270,7 +261,6 @@ public class DummyEntity {
         return BoardBookmark.builder()
                 .user(user)
                 .board(board)
-                .status(true)
                 .build();
     }
 
@@ -280,7 +270,6 @@ public class DummyEntity {
                 .career("키움증권")
                 .startYear(2020)
                 .endYear(2022)
-                .status(true)
                 .build();
     }
 
@@ -288,7 +277,6 @@ public class DummyEntity {
         return Award.builder()
                 .pb(pb)
                 .record("수상이력입니다.")
-                .status(true)
                 .build();
     }
 
@@ -298,7 +286,6 @@ public class DummyEntity {
                 .title("약관1")
                 .isAgreed(true)
                 .type(type)
-                .status(true)
                 .build();
     }
 
@@ -311,7 +298,6 @@ public class DummyEntity {
                 .propensity(PBPropensity.AGGRESSIVE)
                 .dangerRate(1)
                 .file("file1.pdf")
-                .status(true)
                 .build();
     }
 
@@ -319,7 +305,6 @@ public class DummyEntity {
         return Company.builder()
                 .name(name)
                 .logo("logo.png")
-                .status(true)
                 .build();
     }
 
@@ -335,7 +320,6 @@ public class DummyEntity {
                 .streetAddress(company.getName() + " 지번주소")
                 .latitude(String.valueOf(lat))
                 .longitude(String.valueOf(lon))
-                .status(true)
                 .build();
     }
 
@@ -345,7 +329,6 @@ public class DummyEntity {
                 .title("약관1")
                 .type(type)
                 .isAgreed(true)
-                .status(true)
                 .build();
     }
 
@@ -358,7 +341,6 @@ public class DummyEntity {
                 .q4(5)
                 .q5(5)
                 .q6(5)
-                .status(true)
                 .build();
     }
 
@@ -372,7 +354,6 @@ public class DummyEntity {
                 .phoneNumber("01012345678")
                 .propensity(UserPropensity.AGGRESSIVE)
                 .role(Role.USER)
-                .status(true)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

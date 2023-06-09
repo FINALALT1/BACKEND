@@ -33,8 +33,6 @@ public class Admin implements Member {
 
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private Boolean status;
 
     @PrePersist
     protected void onCreate() {
@@ -46,7 +44,4 @@ public class Admin implements Member {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void withdraw(){
-        this.status = false;
-    }
 }
