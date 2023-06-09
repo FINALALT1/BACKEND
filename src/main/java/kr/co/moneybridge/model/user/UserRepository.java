@@ -5,9 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.email = :email")
     Optional<User> findByEmail(@Param("email") String email);
+
+    @Query("select u from User u where u.name = :name and u.phoneNumber = :phoneNumber")
+    List<User> findByNameAndPhoneNumber(@Param("name") String name, @Param("phoneNumber") String phoneNumber);
 }

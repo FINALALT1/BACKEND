@@ -7,6 +7,8 @@ import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 public class UserResponse {
     @Getter @Setter
     public static class DetailOutDTO{
@@ -20,6 +22,20 @@ public class UserResponse {
             this.username = user.getName();
             this.email = user.getEmail();
             this.role = user.getRole();
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class EmailFindOutDTO {
+        private String name;
+        private String phoneNumber;
+        private String email;
+
+        public EmailFindOutDTO(Member member) {
+            this.name = member.getName();
+            this.email = member.getEmail();
+            this.phoneNumber = member.getPhoneNumber();
         }
     }
 

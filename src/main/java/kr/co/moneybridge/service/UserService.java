@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -51,6 +52,17 @@ public class UserService {
     private final JavaMailSender javaMailSender;
 
     @MyLog
+    @Transactional
+    public List<UserResponse.EmailFindOutDTO> emailFind(UserRequest.EmailFindInDTO emailFindInDTO) throws Exception {
+        List<Member> members = myMemberUtil.findByNameAndPhoneNumber(emailFindInDTO.getName(),
+            emailFindInDTO.getPhoneNumber(), emailFindInDTO.getRole());
+        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = new ArrayList<>();
+        members.stream().forEach(member -> emailFindOutDTOs.add(new UserResponse.EmailFindOutDTO(member)));
+        return emailFindOutDTOs;
+    }
+
+    @MyLog
+    @Transactional
     public UserResponse.PasswordOutDTO password(UserRequest.PasswordInDTO passwordInDTO) throws Exception {
         Member member = myMemberUtil.findByEmail(passwordInDTO.getEmail(), passwordInDTO.getRole());
         if(!member.getName().equals(passwordInDTO.getName())){
@@ -67,6 +79,7 @@ public class UserService {
         UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
         return emailOutDTO;
     }
+
 
     private String sendEmail(String email) throws Exception{
         String code = createCode();

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -30,6 +31,16 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    // 이메일 찾기
+    @MyLog
+    @PostMapping("/email")
+    public ResponseEntity<?> emailFind(@RequestBody UserRequest.EmailFindInDTO emailFindInDTO) throws Exception {
+        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = userService.emailFind(emailFindInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(emailFindOutDTOs);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 비밀번호 찾기 + 이메일 인증
     @ApiOperation(value = "비밀번호 찾기시 이메일 인증")
     @SwaggerResponses.DefaultApiResponses
     @MyLog

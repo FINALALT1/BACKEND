@@ -13,6 +13,18 @@ import java.util.List;
 public class UserRequest {
     @Setter
     @Getter
+    public static class EmailFindInDTO {
+        @NotNull
+        private Role role;
+        @NotEmpty
+        private String name;
+        @NotEmpty
+        @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
+                message = "유효하지 않은 휴대폰 번호 형식입니다")
+        private String phoneNumber;
+    }
+    @Setter
+    @Getter
     public static class PasswordInDTO {
         @ApiModelProperty(example = "USER")
         @NotNull
