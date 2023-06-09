@@ -1,6 +1,10 @@
 package kr.co.moneybridge.controller;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.ResponseDTO;
@@ -13,14 +17,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static kr.co.moneybridge.core.util.EnumUtil.*;
+import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 
 @RequiredArgsConstructor
 @RestController
 public class ReservationController {
     private final ReservationService reservationService;
 
-    // PB 상담 예약 사전 정보 조회 API
+    @ApiOperation(value = "상담 예약 사전 정보 조회")
+    @SwaggerResponses.GetReservationBase
     @MyLog
     @GetMapping("/user/reservation/{pbId}")
     public ResponseEntity<?> getReservationBase(@PathVariable Long pbId,
@@ -31,7 +36,8 @@ public class ReservationController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    // 상담 예약 신청하기 API
+    @ApiOperation(value = "상담 예약 신청하기")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/user/reservation/{pbId}")
     public ResponseEntity<?> applyReservation(@PathVariable Long pbId,
