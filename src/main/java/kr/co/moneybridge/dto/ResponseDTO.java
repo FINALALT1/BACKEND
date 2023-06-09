@@ -1,12 +1,21 @@
 package kr.co.moneybridge.dto;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@ApiModel
 @Getter
 public class ResponseDTO<T> {
+    @ApiModelProperty(example = "200")
     private Integer status; // 에러시에 의미 있음.
+
+    @ApiModelProperty(example = "ok")
     private String msg; // 에러시에 의미 있음. ex) badRequest
+
+    @ApiModelProperty
     private T data; // 에러시에는 구체적인 에러 내용 ex) username이 입력되지 않았습니다
 
     public ResponseDTO(){
