@@ -2,10 +2,7 @@ package kr.co.moneybridge.core.dummy;
 
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.board.Board;
-import kr.co.moneybridge.model.board.BoardBookmark;
-import kr.co.moneybridge.model.board.BoardStatus;
-import kr.co.moneybridge.model.board.Reply;
+import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.*;
@@ -154,7 +151,8 @@ public class MockDummyEntity {
         return Reply.builder()
                 .id(id)
                 .board(board)
-                .user(user)
+                .authorId(user.getId())
+                .authorRole(ReplyAuthorRole.USER)
                 .content("댓글입니다")
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -164,7 +162,8 @@ public class MockDummyEntity {
         return Reply.builder()
                 .id(id)
                 .board(board)
-                .user(user)
+                .authorId(user.getId())
+                .authorRole(ReplyAuthorRole.USER)
                 .content("댓글입니다")
                 .parentId(reply.getId())
                 .createdAt(LocalDateTime.now())

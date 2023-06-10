@@ -87,16 +87,16 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
-    @PostMapping("/user/board/{id}/reply")
-    public ResponseEntity<?> postReply(@PathVariable Long id,
-                                       @AuthenticationPrincipal MyUserDetails myUserDetails,
-                                       @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
-
-        Long userId = myUserDetails.getMember().getId();
-        replyService.postReply(replyInDTO, userId, id);
-
-        return ResponseEntity.ok(new ResponseDTO<>());
-    }
+//    @PostMapping("/user/board/{id}/reply")
+//    public ResponseEntity<?> postReply(@PathVariable Long id,
+//                                       @AuthenticationPrincipal MyUserDetails myUserDetails,
+//                                       @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
+//
+//        Long userId = myUserDetails.getMember().getId();
+//        replyService.postReply(replyInDTO, userId, id);
+//
+//        return ResponseEntity.ok(new ResponseDTO<>());
+//    }
 
     @PostMapping("/pb/board")
     public ResponseEntity<?> saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,

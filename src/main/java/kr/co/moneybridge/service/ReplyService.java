@@ -27,7 +27,7 @@ public class ReplyService {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new Exception400("user", "해당 유저 찾울 수 없습니다."));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new Exception400("board", "해당 컨텐츠 찾울 수 없습니다."));
-        Reply reply = replyInDTO.toEntity(user, board);
-        replyRepository.save(reply);
+//        Reply reply = replyInDTO.toEntity(user, board);
+//        replyRepository.save(reply);
     }
 }

@@ -54,9 +54,7 @@ public class UserService {
         if(!passwordEncoder.matches(withdrawInDTO.getPassword(), myUserDetails.getPassword())){
             throw new Exception400("password", "비밀번호가 틀렸습니다");
         }
-        Member memberPS = myMemberUtil.findByIdAndStatus(myUserDetails.getMember().getId(),
-                myUserDetails.getMember().getRole());
-//        memberPS.withdraw();
+        myMemberUtil.deleteById(myUserDetails.getMember().getId(), myUserDetails.getMember().getRole());
     }
 
     @MyLog
@@ -105,7 +103,7 @@ public class UserService {
     @MyLog
     @MyErrorLog
     public UserResponse.LoginOutDTO login(UserRequest.LoginInDTO loginInDTO) {
-        Member memberPS = myMemberUtil.findByEmailAndStatus(loginInDTO.getEmail(), loginInDTO.getRole());
+        Member memberPS = myMemberUtil.findByEmail(loginInDTO.getEmail(), loginInDTO.getRole());
         return new UserResponse.LoginOutDTO(memberPS);
     }
 
@@ -138,7 +136,7 @@ public class UserService {
 
         // 액세스 토큰, 리프레시 토큰 발급.
         try {
-            Member memberPS = myMemberUtil.findByIdAndStatus(id, Role.valueOf(role));
+            Member memberPS = myMemberUtil.findById(id, Role.valueOf(role));
             String newAccessToken = myJwtProvider.createAccess(memberPS);
             String newRefreshToken = myJwtProvider.createRefresh(memberPS);
             return Pair.of(newAccessToken, newRefreshToken);

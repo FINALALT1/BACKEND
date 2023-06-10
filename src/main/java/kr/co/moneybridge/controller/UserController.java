@@ -32,9 +32,10 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    // 탈퇴하기
     @MyLog
     @MyErrorLog
-    @DeleteMapping("/auth/account") // 탈퇴 API
+    @DeleteMapping("/auth/account")
     public ResponseEntity<?> withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.withdraw(withdrawInDTO, myUserDetails);

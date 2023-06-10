@@ -18,4 +18,8 @@ public interface BoardBookmarkRepository extends JpaRepository<BoardBookmark, Lo
 
     @Modifying
     void deleteById(Long id);
+
+    @Modifying
+    @Query("delete from BoardBookmark b where b.user.id = :userId")
+    void deleteByUserId(@Param("userId") Long userId);
 }

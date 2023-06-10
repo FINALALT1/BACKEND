@@ -61,7 +61,7 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
             // 사용자 조회 - 탈퇴 여부 체크
             Member member = null;
             try{
-                member = myMemberUtil.findByIdAndStatus(id, role);
+                member = myMemberUtil.findById(id, role);
             }catch (Exception e){
                 log.error("토큰 정보에서 에러");
                 MyFilterResponseUtil.unAuthorized(response, new Exception401("인증 실패: " + e.getMessage()));
