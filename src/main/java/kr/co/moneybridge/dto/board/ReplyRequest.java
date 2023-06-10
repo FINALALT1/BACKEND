@@ -15,13 +15,13 @@ public class ReplyRequest {
         private Long parentId;
         private String content;
 
-        public Reply toEntity(User user, Board board) {
-            return Reply.builder()
-                    .user(user)
-                    .board(board)
-                    .parentId(parentId)
-                    .content(content)
-                    .build();
-        }
+//        public Reply toEntity(User user, Board board) {
+//            return Reply.builder()
+//                    .user(user)
+//                    .board(board)
+//                    .parentId(parentId)
+//                    .content(content)
+//                    .build();
+//        }
     }
 }

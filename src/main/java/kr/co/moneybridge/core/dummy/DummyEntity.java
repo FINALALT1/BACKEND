@@ -2,10 +2,7 @@ package kr.co.moneybridge.core.dummy;
 
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.board.Board;
-import kr.co.moneybridge.model.board.BoardBookmark;
-import kr.co.moneybridge.model.board.BoardStatus;
-import kr.co.moneybridge.model.board.Reply;
+import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.*;
@@ -151,7 +148,8 @@ public class DummyEntity {
     public Reply newReply(Board board, User user) {
         return Reply.builder()
                 .board(board)
-                .user(user)
+                .authorId(user.getId())
+                .authorRole(ReplyAuthorRole.USER)
                 .content("댓글입니다")
                 .build();
     }
@@ -159,7 +157,8 @@ public class DummyEntity {
     public Reply newParentReply(Board board, User user, Reply reply) {
         return Reply.builder()
                 .board(board)
-                .user(user)
+                .authorId(user.getId())
+                .authorRole(ReplyAuthorRole.USER)
                 .content("댓글입니다")
                 .parentId(reply.getId())
                 .build();
