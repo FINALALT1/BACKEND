@@ -8,4 +8,6 @@ public interface Member {
     String getName();
     String getPhoneNumber();
     void updatePassword(String password);
+    void updateName(String name);
+    void updatePhoneNumber(String phoneNumber);
 }

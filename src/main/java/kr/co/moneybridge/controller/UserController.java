@@ -31,10 +31,36 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    @MyLog
+    @PatchMapping("/auth/myInfo")
+    public ResponseEntity<?> updateMyInfo(@RequestBody @Valid UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO,
+                                          Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        userService.updateMyInfo(updateMyInfoInDTO, myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @MyLog
+    @GetMapping("/auth/myInfo")
+    public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        UserResponse.MyInfoOutDTO myInfoOutDTO = userService.getMyInfo(myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(myInfoOutDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @MyLog
+    @PostMapping("/auth/password")
+    public ResponseEntity<?> checkPassword(@RequestBody @Valid UserRequest.CheckPasswordInDTO checkPasswordInDTO,
+                                           Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        userService.checkPassword(checkPasswordInDTO, myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
     // 비밀번호 재설정
     @MyLog
     @PatchMapping("/password")
-    public ResponseEntity<?> rePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) throws Exception {
+    public ResponseEntity<?> rePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) {
         userService.rePassword(rePasswordInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
         return ResponseEntity.ok().body(responseDTO);
@@ -43,7 +69,7 @@ public class UserController {
     // 이메일 찾기
     @MyLog
     @PostMapping("/email")
-    public ResponseEntity<?> emailFind(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) throws Exception {
+    public ResponseEntity<?> emailFind(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) {
         List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = userService.emailFind(emailFindInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(emailFindOutDTOs);
         return ResponseEntity.ok().body(responseDTO);
@@ -149,15 +175,4 @@ public class UserController {
         }
         return cookieOP.get().getValue();
     }
-
-//    @GetMapping("/s/user/{id}")
-//    public ResponseEntity<?> detail(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) throws JsonProcessingException {
-//        if(id.longValue() != myUserDetails.getMember().getId()){
-//            throw new Exception403("권한이 없습니다");
-//        }
-//        UserResponse.DetailOutDTO detailOutDTO = userService.회원상세보기(id);
-//        //System.out.println(new ObjectMapper().writeValueAsString(detailOutDTO));
-//        ResponseDTO<?> responseDTO = new ResponseDTO<>(detailOutDTO);
-//        return ResponseEntity.ok(responseDTO);
-//    }
 }

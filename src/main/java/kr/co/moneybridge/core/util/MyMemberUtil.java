@@ -12,6 +12,12 @@ import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.*;
+
+import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.pb.PBStatus;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

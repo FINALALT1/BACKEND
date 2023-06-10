@@ -10,18 +10,18 @@ import lombok.Setter;
 import java.util.List;
 
 public class UserResponse {
-    @Getter @Setter
-    public static class DetailOutDTO{
-        private Long id;
-        private String username;
-        private String email;
-        private Role role;
 
-        public DetailOutDTO(User user) {
-            this.id = user.getId();
-            this.username = user.getName();
-            this.email = user.getEmail();
-            this.role = user.getRole();
+    @Setter
+    @Getter
+    public static class MyInfoOutDTO {
+        private String name;
+        private String phoneNumber;
+        private String email;
+
+        public MyInfoOutDTO(Member member) {
+            this.name = member.getName();
+            this.email = member.getEmail();
+            this.phoneNumber = member.getPhoneNumber();
         }
     }
 
