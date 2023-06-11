@@ -48,7 +48,6 @@ public class UserService {
     private final MyMemberUtil myMemberUtil;
 
     @MyLog
-    @MyErrorLog
     @Transactional
     public void withdraw(UserRequest.WithdrawInDTO withdrawInDTO, MyUserDetails myUserDetails) {
         if(!passwordEncoder.matches(withdrawInDTO.getPassword(), myUserDetails.getPassword())){
@@ -58,7 +57,6 @@ public class UserService {
     }
 
     @MyLog
-    @MyErrorLog
     @Transactional
     public UserResponse.JoinOutDTO joinUser(UserRequest.JoinInDTO joinInDTO){
         Optional<User> userOP = userRepository.findByEmail(joinInDTO.getEmail());
@@ -82,7 +80,6 @@ public class UserService {
     }
 
     @MyLog
-    @MyErrorLog
     public Pair<String, String> issue(Role role, String email, String password) {
         try {
             String username = role + "-" + email;
@@ -101,14 +98,12 @@ public class UserService {
     }
 
     @MyLog
-    @MyErrorLog
     public UserResponse.LoginOutDTO login(UserRequest.LoginInDTO loginInDTO) {
         Member memberPS = myMemberUtil.findByEmail(loginInDTO.getEmail(), loginInDTO.getRole());
         return new UserResponse.LoginOutDTO(memberPS);
     }
 
     @MyLog
-    @MyErrorLog
     public Pair<String, String> reissue(HttpServletRequest request, String refreshToken) {
         // access token에서 나온 사용자 정보로 redis에서 refresh token을 조회
         String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
@@ -146,7 +141,6 @@ public class UserService {
     }
 
     @MyLog
-    @MyErrorLog
     public void logout(HttpServletRequest request, String refreshToken) {
         // 요청받은 refresh token에서 나온 사용자 정보로 redis에서 refresh token을 조회
         DecodedJWT decodedJWT = null;

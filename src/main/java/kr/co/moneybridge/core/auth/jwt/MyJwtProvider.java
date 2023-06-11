@@ -10,6 +10,7 @@ import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.user.User;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,6 @@ public class MyJwtProvider {
 
     // Access 토큰 생성
     @MyLog
-    @MyErrorLog
     public static String createAccess(Member member) {
         return TOKEN_PREFIX + JWT.create()
                 .withSubject(SUBJECT)
@@ -46,7 +46,6 @@ public class MyJwtProvider {
 
     // Refresh 토큰 생성
     @MyLog
-    @MyErrorLog
     public String createRefresh(Member member) {
         String refreshToken = JWT.create()
                 .withSubject(SUBJECT)
@@ -65,7 +64,6 @@ public class MyJwtProvider {
 
     // Access 토큰을 검증
     @MyLog
-    @MyErrorLog
     public static DecodedJWT verifyAccess(String accessJwt) throws SignatureVerificationException, TokenExpiredException {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET_ACCESS))
                 .build().verify(accessJwt);
@@ -74,7 +72,6 @@ public class MyJwtProvider {
 
     // Refresh 토큰을 검증
     @MyLog
-    @MyErrorLog
     public static DecodedJWT verifyRefresh(String jwt) throws SignatureVerificationException, TokenExpiredException {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET_REFRESH))
                 .build().verify(jwt);
