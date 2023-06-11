@@ -6,6 +6,7 @@ import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
+import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.user.UserRequest;
@@ -26,11 +27,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -61,10 +61,50 @@ public class UserServiceTest extends MockDummyEntity {
     private RedisUtil redisUtil;
     @Mock
     private MyMemberUtil myMemberUtil;
+    @Mock
+    private MyUserDetails myUserDetails;
 
     // 진짜 객체를 만들어서 Mockito 환경에 Load
     @Spy
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Test
+    public void withdraw_test() {
+        // given
+        String password = "Test1234";
+        UserRequest.WithdrawInDTO withdrawInDTO = new UserRequest.WithdrawInDTO();
+        withdrawInDTO.setPassword(password);
+        String encodedPassword = passwordEncoder.encode(withdrawInDTO.getPassword());
+
+        when(myUserDetails.getPassword()).thenReturn(encodedPassword);
+        when(myUserDetails.getMember()).thenReturn(newMockUser(1L, "lee"));
+        when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
+
+        // when
+        userService.withdraw(withdrawInDTO, myUserDetails);
+
+        // then
+        verify(passwordEncoder, times(1)).matches(password, encodedPassword);
+        verify(myMemberUtil, times(1)).deleteById(1L, Role.USER);
+    }
+
+    @Test
+    public void withdraw_fail_test() {
+        // given
+        String password = "Test1234";
+        String wrongPassword = "Wrong1234";
+        UserRequest.WithdrawInDTO withdrawInDTO = new UserRequest.WithdrawInDTO();
+        withdrawInDTO.setPassword(wrongPassword);
+        String encodedPassword = passwordEncoder.encode(password);
+
+        when(myUserDetails.getPassword()).thenReturn(encodedPassword);
+        when(passwordEncoder.matches(wrongPassword, encodedPassword)).thenReturn(false);
+
+        // when & then
+        assertThrows(Exception400.class, () -> {
+            userService.withdraw(withdrawInDTO, myUserDetails);
+        });
+    }
 
     @Test
     public void logout_test() {

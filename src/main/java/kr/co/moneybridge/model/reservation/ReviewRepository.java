@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Modifying
@@ -13,5 +14,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     void deleteByReservationId(@Param("reservationId") Long reservationId);
 
     @Query("select r from Review r where r.reservation.id = :reservationId")
-    List<Review> findAllByReservationId(@Param("reservationId") Long reservationId);
+    Optional<Review> findByReservationId(@Param("reservationId") Long reservationId);
 }

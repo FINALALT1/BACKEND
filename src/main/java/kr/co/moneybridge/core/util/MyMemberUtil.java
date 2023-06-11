@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class MyMemberUtil {
     private final BoardRepository boardRepository;
     private final ReservationRepository reservationRepository;
     private final ReplyRepository replyRepository;
+    private final ReReplyRepository reReplyRepository;
     private final ReviewRepository reviewRepository;
     private final AnswerRepository answerRepository;
     private final StyleRepository styleRepository;
@@ -43,24 +45,31 @@ public class MyMemberUtil {
             try{
                 List<Reservation> reservations = reservationRepository.findAllByUserId(id);
                 reservations.stream().forEach(reservation -> {
-                    List<Review> reviews = reviewRepository.findAllByReservationId(reservation.getId());
-                    reviews.stream().forEach(review -> {
-                        styleRepository.deleteByReviewId(review.getId());
-                    });
-                    // review를 지우니, review를 연관관계로 가지고 있는 style삭제
-                    reviewRepository.deleteByReservationId(reservation.getId());
-                }); // reservation을 지우니, reservation을 연관관계로 가지고 있는 review도 삭제
+                    Optional<Review> review = reviewRepository.findByReservationId(reservation.getId());
+                    if(review.isPresent()){
+                        // review를 지우니, review를 연관관계로 가지고 있는 style삭제
+                        styleRepository.deleteByReviewId(review.get().getId());
+                        // reservation을 지우니, reservation을 연관관계로 가지고 있는 review도 삭제
+                        reviewRepository.deleteByReservationId(reservation.getId());
+                    }
+                });
                 reservationRepository.deleteByUserId(id);
+
                 List<Reply> replies = replyRepository.findAllByAuthor(id, ReplyAuthorRole.USER);
                 replies.stream().forEach(reply -> {
-                    replyRepository.deleteByParentId(reply.getId());
-                }); // reply를 지우니, replyId를 parentId로 가지고 있는 reply도 삭제
-                replyRepository.deleteByAuthor(id, ReplyAuthorRole.USER);
+                    // reply를 지우니, reply를 연관관계로 가지고 있는 reReply도 삭제
+                    reReplyRepository.deleteByReplyId(reply.getId());
+                });
+                replyRepository.deleteByAuthor(id, ReplyAuthorRole.USER); // 댓글 삭제
+                reReplyRepository.deleteByAuthor(id, ReplyAuthorRole.USER); // 대댓글 삭제
+
                 List<Question> questions = questionRepository.findAllByAuthor(id, QuestionAuthorRole.USER);
                 questions.stream().forEach(question -> {
+                    // question을 지우니, question을 연관관계로 가지고 있는 answer 삭제
                     answerRepository.deleteByQuestionId(question.getId());
-                }); // question을 지우니, question을 연관관계로 가지고 있는 answer 삭제
+                });
                 questionRepository.deleteByAuthor(id, QuestionAuthorRole.USER);
+
                 boardBookmarkRepository.deleteByUserId(id);
                 pbBookmarkRepository.deleteByUserId(id);
                 userInvestInfoRepository.deleteByUserId(id);
@@ -73,31 +82,41 @@ public class MyMemberUtil {
             try{
                 List<Reservation> reservations = reservationRepository.findAllByPBId(id);
                 reservations.stream().forEach(reservation -> {
-                    List<Review> reviews = reviewRepository.findAllByReservationId(reservation.getId());
-                    reviews.stream().forEach(review -> {
-                        styleRepository.deleteByReviewId(review.getId());
-                    });
-                    // review를 지우니, review를 연관관계로 가지고 있는 style삭제
-                    reviewRepository.deleteByReservationId(reservation.getId());
-                }); // reservation을 지우니, reservation을 연관관계로 가지고 있는 review도 삭제
+                    Optional<Review> review = reviewRepository.findByReservationId(reservation.getId());
+                    if(review.isPresent()){
+                        styleRepository.deleteByReviewId(review.get().getId());
+                        reviewRepository.deleteByReservationId(reservation.getId());
+                    }
+                });
                 reservationRepository.deleteByPBId(id);
+
                 List<Reply> replies = replyRepository.findAllByAuthor(id, ReplyAuthorRole.PB);
                 replies.stream().forEach(reply -> {
-                    replyRepository.deleteByParentId(reply.getId());
-                }); // reply를 지우니, replyId를 parentId로 가지고 있는 reply도 삭제
+                    reReplyRepository.deleteByReplyId(reply.getId());
+                });
                 replyRepository.deleteByAuthor(id, ReplyAuthorRole.PB);
+                reReplyRepository.deleteByAuthor(id, ReplyAuthorRole.PB);
+
                 List<Question> questions = questionRepository.findAllByAuthor(id, QuestionAuthorRole.PB);
                 questions.stream().forEach(question -> {
                     answerRepository.deleteByQuestionId(question.getId());
-                }); // question을 지우니, question을 연관관계로 가지고 있는 answer 삭제
+                });
                 questionRepository.deleteByAuthor(id, QuestionAuthorRole.PB);
+
                 List<Board> boards = boardRepository.findAllByPBId(id);
                 boards.stream().forEach(board -> {
+                    // board를 지우니, board를 연관관계로 가지고 있는 boardBookmark삭제
                     boardBookmarkRepository.deleteByBoardId(board.getId());
+                    List<Reply> repliesOnBoard = replyRepository.findAllByBoardId(board.getId());
+                    repliesOnBoard.stream().forEach(replyOnBoard -> {
+                        // reply를 지우니, reply를 연관관계로 가지고 있는 reReply도 삭제
+                        reReplyRepository.deleteByReplyId(replyOnBoard.getId());
+                    });
+                    // board를 지우니, board를 연관관계로 가지고 있는 reply삭제
                     replyRepository.deleteByBoardId(board.getId());
                 });
-                // board를 지우니, board를 연관관계로 가지고 있는 boardBookmark, reply삭제
                 boardRepository.deleteByPBId(id);
+
                 pbBookmarkRepository.deleteByPBId(id);
                 careerRepository.deleteByPBId(id);
                 awardRepository.deleteByPBId(id);

@@ -2,6 +2,9 @@ package kr.co.moneybridge.core.dummy;
 
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.backoffice.Answer;
+import kr.co.moneybridge.model.backoffice.Question;
+import kr.co.moneybridge.model.backoffice.QuestionAuthorRole;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
@@ -147,7 +150,7 @@ public class MockDummyEntity {
                 .build();
     }
 
-    public Reply newMockReply(Long id, Board board, User user) {
+    public Reply newMockUserReply(Long id, Board board, User user) {
         return Reply.builder()
                 .id(id)
                 .board(board)
@@ -158,14 +161,35 @@ public class MockDummyEntity {
                 .build();
     }
 
-    public Reply newMockParentReply(Long id, Board board, User user, Reply reply) {
+    public ReReply newMockUserReReply(Long id, Reply reply, User user) {
+        return ReReply.builder()
+                .id(id)
+                .reply(reply)
+                .authorId(user.getId())
+                .authorRole(ReplyAuthorRole.USER)
+                .content("대댓글입니다")
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public Reply newMockPBReply(Long id, Board board, PB pb) {
         return Reply.builder()
                 .id(id)
                 .board(board)
-                .authorId(user.getId())
-                .authorRole(ReplyAuthorRole.USER)
+                .authorId(pb.getId())
+                .authorRole(ReplyAuthorRole.PB)
                 .content("댓글입니다")
-                .parentId(reply.getId())
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public ReReply newMockPBReReply(Long id, Reply reply, PB pb) {
+        return ReReply.builder()
+                .id(id)
+                .reply(reply)
+                .authorId(pb.getId())
+                .authorRole(ReplyAuthorRole.PB)
+                .content("대댓글입니다")
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -267,7 +291,7 @@ public class MockDummyEntity {
                 .build();
     }
 
-    public PBBookmark newPBBookmark(Long id, PB pb, User user) {
+    public PBBookmark newMockPBBookmark(Long id, PB pb, User user) {
         return PBBookmark.builder()
                 .id(id)
                 .user(user)
@@ -377,6 +401,37 @@ public class MockDummyEntity {
                 .q4(5)
                 .q5(5)
                 .q6(5)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public Question newMockUserQuestion(Long id, User user) {
+        return Question.builder()
+                .id(id)
+                .authorId(user.getId())
+                .authorRole(QuestionAuthorRole.USER)
+                .title("제목")
+                .content("1대1문의사항")
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public Question newMockPBQuestion(Long id, PB pb) {
+        return Question.builder()
+                .id(id)
+                .authorId(pb.getId())
+                .authorRole(QuestionAuthorRole.PB)
+                .title("제목")
+                .content("1대1문의사항")
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public Answer newMockAnswer(Long id, Question question) {
+        return Answer.builder()
+                .id(id)
+                .question(question)
+                .content("답변")
                 .createdAt(LocalDateTime.now())
                 .build();
     }

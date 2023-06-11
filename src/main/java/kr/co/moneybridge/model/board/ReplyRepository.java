@@ -22,14 +22,12 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     void deleteByBoardId(@Param("boardId") Long boardId);
 
     @Modifying
-    @Query("delete from Reply r WHERE r.parentId = :parentId")
-    void deleteByParentId(@Param("parentId") Long parentId);
-
-    @Modifying
     @Query("delete from Reply r where r.authorId = :authorId and r.authorRole = :authorRole")
     void deleteByAuthor(@Param("authorId") Long authorId, @Param("authorRole")ReplyAuthorRole authorRole);
 
     @Query("select r from Reply r where r.authorId = :authorId and r.authorRole = :authorRole")
     List<Reply> findAllByAuthor(@Param("authorId") Long authorId, @Param("authorRole")ReplyAuthorRole authorRole);
 
+    @Query("select r from Reply r where r.board.id = :boardId")
+    List<Reply> findAllByBoardId(@Param("boardId") Long boardId);
 }

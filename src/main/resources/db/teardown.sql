@@ -7,6 +7,7 @@ truncate table question_tb;
 truncate table board_tb;
 truncate table board_bookmark_tb;
 truncate table reply_tb;
+truncate table rereply_tb;
 truncate table award_tb;
 truncate table branch_tb;
 truncate table career_tb;

@@ -1,7 +1,5 @@
 package kr.co.moneybridge.model.board;
 
-import kr.co.moneybridge.model.backoffice.QuestionAuthorRole;
-import kr.co.moneybridge.model.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,15 +9,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "reply_tb")
+@Table(name = "rereply_tb")
 @Entity
-public class Reply {
+public class ReReply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Board board;
+    private Reply reply;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private User user;
