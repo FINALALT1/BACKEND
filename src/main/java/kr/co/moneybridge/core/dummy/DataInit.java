@@ -1,5 +1,8 @@
 package kr.co.moneybridge.core.dummy;
 
+import kr.co.moneybridge.model.backoffice.AnswerRepository;
+import kr.co.moneybridge.model.backoffice.Question;
+import kr.co.moneybridge.model.backoffice.QuestionRepository;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
@@ -26,12 +29,15 @@ public class DataInit extends DummyEntity{
                            UserInvestInfoRepository userInvestInfoRepository,
                            BoardRepository boardRepository,
                            ReplyRepository replyRepository,
+                           ReReplyRepository reReplyRepository,
                            UserBookmarkRepository userBookmarkRepository,
                            BoardBookmarkRepository boardBookmarkRepository,
                            PBBookmarkRepository pbBookmarkRepository,
                            ReservationRepository reservationRepository,
                            ReviewRepository reviewRepository,
-                           StyleRepository styleRepository){
+                           StyleRepository styleRepository,
+                           QuestionRepository questionRepository,
+                           AnswerRepository answerRepository){
         return args -> {
             User user1 = userRepository.save(newUser("김투자"));
             User user2 = userRepository.save(newUser("이투자"));
@@ -85,14 +91,15 @@ public class DataInit extends DummyEntity{
             Board board5 =boardRepository.save(newBoard("제목5", pb3));
             Board board6 = boardRepository.save(newTempBoard("제목6", pb3));
 
-            Reply reply1 = replyRepository.save(newReply(board1, user1));
-            Reply reply2 = replyRepository.save(newReply(board1, user1));
-            Reply reply3 = replyRepository.save(newReply(board1, user2));
-            Reply reply4 = replyRepository.save(newReply(board1, user2));
-            replyRepository.save(newParentReply(board1, user1, reply1));
-            replyRepository.save(newParentReply(board1, user2, reply2));
-            replyRepository.save(newParentReply(board1, user1, reply3));
-            replyRepository.save(newParentReply(board1, user2, reply1));
+            Reply reply1 = replyRepository.save(newUserReply(board1, user1));
+            Reply reply2 = replyRepository.save(newUserReply(board1, user2));
+            Reply reply3 = replyRepository.save(newPBReply(board1, pb1));
+            Reply reply4 = replyRepository.save(newPBReply(board1, pb2));
+            reReplyRepository.save(newUserReReply(reply3, user1));
+            reReplyRepository.save(newUserReReply(reply4, user2));
+            reReplyRepository.save(newUserReReply(reply4, user1));
+            reReplyRepository.save(newPBReReply(reply2, pb1));
+            reReplyRepository.save(newPBReReply(reply1, pb2));
 
             userBookmarkRepository.save(newUserBookmark(user1, pb1));
             userBookmarkRepository.save(newUserBookmark(user1, pb2));
@@ -124,6 +131,12 @@ public class DataInit extends DummyEntity{
             styleRepository.save(newStyle(review1, StyleStyle.FAST));
             styleRepository.save(newStyle(review2, StyleStyle.KIND));
 
+            Question q1 = questionRepository.save(newUserQuestion(user1));
+            Question q2 = questionRepository.save(newPBQuestion(pb1));
+            Question q3 = questionRepository.save(newUserQuestion(user2));
+            Question q4 = questionRepository.save(newPBQuestion(pb2));
+            answerRepository.save(newAnswer(q1));
+            answerRepository.save(newAnswer(q2));
         };
     }
 }
