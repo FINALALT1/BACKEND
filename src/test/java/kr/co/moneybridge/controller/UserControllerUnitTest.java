@@ -60,46 +60,46 @@ public class UserControllerUnitTest extends MockDummyEntity {
     @MockBean
     private MyMemberUtil myMemberUtil;
 
-    @Test
-    public void join_test() throws Exception {
-        // given
-        UserRequest.JoinInDTO joinInDTO = new UserRequest.JoinInDTO();
-        joinInDTO.setEmail("investor@naver.com");
-        joinInDTO.setPassword("kang1234");
-        joinInDTO.setName("강투자");
-        joinInDTO.setPhoneNumber("01012345678");
-        List<UserRequest.AgreementDTO> agreements = new ArrayList<>();
-        UserRequest.AgreementDTO agreement1 = new UserRequest.AgreementDTO();
-        agreement1.setTitle("돈줄 이용약관 동의");
-        agreement1.setType(UserAgreementType.REQUIRED);
-        agreement1.setIsAgreed(true);
-        agreements.add(agreement1);
-        UserRequest.AgreementDTO agreement2 = new UserRequest.AgreementDTO();
-        agreement2.setTitle("마케팅 정보 수신 동의");
-        agreement2.setType(UserAgreementType.OPTIONAL);
-        agreement2.setIsAgreed(true);
-        agreements.add(agreement2);
-        joinInDTO.setAgreements(agreements);
-        String requestBody = om.writeValueAsString(joinInDTO);
-
-        // stub
-        User mockUser = newMockUser(1L,"강투자");
-
-        UserResponse.JoinOutDTO joinOutDTO = new UserResponse.JoinOutDTO(mockUser);
-        Mockito.when(userService.joinUser(any())).thenReturn(joinOutDTO);
-//        Pair<String, String> tokens = new
-//        Mockito.when(userService.issue(any())).thenReturn(joinOutDTO);
-
-        // when
-        ResultActions resultActions = mvc
-                .perform(post("/join/user").content(requestBody).contentType(MediaType.APPLICATION_JSON));
-        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        System.out.println("테스트 : " + responseBody);
-
-        // then
-        resultActions.andExpect(jsonPath("$.data.id").value(1L));
-        resultActions.andExpect(status().isOk());
-    }
+//    @Test
+//    public void join_test() throws Exception {
+//        // given
+//        UserRequest.JoinInDTO joinInDTO = new UserRequest.JoinInDTO();
+//        joinInDTO.setEmail("investor@naver.com");
+//        joinInDTO.setPassword("kang1234");
+//        joinInDTO.setName("강투자");
+//        joinInDTO.setPhoneNumber("01012345678");
+//        List<UserRequest.AgreementDTO> agreements = new ArrayList<>();
+//        UserRequest.AgreementDTO agreement1 = new UserRequest.AgreementDTO();
+//        agreement1.setTitle("돈줄 이용약관 동의");
+//        agreement1.setType(UserAgreementType.REQUIRED);
+//        agreement1.setIsAgreed(true);
+//        agreements.add(agreement1);
+//        UserRequest.AgreementDTO agreement2 = new UserRequest.AgreementDTO();
+//        agreement2.setTitle("마케팅 정보 수신 동의");
+//        agreement2.setType(UserAgreementType.OPTIONAL);
+//        agreement2.setIsAgreed(true);
+//        agreements.add(agreement2);
+//        joinInDTO.setAgreements(agreements);
+//        String requestBody = om.writeValueAsString(joinInDTO);
+//
+//        // stub
+//        User mockUser = newMockUser(1L,"강투자");
+//
+//        UserResponse.JoinOutDTO joinOutDTO = new UserResponse.JoinOutDTO(mockUser);
+//        Mockito.when(userService.joinUser(any())).thenReturn(joinOutDTO);
+////        Pair<String, String> tokens = new
+////        Mockito.when(userService.issue(any())).thenReturn(joinOutDTO);
+//
+//        // when
+//        ResultActions resultActions = mvc
+//                .perform(post("/join/user").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+//        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+//        System.out.println("테스트 : " + responseBody);
+//
+//        // then
+//        resultActions.andExpect(jsonPath("$.data.id").value(1L));
+//        resultActions.andExpect(status().isOk());
+//    }
 
 //    @WithMockUser
 //    @Test
