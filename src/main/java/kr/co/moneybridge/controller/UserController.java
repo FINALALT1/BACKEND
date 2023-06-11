@@ -34,7 +34,6 @@ public class UserController {
 
     // 탈퇴하기
     @MyLog
-    @MyErrorLog
     @DeleteMapping("/auth/account")
     public ResponseEntity<?> withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -44,7 +43,6 @@ public class UserController {
     }
 
     @MyLog
-    @MyErrorLog
     @PostMapping("/join/user")
     public ResponseEntity<?> joinUser(@RequestBody @Valid UserRequest.JoinInDTO joinInDTO, Errors errors, HttpServletResponse response) {
         String rawPassword = joinInDTO.getPassword();
@@ -60,7 +58,6 @@ public class UserController {
 
     // 로그인 성공시 access 토큰과 refresh 토큰 둘 다 발급.
     @MyLog
-    @MyErrorLog
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
@@ -75,7 +72,6 @@ public class UserController {
 
     // AccessToken, RefreshToken 재발급을 위한 API
     @MyLog
-    @MyErrorLog
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         Pair<String, String> tokens = userService.reissue(request, getRefreshToken(request));
@@ -87,7 +83,6 @@ public class UserController {
     }
 
     @MyLog
-    @MyErrorLog
     @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(HttpServletRequest request){
         userService.logout(request, getRefreshToken(request));
