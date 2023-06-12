@@ -119,4 +119,14 @@ public class BoardResponse {
         private BoardStatus status;
 
     }
+
+    @Getter
+    @Setter
+    public static class BoardListOutDTO {
+        private List<BoardResponse.BoardPageDTO> list;
+
+        public BoardListOutDTO(List<BoardPageDTO> list) {
+            this.list = list;
+        }
+    }
 }

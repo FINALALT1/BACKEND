@@ -57,7 +57,8 @@ public class BoardController {
     @GetMapping("/lounge/board")
     public ResponseEntity<?> getNewHotBoards() {
         List<BoardResponse.BoardPageDTO> boardList = boardService.getNewHotContents();
-        ResponseDTO<List<BoardResponse.BoardPageDTO>> responseDTO = new ResponseDTO<>(boardList);
+        BoardResponse.BoardListOutDTO boardListOutDTO = new BoardResponse.BoardListOutDTO(boardList);
+        ResponseDTO<BoardResponse.BoardListOutDTO> responseDTO = new ResponseDTO<>(boardListOutDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
