@@ -32,12 +32,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -72,6 +73,119 @@ public class UserServiceTest extends MockDummyEntity {
     // 진짜 객체를 만들어서 Mockito 환경에 Load
     @Spy
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Test
+    public void updateMyInfo_test() throws Exception {
+        // given
+        String newPhoneNumber = "01011223344";
+        UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO = new UserRequest.UpdateMyInfoInDTO();
+        updateMyInfoInDTO.setPhoneNumber(newPhoneNumber);
+
+        // stub
+        User mockUser = User.builder()
+                .id(1L)
+                .name("lee")
+                .password(passwordEncoder.encode("password1234"))
+                .email("jisu3148496@naver.com")
+                .phoneNumber(newPhoneNumber)
+                .role(Role.USER)
+                .profile("profile.png")
+                .createdAt(LocalDateTime.now())
+                .build();
+        when(myUserDetails.getMember()).thenReturn(mockUser);
+
+        // when
+        userService.updateMyInfo(updateMyInfoInDTO, myUserDetails);
+
+        // then
+        Assertions.assertThat(mockUser.getPhoneNumber()).isEqualTo(newPhoneNumber);
+
+    }
+
+    @Test
+    public void getMyInfo_test() throws Exception {
+        // stub
+        User user = newMockUser(1L, "lee");
+        when(myUserDetails.getMember()).thenReturn(user);
+
+        // when
+        userService.getMyInfo(myUserDetails);
+
+        // then
+        verify(myUserDetails, times(1)).getMember();
+    }
+
+    @Test
+    public void checkPassword_fail_test() {
+        // given
+        String wrongPassword = "Wrong1234";
+        UserRequest.CheckPasswordInDTO checkPasswordInDTO = new UserRequest.CheckPasswordInDTO();
+        checkPasswordInDTO.setPassword(wrongPassword);
+
+        String originalPassword = newMockUser(1L, "lee").getPassword();
+        when(myUserDetails.getPassword()).thenReturn(originalPassword);
+
+        // when & then
+        assertThrows(Exception400.class, () -> {
+            userService.checkPassword(checkPasswordInDTO, myUserDetails);
+        });
+    }
+
+    @Test
+    public void checkPassword_test() throws Exception {
+        // given
+        String password = "password1234";
+        UserRequest.CheckPasswordInDTO checkPasswordInDTO = new UserRequest.CheckPasswordInDTO();
+        checkPasswordInDTO.setPassword(password);
+
+        String originalPassword = newMockUser(1L, "lee").getPassword();
+        when(myUserDetails.getPassword()).thenReturn(originalPassword);
+
+        // when
+        userService.checkPassword(checkPasswordInDTO, myUserDetails);
+
+        // then
+        verify(passwordEncoder, times(1)).matches(password, originalPassword);
+    }
+
+    @Test
+    public void updatePassword_test() throws Exception {
+        // given
+        UserRequest.RePasswordInDTO rePasswordInDTO = new UserRequest.RePasswordInDTO();
+        rePasswordInDTO.setId(1L);
+        rePasswordInDTO.setRole(Role.USER);
+        rePasswordInDTO.setPassword("1111abcd");
+
+        when(myMemberUtil.findById(rePasswordInDTO.getId(), rePasswordInDTO.getRole()))
+                .thenReturn(newMockUser(1L, "lee"));
+
+        // when
+        userService.updatePassword(rePasswordInDTO);
+
+        // then
+        verify(myMemberUtil, times(1)).findById(1L, Role.USER);
+        verify(passwordEncoder, times(1)).encode("1111abcd");
+    }
+
+    @Test
+    public void findEmail_test() throws Exception {
+        // given
+        UserRequest.EmailFindInDTO emailFindInDTO = new UserRequest.EmailFindInDTO();
+        emailFindInDTO.setRole(Role.USER);
+        emailFindInDTO.setName("lee");
+        emailFindInDTO.setPhoneNumber("01012345678");
+
+        when(myMemberUtil.findByNameAndPhoneNumber(emailFindInDTO.getName(), emailFindInDTO.getPhoneNumber(),
+                emailFindInDTO.getRole())).thenReturn(Arrays.asList(newMockUser(1L, "lee")));
+
+        // when
+        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = userService.findEmail(emailFindInDTO);
+
+        // then
+        Assertions.assertThat(emailFindOutDTOs.get(0).getName()).isEqualTo("lee");
+        Assertions.assertThat(emailFindOutDTOs.get(0).getPhoneNumber()).isEqualTo("01012345678");
+        Assertions.assertThat(emailFindOutDTOs.get(0).getEmail()).isEqualTo("lee@nate.com");
+    }
 
     @Test
     public void password_test() throws Exception {

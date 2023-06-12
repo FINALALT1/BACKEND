@@ -31,6 +31,7 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    // 개인 정보 수정
     @MyLog
     @PatchMapping("/auth/myInfo")
     public ResponseEntity<?> updateMyInfo(@RequestBody @Valid UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO,
@@ -40,6 +41,7 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    // 개인 정보 가져오기
     @MyLog
     @GetMapping("/auth/myInfo")
     public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -48,6 +50,7 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    // 개인정보 수정시 비밀번호 확인
     @MyLog
     @PostMapping("/auth/password")
     public ResponseEntity<?> checkPassword(@RequestBody @Valid UserRequest.CheckPasswordInDTO checkPasswordInDTO,
@@ -60,8 +63,8 @@ public class UserController {
     // 비밀번호 재설정
     @MyLog
     @PatchMapping("/password")
-    public ResponseEntity<?> rePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) {
-        userService.rePassword(rePasswordInDTO);
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) {
+        userService.updatePassword(rePasswordInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -69,8 +72,8 @@ public class UserController {
     // 이메일 찾기
     @MyLog
     @PostMapping("/email")
-    public ResponseEntity<?> emailFind(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) {
-        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = userService.emailFind(emailFindInDTO);
+    public ResponseEntity<?> findEmail(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) {
+        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = userService.findEmail(emailFindInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(emailFindOutDTOs);
         return ResponseEntity.ok().body(responseDTO);
     }

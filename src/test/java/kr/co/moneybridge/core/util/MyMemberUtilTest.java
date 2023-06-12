@@ -1,12 +1,14 @@
 package kr.co.moneybridge.core.util;
 
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.*;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.*;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -83,7 +86,108 @@ public class MyMemberUtilTest extends MockDummyEntity {
     private AnswerRepository answerRepository;
 
     @Test
-    public void deleteById_withUserRole_test() {
+    void findByEmail_pb_test() {
+        // given
+        String email = "김피비@nate.com";
+        PB pb = newMockPB(1L, "lee", newMockBranch(1L,
+                newMockCompany(1L, "미래에셋증권"), 0));
+
+        // stub
+        when(pbRepository.findByEmail(any())).thenReturn(Optional.of(pb));
+
+        // when
+        Member member = myMemberUtil.findByEmail(email, Role.PB);
+
+        // then
+        Assertions.assertThat(member).isEqualTo(pb);
+    }
+
+    @Test
+    void findByEmail_user_test() {
+        // given
+        String email = "lee@nate.com";
+        User user = newMockUser(1L, "lee");
+
+        // stub
+        when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
+
+        // when
+        Member member = myMemberUtil.findByEmail(email, Role.USER);
+
+        // then
+        Assertions.assertThat(member).isEqualTo(user);
+    }
+
+    @Test
+    void findByNameAndPhoneNumber_pb_test() {
+        // given
+        PB pb = newMockPB(1L, "lee", newMockBranch(1L,
+                newMockCompany(1L, "미래에셋증권"), 0));
+        String name = "lee";
+        String phoneNumber = "01012345678";
+
+        // stub
+        when(pbRepository.findByNameAndPhoneNumber(any(), any())).thenReturn(Arrays.asList(pb));
+
+        // when
+        List<Member> members = myMemberUtil.findByNameAndPhoneNumber(name, phoneNumber, Role.PB);
+
+        // then
+        Assertions.assertThat(members.get(0)).isEqualTo(pb);
+    }
+
+    @Test
+    void findByNameAndPhoneNumber_user_test() {
+        // given
+        User user = newMockUser(1L, "lee");
+        String name = "lee";
+        String phoneNumber = "01012345678";
+
+        // stub
+        when(userRepository.findByNameAndPhoneNumber(any(), any())).thenReturn(Arrays.asList(user));
+
+        // when
+        List<Member> members = myMemberUtil.findByNameAndPhoneNumber(name, phoneNumber, Role.USER);
+
+        // then
+        Assertions.assertThat(members.get(0)).isEqualTo(user);
+    }
+
+    @Test
+    void findById_pb_test() {
+        // given
+        Long id = 1L;
+        PB pb = newMockPB(1L, "lee", newMockBranch(1L,
+                newMockCompany(1L, "미래에셋증권"), 0));
+
+        // stub
+        when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
+
+        // when
+        Member member = myMemberUtil.findById(id, Role.PB);
+
+        // then
+        Assertions.assertThat(member).isEqualTo(pb);
+    }
+
+    @Test
+    void findById_user_test() {
+        // given
+        Long id = 1L;
+        User user = newMockUser(1L, "lee");
+
+        // stub
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+
+        // when
+        Member member = myMemberUtil.findById(1L, Role.USER);
+
+        // then
+        Assertions.assertThat(member).isEqualTo(user);
+    }
+
+    @Test
+    public void deleteById_user_test() {
         // given
         Long id = 1L;
         User user = newMockUser(1L, "lee");
@@ -125,12 +229,13 @@ public class MyMemberUtilTest extends MockDummyEntity {
         Style style1 = newMockStyle(1L, review, StyleStyle.FAST);
         Style style2 = newMockStyle(2L, review, StyleStyle.KIND);
 
-        // when
+        // stub
         when(questionRepository.findAllByAuthor(id, QuestionAuthorRole.USER)).thenReturn(questions);
         when(replyRepository.findAllByAuthor(id, ReplyAuthorRole.USER)).thenReturn(replies);
         when(reservationRepository.findAllByUserId(id)).thenReturn(reservations);
         when(reviewRepository.findByReservationId(reservation1.getId())).thenReturn(reviewOP);
 
+        // when
         myMemberUtil.deleteById(id, Role.USER);
 
         // then
@@ -152,7 +257,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
     }
 
     @Test
-    public void deleteById_withPBRole_test() {
+    public void deleteById_pb_test() {
         // given
         Long id = 1L;
         Company company = newMockCompany(1L, "미래에셋증권");
@@ -207,7 +312,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         Style style1 = newMockStyle(1L, review, StyleStyle.FAST);
         Style style2 = newMockStyle(2L, review, StyleStyle.KIND);
 
-        // when
+        // stub
         when(boardRepository.findAllByPBId(id)).thenReturn(boards);
         when(replyRepository.findAllByBoardId(board1.getId())).thenReturn(repliesOnBoard1);
         when(replyRepository.findAllByBoardId(board2.getId())).thenReturn(repliesOnBoard2);
@@ -216,6 +321,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(reservationRepository.findAllByPBId(id)).thenReturn(reservations);
         when(reviewRepository.findByReservationId(reservation1.getId())).thenReturn(reviewOP);
 
+        // when
         myMemberUtil.deleteById(id, Role.PB);
 
         // then

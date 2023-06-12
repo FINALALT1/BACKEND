@@ -51,11 +51,10 @@ public class UserService {
     private final MyMemberUtil myMemberUtil;
     private final JavaMailSender javaMailSender;
 
+    @MyLog
+    @Transactional
     public void updateMyInfo(UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO, MyUserDetails myUserDetails) {
-        String username = myUserDetails.getUsername();
-        Role role = Role.valueOf(username.split("-")[0]);
-        String email = username.split("-")[1];
-        Member memberPS = myMemberUtil.findByEmail(email, role);
+        Member memberPS = myUserDetails.getMember();
 
         if(updateMyInfoInDTO.getName() != null && !updateMyInfoInDTO.getName().isEmpty()) { // isEmpty()는 null이 아닐 때만 확인 가능
             memberPS.updateName(updateMyInfoInDTO.getName());
@@ -67,28 +66,11 @@ public class UserService {
 
     @MyLog
     public UserResponse.MyInfoOutDTO getMyInfo(MyUserDetails myUserDetails) {
-//        String username = myUserDetails.getUsername();
-//        Role role = Role.valueOf(username.split("-")[0]);
-//        String email = username.split("-")[1];
-//        Member memberPS = myMemberUtil.findByEmailAndStatus(email, role);
-        Member memberPS = myMemberUtil.findById(myUserDetails.getMember().getId(),
-                myUserDetails.getMember().getRole());
-        return new UserResponse.MyInfoOutDTO(memberPS);
+        return new UserResponse.MyInfoOutDTO(myUserDetails.getMember());
     }
 
     @MyLog
-    @Transactional
     public void checkPassword(UserRequest.CheckPasswordInDTO checkPasswordInDTO, MyUserDetails myUserDetails) {
-//        try{
-            // 비밀번호 인증
-//            String username = myUserDetails.getUsername();
-//            String password = checkPasswordInDTO.getPassword();
-//            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-//                    = new UsernamePasswordAuthenticationToken(username, password);
-//            authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-//        }catch (Exception e){
-//            throw new Exception400("password", "비밀번호가 틀립니다");
-//        }
         if(!passwordEncoder.matches(checkPasswordInDTO.getPassword(), myUserDetails.getPassword())){
             throw new Exception400("password", "비밀번호가 틀렸습니다");
         }
@@ -96,14 +78,14 @@ public class UserService {
 
     @MyLog
     @Transactional
-    public void rePassword(UserRequest.RePasswordInDTO rePasswordInDTO) {
+    public void updatePassword(UserRequest.RePasswordInDTO rePasswordInDTO) {
         Member memberPS = myMemberUtil.findById(rePasswordInDTO.getId(), rePasswordInDTO.getRole());
         String encPassword = passwordEncoder.encode(rePasswordInDTO.getPassword()); // 60Byte
         memberPS.updatePassword(encPassword);
     }
 
     @MyLog
-    public List<UserResponse.EmailFindOutDTO> emailFind(UserRequest.EmailFindInDTO emailFindInDTO) {
+    public List<UserResponse.EmailFindOutDTO> findEmail(UserRequest.EmailFindInDTO emailFindInDTO) {
         List<Member> membersPS = myMemberUtil.findByNameAndPhoneNumber(emailFindInDTO.getName(),
             emailFindInDTO.getPhoneNumber(), emailFindInDTO.getRole());
         List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = new ArrayList<>();
@@ -128,7 +110,6 @@ public class UserService {
         UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
         return emailOutDTO;
     }
-
 
     private String sendEmail(String email) throws Exception{
         String code = createCode();
@@ -229,7 +210,7 @@ public class UserService {
             String refreshToken = myJwtProvider.createRefresh(myUserDetails.getMember());
             return Pair.of(accessToken, refreshToken);
         }catch (Exception e){
-            throw new Exception500("토큰발급 실패" + e.getMessage());
+            throw new Exception500("토큰 발급 실패: " + e.getMessage());
         }
     }
 
@@ -272,7 +253,7 @@ public class UserService {
             String newRefreshToken = myJwtProvider.createRefresh(memberPS);
             return Pair.of(newAccessToken, newRefreshToken);
         } catch (Exception e){
-            throw new Exception500("토큰 재발급 실패 " + e.getMessage());
+            throw new Exception500("토큰 재발급 실패: " + e.getMessage());
         }
     }
 
