@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -51,13 +52,55 @@ public class UserService {
     private final JavaMailSender javaMailSender;
 
     @MyLog
+    @Transactional
+    public void updateMyInfo(UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO, MyUserDetails myUserDetails) {
+        Member memberPS = myUserDetails.getMember();
+
+        if(updateMyInfoInDTO.getName() != null && !updateMyInfoInDTO.getName().isEmpty()) { // isEmpty()는 null이 아닐 때만 확인 가능
+            memberPS.updateName(updateMyInfoInDTO.getName());
+        }
+        if (updateMyInfoInDTO.getPhoneNumber() != null && !updateMyInfoInDTO.getPhoneNumber().isEmpty()){
+            memberPS.updatePhoneNumber(updateMyInfoInDTO.getPhoneNumber());
+        }
+    }
+
+    @MyLog
+    public UserResponse.MyInfoOutDTO getMyInfo(MyUserDetails myUserDetails) {
+        return new UserResponse.MyInfoOutDTO(myUserDetails.getMember());
+    }
+
+    @MyLog
+    public void checkPassword(UserRequest.CheckPasswordInDTO checkPasswordInDTO, MyUserDetails myUserDetails) {
+        if(!passwordEncoder.matches(checkPasswordInDTO.getPassword(), myUserDetails.getPassword())){
+            throw new Exception400("password", "비밀번호가 틀렸습니다");
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void updatePassword(UserRequest.RePasswordInDTO rePasswordInDTO) {
+        Member memberPS = myMemberUtil.findById(rePasswordInDTO.getId(), rePasswordInDTO.getRole());
+        String encPassword = passwordEncoder.encode(rePasswordInDTO.getPassword()); // 60Byte
+        memberPS.updatePassword(encPassword);
+    }
+
+    @MyLog
+    public List<UserResponse.EmailFindOutDTO> findEmail(UserRequest.EmailFindInDTO emailFindInDTO) {
+        List<Member> membersPS = myMemberUtil.findByNameAndPhoneNumber(emailFindInDTO.getName(),
+            emailFindInDTO.getPhoneNumber(), emailFindInDTO.getRole());
+        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = new ArrayList<>();
+        membersPS.stream().forEach(memberPS -> emailFindOutDTOs.add(new UserResponse.EmailFindOutDTO(memberPS)));
+        return emailFindOutDTOs;
+    }
+
+    @MyLog
     public UserResponse.PasswordOutDTO password(UserRequest.PasswordInDTO passwordInDTO) throws Exception {
-        Member member = myMemberUtil.findByEmail(passwordInDTO.getEmail(), passwordInDTO.getRole());
-        if(!member.getName().equals(passwordInDTO.getName())){
+        Member memberPS = myMemberUtil.findByEmail(passwordInDTO.getEmail(), passwordInDTO.getRole());
+        if(!memberPS.getName().equals(passwordInDTO.getName())){
             throw new Exception404("이름이 틀렸습니다");
         }
         String code = sendEmail(passwordInDTO.getEmail());
-        UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(member, code);
+        UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(memberPS, code);
         return passwordOutDTO;
     }
 
@@ -134,7 +177,9 @@ public class UserService {
         if(userOP.isPresent()){
             throw new Exception400("email", "이미 투자자로 회원가입된 이메일입니다");
         }
+        System.out.println(joinInDTO.getPassword());
         String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte
+        System.out.println(encPassword);
         joinInDTO.setPassword(encPassword);
 
         try {
@@ -153,18 +198,19 @@ public class UserService {
     @MyLog
     public Pair<String, String> issue(Role role, String email, String password) {
         try {
+            // 인증
             String username = role + "-" + email;
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                     = new UsernamePasswordAuthenticationToken(username, password); // username과 password는 사용자가 제공한 인증 정보
             Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken); // 인증 매니저(authenticationManager)를 통해 인증되고, Authentication 객체를 반환
             MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal(); //  인증된 사용자의 주체(Principal)를 반환 - 주체는 보통 UserDetails 인터페이스를 구현한 사용자 정보 객체
 
-            //로그인 성공하면 액세스 토큰, 리프레시 토큰 발급.
+            // 로그인 성공하면 액세스 토큰, 리프레시 토큰 발급.
             String accessToken = myJwtProvider.createAccess(myUserDetails.getMember());
             String refreshToken = myJwtProvider.createRefresh(myUserDetails.getMember());
             return Pair.of(accessToken, refreshToken);
         }catch (Exception e){
-            throw new Exception500("토큰발급 실패" + e.getMessage());
+            throw new Exception500("토큰 발급 실패: " + e.getMessage());
         }
     }
 
@@ -207,7 +253,7 @@ public class UserService {
             String newRefreshToken = myJwtProvider.createRefresh(memberPS);
             return Pair.of(newAccessToken, newRefreshToken);
         } catch (Exception e){
-            throw new Exception500("토큰 재발급 실패 " + e.getMessage());
+            throw new Exception500("토큰 재발급 실패: " + e.getMessage());
         }
     }
 
@@ -241,15 +287,6 @@ public class UserService {
         Long remainingTimeMillis = decodedJWT.getExpiresAt().getTime() - System.currentTimeMillis();
         redisUtil.setBlackList(accessJwt, "access_token_blacklist", remainingTimeMillis);
         log.info("로그아웃한 액세스 토큰 블랙리스트로 등록");
-    }
-
-    @MyLog
-    public UserResponse.DetailOutDTO 회원상세보기(Long id) {
-        User userPS = userRepository.findById(id).orElseThrow(
-                ()-> new Exception404("해당 유저를 찾을 수 없습니다")
-
-        );
-        return new UserResponse.DetailOutDTO(userPS);
     }
 
     public User getUser(Long id) {

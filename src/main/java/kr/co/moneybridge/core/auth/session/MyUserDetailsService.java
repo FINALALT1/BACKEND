@@ -27,7 +27,7 @@ public class MyUserDetailsService implements UserDetailsService {
             member = myMemberUtil.findByEmail(email, role);
         }catch (Exception e){
             log.error("회원 인증 실패 : " + e.getMessage());
-            throw new InternalAuthenticationServiceException("인증 실패" + e.getMessage());
+            throw new InternalAuthenticationServiceException("인증 실패: " + e.getMessage());
         }
 
         return new MyUserDetails(member);

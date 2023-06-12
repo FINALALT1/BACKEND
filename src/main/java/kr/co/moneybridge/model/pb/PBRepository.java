@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PBRepository extends JpaRepository<PB, Long> {
@@ -26,4 +26,7 @@ public interface PBRepository extends JpaRepository<PB, Long> {
 
     @Query("SELECT COUNT(rv) FROM Review rv JOIN Reservation r ON rv.reservation = r WHERE r.pb.id = :pbId")
     Integer countReviewsByPbId(@Param("pbId") Long pbId);
+
+    @Query("select p from PB p where p.name = :name and p.phoneNumber = :phoneNumber")
+    List<PB> findByNameAndPhoneNumber(@Param("name") String name, @Param("phoneNumber") String phoneNumber);
 }

@@ -19,12 +19,11 @@ public class ReReply {
     @ManyToOne(fetch = FetchType.LAZY)
     private Reply reply;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private User user;
     @Column(nullable = false)
     private Long authorId;
 
     private String name;
+
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -33,8 +32,6 @@ public class ReReply {
 
     @Column(nullable = false)
     private String content; // 댓글, varchar(255)
-
-//    private Long parentId;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

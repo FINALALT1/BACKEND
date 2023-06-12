@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -30,11 +31,64 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    @ApiOperation(value = "개인 정보 수정")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @PatchMapping("/auth/myInfo")
+    public ResponseEntity<?> updateMyInfo(@RequestBody @Valid UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO,
+                                          Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        userService.updateMyInfo(updateMyInfoInDTO, myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @ApiOperation(value = "개인 정보 가져오기")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @GetMapping("/auth/myInfo")
+    public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        UserResponse.MyInfoOutDTO myInfoOutDTO = userService.getMyInfo(myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(myInfoOutDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @ApiOperation(value = "개인정보 수정시 비밀번호 확인")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @PostMapping("/auth/password")
+    public ResponseEntity<?> checkPassword(@RequestBody @Valid UserRequest.CheckPasswordInDTO checkPasswordInDTO,
+                                           Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        userService.checkPassword(checkPasswordInDTO, myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @ApiOperation(value = "비밀번호 재설정")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @PatchMapping("/password")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) {
+        userService.updatePassword(rePasswordInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @ApiOperation(value = "이메일 찾기")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @PostMapping("/email")
+    public ResponseEntity<?> findEmail(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) {
+        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = userService.findEmail(emailFindInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(emailFindOutDTOs);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    // 비밀번호 찾기 + 이메일 인증
     @ApiOperation(value = "비밀번호 찾기시 이메일 인증")
     @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/password")
-    public ResponseEntity<?> password(@RequestBody UserRequest.PasswordInDTO passwordInDTO) throws Exception {
+    public ResponseEntity<?> password(@RequestBody @Valid UserRequest.PasswordInDTO passwordInDTO, Errors errors) throws Exception {
         UserResponse.PasswordOutDTO passwordOutDTO = userService.password(passwordInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(passwordOutDTO);
         return ResponseEntity.ok().body(responseDTO);
@@ -44,7 +98,7 @@ public class UserController {
     @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/email/authentication")
-    public ResponseEntity<?> email(@RequestBody UserRequest.EmailInDTO emailInDTO) throws Exception {
+    public ResponseEntity<?> email(@RequestBody @Valid UserRequest.EmailInDTO emailInDTO, Errors errors) throws Exception {
         UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO.getEmail());
         ResponseDTO<?> responseDTO = new ResponseDTO<>(emailOutDTO);
         return ResponseEntity.ok().body(responseDTO);
@@ -129,15 +183,4 @@ public class UserController {
         }
         return cookieOP.get().getValue();
     }
-
-//    @GetMapping("/s/user/{id}")
-//    public ResponseEntity<?> detail(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) throws JsonProcessingException {
-//        if(id.longValue() != myUserDetails.getMember().getId()){
-//            throw new Exception403("권한이 없습니다");
-//        }
-//        UserResponse.DetailOutDTO detailOutDTO = userService.회원상세보기(id);
-//        //System.out.println(new ObjectMapper().writeValueAsString(detailOutDTO));
-//        ResponseDTO<?> responseDTO = new ResponseDTO<>(detailOutDTO);
-//        return ResponseEntity.ok(responseDTO);
-//    }
 }

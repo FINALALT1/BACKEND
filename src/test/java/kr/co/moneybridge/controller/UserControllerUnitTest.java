@@ -43,8 +43,7 @@ import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -71,6 +70,107 @@ public class UserControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockUser
+    @Test
+    public void updateMyInfo_test() throws Exception {
+        // given
+        UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO = new UserRequest.UpdateMyInfoInDTO();
+        updateMyInfoInDTO.setPhoneNumber("01011223344");
+        String requestBody = om.writeValueAsString(updateMyInfoInDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(patch("/auth/myInfo")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithMockUser
+    @Test
+    public void getMyInfo_test() throws Exception {
+        // given
+        UserResponse.MyInfoOutDTO myInfoOutDTO = new UserResponse.MyInfoOutDTO(newMockUser(1L, "lee"));
+
+        //stub
+        Mockito.when(userService.getMyInfo(any())).thenReturn(myInfoOutDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/auth/myInfo"));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.data.name").value("lee"));
+        resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.email").value("lee@nate.com"));
+    }
+
+    @WithMockUser
+    @Test
+    public void checkPassword_test() throws Exception {
+        // Given
+        UserRequest.CheckPasswordInDTO checkPasswordInDTO = new UserRequest.CheckPasswordInDTO();
+        checkPasswordInDTO.setPassword("password1234");
+        String requestBody = om.writeValueAsString(checkPasswordInDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(post("/auth/password")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void updatePassword_test() throws Exception {
+        // Given
+        UserRequest.RePasswordInDTO rePasswordInDTO = new UserRequest.RePasswordInDTO();
+        rePasswordInDTO.setId(1L);
+        rePasswordInDTO.setRole(Role.USER);
+        rePasswordInDTO.setPassword("1111abcd");
+        String requestBody = om.writeValueAsString(rePasswordInDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(patch("/password")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void findEmail_test() throws Exception {
+        // Given
+        UserRequest.EmailFindInDTO emailFindInDTO = new UserRequest.EmailFindInDTO();
+        emailFindInDTO.setRole(Role.USER);
+        emailFindInDTO.setName("김투자");
+        emailFindInDTO.setPhoneNumber("01012345678");
+        String requestBody = om.writeValueAsString(emailFindInDTO);
+
+        // stub
+        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = new ArrayList<>();
+        emailFindOutDTOs.add(new UserResponse.EmailFindOutDTO(newMockUser(1L, "김투자")));
+        Mockito.when(userService.findEmail(any())).thenReturn(emailFindOutDTOs);
+
+        // When
+        ResultActions resultActions = mvc.perform(post("/email")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.data[0].name").value("김투자"));
+        resultActions.andExpect(jsonPath("$.data[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data[0].email").value("김투자@nate.com"));
+    }
 
     @WithMockUser
     @Test

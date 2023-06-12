@@ -12,11 +12,18 @@ import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.*;
+
+import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.pb.PBStatus;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
@@ -127,6 +134,23 @@ public class MyMemberUtil {
                 new Exception500("PB 계정 삭제 실패했습니다");
             }
         }
+    }
+    public List<Member> findByNameAndPhoneNumber(String name, String phoneNumber, Role role) {
+        List<Member> members = null;
+        if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
+            List<User> users = userRepository.findByNameAndPhoneNumber(name, phoneNumber);
+            if(users.isEmpty()){
+                throw new Exception404("사용자가 존재하지 않습니다");
+            }
+            members = new ArrayList<>(users);
+        } else if(role.equals(Role.PB)) {
+            List<PB> pbs = pbRepository.findByNameAndPhoneNumber(name, phoneNumber);
+            if (pbs.isEmpty()) {
+                throw new Exception404("사용자가 존재하지 않습니다");
+            }
+            members = new ArrayList<>(pbs);
+        }
+        return members;
     }
 
     public Member findByEmail(String email, Role role) {

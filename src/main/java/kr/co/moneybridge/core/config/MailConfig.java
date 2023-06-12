@@ -19,6 +19,7 @@ public class MailConfig {
         javaMailSender.setHost("smtp.naver.com"); // smtp 서버 주소
         javaMailSender.setUsername("moneybridge@naver.com");
         javaMailSender.setPassword(emailPassword);
+        javaMailSender.setPassword("finalback1234!!");
         javaMailSender.setPort(465);
         javaMailSender.setJavaMailProperties(getMailProperties()); // 메일 인증서버 정보 가져오기
         return javaMailSender;
