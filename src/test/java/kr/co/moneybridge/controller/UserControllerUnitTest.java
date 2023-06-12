@@ -26,6 +26,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -34,9 +35,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -68,6 +71,68 @@ public class UserControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockUser
+    @Test
+    public void password_test() throws Exception {
+        // Given
+        UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
+        passwordInDTO.setRole(Role.USER);
+        passwordInDTO.setName("lee");
+        passwordInDTO.setEmail("jisu3148496@naver.com");
+        String requestBody = om.writeValueAsString(passwordInDTO);
+
+        // stub
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        User mockUser = User.builder()
+                .id(1L)
+                .name("lee")
+                .password(passwordEncoder.encode("password1234"))
+                .email("jisu3148496@naver.com")
+                .phoneNumber("01012345678")
+                .role(Role.USER)
+                .profile("profile.png")
+                .createdAt(LocalDateTime.now())
+                .build();;
+        UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(mockUser,"J46L4SBJ");
+        Mockito.when(userService.password(any())).thenReturn(passwordOutDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(post("/password")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.data.role").value("USER"));
+        resultActions.andExpect(jsonPath("$.data.name").value("lee"));
+        resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.email").value("jisu3148496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data.code").value("J46L4SBJ"));
+    }
+
+    @Test
+    public void email_test() throws Exception {
+        // Given
+        UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();
+        emailInDTO.setEmail("jisu3148496@naver.com");
+        String requestBody = om.writeValueAsString(emailInDTO);
+
+        // stub
+        UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO("J46L4SBJ");
+        Mockito.when(userService.email(any())).thenReturn(emailOutDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(post("/email/authentication")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.data.code").value("J46L4SBJ"));
+    }
 
     @WithMockUser
     @Test
