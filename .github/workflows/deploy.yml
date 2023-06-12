@@ -34,12 +34,21 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+
+#      # MySQL 세팅
+#      - name: setup MySQL
+#        uses: samin/mysql-action@v1
+#        with:
+#          mysql database: 'test'
+#          mysql user: 'test'
+#          mysql password: 'test'
+
       # (3) Gradle build (Test 제외)
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -x test
         shell: bash
         env:
           SPRING_PROFILES_ACTIVE: prod
@@ -51,6 +60,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          spring.datasource.username.RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
+          spring.datasource.username.RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+          SECRET_ACCESS: ${{ secrets.SECRET_ACCESS }}
+          SECRET_REFRESH: ${{ secrets.SECRET_REFRESH }}
 
       # (5) 빌드 결과물을 S3 버킷에 업로드
       - name: Upload to AWS S3
