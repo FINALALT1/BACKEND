@@ -1,20 +1,16 @@
 package kr.co.moneybridge.dto.reservation;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.core.util.MyDateUtil;
-import kr.co.moneybridge.model.reservation.Reservation;
 import kr.co.moneybridge.model.reservation.Review;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 public class ReservationResponse {
     @Getter
     @Setter
-    public static class ReservationBaseOutDTO{
+    public static class BaseOutDTO {
         @ApiModelProperty
         private pbInfoDTO pbInfo;
 
@@ -24,7 +20,7 @@ public class ReservationResponse {
         @ApiModelProperty
         private userInfoDTO userInfo;
 
-        public ReservationBaseOutDTO(pbInfoDTO pbInfo, consultInfoDTO consultInfo, userInfoDTO userInfo) {
+        public BaseOutDTO(pbInfoDTO pbInfo, consultInfoDTO consultInfo, userInfoDTO userInfo) {
             this.pbInfo = pbInfo;
             this.consultInfo = consultInfo;
             this.userInfo = userInfo;

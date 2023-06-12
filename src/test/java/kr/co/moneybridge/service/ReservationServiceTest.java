@@ -1,7 +1,6 @@
 package kr.co.moneybridge.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
@@ -56,20 +55,20 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(Optional.of(user));
 
         // when
-        ReservationResponse.ReservationBaseOutDTO reservationBaseOutDTO = reservationService.getReservationBase(pbId, new MyUserDetails(user));
+        ReservationResponse.BaseOutDTO baseOutDTO = reservationService.getReservationBase(pbId, user.getId());
 
         // then
-        assertThat(reservationBaseOutDTO.getPbInfo().getPbName()).isEqualTo(pb.getName());
-        assertThat(reservationBaseOutDTO.getPbInfo().getBranchName()).isEqualTo(pb.getBranch().getName());
-        assertThat(reservationBaseOutDTO.getPbInfo().getBranchAddress()).isEqualTo(pb.getBranch().getRoadAddress());
-        assertThat(reservationBaseOutDTO.getPbInfo().getBranchLatitude()).isEqualTo(pb.getBranch().getLatitude());
-        assertThat(reservationBaseOutDTO.getPbInfo().getBranchLongitude()).isEqualTo(pb.getBranch().getLongitude());
-        assertThat(reservationBaseOutDTO.getConsultInfo().getConsultStart()).isEqualTo(MyDateUtil.localTimeToString(pb.getConsultStart()));
-        assertThat(reservationBaseOutDTO.getConsultInfo().getConsultEnd()).isEqualTo(MyDateUtil.localTimeToString(pb.getConsultEnd()));
-        assertThat(reservationBaseOutDTO.getConsultInfo().getNotice()).isEqualTo(pb.getConsultNotice());
-        assertThat(reservationBaseOutDTO.getUserInfo().getUserName()).isEqualTo(user.getName());
-        assertThat(reservationBaseOutDTO.getUserInfo().getUserPhoneNumber()).isEqualTo(user.getPhoneNumber());
-        assertThat(reservationBaseOutDTO.getUserInfo().getUserEmail()).isEqualTo(user.getEmail());
+        assertThat(baseOutDTO.getPbInfo().getPbName()).isEqualTo(pb.getName());
+        assertThat(baseOutDTO.getPbInfo().getBranchName()).isEqualTo(pb.getBranch().getName());
+        assertThat(baseOutDTO.getPbInfo().getBranchAddress()).isEqualTo(pb.getBranch().getRoadAddress());
+        assertThat(baseOutDTO.getPbInfo().getBranchLatitude()).isEqualTo(pb.getBranch().getLatitude());
+        assertThat(baseOutDTO.getPbInfo().getBranchLongitude()).isEqualTo(pb.getBranch().getLongitude());
+        assertThat(baseOutDTO.getConsultInfo().getConsultStart()).isEqualTo(MyDateUtil.localTimeToString(pb.getConsultStart()));
+        assertThat(baseOutDTO.getConsultInfo().getConsultEnd()).isEqualTo(MyDateUtil.localTimeToString(pb.getConsultEnd()));
+        assertThat(baseOutDTO.getConsultInfo().getNotice()).isEqualTo(pb.getConsultNotice());
+        assertThat(baseOutDTO.getUserInfo().getUserName()).isEqualTo(user.getName());
+        assertThat(baseOutDTO.getUserInfo().getUserPhoneNumber()).isEqualTo(user.getPhoneNumber());
+        assertThat(baseOutDTO.getUserInfo().getUserEmail()).isEqualTo(user.getEmail());
     }
 
 //    @Test

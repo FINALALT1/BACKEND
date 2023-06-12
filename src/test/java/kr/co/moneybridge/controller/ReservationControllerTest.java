@@ -99,21 +99,18 @@ public class ReservationControllerTest {
     public void apply_reservation_test() throws Exception {
         // given
         Long pbId = 1L;
-        ReservationRequest.ApplyReservationInDTO applyReservationInDTO = new ReservationRequest.ApplyReservationInDTO();
-        applyReservationInDTO.setGoal1(ReservationGoal.PROFIT);
-        applyReservationInDTO.setGoal2(ReservationGoal.RISK);
-        applyReservationInDTO.setReservationType(ReservationType.VISIT);
-        applyReservationInDTO.setLocationType(LocationType.BRANCH);
-        applyReservationInDTO.setLocationName("미래에셋증권 용산wm점");
-        applyReservationInDTO.setLocationAddress("서울특별시 용산구 한강로동 한강대로 92");
-        applyReservationInDTO.setCandidateTime1("2023-05-15T09:00:00");
-        applyReservationInDTO.setCandidateTime2("2023-05-15T12:00:00");
-        applyReservationInDTO.setQuestion("잘 부탁드립니다.");
-        applyReservationInDTO.setUserName("lee");
-        applyReservationInDTO.setUserPhoneNumber("01012345678");
-        applyReservationInDTO.setUserEmail("asdf1234@nate.com");
+        ReservationRequest.ApplyInDTO applyInDTO = new ReservationRequest.ApplyInDTO();
+        applyInDTO.setGoal(ReservationGoal.PROFIT);
+        applyInDTO.setReservationType(ReservationType.VISIT);
+        applyInDTO.setLocationType(LocationType.BRANCH);
+        applyInDTO.setCandidateTime1("2023-05-15T09:00:00");
+        applyInDTO.setCandidateTime2("2023-05-15T12:00:00");
+        applyInDTO.setQuestion("잘 부탁드립니다.");
+        applyInDTO.setUserName("lee");
+        applyInDTO.setUserPhoneNumber("01012345678");
+        applyInDTO.setUserEmail("asdf1234@nate.com");
 
-        String requestBody = om.writeValueAsString(applyReservationInDTO);
+        String requestBody = om.writeValueAsString(applyInDTO);
 
         // when
         ResultActions resultActions = mvc
