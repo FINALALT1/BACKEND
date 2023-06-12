@@ -14,7 +14,11 @@ public class UserRequest {
     @Setter
     @Getter
     public static class UpdateMyInfoInDTO {
+
+        @ApiModelProperty(example = "김이름")
         private String name;
+
+        @ApiModelProperty(example = "01011119999")
         @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
                 message = "유효하지 않은 휴대폰 번호 형식입니다")
         private String phoneNumber;
@@ -23,6 +27,7 @@ public class UserRequest {
     @Setter
     @Getter
     public static class CheckPasswordInDTO {
+        @ApiModelProperty(example = "password1234")
         @NotEmpty
         @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
         private String password;
@@ -31,10 +36,16 @@ public class UserRequest {
     @Setter
     @Getter
     public static class RePasswordInDTO {
+
+        @ApiModelProperty(example = "1")
         @NotNull
         private Long id;
+
+        @ApiModelProperty(example = "USER")
         @NotNull
         private Role role;
+
+        @ApiModelProperty(example = "password1234")
         @NotEmpty
         @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
         private String password;
@@ -43,10 +54,15 @@ public class UserRequest {
     @Setter
     @Getter
     public static class EmailFindInDTO {
+        @ApiModelProperty(example = "USER")
         @NotNull
         private Role role;
+
+        @ApiModelProperty(example = "김투자")
         @NotEmpty
         private String name;
+
+        @ApiModelProperty(example = "01012345678")
         @NotEmpty
         @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
                 message = "유효하지 않은 휴대폰 번호 형식입니다")
@@ -73,6 +89,7 @@ public class UserRequest {
     @Setter
     @Getter
     public static class EmailInDTO {
+        @ApiModelProperty(example = "jisu3148496@naver.com")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         private String email;
@@ -81,7 +98,7 @@ public class UserRequest {
     @Setter
     @Getter
     public static class WithdrawInDTO {
-        @ApiModelProperty(example = "01012345678")
+        @ApiModelProperty(example = "password1234")
         @NotEmpty
         @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
         private String password;

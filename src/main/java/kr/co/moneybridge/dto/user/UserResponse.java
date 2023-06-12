@@ -28,8 +28,13 @@ public class UserResponse {
     @Setter
     @Getter
     public static class EmailFindOutDTO {
+        @ApiModelProperty(example = "김투자")
         private String name;
+
+        @ApiModelProperty(example = "01012345678")
         private String phoneNumber;
+
+        @ApiModelProperty(example = "김투자@nate.com")
         private String email;
 
         public EmailFindOutDTO(Member member) {
@@ -44,14 +49,19 @@ public class UserResponse {
     public static class PasswordOutDTO {
         @ApiModelProperty(example = "1")
         private Long id;
+
         @ApiModelProperty(example = "USER")
         private Role role;
+
         @ApiModelProperty(example = "김투자")
         private String name;
+
         @ApiModelProperty(example = "01012345678")
         private String phoneNumber;
-        @ApiModelProperty(example = "김지수")
+
+        @ApiModelProperty(example = "김투자@nate.com")
         private String email;
+
         @ApiModelProperty(example = "J46L4SBJ")
         private String code;
 

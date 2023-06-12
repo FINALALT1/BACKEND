@@ -31,7 +31,8 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
-    // 개인 정보 수정
+    @ApiOperation(value = "개인 정보 수정")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PatchMapping("/auth/myInfo")
     public ResponseEntity<?> updateMyInfo(@RequestBody @Valid UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO,
@@ -41,7 +42,8 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-    // 개인 정보 가져오기
+    @ApiOperation(value = "개인 정보 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @GetMapping("/auth/myInfo")
     public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -50,7 +52,8 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-    // 개인정보 수정시 비밀번호 확인
+    @ApiOperation(value = "개인정보 수정시 비밀번호 확인")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/auth/password")
     public ResponseEntity<?> checkPassword(@RequestBody @Valid UserRequest.CheckPasswordInDTO checkPasswordInDTO,
@@ -60,7 +63,8 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-    // 비밀번호 재설정
+    @ApiOperation(value = "비밀번호 재설정")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PatchMapping("/password")
     public ResponseEntity<?> updatePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) {
@@ -69,7 +73,8 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-    // 이메일 찾기
+    @ApiOperation(value = "이메일 찾기")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/email")
     public ResponseEntity<?> findEmail(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) {
