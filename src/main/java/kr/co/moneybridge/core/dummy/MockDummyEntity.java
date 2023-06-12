@@ -303,7 +303,7 @@ public class MockDummyEntity {
     public BoardBookmark newMockBoardBookmark(Long id, User user, Board board) {
         return BoardBookmark.builder()
                 .id(id)
-                .user(user)
+                .bookmarkerId(user.getId())
                 .board(board)
                 .createdAt(LocalDateTime.now())
                 .build();

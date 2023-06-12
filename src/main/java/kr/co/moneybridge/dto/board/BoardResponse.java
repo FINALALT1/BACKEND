@@ -2,6 +2,7 @@ package kr.co.moneybridge.dto.board;
 
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.board.BoardStatus;
+import kr.co.moneybridge.model.board.ReReply;
 import kr.co.moneybridge.model.board.Reply;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
@@ -81,17 +82,49 @@ public class BoardResponse {
         private Long id;
         private String name;
         private String profile;
-        private String replyContent;
+        private String content;
         private LocalDateTime createdAt;
-        private Long parentId;
+        private List<ReReplyOutDTO> reReply;
 
         public ReplyOutDTO(Reply reply, User user) {
             this.id = reply.getId();
             this.name = user.getName();
             this.profile = user.getProfile();
-            this.replyContent = reply.getContent();
+            this.content = reply.getContent();
             this.createdAt = reply.getCreatedAt();
-//            this.parentId = reply.getParentId();
+        }
+        public ReplyOutDTO(Reply reply, PB pb) {
+            this.id = reply.getId();
+            this.name = pb.getName();
+            this.profile = pb.getProfile();
+            this.content = reply.getContent();
+            this.createdAt = reply.getCreatedAt();
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class ReReplyOutDTO {
+
+        private Long id;
+        private String name;
+        private String profile;
+        private String content;
+        private LocalDateTime createdAt;
+
+        public ReReplyOutDTO(ReReply reReply, User user) {
+            this.id = reReply.getId();
+            this.name = user.getName();
+            this.profile = user.getProfile();
+            this.content = reReply.getContent();
+            this.createdAt = reReply.getCreatedAt();
+        }
+        public ReReplyOutDTO(ReReply reReply, PB pb) {
+            this.id = reReply.getId();
+            this.name = pb.getName();
+            this.profile = pb.getProfile();
+            this.content = reReply.getContent();
+            this.createdAt = reReply.getCreatedAt();
         }
     }
 
@@ -118,5 +151,15 @@ public class BoardResponse {
         private String thumbnail;
         private BoardStatus status;
 
+    }
+
+    @Getter
+    @Setter
+    public static class BoardListOutDTO {
+        private List<BoardResponse.BoardPageDTO> list;
+
+        public BoardListOutDTO(List<BoardPageDTO> list) {
+            this.list = list;
+        }
     }
 }

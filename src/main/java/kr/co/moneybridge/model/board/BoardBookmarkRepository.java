@@ -9,8 +9,11 @@ import java.util.Optional;
 
 public interface BoardBookmarkRepository extends JpaRepository<BoardBookmark, Long> {
 
-    @Query("SELECT b FROM BoardBookmark b JOIN b.user u JOIN b.board bd WHERE u.id = :userId AND bd.id = :boardId")
+    @Query("SELECT bm FROM BoardBookmark bm JOIN bm.board bd WHERE bm.bookmarkerId = :userId AND bd.id = :boardId AND bm.bookmarkerRole = 'USER'")
     Optional<BoardBookmark> findWithUserAndBoard(@Param("userId") Long userId, @Param("boardId") Long boardId);
+
+    @Query("SELECT bm FROM BoardBookmark bm JOIN bm.board bd WHERE bm.bookmarkerId = :pbId AND bd.id = :boardId AND bm.bookmarkerRole = 'PB'")
+    Optional<BoardBookmark> findWithPBAndBoard(@Param("pbId") Long pbId, @Param("boardId") Long boardId);
 
     @Modifying
     @Query("DELETE FROM BoardBookmark b WHERE b.board.id = :boardId")
@@ -19,7 +22,10 @@ public interface BoardBookmarkRepository extends JpaRepository<BoardBookmark, Lo
     @Modifying
     void deleteById(Long id);
 
-    @Modifying
-    @Query("delete from BoardBookmark b where b.user.id = :userId")
-    void deleteByUserId(@Param("userId") Long userId);
+//    @Modifying
+//    @Query("delete from BoardBookmark b where b.user.id = :userId")
+//    void deleteByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT bm FROM BoardBookmark bm WHERE bm.bookmarkerId = :bookmarkerId AND bm.board.id = :boardId")
+    Optional<BoardBookmark> findByMemberAndBoardId(@Param("bookmarkerId") Long bookmarkerId, @Param("boardId") Long boardId);
 }

@@ -70,7 +70,7 @@ public class MyMemberUtil {
                 });
                 questionRepository.deleteByAuthor(id, QuestionAuthorRole.USER);
 
-                boardBookmarkRepository.deleteByUserId(id);
+//                boardBookmarkRepository.deleteByUserId(id);
                 pbBookmarkRepository.deleteByUserId(id);
                 userInvestInfoRepository.deleteByUserId(id);
                 userAgreementRepository.deleteByUserId(id);

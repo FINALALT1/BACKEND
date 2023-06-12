@@ -138,7 +138,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         verify(userAgreementRepository, times(1)).deleteByUserId(id);
         verify(userInvestInfoRepository, times(1)).deleteByUserId(id);
         verify(pbBookmarkRepository, times(1)).deleteByUserId(id);
-        verify(boardBookmarkRepository, times(1)).deleteByUserId(id);
+//        verify(boardBookmarkRepository, times(1)).deleteByUserId(id);
         verify(answerRepository, times(1)).deleteByQuestionId(question1.getId());
         verify(answerRepository, times(1)).deleteByQuestionId(question2.getId());
         verify(questionRepository, times(1)).deleteByAuthor(id, QuestionAuthorRole.USER);
