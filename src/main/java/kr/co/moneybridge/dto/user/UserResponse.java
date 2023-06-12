@@ -1,5 +1,6 @@
 package kr.co.moneybridge.dto.user;
 
+import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.PB;
@@ -26,6 +27,7 @@ public class UserResponse {
     @Setter
     @Getter
     public static class JoinOutDTO {
+        @ApiModelProperty(example = "1")
         private Long id;
 
         public JoinOutDTO(User user) {
@@ -36,6 +38,7 @@ public class UserResponse {
     @Setter
     @Getter
     public static class LoginOutDTO {
+        @ApiModelProperty(example = "1")
         private Long id;
 
         public LoginOutDTO(Member member) {

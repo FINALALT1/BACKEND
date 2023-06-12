@@ -4,6 +4,8 @@ import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -24,7 +26,7 @@ public class MySwaggerConfig {
     public Docket commonApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("common API")
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .ignoredParameterTypes(AuthenticationPrincipal.class, BindingResult.class, Errors.class)
                 .useDefaultResponseMessages(false)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("kr.co.moneybridge.controller"))
@@ -49,7 +51,7 @@ public class MySwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("auth API")
                 .globalOperationParameters(parameters)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .ignoredParameterTypes(AuthenticationPrincipal.class, BindingResult.class, Errors.class)
                 .useDefaultResponseMessages(false)
                 .apiInfo(new ApiInfoBuilder()
                         .title("MoneyBridge API Documentation")
@@ -74,7 +76,7 @@ public class MySwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("admin API")
                 .globalOperationParameters(parameters)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .ignoredParameterTypes(AuthenticationPrincipal.class, BindingResult.class, Errors.class)
                 .useDefaultResponseMessages(false)
                 .apiInfo(new ApiInfoBuilder()
                         .title("MoneyBridge API Documentation")
@@ -99,7 +101,7 @@ public class MySwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("user API")
                 .globalOperationParameters(parameters)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .ignoredParameterTypes(AuthenticationPrincipal.class, BindingResult.class, Errors.class)
                 .useDefaultResponseMessages(false)
                 .apiInfo(new ApiInfoBuilder()
                         .title("MoneyBridge API Documentation")
@@ -124,7 +126,7 @@ public class MySwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("pb API")
                 .globalOperationParameters(parameters)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .ignoredParameterTypes(AuthenticationPrincipal.class, BindingResult.class, Errors.class)
                 .useDefaultResponseMessages(false)
                 .apiInfo(new ApiInfoBuilder()
                         .title("MoneyBridge API Documentation")
