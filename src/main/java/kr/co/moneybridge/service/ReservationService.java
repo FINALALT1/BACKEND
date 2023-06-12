@@ -16,11 +16,10 @@ import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.stream.Collectors;
 
 import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
 import static kr.co.moneybridge.core.util.MyDateUtil.localTimeToString;
@@ -125,13 +124,13 @@ public class ReservationService {
 
         try {
             // 페이징
-            Page<ReservationResponse.ReviewDTO> reveiwPG = reviewRepository
+            Page<ReservationResponse.ReviewDTO> reviewPG = reviewRepository
                     .findAll(pbId,
                             ReservationProcess.COMPLETE,
-                            PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt")));
+                            PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt"));
             // 응답
             return new PageDTO<>(
-                    reveiwPG.stream().collect(Collectors.toList()), reveiwPG
+                    reviewPG.getContent(), reviewPG
             );
         } catch (Exception e) {
             throw new Exception500("상담 후기 목록 조회 실패 : " + e.getMessage());
