@@ -2,6 +2,7 @@ package kr.co.moneybridge.model.board;
 
 import kr.co.moneybridge.model.user.User;
 import lombok.*;
+import org.checkerframework.checker.units.qual.C;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,8 +18,15 @@ public class BoardBookmark {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private User user;
+
+    @Column(nullable = false)
+    private Long bookmarkerId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BookmarkerRole bookmarkerRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;

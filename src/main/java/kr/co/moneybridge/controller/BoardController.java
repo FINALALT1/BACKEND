@@ -74,20 +74,19 @@ public class BoardController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PostMapping("/user/bookmark/board/{id}")
+    @PostMapping("/auth/bookmark/board/{id}")
     public ResponseEntity<?> addBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        Long userId = myUserDetails.getMember().getId();
-        boardService.bookmarkBoard(id, userId);
+        boardService.bookmarkBoard(id, myUserDetails);
 
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
-    @DeleteMapping("/user/bookmark/board/{id}")
+    @DeleteMapping("/auth/bookmark/board/{id}")
     public ResponseEntity<?> deleteBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        Long userId = myUserDetails.getMember().getId();
-        boardService.DeleteBookmarkBoard(id, userId);
+        Long memberId = myUserDetails.getMember().getId();
+        boardService.deleteBookmarkBoard(id, memberId);
 
         return ResponseEntity.ok(new ResponseDTO<>());
     }
@@ -133,7 +132,7 @@ public class BoardController {
 
     @PostMapping("/pb/board/temp")
     public ResponseEntity<?> saveTempBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
-                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.TEMP);
 
@@ -177,7 +176,7 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
-    @GetMapping("/user/bookmarks/boards")
+    @GetMapping("/auth/bookmarks/boards")
     public ResponseEntity<?> getBookmarkBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));

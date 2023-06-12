@@ -277,7 +277,8 @@ public class DummyEntity {
 
     public BoardBookmark newBoardBookmark(User user, Board board) {
         return BoardBookmark.builder()
-                .user(user)
+                .bookmarkerId(user.getId())
+                .bookmarkerRole(BookmarkerRole.USER)
                 .board(board)
                 .build();
     }
