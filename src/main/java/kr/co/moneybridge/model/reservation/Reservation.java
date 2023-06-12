@@ -43,10 +43,7 @@ public class Reservation {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReservationGoal goal1;        // 상담 목적1
-
-    @Enumerated(EnumType.STRING)
-    private ReservationGoal goal2;        // 상담 목적2
+    private ReservationGoal goal;        // 상담 목적
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -71,8 +68,12 @@ public class Reservation {
     private ReservationStatus status;
 
     @PrePersist
-    protected void onCreate() { this.createdAt = LocalDateTime.now(); }
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     @PreUpdate
-    protected void onUpdate() { this.updatedAt = LocalDateTime.now(); }
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
