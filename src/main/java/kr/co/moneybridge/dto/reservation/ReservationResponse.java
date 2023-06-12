@@ -2,8 +2,14 @@ package kr.co.moneybridge.dto.reservation;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.model.reservation.Reservation;
+import kr.co.moneybridge.model.reservation.Review;
+import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 public class ReservationResponse {
     @Getter
@@ -87,6 +93,22 @@ public class ReservationResponse {
             this.userName = userName;
             this.userPhoneNumber = userPhoneNumber;
             this.userEmail = userEmail;
+        }
+    }
+
+    @Getter
+    @Setter
+    public class ReviewDTO {
+        private Long reviewId;
+        private String username;
+        private String content;
+        private String createdAt;
+
+        public ReviewDTO(Review review, User user) {
+            this.reviewId = review.getId();
+            this.username = user.getName();
+            this.content = review.getContent();
+            this.createdAt = MyDateUtil.localDateTimeToString(review.getCreatedAt());
         }
     }
 }

@@ -5,6 +5,7 @@ import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
+import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
@@ -97,6 +98,18 @@ public class ReservationController {
         reservationService.applyReservation(pbId, applyReservationInDTO, myUserDetails);
 
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @ApiOperation(value = "상담 후기 리스트 조회")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @GetMapping("/pb/reviews")
+    public ResponseEntity<?> getReviews(@RequestParam(defaultValue = "0") int page,
+                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        PageDTO<ReservationResponse.ReviewDTO> reviews = reservationService.getReviews(myUserDetails.getMember().getId(), page);
+
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(reviews);
         return ResponseEntity.ok(responseDTO);
     }
 }
