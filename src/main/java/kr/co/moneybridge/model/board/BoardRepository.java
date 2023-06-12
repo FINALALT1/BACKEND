@@ -1,6 +1,7 @@
 package kr.co.moneybridge.model.board;
 
 import kr.co.moneybridge.dto.board.BoardResponse;
+import kr.co.moneybridge.model.reservation.Reservation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -57,4 +58,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Modifying
     void deleteById(Long boardId);
+
+    @Modifying
+    @Query("delete from Board b where b.pb.id = :pbId")
+    void deleteByPBId(@Param("pbId") Long pbId);
+
+    @Query("select b from Board b where b.pb.id = :pbId")
+    List<Board> findAllByPBId(@Param("pbId") Long pbId);
 }

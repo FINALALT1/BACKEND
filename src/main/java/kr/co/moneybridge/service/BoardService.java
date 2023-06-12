@@ -88,8 +88,8 @@ public class BoardService {
             throw new Exception500("클릭수 증가 에러");
         }
 
-        List<BoardResponse.ReplyOutDTO> replyList = replyRepository.findRepliesByBoardId(id);
-        boardDetailDTO.setReply(replyList);
+//        List<BoardResponse.ReplyOutDTO> replyList = replyRepository.findRepliesByBoardId(id);
+//        boardDetailDTO.setReply(replyList);
 
         return boardDetailDTO;
     }
@@ -124,12 +124,12 @@ public class BoardService {
     public void DeleteBookmarkBoard(Long boardId, Long userId) {
 
         BoardBookmark boardBookmark = boardBookmarkRepository.findWithUserAndBoard(userId, boardId).orElseThrow(
-                () -> new Exception400("boardBookmark", "북마크되지않은 컨텐츠입니다"));
+                () -> new Exception400("boardBookmark", "북마크 되지 않은 컨텐츠입니다"));
 
         try {
             boardBookmarkRepository.deleteById(boardBookmark.getId());
         } catch (Exception e) {
-            throw new Exception500("북마킄 취소 실패");
+            throw new Exception500("북마크 취소 실패");
         }
     }
 

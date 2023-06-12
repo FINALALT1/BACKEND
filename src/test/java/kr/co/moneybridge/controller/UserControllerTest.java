@@ -78,11 +78,11 @@ public class UserControllerTest {
     @Test
     public void join_user_test() throws Exception {
         // given
-        UserRequest.JoinInDTO joinUserInDTO = new UserRequest.JoinInDTO();
-        joinUserInDTO.setEmail("investor@naver.com");
-        joinUserInDTO.setPassword("kang1234");
-        joinUserInDTO.setName("강투자");
-        joinUserInDTO.setPhoneNumber("01012345678");
+        UserRequest.JoinInDTO joinInDTO = new UserRequest.JoinInDTO();
+        joinInDTO.setEmail("investor@naver.com");
+        joinInDTO.setPassword("kang1234");
+        joinInDTO.setName("강투자");
+        joinInDTO.setPhoneNumber("01012345678");
         List<UserRequest.AgreementDTO> agreements = new ArrayList<>();
         UserRequest.AgreementDTO agreement1 = new UserRequest.AgreementDTO();
         agreement1.setTitle("돈줄 이용약관 동의");
@@ -94,8 +94,8 @@ public class UserControllerTest {
         agreement2.setType(UserAgreementType.OPTIONAL);
         agreement2.setIsAgreed(true);
         agreements.add(agreement2);
-        joinUserInDTO.setAgreements(agreements);
-        String requestBody = om.writeValueAsString(joinUserInDTO);
+        joinInDTO.setAgreements(agreements);
+        String requestBody = om.writeValueAsString(joinInDTO);
 
         // when
         ResultActions resultActions = mvc

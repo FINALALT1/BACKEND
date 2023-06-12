@@ -1,7 +1,5 @@
-package kr.co.moneybridge.model.backoffice;
+package kr.co.moneybridge.model.board;
 
-import kr.co.moneybridge.model.Member;
-import kr.co.moneybridge.model.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,28 +9,34 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "admin_tb")
+@Table(name = "rereply_tb")
 @Entity
-public class Admin implements Member {
+public class ReReply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30, unique = true)
-    private String email;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Reply reply;
 
-    @Column(nullable = false, length = 60) // 패스워드 인코딩(BCrypt)
-    private String password;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private User user;
+    @Column(nullable = false)
+    private Long authorId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private ReplyAuthorRole authorRole;
+
+    @Column(nullable = false)
+    private String content; // 댓글, varchar(255)
+
+//    private Long parentId;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
 
     @PrePersist
     protected void onCreate() {
@@ -43,5 +47,4 @@ public class Admin implements Member {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
 }

@@ -48,19 +48,15 @@ public class UserService {
     private final MyMemberUtil myMemberUtil;
 
     @MyLog
-    @MyErrorLog
     @Transactional
     public void withdraw(UserRequest.WithdrawInDTO withdrawInDTO, MyUserDetails myUserDetails) {
         if(!passwordEncoder.matches(withdrawInDTO.getPassword(), myUserDetails.getPassword())){
             throw new Exception400("password", "비밀번호가 틀렸습니다");
         }
-        Member memberPS = myMemberUtil.findByIdAndStatus(myUserDetails.getMember().getId(),
-                myUserDetails.getMember().getRole());
-//        memberPS.withdraw();
+        myMemberUtil.deleteById(myUserDetails.getMember().getId(), myUserDetails.getMember().getRole());
     }
 
     @MyLog
-    @MyErrorLog
     @Transactional
     public UserResponse.JoinOutDTO joinUser(UserRequest.JoinInDTO joinInDTO){
         Optional<User> userOP = userRepository.findByEmail(joinInDTO.getEmail());
@@ -84,7 +80,6 @@ public class UserService {
     }
 
     @MyLog
-    @MyErrorLog
     public Pair<String, String> issue(Role role, String email, String password) {
         try {
             String username = role + "-" + email;
@@ -103,14 +98,12 @@ public class UserService {
     }
 
     @MyLog
-    @MyErrorLog
     public UserResponse.LoginOutDTO login(UserRequest.LoginInDTO loginInDTO) {
-        Member memberPS = myMemberUtil.findByEmailAndStatus(loginInDTO.getEmail(), loginInDTO.getRole());
+        Member memberPS = myMemberUtil.findByEmail(loginInDTO.getEmail(), loginInDTO.getRole());
         return new UserResponse.LoginOutDTO(memberPS);
     }
 
     @MyLog
-    @MyErrorLog
     public Pair<String, String> reissue(HttpServletRequest request, String refreshToken) {
         // access token에서 나온 사용자 정보로 redis에서 refresh token을 조회
         String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
@@ -138,7 +131,7 @@ public class UserService {
 
         // 액세스 토큰, 리프레시 토큰 발급.
         try {
-            Member memberPS = myMemberUtil.findByIdAndStatus(id, Role.valueOf(role));
+            Member memberPS = myMemberUtil.findById(id, Role.valueOf(role));
             String newAccessToken = myJwtProvider.createAccess(memberPS);
             String newRefreshToken = myJwtProvider.createRefresh(memberPS);
             return Pair.of(newAccessToken, newRefreshToken);
@@ -148,7 +141,6 @@ public class UserService {
     }
 
     @MyLog
-    @MyErrorLog
     public void logout(HttpServletRequest request, String refreshToken) {
         // 요청받은 refresh token에서 나온 사용자 정보로 redis에서 refresh token을 조회
         DecodedJWT decodedJWT = null;

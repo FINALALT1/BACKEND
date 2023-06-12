@@ -2,10 +2,10 @@ package kr.co.moneybridge.core.dummy;
 
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.board.Board;
-import kr.co.moneybridge.model.board.BoardBookmark;
-import kr.co.moneybridge.model.board.BoardStatus;
-import kr.co.moneybridge.model.board.Reply;
+import kr.co.moneybridge.model.backoffice.Answer;
+import kr.co.moneybridge.model.backoffice.Question;
+import kr.co.moneybridge.model.backoffice.QuestionAuthorRole;
+import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.*;
@@ -147,21 +147,39 @@ public class DummyEntity {
                 .status(BoardStatus.TEMP)
                 .build();
     }
-
-    public Reply newReply(Board board, User user) {
+    public Reply newUserReply(Board board, User user) {
         return Reply.builder()
                 .board(board)
-                .user(user)
+                .authorId(user.getId())
+                .authorRole(ReplyAuthorRole.USER)
                 .content("댓글입니다")
                 .build();
     }
 
-    public Reply newParentReply(Board board, User user, Reply reply) {
+    public ReReply newUserReReply(Reply reply, User user) {
+        return ReReply.builder()
+                .reply(reply)
+                .authorId(user.getId())
+                .authorRole(ReplyAuthorRole.USER)
+                .content("대댓글입니다")
+                .build();
+    }
+
+    public Reply newPBReply(Board board, PB pb) {
         return Reply.builder()
                 .board(board)
-                .user(user)
+                .authorId(pb.getId())
+                .authorRole(ReplyAuthorRole.PB)
                 .content("댓글입니다")
-                .parentId(reply.getId())
+                .build();
+    }
+
+    public ReReply newPBReReply(Reply reply, PB pb) {
+        return ReReply.builder()
+                .reply(reply)
+                .authorId(pb.getId())
+                .authorRole(ReplyAuthorRole.PB)
+                .content("대댓글입니다")
                 .build();
     }
 
@@ -344,4 +362,28 @@ public class DummyEntity {
                 .build();
     }
 
+    public Question newUserQuestion(User user) {
+        return Question.builder()
+                .authorId(user.getId())
+                .authorRole(QuestionAuthorRole.USER)
+                .title("제목")
+                .content("1대1문의사항")
+                .build();
+    }
+
+    public Question newPBQuestion(PB pb) {
+        return Question.builder()
+                .authorId(pb.getId())
+                .authorRole(QuestionAuthorRole.PB)
+                .title("제목")
+                .content("1대1문의사항")
+                .build();
+    }
+
+    public Answer newAnswer(Question question) {
+        return Answer.builder()
+                .question(question)
+                .content("답변")
+                .build();
+    }
 }

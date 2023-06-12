@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.board;
 
+import kr.co.moneybridge.model.backoffice.QuestionAuthorRole;
 import kr.co.moneybridge.model.user.User;
 import lombok.*;
 
@@ -20,13 +21,19 @@ public class Reply {
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private User user;
+    @Column(nullable = false)
+    private Long authorId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReplyAuthorRole authorRole;
 
     @Column(nullable = false)
     private String content; // 댓글, varchar(255)
 
-    private Long parentId;
+//    private Long parentId;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

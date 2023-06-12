@@ -91,7 +91,7 @@ public class BoardResponse {
             this.profile = user.getProfile();
             this.replyContent = reply.getContent();
             this.createdAt = reply.getCreatedAt();
-            this.parentId = reply.getParentId();
+//            this.parentId = reply.getParentId();
         }
     }
 

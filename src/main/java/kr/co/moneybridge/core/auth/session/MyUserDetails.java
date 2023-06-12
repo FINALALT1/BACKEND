@@ -1,9 +1,6 @@
 package kr.co.moneybridge.core.auth.session;
 
 import kr.co.moneybridge.model.Member;
-import kr.co.moneybridge.model.backoffice.Admin;
-import kr.co.moneybridge.model.pb.PB;
-import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

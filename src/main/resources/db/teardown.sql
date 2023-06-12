@@ -1,6 +1,5 @@
 -- 모든 제약 조건 비활성화
 SET REFERENTIAL_INTEGRITY FALSE;
-truncate table admin_tb;
 truncate table answer_tb;
 truncate table frequent_question_tb;
 truncate table notice_tb;
@@ -8,6 +7,7 @@ truncate table question_tb;
 truncate table board_tb;
 truncate table board_bookmark_tb;
 truncate table reply_tb;
+truncate table rereply_tb;
 truncate table award_tb;
 truncate table branch_tb;
 truncate table career_tb;
