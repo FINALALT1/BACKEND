@@ -20,25 +20,26 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -64,10 +65,54 @@ public class UserServiceTest extends MockDummyEntity {
     private MyMemberUtil myMemberUtil;
     @Mock
     private MyUserDetails myUserDetails;
+    @Mock
+    private JavaMailSender javaMailSender;
 
     // 진짜 객체를 만들어서 Mockito 환경에 Load
     @Spy
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Test
+    public void password_test() throws Exception {
+        // given
+        String email = "lee@nate.com";
+        UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
+        passwordInDTO.setRole(Role.USER);
+        passwordInDTO.setName("lee");
+        passwordInDTO.setEmail(email);
+
+        when(myMemberUtil.findByEmail(passwordInDTO.getEmail(), passwordInDTO.getRole()))
+                .thenReturn(newMockUser(1L, "lee"));
+        when(javaMailSender.createMimeMessage()).thenReturn(mock(MimeMessage.class));
+
+        // when
+        UserResponse.PasswordOutDTO passwordOutDTO = userService.password(passwordInDTO);
+
+        // then
+        String regex = "^[0-9A-Z]{8}$"; // 이는 8자리 숫자와 대문자를 예상하는 정규식입니다.
+        Assertions.assertThat(passwordOutDTO.getCode()).matches(regex);
+        Assertions.assertThat(passwordOutDTO.getRole()).isEqualTo(Role.USER);
+        Assertions.assertThat(passwordOutDTO.getName()).isEqualTo("lee");
+        Assertions.assertThat(passwordOutDTO.getPhoneNumber()).isEqualTo("01012345678");
+        Assertions.assertThat(passwordOutDTO.getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    public void email_test() throws Exception {
+        // given
+        String email = "lee@nate.com";
+        UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();
+        emailInDTO.setEmail(email);
+
+        when(javaMailSender.createMimeMessage()).thenReturn(mock(MimeMessage.class));
+
+        // when
+        UserResponse.EmailOutDTO emailOutDTO = userService.email(email);
+
+        // then
+        String regex = "^[0-9A-Z]{8}$"; // 이는 8자리 숫자와 대문자를 예상하는 정규식입니다.
+        Assertions.assertThat(emailOutDTO.getCode()).matches(regex);
+    }
 
     @Test
     public void withdraw_test() {
@@ -107,54 +152,54 @@ public class UserServiceTest extends MockDummyEntity {
         });
     }
 
-//    @Test
-//    public void logout_test() {
-//        // given
-//        String accessJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODY1MzA0MTh9.m7WIc5AdUzwfQt_26eOZy5IZUJ8eWVMfcE_wa7VjT2Zy6Tk92JYAAirxWYP6v7dOg5xHMwUTMScy5gnk7V-rqQ";
-//        String refreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODc2OTY4MTh9.xHicI5gktXYzHoVLZeOYFC6oUFS9PXzx_cY0ZumH7StVwcL5uSHJ8RU0Yt4mh_cr3OiMWG2ApLVoptpDndIyIw";
-//        Long id = 1L;
-//        String role = "PB";
-//        String key = id + role;
-//
-//        // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
-//        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
-//        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(MyJwtProvider.TOKEN_PREFIX + accessJwt);
-//
-//        // MyJwtProvider를 모킹하여 액세스 토큰과 리프레시 토큰을 검증하고, 검증된 JWT의 클레임을 반환하도록 설정
-//        DecodedJWT mockDecodedJWT = Mockito.mock(DecodedJWT.class);
-//
-//        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
-//        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
-//
-//        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
-//            myJwtProviderMock.when(() -> MyJwtProvider.verifyAccess(accessJwt)).thenReturn(mockDecodedJWT);
-//            myJwtProviderMock.when(() -> MyJwtProvider.verifyRefresh(refreshToken)).thenReturn(mockDecodedJWT);
-//        } // static 메서드여서
-//
-//        // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하고, 액세스 토큰을 블랙리스트에 추가하도록 설정
-//        when(redisUtil.get(key)).thenReturn(refreshToken);
-//        when(redisUtil.delete(key)).thenReturn(true);
-//        doNothing().when(redisUtil).setBlackList(any(), any(), any());
-//
-//        // when
-//        userService.logout(mockRequest, refreshToken);
-//
-//        // 세 번째 파라미터를 캡쳐할 ArgumentCaptor를 생성합니다.
-//        ArgumentCaptor<Long> remainingTimeCaptor = ArgumentCaptor.forClass(Long.class);
-//
-//        // then
-//        verify(redisUtil, times(1)).delete(key);
-//        verify(redisUtil, times(1)).setBlackList(
-//                eq(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")),
-//                eq("access_token_blacklist"),
-//                remainingTimeCaptor.capture() // 캡쳐합니다.
-//        );
-//
-//        // 캡쳐한 값을 가져와서 원하는 조건을 만족하는지 검사합니다.
-//        Long capturedRemainingTimeMillis = remainingTimeCaptor.getValue();
-//        assertTrue(capturedRemainingTimeMillis <= MyJwtProvider.EXP_ACCESS && capturedRemainingTimeMillis >= 0);
-//    }
+    @Test
+    public void logout_test() {
+        // given
+        Long id = 1L;
+        String role = "USER";
+        String key = id + role;
+        User user = newMockUser(id, "김투자");
+        String accessJwt = MyJwtProviderTest.createTestAccess(user);
+        String refreshToken = MyJwtProviderTest.createTestRefresh(user);
 
+        // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
+        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(MyJwtProvider.TOKEN_PREFIX + accessJwt);
+
+        // MyJwtProvider를 모킹하여 액세스 토큰과 리프레시 토큰을 검증하고, 검증된 JWT의 클레임을 반환하도록 설정
+        DecodedJWT mockDecodedJWT = mock(DecodedJWT.class);
+
+        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
+        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
+
+        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
+            myJwtProviderMock.when(() -> MyJwtProvider.verifyAccess(accessJwt)).thenReturn(mockDecodedJWT);
+            myJwtProviderMock.when(() -> MyJwtProvider.verifyRefresh(refreshToken)).thenReturn(mockDecodedJWT);
+        } // static 메서드여서
+
+        // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하고, 액세스 토큰을 블랙리스트에 추가하도록 설정
+        when(redisUtil.get(key)).thenReturn(refreshToken);
+        when(redisUtil.delete(key)).thenReturn(true);
+        doNothing().when(redisUtil).setBlackList(any(), any(), any());
+
+        // when
+        userService.logout(mockRequest, refreshToken);
+
+        // 세 번째 파라미터를 캡쳐할 ArgumentCaptor를 생성합니다.
+        ArgumentCaptor<Long> remainingTimeCaptor = ArgumentCaptor.forClass(Long.class);
+
+        // then
+        verify(redisUtil, times(1)).delete(key);
+        verify(redisUtil, times(1)).setBlackList(
+                eq(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")),
+                eq("access_token_blacklist"),
+                remainingTimeCaptor.capture() // 캡쳐합니다.
+        );
+
+        // 캡쳐한 값을 가져와서 원하는 조건을 만족하는지 검사합니다.
+        Long capturedRemainingTimeMillis = remainingTimeCaptor.getValue();
+        assertTrue(capturedRemainingTimeMillis <= MyJwtProvider.EXP_ACCESS && capturedRemainingTimeMillis >= 0);
+    }
 
         @Test
     public void reissue_test() {
@@ -167,11 +212,11 @@ public class UserServiceTest extends MockDummyEntity {
         String key = id + role;
 
         // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
-        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(accessJwt);
 
         // MyJwtProvider를 모킹하여 액세스 토큰을 디코딩하고, 디코딩된 JWT의 클레임을 반환하도록 설정
-        DecodedJWT mockDecodedJWT = Mockito.mock(DecodedJWT.class);
+        DecodedJWT mockDecodedJWT = mock(DecodedJWT.class);
         try (MockedStatic<JWT> jwtMock = Mockito.mockStatic(JWT.class)) {
             jwtMock.when(() -> JWT.decode(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")))
                     .thenReturn(mockDecodedJWT);
@@ -183,7 +228,7 @@ public class UserServiceTest extends MockDummyEntity {
 
         // MyMemberUtil를 모킹하여 멤버를 조회하고, 멤버에 해당하는 액세스 토큰과 리프레시 토큰을 생성하도록 설정
         // 가짜 멤버 객체를 생성하고, getId와 getRole 메서드의 반환값을 설정합니다.
-        Member mockMember = Mockito.mock(Member.class);
+        Member mockMember = mock(Member.class);
         when(mockMember.getId()).thenReturn(1L);
         when(mockMember.getRole()).thenReturn(Role.PB);
 
@@ -218,8 +263,8 @@ public class UserServiceTest extends MockDummyEntity {
         String password = "password1234";
 
         // 가짜 인증 객체를 생성합니다.
-        MyUserDetails mockUserDetails = Mockito.mock(MyUserDetails.class);
-        Authentication mockAuthentication = Mockito.mock(Authentication.class);
+        MyUserDetails mockUserDetails = mock(MyUserDetails.class);
+        Authentication mockAuthentication = mock(Authentication.class);
 
         // 인증 매니저가 인증을 성공적으로 수행하도록 설정합니다.
         when(authenticationManager.authenticate(any()))
@@ -230,7 +275,7 @@ public class UserServiceTest extends MockDummyEntity {
                 .thenReturn(mockUserDetails);
 
         // 가짜 멤버 객체를 생성하고, getId와 getRole 메서드의 반환값을 설정합니다.
-        Member mockMember = Mockito.mock(Member.class);
+        Member mockMember = mock(Member.class);
         when(mockMember.getId()).thenReturn(1L);
         when(mockMember.getRole()).thenReturn(Role.PB);
 
