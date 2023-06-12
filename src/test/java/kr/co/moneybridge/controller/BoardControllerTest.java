@@ -129,9 +129,9 @@ public class BoardControllerTest {
         //then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data[0].title").value("제목2입니다"));
-        resultActions.andExpect(jsonPath("$.data[0].pbName").value("이피비"));
-        resultActions.andExpect(jsonPath("$.data[1].title").value("컨텐츠 타이들입니다"));
-        resultActions.andExpect(jsonPath("$.data[1].pbName").value("이피비"));
+        resultActions.andExpect(jsonPath("$.data.list[0].title").value("제목2입니다"));
+        resultActions.andExpect(jsonPath("$.data.list[1].title").value("컨텐츠 타이들입니다"));
+        resultActions.andExpect(jsonPath("$.data.list[0].career").value(10));
+        resultActions.andExpect(jsonPath("$.data.list[1].pbName").value("이피비"));
     }
 }
