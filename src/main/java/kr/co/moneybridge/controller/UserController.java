@@ -30,6 +30,8 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    @ApiOperation(value = "비밀번호 찾기시 이메일 인증")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/password")
     public ResponseEntity<?> password(@RequestBody UserRequest.PasswordInDTO passwordInDTO) throws Exception {
@@ -38,6 +40,8 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @ApiOperation(value = "이메일 인증")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/email/authentication")
     public ResponseEntity<?> email(@RequestBody UserRequest.EmailInDTO emailInDTO) throws Exception {

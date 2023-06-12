@@ -26,11 +26,17 @@ public class UserResponse {
     @Setter
     @Getter
     public static class PasswordOutDTO {
+        @ApiModelProperty(example = "1")
         private Long id;
+        @ApiModelProperty(example = "USER")
         private Role role;
+        @ApiModelProperty(example = "김투자")
         private String name;
+        @ApiModelProperty(example = "01012345678")
         private String phoneNumber;
+        @ApiModelProperty(example = "김지수")
         private String email;
+        @ApiModelProperty(example = "J46L4SBJ")
         private String code;
 
         public PasswordOutDTO(Member member, String code) {
@@ -46,6 +52,7 @@ public class UserResponse {
     @Setter
     @Getter
     public static class EmailOutDTO {
+        @ApiModelProperty(example = "J46L4SBJ")
         private String code;
         public EmailOutDTO(String code){
             this.code = code;
