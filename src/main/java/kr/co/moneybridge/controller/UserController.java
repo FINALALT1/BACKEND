@@ -1,8 +1,10 @@
 package kr.co.moneybridge.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.util.Pair;
+import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
@@ -32,7 +34,8 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
-    // 탈퇴하기
+    @ApiOperation(value = "탈퇴")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @DeleteMapping("/auth/account")
     public ResponseEntity<?> withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
@@ -42,6 +45,8 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @ApiOperation(value = "투자자 회원가입")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/join/user")
     public ResponseEntity<?> joinUser(@RequestBody @Valid UserRequest.JoinInDTO joinInDTO, Errors errors, HttpServletResponse response) {
@@ -57,6 +62,8 @@ public class UserController {
     }
 
     // 로그인 성공시 access 토큰과 refresh 토큰 둘 다 발급.
+    @ApiOperation(value = "로그인")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
@@ -71,6 +78,8 @@ public class UserController {
     }
 
     // AccessToken, RefreshToken 재발급을 위한 API
+    @ApiOperation(value = "토큰 재발급")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
@@ -82,6 +91,8 @@ public class UserController {
                 .body(responseDTO);
     }
 
+    @ApiOperation(value = "로그아웃")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
     @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(HttpServletRequest request){
@@ -103,14 +114,14 @@ public class UserController {
         return cookieOP.get().getValue();
     }
 
-    @GetMapping("/s/user/{id}")
-    public ResponseEntity<?> detail(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) throws JsonProcessingException {
-        if(id.longValue() != myUserDetails.getMember().getId()){
-            throw new Exception403("권한이 없습니다");
-        }
-        UserResponse.DetailOutDTO detailOutDTO = userService.회원상세보기(id);
-        //System.out.println(new ObjectMapper().writeValueAsString(detailOutDTO));
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(detailOutDTO);
-        return ResponseEntity.ok(responseDTO);
-    }
+//    @GetMapping("/s/user/{id}")
+//    public ResponseEntity<?> detail(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) throws JsonProcessingException {
+//        if(id.longValue() != myUserDetails.getMember().getId()){
+//            throw new Exception403("권한이 없습니다");
+//        }
+//        UserResponse.DetailOutDTO detailOutDTO = userService.회원상세보기(id);
+//        //System.out.println(new ObjectMapper().writeValueAsString(detailOutDTO));
+//        ResponseDTO<?> responseDTO = new ResponseDTO<>(detailOutDTO);
+//        return ResponseEntity.ok(responseDTO);
+//    }
 }
