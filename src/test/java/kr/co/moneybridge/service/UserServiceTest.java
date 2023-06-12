@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
+import kr.co.moneybridge.core.auth.jwt.MyJwtProviderTest;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.exception.Exception400;
@@ -13,6 +14,7 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -107,13 +109,14 @@ public class UserServiceTest extends MockDummyEntity {
     }
 
     @Test
-    public void logout_test() {
-        // given
-        String accessJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODY1MzA0MTh9.m7WIc5AdUzwfQt_26eOZy5IZUJ8eWVMfcE_wa7VjT2Zy6Tk92JYAAirxWYP6v7dOg5xHMwUTMScy5gnk7V-rqQ";
-        String refreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODc2OTY4MTh9.xHicI5gktXYzHoVLZeOYFC6oUFS9PXzx_cY0ZumH7StVwcL5uSHJ8RU0Yt4mh_cr3OiMWG2ApLVoptpDndIyIw";
-        Long id = 1L;
-        String role = "PB";
-        String key = id + role;
+        public void logout_test() {
+            // given
+            Long id = 1L;
+            String role = "USER";
+            String key = id + role;
+            User user = newMockUser(id, "김투자");
+            String accessJwt = MyJwtProviderTest.createTestAccess(user);
+            String refreshToken = MyJwtProviderTest.createTestRefresh(user);
 
         // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
         HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
