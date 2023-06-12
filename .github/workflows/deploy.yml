@@ -12,6 +12,10 @@ env:
   S3_BUCKET_NAME: final-project-be-bucket
   CODE_DEPLOY_APPLICATION_NAME: final-project-deploy-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: final-project-deploy-group
+  spring.datasource.username.RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
+  spring.datasource.username.RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+  SECRET_ACCESS: ${{ secrets.SECRET_ACCESS }}
+  SECRET_REFRESH: ${{ secrets.SECRET_REFRESH }}
 
 permissions:
   contents: read
