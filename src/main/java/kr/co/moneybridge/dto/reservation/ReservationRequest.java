@@ -11,24 +11,15 @@ public class ReservationRequest {
     // validation은 controller에서 수행
     @Getter
     @Setter
-    public static class ApplyReservationInDTO {
+    public static class ApplyInDTO {
         @ApiModelProperty(example = "PROFIT")
-        private ReservationGoal goal1;
-
-        @ApiModelProperty(example = "RISK")
-        private ReservationGoal goal2;
+        private ReservationGoal goal;
 
         @ApiModelProperty(example = "VISIT")
         private ReservationType reservationType;
 
         @ApiModelProperty(example = "BRANCH")
         private LocationType locationType;
-
-        @ApiModelProperty(example = "미래에셋증권 용산wm점")
-        private String locationName;
-
-        @ApiModelProperty(example = "서울특별시 용산구 한강로동 한강대로 92")
-        private String locationAddress;
 
         @ApiModelProperty(example = "2023-05-15T09:00:00")
         private String candidateTime1;

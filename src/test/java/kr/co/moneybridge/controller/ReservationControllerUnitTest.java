@@ -76,7 +76,7 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
 
         // stub
         Mockito.when(reservationService.getReservationBase(anyLong(), any()))
-                .thenReturn(new ReservationResponse.ReservationBaseOutDTO(
+                .thenReturn(new ReservationResponse.BaseOutDTO(
                         new ReservationResponse.pbInfoDTO(
                                 pb.getName(),
                                 pb.getBranch().getName(),
@@ -126,20 +126,17 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
         Branch branch = newMockBranch(1L, company, 1);
         PB pb = newMockPB(pbId, "이피비", branch);
         User user = newMockUser(1L, "lee");
-        ReservationRequest.ApplyReservationInDTO applyReservationInDTO = new ReservationRequest.ApplyReservationInDTO();
-        applyReservationInDTO.setGoal1(ReservationGoal.PROFIT);
-        applyReservationInDTO.setGoal2(ReservationGoal.RISK);
-        applyReservationInDTO.setReservationType(ReservationType.VISIT);
-        applyReservationInDTO.setLocationType(LocationType.BRANCH);
-        applyReservationInDTO.setLocationName("미래에셋증권 용산wm점");
-        applyReservationInDTO.setLocationAddress("서울특별시 용산구 한강로동 한강대로 92");
-        applyReservationInDTO.setCandidateTime1("2023-05-15T09:00:00");
-        applyReservationInDTO.setCandidateTime2("2023-05-15T10:00:00");
-        applyReservationInDTO.setQuestion("2023-05-15T10:00:00");
-        applyReservationInDTO.setUserName("lee");
-        applyReservationInDTO.setUserPhoneNumber("01012345678");
-        applyReservationInDTO.setUserEmail("lee@nate.com");
-        String requestBody = om.writeValueAsString(applyReservationInDTO);
+        ReservationRequest.ApplyInDTO applyInDTO = new ReservationRequest.ApplyInDTO();
+        applyInDTO.setGoal(ReservationGoal.PROFIT);
+        applyInDTO.setReservationType(ReservationType.VISIT);
+        applyInDTO.setLocationType(LocationType.BRANCH);
+        applyInDTO.setCandidateTime1("2023-05-15T09:00:00");
+        applyInDTO.setCandidateTime2("2023-05-15T10:00:00");
+        applyInDTO.setQuestion("2023-05-15T10:00:00");
+        applyInDTO.setUserName("lee");
+        applyInDTO.setUserPhoneNumber("01012345678");
+        applyInDTO.setUserEmail("lee@nate.com");
+        String requestBody = om.writeValueAsString(applyInDTO);
 
         // stub
 

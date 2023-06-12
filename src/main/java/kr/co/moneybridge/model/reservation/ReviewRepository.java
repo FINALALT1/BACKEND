@@ -1,5 +1,8 @@
 package kr.co.moneybridge.model.reservation;
 
+import kr.co.moneybridge.dto.reservation.ReservationResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,4 +17,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("select r from Review r where r.reservation.id = :reservationId")
     Optional<Review> findByReservationId(@Param("reservationId") Long reservationId);
+
+    @Query("select new kr.co.moneybridge.dto.reservation.ReservationResponse$ReviewDTO(rev, u) " +
+            "from Review rev " +
+            "join rev.reservation res " +
+            "join res.user u " +
+            "where res.pb.id = :pbId and res.process = :process")
+    Page<ReservationResponse.ReviewDTO> findAll(@Param("pbId") Long pbId, @Param("process") ReservationProcess process, Pageable pageable);
 }
