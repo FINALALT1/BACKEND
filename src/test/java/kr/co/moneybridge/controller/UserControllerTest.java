@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.user.UserRequest;
+import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -27,6 +29,7 @@ import javax.servlet.http.Cookie;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -50,8 +53,66 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user1 = userRepository.save(dummy.newUser("로그인"));
+        User user2 = userRepository.save(User.builder()
+                .name("김비밀")
+                .password(passwordEncoder.encode("password1234"))
+                .email("jisu3148496@naver.com")
+                .phoneNumber("01012345678")
+                .role(Role.USER)
+                .profile("프로필.png")
+                .build());
         em.clear();
+    }
+
+    @DisplayName("비밀번호 찾기시 이메일 인증 성공")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void password_test() throws Exception {
+        // given
+        UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
+        passwordInDTO.setRole(Role.USER);
+        passwordInDTO.setName("김비밀");
+        passwordInDTO.setEmail("jisu3148496@naver.com");
+        String requestBody = om.writeValueAsString(passwordInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/password").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.role").value("USER"));
+        resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
+        resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.email").value("jisu3148496@naver.com"));
+        String regex = "^[0-9A-Z]{8}$";
+        resultActions.andExpect(jsonPath("$.data.code").value(matchesPattern(regex)));
+    }
+
+    @DisplayName("이메일 인증 성공")
+    @Test
+    public void email_test() throws Exception {
+        // given
+        UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();
+        emailInDTO.setEmail("jisu3148496@naver.com");
+        String requestBody = om.writeValueAsString(emailInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/email/authentication").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        String regex = "^[0-9A-Z]{8}$"; // 이는 8자리 숫자와 대문자를 예상하는 정규식입니다.
+        resultActions.andExpect(jsonPath("$.data.code").value(matchesPattern(regex)));
     }
 
     @DisplayName("탈퇴 성공")
