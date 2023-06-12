@@ -1,5 +1,6 @@
 package kr.co.moneybridge.core.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,12 +10,15 @@ import java.util.Properties;
 
 @Configuration
 public class MailConfig {
+    @Value("${EMAIL_PASSWORD}")
+    private String emailPassword;
+
     @Bean
     public JavaMailSender javaMailSender(){
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.naver.com"); // smtp 서버 주소
         javaMailSender.setUsername("moneybridge@naver.com");
-        javaMailSender.setPassword("finalback1234!!");
+        javaMailSender.setPassword(emailPassword);
         javaMailSender.setPort(465);
         javaMailSender.setJavaMailProperties(getMailProperties()); // 메일 인증서버 정보 가져오기
         return javaMailSender;

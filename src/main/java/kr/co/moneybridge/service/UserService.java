@@ -112,7 +112,7 @@ public class UserService {
     public String createCode() {
         Random random = new Random();
         return random.ints('0', 'z' + 1)
-                .filter(i -> (i <= '9' || i >= 'A') && (i <= 'Z' || i >= 'z'))
+                .filter(i -> (i <= '9' || i >= 'A') && (i <= 'Z' || i > 'z'))
                 .limit(8) // 인증코드 8자리
                 .collect(StringBuffer::new, StringBuffer::appendCodePoint, StringBuffer::append)
                 .toString();
