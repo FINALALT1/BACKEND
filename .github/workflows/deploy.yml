@@ -34,13 +34,14 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      # MySQL 세팅
-      - name: setup MySQL
-        uses: samin/mysql-action@v1
-        with:
-          mysql database: 'test'
-          mysql user: 'test'
-          mysql password: 'test'
+
+#      # MySQL 세팅
+#      - name: setup MySQL
+#        uses: samin/mysql-action@v1
+#        with:
+#          mysql database: 'test'
+#          mysql user: 'test'
+#          mysql password: 'test'
 
       # (3) Gradle build (Test 제외)
       - name: Grant execute permission for gradlew
