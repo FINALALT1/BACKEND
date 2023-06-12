@@ -14,6 +14,9 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.pb.Branch;
+import kr.co.moneybridge.model.pb.Company;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -205,11 +208,14 @@ public class UserServiceTest extends MockDummyEntity {
     public void reissue_test() {
         // given
         String prefix = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjo";
-        String accessJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODc2ODQxMDd9.LzNpNcVuyyorwnHIewrg7s9CRmiUO0f-evAdtKiFMZ5kXAmEe4itiI-U_ow8PA288LgxeDD58-DJjC3ebbhxiQ";
-        String refreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODY1MTc2OTN9.O9eLsSPJICnGFtNVtXeFcape19-EisJbPPWQeKwPGJT6BXeueE2U0okUkqXAw8dIWu2espIMR4UHT3UWkftT-g";
         Long id = 1L;
         String role = "PB";
         String key = id + role;
+        Company c= newMockCompany(1L, "미래에셋증권");
+        Branch b = newMockBranch(1L, c, 0);
+        PB pb = newMockPB(id, "김피비", b);
+        String accessJwt = MyJwtProviderTest.createTestAccess(pb);
+        String refreshToken = MyJwtProviderTest.createTestRefresh(pb);
 
         // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
