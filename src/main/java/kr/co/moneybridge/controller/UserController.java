@@ -1,14 +1,11 @@
 package kr.co.moneybridge.controller;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.util.Pair;
 import io.swagger.annotations.ApiOperation;
-import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
-import kr.co.moneybridge.core.exception.Exception403;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
@@ -19,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.servlet.http.Cookie;
@@ -33,6 +29,26 @@ import java.util.Optional;
 @RestController
 public class UserController {
     private final UserService userService;
+
+    @ApiOperation(value = "비밀번호 찾기시 이메일 인증")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @PostMapping("/password")
+    public ResponseEntity<?> password(@RequestBody UserRequest.PasswordInDTO passwordInDTO) throws Exception {
+        UserResponse.PasswordOutDTO passwordOutDTO = userService.password(passwordInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(passwordOutDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @ApiOperation(value = "이메일 인증")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @PostMapping("/email/authentication")
+    public ResponseEntity<?> email(@RequestBody UserRequest.EmailInDTO emailInDTO) throws Exception {
+        UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO.getEmail());
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(emailOutDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
 
     @ApiOperation(value = "탈퇴")
     @SwaggerResponses.DefaultApiResponses

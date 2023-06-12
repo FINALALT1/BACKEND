@@ -94,7 +94,7 @@ public class ReservationResponse {
 
     @Getter
     @Setter
-    public class ReviewDTO {
+    public static class ReviewDTO {
         private Long reviewId;
         private String username;
         private String content;

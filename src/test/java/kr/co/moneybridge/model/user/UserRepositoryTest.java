@@ -1,7 +1,8 @@
-package kr.co.moneybridge.model;
+package kr.co.moneybridge.model.user;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.core.exception.Exception400;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
