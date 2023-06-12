@@ -2,7 +2,6 @@ package kr.co.moneybridge.dto.reservation;
 
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.core.util.MyDateUtil;
-import kr.co.moneybridge.model.reservation.Reservation;
 import kr.co.moneybridge.model.reservation.Review;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
@@ -30,7 +29,7 @@ public class ReservationResponse {
 
     @Getter
     @Setter
-    public static class pbInfoDTO{
+    public static class pbInfoDTO {
         @ApiModelProperty(example = "김피비")
         private String pbName;
 
@@ -41,12 +40,12 @@ public class ReservationResponse {
         private String branchAddress;
 
         @ApiModelProperty(example = "37.55628")
-        private String branchLatitude;
+        private Double branchLatitude;
 
         @ApiModelProperty(example = "126.97037")
-        private String branchLongitude;
+        private Double branchLongitude;
 
-        public pbInfoDTO(String pbName, String branchName, String branchAddress, String branchLatitude, String branchLongitude) {
+        public pbInfoDTO(String pbName, String branchName, String branchAddress, Double branchLatitude, Double branchLongitude) {
             this.pbName = pbName;
             this.branchName = branchName;
             this.branchAddress = branchAddress;
@@ -57,7 +56,7 @@ public class ReservationResponse {
 
     @Getter
     @Setter
-    public static class consultInfoDTO{
+    public static class consultInfoDTO {
         @ApiModelProperty(example = "09:00")
         private String consultStart;
 
@@ -76,7 +75,7 @@ public class ReservationResponse {
 
     @Getter
     @Setter
-    public static class userInfoDTO{
+    public static class userInfoDTO {
         @ApiModelProperty(example = "홍길동")
         private String userName;
 
