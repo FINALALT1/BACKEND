@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
 
 public class SwaggerResponses {
     private static final String OK = "ok"; // 200
-
     private static final String BAD_REQUEST = "badRequest"; // 400
     private static final String UNAUTHORIZED = "unAuthorized"; // 401
     private static final String FORBIDDEN = "forbidden"; // 403

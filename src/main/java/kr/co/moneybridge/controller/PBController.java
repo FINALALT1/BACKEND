@@ -1,7 +1,9 @@
 package kr.co.moneybridge.controller;
 
+import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
@@ -27,8 +29,9 @@ import javax.validation.Valid;
 public class PBController {
     private final PBService pbService;
 
+    @ApiOperation(value = "PB 회원가입")
+    @SwaggerResponses.DefaultApiResponses
     @MyLog
-    @MyErrorLog
     @PostMapping("/join/pb")
     public ResponseEntity<?> joinPB(@RequestPart(value = "businessCard") MultipartFile businessCard,
                                     @RequestPart(value = "joinInDTO") @Valid PBRequest.JoinInDTO joinInDTO, Errors errors) {
