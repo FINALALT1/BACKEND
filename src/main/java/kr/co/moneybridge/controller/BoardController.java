@@ -1,6 +1,5 @@
 package kr.co.moneybridge.controller;
 
-import ch.qos.logback.core.joran.spi.NoAutoStart;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.PageDTO;
@@ -8,10 +7,14 @@ import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.dto.board.ReplyRequest;
-import kr.co.moneybridge.model.board.BoardRepository;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.BoardStatus;
+import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.BoardService;
+import kr.co.moneybridge.service.PBService;
 import kr.co.moneybridge.service.ReplyService;
+import kr.co.moneybridge.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +31,8 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
     private final ReplyService replyService;
-    private final BoardRepository boardRepository;
+    private final UserService userService;
+    private final PBService pbService;
 
     @GetMapping("/lounge/boards")
     public ResponseEntity<?> getBoardsWithTitle(@RequestParam(value = "title") String title) {
@@ -88,16 +92,29 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
-//    @PostMapping("/user/board/{id}/reply")
-//    public ResponseEntity<?> postReply(@PathVariable Long id,
-//                                       @AuthenticationPrincipal MyUserDetails myUserDetails,
-//                                       @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
-//
-//        Long userId = myUserDetails.getMember().getId();
-//        replyService.postReply(replyInDTO, userId, id);
-//
-//        return ResponseEntity.ok(new ResponseDTO<>());
-//    }
+    @PostMapping("/auth/board/{id}/reply")
+    public ResponseEntity<?> postReply(@PathVariable Long id,
+                                       @AuthenticationPrincipal MyUserDetails myUserDetails,
+                                       @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
+
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            User user = userService.getUser(myUserDetails.getMember().getId());
+            replyService.postUserReply(replyInDTO, user.getId(), id);
+        } else if (myUserDetails.getMember().getRole().equals(Role.PB)) {
+            PB pb = pbService.getPB(myUserDetails.getMember().getId());
+            replyService.postPbReply(replyInDTO, pb.getId(), id);
+        }
+
+        return ResponseEntity.ok(new ResponseDTO<>());
+    }
+
+    @PostMapping("/auth/board/{id}/rereply")
+    public ResponseEntity<?> postReReply(@PathVariable Long id, @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
+
+        replyService.postReReply(id, reReplyInDTO);
+
+        return ResponseEntity.ok(new ResponseDTO<>());
+    }
 
     @PostMapping("/pb/board")
     public ResponseEntity<?> saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
