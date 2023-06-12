@@ -2,6 +2,7 @@ package kr.co.moneybridge.dto.reservation;
 
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.model.reservation.Reservation;
 import kr.co.moneybridge.model.reservation.Review;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,8 +38,6 @@ public class ReviewRepositoryTest extends DummyEntity {
     private CompanyRepository companyRepository;
     @Autowired
     private BranchRepository branchRepository;
-    @Autowired
-    private ObjectMapper om;
 
     @BeforeEach
     public void setUp() {
@@ -52,7 +51,15 @@ public class ReviewRepositoryTest extends DummyEntity {
         Branch branchPS = branchRepository.save(newBranch(companyPS, 1));
         PB pbPS = pbRepository.save(newPB("이피비", branchPS));
         Reservation reservation = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
+        Reservation reservation2 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
+        Reservation reservation3 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
+        Reservation reservation4 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
+        Reservation reservation5 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
         reviewRepository.save(newReview(reservation));
+        reviewRepository.save(newReview(reservation2));
+        reviewRepository.save(newReview(reservation3));
+        reviewRepository.save(newReview(reservation4));
+        reviewRepository.save(newReview(reservation5));
 
         em.clear();
     }
@@ -67,12 +74,11 @@ public class ReviewRepositoryTest extends DummyEntity {
 
         // when
         Page<ReservationResponse.ReviewDTO> reviewPG = reviewRepository.findAll(pbId, process, pageable);
-        String response = om.writeValueAsString(reviewPG);
 
         // then
-        assertThat(reviewPG.getContent().get(0).getReviewId()).isEqualTo(1L);
+        assertThat(reviewPG.getContent().get(0).getReviewId()).isEqualTo(5L);
         assertThat(reviewPG.getContent().get(0).getUsername()).isEqualTo("lee");
         assertThat(reviewPG.getContent().get(0).getContent()).isEqualTo("content 입니다");
-        assertThat(reviewPG.getContent().get(0).getCreatedAt()).matches("content 입니다");
+        assertThat(reviewPG.getContent().get(0).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
     }
 }
