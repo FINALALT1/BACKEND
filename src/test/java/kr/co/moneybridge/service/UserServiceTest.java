@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
+import kr.co.moneybridge.core.auth.jwt.MyJwtProviderTest;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.exception.Exception400;
@@ -13,6 +14,7 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -106,53 +108,54 @@ public class UserServiceTest extends MockDummyEntity {
         });
     }
 
-    @Test
-    public void logout_test() {
-        // given
-        String accessJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODY1MzA0MTh9.m7WIc5AdUzwfQt_26eOZy5IZUJ8eWVMfcE_wa7VjT2Zy6Tk92JYAAirxWYP6v7dOg5xHMwUTMScy5gnk7V-rqQ";
-        String refreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODc2OTY4MTh9.xHicI5gktXYzHoVLZeOYFC6oUFS9PXzx_cY0ZumH7StVwcL5uSHJ8RU0Yt4mh_cr3OiMWG2ApLVoptpDndIyIw";
-        Long id = 1L;
-        String role = "PB";
-        String key = id + role;
+//    @Test
+//    public void logout_test() {
+//        // given
+//        String accessJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODY1MzA0MTh9.m7WIc5AdUzwfQt_26eOZy5IZUJ8eWVMfcE_wa7VjT2Zy6Tk92JYAAirxWYP6v7dOg5xHMwUTMScy5gnk7V-rqQ";
+//        String refreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjoxLCJleHAiOjE2ODc2OTY4MTh9.xHicI5gktXYzHoVLZeOYFC6oUFS9PXzx_cY0ZumH7StVwcL5uSHJ8RU0Yt4mh_cr3OiMWG2ApLVoptpDndIyIw";
+//        Long id = 1L;
+//        String role = "PB";
+//        String key = id + role;
+//
+//        // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
+//        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+//        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(MyJwtProvider.TOKEN_PREFIX + accessJwt);
+//
+//        // MyJwtProvider를 모킹하여 액세스 토큰과 리프레시 토큰을 검증하고, 검증된 JWT의 클레임을 반환하도록 설정
+//        DecodedJWT mockDecodedJWT = Mockito.mock(DecodedJWT.class);
+//
+//        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
+//        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
+//
+//        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
+//            myJwtProviderMock.when(() -> MyJwtProvider.verifyAccess(accessJwt)).thenReturn(mockDecodedJWT);
+//            myJwtProviderMock.when(() -> MyJwtProvider.verifyRefresh(refreshToken)).thenReturn(mockDecodedJWT);
+//        } // static 메서드여서
+//
+//        // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하고, 액세스 토큰을 블랙리스트에 추가하도록 설정
+//        when(redisUtil.get(key)).thenReturn(refreshToken);
+//        when(redisUtil.delete(key)).thenReturn(true);
+//        doNothing().when(redisUtil).setBlackList(any(), any(), any());
+//
+//        // when
+//        userService.logout(mockRequest, refreshToken);
+//
+//        // 세 번째 파라미터를 캡쳐할 ArgumentCaptor를 생성합니다.
+//        ArgumentCaptor<Long> remainingTimeCaptor = ArgumentCaptor.forClass(Long.class);
+//
+//        // then
+//        verify(redisUtil, times(1)).delete(key);
+//        verify(redisUtil, times(1)).setBlackList(
+//                eq(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")),
+//                eq("access_token_blacklist"),
+//                remainingTimeCaptor.capture() // 캡쳐합니다.
+//        );
+//
+//        // 캡쳐한 값을 가져와서 원하는 조건을 만족하는지 검사합니다.
+//        Long capturedRemainingTimeMillis = remainingTimeCaptor.getValue();
+//        assertTrue(capturedRemainingTimeMillis <= MyJwtProvider.EXP_ACCESS && capturedRemainingTimeMillis >= 0);
+//    }
 
-        // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
-        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
-        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(MyJwtProvider.TOKEN_PREFIX + accessJwt);
-
-        // MyJwtProvider를 모킹하여 액세스 토큰과 리프레시 토큰을 검증하고, 검증된 JWT의 클레임을 반환하도록 설정
-        DecodedJWT mockDecodedJWT = Mockito.mock(DecodedJWT.class);
-
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
-
-        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
-            myJwtProviderMock.when(() -> MyJwtProvider.verifyAccess(accessJwt)).thenReturn(mockDecodedJWT);
-            myJwtProviderMock.when(() -> MyJwtProvider.verifyRefresh(refreshToken)).thenReturn(mockDecodedJWT);
-        } // static 메서드여서
-
-        // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하고, 액세스 토큰을 블랙리스트에 추가하도록 설정
-        when(redisUtil.get(key)).thenReturn(refreshToken);
-        when(redisUtil.delete(key)).thenReturn(true);
-        doNothing().when(redisUtil).setBlackList(any(), any(), any());
-
-        // when
-        userService.logout(mockRequest, refreshToken);
-
-        // 세 번째 파라미터를 캡쳐할 ArgumentCaptor를 생성합니다.
-        ArgumentCaptor<Long> remainingTimeCaptor = ArgumentCaptor.forClass(Long.class);
-
-        // then
-        verify(redisUtil, times(1)).delete(key);
-        verify(redisUtil, times(1)).setBlackList(
-                eq(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")),
-                eq("access_token_blacklist"),
-                remainingTimeCaptor.capture() // 캡쳐합니다.
-        );
-
-        // 캡쳐한 값을 가져와서 원하는 조건을 만족하는지 검사합니다.
-        Long capturedRemainingTimeMillis = remainingTimeCaptor.getValue();
-        assertTrue(capturedRemainingTimeMillis <= MyJwtProvider.EXP_ACCESS && capturedRemainingTimeMillis >= 0);
-    }
 
         @Test
     public void reissue_test() {

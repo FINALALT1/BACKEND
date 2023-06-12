@@ -53,9 +53,17 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "JOIN Branch br ON pb.branch = br " +
             "JOIN Company c ON br.company = c " +
             "JOIN BoardBookmark bb ON bb.board = b " +
-            "WHERE bb.user.id = :userId")
+            "WHERE bb.bookmarkerId = :userId AND bb.bookmarkerRole = 'USER'")
     Page<BoardResponse.BoardPageDTO> findBookmarkBoardsWithUserId(@Param("userId") Long userId, Pageable pageable);
 
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, pb, c) " +
+            "FROM Board b " +
+            "JOIN PB pb ON b.pb = pb " +
+            "JOIN Branch br ON pb.branch = br " +
+            "JOIN Company c ON br.company = c " +
+            "JOIN BoardBookmark bb ON bb.board = b " +
+            "WHERE bb.bookmarkerId = :pbId AND bb.bookmarkerRole = 'PB'")
+    Page<BoardResponse.BoardPageDTO> findBookmarkBoardsWithPbId(@Param("pbId") Long pbId, Pageable pageable);
     @Modifying
     void deleteById(Long boardId);
 

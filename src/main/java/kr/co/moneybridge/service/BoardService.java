@@ -1,12 +1,12 @@
 package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
-import kr.co.moneybridge.core.exception.Exception400;
-import kr.co.moneybridge.core.exception.Exception404;
-import kr.co.moneybridge.core.exception.Exception500;
+import kr.co.moneybridge.core.exception.*;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
+import kr.co.moneybridge.model.Member;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
@@ -20,10 +20,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -36,6 +34,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final PBRepository pbRepository;
     private final ReplyRepository replyRepository;
+    private final ReReplyRepository reReplyRepository;
 
     //컨텐츠검색
     public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithTitle(String title, Pageable pageable) {
@@ -88,43 +87,87 @@ public class BoardService {
             throw new Exception500("클릭수 증가 에러");
         }
 
-//        List<BoardResponse.ReplyOutDTO> replyList = replyRepository.findRepliesByBoardId(id);
-//        boardDetailDTO.setReply(replyList);
+        boardDetailDTO.setReply(getReplies(id));
 
         return boardDetailDTO;
     }
 
+    //댓글 가져오기
+    public List<BoardResponse.ReplyOutDTO> getReplies(Long id) {
 
+        List<BoardResponse.ReplyOutDTO> replyList = new ArrayList<>();
+        List<BoardResponse.ReplyOutDTO> userReplyList = replyRepository.findUserRepliesByBoardId(id);
+        List<BoardResponse.ReplyOutDTO> PBReplyList = replyRepository.findPBRepliesByBoardId(id);
+        replyList.addAll(userReplyList);
+        replyList.addAll(PBReplyList);
 
-    //북마크 저장하기
-    public void bookmarkBoard(Long boardId, Long userId) {
-
-        Optional<BoardBookmark> boardBookmarkOP = boardBookmarkRepository.findWithUserAndBoard(userId, boardId);
-
-        if (boardBookmarkOP.isPresent()) {
-            throw new Exception400("boardBookmark", "이미 북마크한 컨텐츠입니다");
+        for (BoardResponse.ReplyOutDTO replyOutDTO : replyList) {
+            replyOutDTO.setReReply(getReReplies(replyOutDTO.getId()));
         }
 
-        try {
-            Board board = boardRepository.findById(boardId).get();
-            User user = userRepository.findById(userId).get();
-            BoardBookmark boardBookmark = BoardBookmark.builder()
-                    .user(user)
-                    .board(board)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            boardBookmarkRepository.save(boardBookmark);
-        } catch (Exception e) {
-            throw new Exception500("북마크 실패" + e.getMessage());
+        return replyList;
+    }
+
+    //대댓글 가져오기
+    public List<BoardResponse.ReReplyOutDTO> getReReplies(Long replyId) {
+
+        List<BoardResponse.ReReplyOutDTO> reReplyList = new ArrayList<>();
+        List<BoardResponse.ReReplyOutDTO> userReReplyList = reReplyRepository.findUserReReplyByReplyId(replyId);
+        List<BoardResponse.ReReplyOutDTO> pbReReplyList = reReplyRepository.findPBReReplyByReplyId(replyId);
+        reReplyList.addAll(userReReplyList);
+        reReplyList.addAll(pbReReplyList);
+
+        return reReplyList;
+    }
+
+    //북마크 저장하기
+    @Transactional
+    public void bookmarkBoard(Long boardId, MyUserDetails myUserDetails) {
+
+        Member member = myUserDetails.getMember();
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new Exception404("해당 컨텐츠는 존재하지 않습니다."));
+
+        if (member.getRole().equals(Role.USER)) {
+            if (boardBookmarkRepository.findWithUserAndBoard(member.getId(), boardId).isPresent()) {
+                throw new Exception404("이미 북마크한 컨텐츠입니다.");
+            }
+            try {
+                BoardBookmark boardBookmarkUser = BoardBookmark.builder()
+                        .bookmarkerId(member.getId())
+                        .bookmarkerRole(BookmarkerRole.USER)
+                        .board(board)
+                        .build();
+                boardBookmarkRepository.save(boardBookmarkUser);
+            } catch (Exception e) {
+                throw new Exception500("북마크 실패" + e.getMessage());
+            }
+
+        } else if (member.getRole().equals(Role.PB)) {
+            if (boardBookmarkRepository.findWithPBAndBoard(member.getId(), boardId).isPresent()) {
+                throw new Exception400("content", "이미 북마크한 컨텐츠입니다.");
+            }
+            try {
+                BoardBookmark boardBookmarkPB = BoardBookmark.builder()
+                        .bookmarkerId(member.getId())
+                        .bookmarkerRole(BookmarkerRole.PB)
+                        .board(board)
+                        .build();
+                boardBookmarkRepository.save(boardBookmarkPB);
+            } catch (Exception e) {
+                throw new Exception500("북마크 실패" + e.getMessage());
+            }
+
+        } else {
+            throw new Exception401("권한이 없습니다.");
         }
     }
 
     //북마크 취소하기
     @Transactional
-    public void DeleteBookmarkBoard(Long boardId, Long userId) {
+    public void deleteBookmarkBoard(Long boardId, Long memberId) {
 
-        BoardBookmark boardBookmark = boardBookmarkRepository.findWithUserAndBoard(userId, boardId).orElseThrow(
-                () -> new Exception400("boardBookmark", "북마크 되지 않은 컨텐츠입니다"));
+        BoardBookmark boardBookmark = boardBookmarkRepository.findByMemberAndBoardId(memberId, boardId).orElseThrow(
+                () -> new Exception404("북마크 되지 않은 컨텐츠입니다"));
 
         try {
             boardBookmarkRepository.deleteById(boardBookmark.getId());
@@ -228,10 +271,21 @@ public class BoardService {
     //북마크한 컨텐츠 목록 가져오기
     public PageDTO<BoardResponse.BoardPageDTO> getBookmarkBoards(MyUserDetails myUserDetails, Pageable pageable) {
 
-        User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 유저입니다."));
+        Member member = myUserDetails.getMember();
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("존재하지 않는 유저입니다."));
+            Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithUserId(user.getId(), pageable);
+            List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+            return new PageDTO<>(list, boardPG);
 
-        Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithUserId(user.getId(), pageable);
-        List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
-        return new PageDTO<>(list, boardPG);
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("존재하지 않는 PB 입니다."));
+            Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithPbId(pb.getId(), pageable);
+            List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+            return new PageDTO<>(list, boardPG);
+
+        } else {
+            throw new Exception403("권한이 없습니다.");
+        }
     }
 }

@@ -91,4 +91,10 @@ public class PBService {
             throw new Exception500("PB 목록 조회 에러");
         }
     }
+
+    public PB getPB(Long id) {
+        return pbRepository.findById(id).orElseThrow(
+                () -> new Exception404("해당 PB 는 찾을 수 없습니다.")
+        );
+    }
 }
