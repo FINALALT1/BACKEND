@@ -32,6 +32,22 @@ import javax.validation.Valid;
 public class PBController {
     private final PBService pbService;
 
+    // 증권사 리스트 가져오기 - 메인페이지, 회원가입시
+    @MyLog
+    @GetMapping("/companies")
+    public ResponseEntity<?> joinPB(@RequestParam(defaultValue = "true") Boolean includeLogo) {
+        ResponseDTO<?> responseDTO = null;
+        if(includeLogo){
+            PBResponse.CompanyOutDTO companyOutDTO = pbService.getCompanies();
+            responseDTO = new ResponseDTO<>(companyOutDTO);
+        }
+        else {
+            PBResponse.CompanyNameOutDTO companyNameOutDTO = pbService.getCompanyNames();
+            responseDTO = new ResponseDTO<>(companyNameOutDTO);
+        }
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
     @MyLog
     @ApiOperation(value = "PB 회원가입", notes = "<b>joinInDTO 예시 및 설명</b>\n<br>{\n" +
             "&nbsp;&nbsp;\"email\": \"investor2@naver.com\",&nbsp;<font color=\"#C0C0C0\">// @ 포함해야함 + 30바이트 이내</font>\n" +

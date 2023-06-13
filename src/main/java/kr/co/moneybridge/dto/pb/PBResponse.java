@@ -9,8 +9,60 @@ import kr.co.moneybridge.model.pb.PBSpeciality;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 public class PBResponse {
     @ApiModel(description = "PB 회원가입 완료시 응답 데이터")
+    @Setter
+    @Getter
+    public static class CompanyNameDTO {
+        private Long id;
+        private String name;
+
+        public CompanyNameDTO(Company company) {
+
+            this.id = company.getId();
+            this.name = company.getName();
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class CompanyNameOutDTO {
+        private List<CompanyNameDTO> list;
+
+        public CompanyNameOutDTO(List<CompanyNameDTO> list) {
+
+            this.list = list;
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class CompanyDTO {
+        private Long id;
+        private String logo;
+        private String name;
+
+        public CompanyDTO(Company company) {
+
+            this.id = company.getId();
+            this.logo = company.getLogo();
+            this.name = company.getName();
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class CompanyOutDTO {
+        private List<CompanyDTO> list;
+
+        public CompanyOutDTO(List<CompanyDTO> list) {
+
+            this.list = list;
+        }
+    }
+
     @Setter
     @Getter
     public static class JoinOutDTO {
