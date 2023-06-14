@@ -119,4 +119,33 @@ public class ReservationService {
             throw new Exception500("상담 예약 저장 실패 : " + e.getMessage());
         }
     }
+
+    @MyLog
+    public PageDTO<ReservationResponse.ReviewDTO> getReviews(Long pbId, int page) {
+        pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            // 페이징
+            Page<Review> reviews = reviewRepository.findAllByPbIdAndProcess(
+                    pbId,
+                    ReservationProcess.COMPLETE,
+                    PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt")
+            );
+            List<ReservationResponse.ReviewDTO> reviewDTOs = new ArrayList<>();
+            for (Review review : reviews) {
+                User user = userRepository.findUserByReviewId(review.getId());
+                List<Style> styles = styleRepository.findAllByReviewId(review.getId());
+                reviewDTOs.add(new ReservationResponse.ReviewDTO(review, user, styles));
+            }
+
+            // 응답
+            return new PageDTO<>(
+                    reviewDTOs, reviews, Review.class
+            );
+        } catch (Exception e) {
+            throw new Exception500("상담 후기 목록 조회 실패 : " + e.getMessage());
+        }
+    }
 }
