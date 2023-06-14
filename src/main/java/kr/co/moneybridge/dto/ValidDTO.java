@@ -13,6 +13,7 @@ import lombok.Setter;
 public class ValidDTO {
     @ApiModelProperty
     private String key;
+
     @ApiModelProperty
     private String value;
 }

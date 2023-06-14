@@ -42,7 +42,7 @@ public class SwaggerResponses {
     @ApiResponses({
             @ApiResponse(code = 200,
                     message = OK,
-                    response = ReservationResponse.BaseOutDTO.class),
+                    response = ReservationResponse.BaseDTO.class),
             @ApiResponse(code = 401,
                     message = UNAUTHORIZED),
             @ApiResponse(code = 403,

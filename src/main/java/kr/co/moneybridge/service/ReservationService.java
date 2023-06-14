@@ -16,7 +16,6 @@ import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +37,7 @@ public class ReservationService {
     private final StyleRepository styleRepository;
 
     @MyLog
-    public ReservationResponse.BaseOutDTO getReservationBase(Long pbId, Long userId) {
+    public ReservationResponse.BaseDTO getReservationBase(Long pbId, Long userId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
@@ -50,20 +49,20 @@ public class ReservationService {
         );
 
         try {
-            return new ReservationResponse.BaseOutDTO(
-                    new ReservationResponse.pbInfoDTO(
+            return new ReservationResponse.BaseDTO(
+                    new ReservationResponse.PBInfoDTO(
                             pbPS.getName(),
                             pbPS.getBranch().getName(),
                             pbPS.getBranch().getRoadAddress(),
                             pbPS.getBranch().getLatitude(),
                             pbPS.getBranch().getLongitude()
                     ),
-                    new ReservationResponse.consultInfoDTO(
+                    new ReservationResponse.ConsultInfoDTO(
                             localTimeToString(pbPS.getConsultStart()),
                             localTimeToString(pbPS.getConsultEnd()),
                             pbPS.getConsultNotice()
                     ),
-                    new ReservationResponse.userInfoDTO(
+                    new ReservationResponse.UserInfoDTO(
                             userPS.getName(),
                             userPS.getPhoneNumber(),
                             userPS.getEmail()
@@ -77,7 +76,7 @@ public class ReservationService {
     @MyLog
     @Transactional
     public void applyReservation(Long pbId,
-                                 ReservationRequest.ApplyInDTO applyInDTO,
+                                 ReservationRequest.ApplyDTO applyDTO,
                                  Long userId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -93,8 +92,8 @@ public class ReservationService {
             String locationName = null;
             String locationAddress = null;
             // 방문상담
-            if (applyInDTO.getReservationType().equals(ReservationType.VISIT)) {
-                if (applyInDTO.getLocationType().equals(LocationType.BRANCH)) {
+            if (applyDTO.getReservationType().equals(ReservationType.VISIT)) {
+                if (applyDTO.getLocationType().equals(LocationType.BRANCH)) {
                     locationName = pbPS.getBranch().getName();
                     locationAddress = pbPS.getBranch().getRoadAddress();
                 }
@@ -102,17 +101,17 @@ public class ReservationService {
             reservationRepository.save(Reservation.builder()
                     .user(userPS)
                     .pb(pbPS)
-                    .type(applyInDTO.getReservationType())
+                    .type(applyDTO.getReservationType())
                     .locationName(locationName)
                     .locationAddress(locationAddress)
-                    .candidateTime1(StringToLocalDateTime(applyInDTO.getCandidateTime1()))
-                    .candidateTime2(StringToLocalDateTime(applyInDTO.getCandidateTime2()))
-                    .question(applyInDTO.getQuestion())
-                    .goal(applyInDTO.getGoal())
+                    .candidateTime1(StringToLocalDateTime(applyDTO.getCandidateTime1()))
+                    .candidateTime2(StringToLocalDateTime(applyDTO.getCandidateTime2()))
+                    .question(applyDTO.getQuestion())
+                    .goal(applyDTO.getGoal())
                     .process(ReservationProcess.APPLY)
-                    .investor(applyInDTO.getUserName())
-                    .phoneNumber(applyInDTO.getUserPhoneNumber())
-                    .email(applyInDTO.getUserEmail())
+                    .investor(applyDTO.getUserName())
+                    .phoneNumber(applyDTO.getUserPhoneNumber())
+                    .email(applyDTO.getUserEmail())
                     .status(ReservationStatus.ACTIVE)
                     .build());
         } catch (Exception e) {
@@ -146,6 +145,26 @@ public class ReservationService {
             );
         } catch (Exception e) {
             throw new Exception500("상담 후기 목록 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    public ReservationResponse.RecentInfoDTO getRecentReservationInfo(Long pbId) {
+        pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            return new ReservationResponse.RecentInfoDTO(
+                    reservationRepository.countReservationByPBIdAndProcess(pbId, ReservationProcess.APPLY),
+                    reservationRepository.countRecentReservationByPBIdAndProcess(pbId, ReservationProcess.APPLY) >= 1,
+                    reservationRepository.countReservationByPBIdAndProcess(pbId, ReservationProcess.CONFIRM),
+                    reservationRepository.countRecentReservationByPBIdAndProcess(pbId, ReservationProcess.CONFIRM) >= 1,
+                    reservationRepository.countReservationByPBIdAndProcess(pbId, ReservationProcess.COMPLETE),
+                    reservationRepository.countRecentReservationByPBIdAndProcess(pbId, ReservationProcess.COMPLETE) >= 1
+            );
+        } catch (Exception e) {
+            throw new Exception500("??? : " + e.getMessage());
         }
     }
 }

@@ -76,20 +76,20 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
 
         // stub
         Mockito.when(reservationService.getReservationBase(anyLong(), any()))
-                .thenReturn(new ReservationResponse.BaseOutDTO(
-                        new ReservationResponse.pbInfoDTO(
+                .thenReturn(new ReservationResponse.BaseDTO(
+                        new ReservationResponse.PBInfoDTO(
                                 pb.getName(),
                                 pb.getBranch().getName(),
                                 pb.getBranch().getRoadAddress(),
                                 pb.getBranch().getLatitude(),
                                 pb.getBranch().getLongitude()
                         ),
-                        new ReservationResponse.consultInfoDTO(
+                        new ReservationResponse.ConsultInfoDTO(
                                 MyDateUtil.localTimeToString(pb.getConsultStart()),
                                 MyDateUtil.localTimeToString(pb.getConsultEnd()),
                                 pb.getConsultNotice()
                         ),
-                        new ReservationResponse.userInfoDTO(
+                        new ReservationResponse.UserInfoDTO(
                                 user.getName(),
                                 user.getPhoneNumber(),
                                 user.getEmail()
@@ -126,17 +126,17 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
         Branch branch = newMockBranch(1L, company, 1);
         PB pb = newMockPB(pbId, "이피비", branch);
         User user = newMockUser(1L, "lee");
-        ReservationRequest.ApplyInDTO applyInDTO = new ReservationRequest.ApplyInDTO();
-        applyInDTO.setGoal(ReservationGoal.PROFIT);
-        applyInDTO.setReservationType(ReservationType.VISIT);
-        applyInDTO.setLocationType(LocationType.BRANCH);
-        applyInDTO.setCandidateTime1("2023-05-15T09:00:00");
-        applyInDTO.setCandidateTime2("2023-05-15T10:00:00");
-        applyInDTO.setQuestion("2023-05-15T10:00:00");
-        applyInDTO.setUserName("lee");
-        applyInDTO.setUserPhoneNumber("01012345678");
-        applyInDTO.setUserEmail("lee@nate.com");
-        String requestBody = om.writeValueAsString(applyInDTO);
+        ReservationRequest.ApplyDTO applyDTO = new ReservationRequest.ApplyDTO();
+        applyDTO.setGoal(ReservationGoal.PROFIT);
+        applyDTO.setReservationType(ReservationType.VISIT);
+        applyDTO.setLocationType(LocationType.BRANCH);
+        applyDTO.setCandidateTime1("2023-05-15T09:00:00");
+        applyDTO.setCandidateTime2("2023-05-15T10:00:00");
+        applyDTO.setQuestion("2023-05-15T10:00:00");
+        applyDTO.setUserName("lee");
+        applyDTO.setUserPhoneNumber("01012345678");
+        applyDTO.setUserEmail("lee@nate.com");
+        String requestBody = om.writeValueAsString(applyDTO);
 
         // stub
 

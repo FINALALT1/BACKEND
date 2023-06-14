@@ -13,7 +13,7 @@ public class ReservationRequest {
     @ApiModel
     @Getter
     @Setter
-    public static class ApplyInDTO {
+    public static class ApplyDTO {
         @ApiModelProperty(example = "PROFIT")
         private ReservationGoal goal;
 

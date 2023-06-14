@@ -65,20 +65,20 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(Optional.of(user));
 
         // when
-        ReservationResponse.BaseOutDTO baseOutDTO = reservationService.getReservationBase(pbId, user.getId());
+        ReservationResponse.BaseDTO baseDTO = reservationService.getReservationBase(pbId, user.getId());
 
         // then
-        assertThat(baseOutDTO.getPbInfo().getPbName()).isEqualTo(pb.getName());
-        assertThat(baseOutDTO.getPbInfo().getBranchName()).isEqualTo(pb.getBranch().getName());
-        assertThat(baseOutDTO.getPbInfo().getBranchAddress()).isEqualTo(pb.getBranch().getRoadAddress());
-        assertThat(baseOutDTO.getPbInfo().getBranchLatitude()).isEqualTo(pb.getBranch().getLatitude());
-        assertThat(baseOutDTO.getPbInfo().getBranchLongitude()).isEqualTo(pb.getBranch().getLongitude());
-        assertThat(baseOutDTO.getConsultInfo().getConsultStart()).isEqualTo(MyDateUtil.localTimeToString(pb.getConsultStart()));
-        assertThat(baseOutDTO.getConsultInfo().getConsultEnd()).isEqualTo(MyDateUtil.localTimeToString(pb.getConsultEnd()));
-        assertThat(baseOutDTO.getConsultInfo().getNotice()).isEqualTo(pb.getConsultNotice());
-        assertThat(baseOutDTO.getUserInfo().getUserName()).isEqualTo(user.getName());
-        assertThat(baseOutDTO.getUserInfo().getUserPhoneNumber()).isEqualTo(user.getPhoneNumber());
-        assertThat(baseOutDTO.getUserInfo().getUserEmail()).isEqualTo(user.getEmail());
+        assertThat(baseDTO.getPbInfo().getPbName()).isEqualTo(pb.getName());
+        assertThat(baseDTO.getPbInfo().getBranchName()).isEqualTo(pb.getBranch().getName());
+        assertThat(baseDTO.getPbInfo().getBranchAddress()).isEqualTo(pb.getBranch().getRoadAddress());
+        assertThat(baseDTO.getPbInfo().getBranchLatitude()).isEqualTo(pb.getBranch().getLatitude());
+        assertThat(baseDTO.getPbInfo().getBranchLongitude()).isEqualTo(pb.getBranch().getLongitude());
+        assertThat(baseDTO.getConsultInfo().getConsultStart()).isEqualTo(MyDateUtil.localTimeToString(pb.getConsultStart()));
+        assertThat(baseDTO.getConsultInfo().getConsultEnd()).isEqualTo(MyDateUtil.localTimeToString(pb.getConsultEnd()));
+        assertThat(baseDTO.getConsultInfo().getNotice()).isEqualTo(pb.getConsultNotice());
+        assertThat(baseDTO.getUserInfo().getUserName()).isEqualTo(user.getName());
+        assertThat(baseDTO.getUserInfo().getUserPhoneNumber()).isEqualTo(user.getPhoneNumber());
+        assertThat(baseDTO.getUserInfo().getUserEmail()).isEqualTo(user.getEmail());
     }
 
 //    @Test

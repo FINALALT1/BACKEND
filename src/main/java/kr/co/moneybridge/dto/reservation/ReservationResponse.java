@@ -2,7 +2,6 @@ package kr.co.moneybridge.dto.reservation;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.reservation.Review;
 import kr.co.moneybridge.model.reservation.Style;
 import kr.co.moneybridge.model.reservation.StyleStyle;
@@ -19,17 +18,17 @@ public class ReservationResponse {
     @ApiModel
     @Getter
     @Setter
-    public static class BaseOutDTO {
+    public static class BaseDTO {
         @ApiModelProperty
-        private pbInfoDTO pbInfo;
+        private PBInfoDTO pbInfo;
 
         @ApiModelProperty
-        private consultInfoDTO consultInfo;
+        private ConsultInfoDTO consultInfo;
 
         @ApiModelProperty
-        private userInfoDTO userInfo;
+        private UserInfoDTO userInfo;
 
-        public BaseOutDTO(pbInfoDTO pbInfo, consultInfoDTO consultInfo, userInfoDTO userInfo) {
+        public BaseDTO(PBInfoDTO pbInfo, ConsultInfoDTO consultInfo, UserInfoDTO userInfo) {
             this.pbInfo = pbInfo;
             this.consultInfo = consultInfo;
             this.userInfo = userInfo;
@@ -39,7 +38,7 @@ public class ReservationResponse {
     @ApiModel
     @Getter
     @Setter
-    public static class pbInfoDTO {
+    public static class PBInfoDTO {
         @ApiModelProperty(example = "김피비")
         private String pbName;
 
@@ -55,7 +54,7 @@ public class ReservationResponse {
         @ApiModelProperty(example = "126.97037")
         private Double branchLongitude;
 
-        public pbInfoDTO(String pbName, String branchName, String branchAddress, Double branchLatitude, Double branchLongitude) {
+        public PBInfoDTO(String pbName, String branchName, String branchAddress, Double branchLatitude, Double branchLongitude) {
             this.pbName = pbName;
             this.branchName = branchName;
             this.branchAddress = branchAddress;
@@ -67,7 +66,7 @@ public class ReservationResponse {
     @ApiModel
     @Getter
     @Setter
-    public static class consultInfoDTO {
+    public static class ConsultInfoDTO {
         @ApiModelProperty(example = "09:00")
         private String consultStart;
 
@@ -77,7 +76,7 @@ public class ReservationResponse {
         @ApiModelProperty(example = "월요일 13시 제외")
         private String notice;
 
-        public consultInfoDTO(String consultStart, String consultEnd, String notice) {
+        public ConsultInfoDTO(String consultStart, String consultEnd, String notice) {
             this.consultStart = consultStart;
             this.consultEnd = consultEnd;
             this.notice = notice;
@@ -87,17 +86,17 @@ public class ReservationResponse {
     @ApiModel
     @Getter
     @Setter
-    public static class userInfoDTO {
+    public static class UserInfoDTO {
         @ApiModelProperty(example = "홍길동")
         private String userName;
 
         @ApiModelProperty(example = "01012345678")
         private String userPhoneNumber;
 
-        @ApiModelProperty(example = "asdf1234@gmail.")
+        @ApiModelProperty(example = "asdf1234@gmail.com")
         private String userEmail;
 
-        public userInfoDTO(String userName, String userPhoneNumber, String userEmail) {
+        public UserInfoDTO(String userName, String userPhoneNumber, String userEmail) {
             this.userName = userName;
             this.userPhoneNumber = userPhoneNumber;
             this.userEmail = userEmail;
@@ -108,10 +107,19 @@ public class ReservationResponse {
     @Getter
     @Setter
     public static class ReviewDTO {
+        @ApiModelProperty(example = "1")
         private Long reviewId;
+
+        @ApiModelProperty(example = "홍길동")
         private String username;
+
+        @ApiModelProperty(example = "content입니다.")
         private String content;
+
+        @ApiModelProperty(example = "2023-05-15")
         private String createdAt;
+
+        @ApiModelProperty
         private List<StyleDTO> list;
 
         public ReviewDTO(Review review, User user, List<Style> styles) {
@@ -136,6 +144,38 @@ public class ReservationResponse {
 
         public StyleDTO(StyleStyle style) {
             this.style = style;
+        }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class RecentInfoDTO {
+        @ApiModelProperty(example = "2")
+        private Integer applyCount;
+
+        @ApiModelProperty(example = "true")
+        private Boolean isNewApply;
+
+        @ApiModelProperty(example = "3")
+        private Integer confirmCount;
+
+        @ApiModelProperty(example = "false")
+        private Boolean isNewConfirm;
+
+        @ApiModelProperty(example = "0")
+        private Integer completeCount;
+
+        @ApiModelProperty(example = "false")
+        private Boolean isNewComplete;
+
+        public RecentInfoDTO(Integer applyCount, Boolean isNewApply, Integer confirmCount, Boolean isNewConfirm, Integer completeCount, Boolean isNewComplete) {
+            this.applyCount = applyCount;
+            this.isNewApply = isNewApply;
+            this.confirmCount = confirmCount;
+            this.isNewConfirm = isNewConfirm;
+            this.completeCount = completeCount;
+            this.isNewComplete = isNewComplete;
         }
     }
 }

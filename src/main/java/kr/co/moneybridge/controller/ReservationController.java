@@ -29,9 +29,9 @@ public class ReservationController {
     @GetMapping("/user/reservation/{pbId}")
     public ResponseEntity<?> getReservationBase(@PathVariable Long pbId,
                                                 @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        ReservationResponse.BaseOutDTO baseOutDTO = reservationService.getReservationBase(pbId, myUserDetails.getMember().getId());
+        ReservationResponse.BaseDTO baseDTO = reservationService.getReservationBase(pbId, myUserDetails.getMember().getId());
 
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(baseOutDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(baseDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -40,48 +40,48 @@ public class ReservationController {
     @MyLog
     @PostMapping("/user/reservation/{pbId}")
     public ResponseEntity<?> applyReservation(@PathVariable Long pbId,
-                                              @RequestBody ReservationRequest.ApplyInDTO applyInDTO,
+                                              @RequestBody ReservationRequest.ApplyDTO applyDTO,
                                               @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        if (applyInDTO.getGoal() == null
-                || !isValidReservationGoal(applyInDTO.getGoal())) {
-            throw new Exception400(applyInDTO.getGoal().toString(), "Enum 형식에 맞춰 요청해주세요.");
+        if (applyDTO.getGoal() == null
+                || !isValidReservationGoal(applyDTO.getGoal())) {
+            throw new Exception400(applyDTO.getGoal().toString(), "Enum 형식에 맞춰 요청해주세요.");
         }
 
-        if (!isValidReservationType(applyInDTO.getReservationType())) {
-            throw new Exception400(applyInDTO.getReservationType().toString(), "Enum 형식에 맞춰 요청해주세요.");
+        if (!isValidReservationType(applyDTO.getReservationType())) {
+            throw new Exception400(applyDTO.getReservationType().toString(), "Enum 형식에 맞춰 요청해주세요.");
         }
 
-        if (applyInDTO.getReservationType().equals(ReservationType.VISIT)) {
-            if (!isValidLocationType(applyInDTO.getLocationType())) {
-                throw new Exception400(applyInDTO.getLocationType().toString(), "Enum 형식에 맞춰 요청해주세요.");
+        if (applyDTO.getReservationType().equals(ReservationType.VISIT)) {
+            if (!isValidLocationType(applyDTO.getLocationType())) {
+                throw new Exception400(applyDTO.getLocationType().toString(), "Enum 형식에 맞춰 요청해주세요.");
             }
         }
 
-        if (!applyInDTO.getCandidateTime1().matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}")) {
-            throw new Exception400(applyInDTO.getCandidateTime1(), "2023-05-15T09:00:00 형식에 맞춰 입력해주세요.");
+        if (!applyDTO.getCandidateTime1().matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}")) {
+            throw new Exception400(applyDTO.getCandidateTime1(), "2023-05-15T09:00:00 형식에 맞춰 입력해주세요.");
         }
 
-        if (!applyInDTO.getCandidateTime2().matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}")) {
-            throw new Exception400(applyInDTO.getCandidateTime2(), "2023-05-15T09:00:00 형식에 맞춰 입력해주세요.");
+        if (!applyDTO.getCandidateTime2().matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}")) {
+            throw new Exception400(applyDTO.getCandidateTime2(), "2023-05-15T09:00:00 형식에 맞춰 입력해주세요.");
         }
 
-        if (!applyInDTO.getQuestion().matches("^.{0,100}$")) {
-            throw new Exception400(applyInDTO.getQuestion(), "최대 100자까지 입력 가능합니다.");
+        if (!applyDTO.getQuestion().matches("^.{0,100}$")) {
+            throw new Exception400(applyDTO.getQuestion(), "최대 100자까지 입력 가능합니다.");
         }
 
-        if (applyInDTO.getUserName().isBlank()) {
-            throw new Exception400(applyInDTO.getUserName(), "이름을 입력해주세요.");
+        if (applyDTO.getUserName().isBlank()) {
+            throw new Exception400(applyDTO.getUserName(), "이름을 입력해주세요.");
         }
 
-        if (!applyInDTO.getUserPhoneNumber().matches("^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$")) {
-            throw new Exception400(applyInDTO.getUserPhoneNumber(), "유효하지 않은 휴대폰 번호 형식입니다.");
+        if (!applyDTO.getUserPhoneNumber().matches("^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$")) {
+            throw new Exception400(applyDTO.getUserPhoneNumber(), "유효하지 않은 휴대폰 번호 형식입니다.");
         }
 
-        if (!applyInDTO.getUserEmail().matches("^(?=.{1,30}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-            throw new Exception400(applyInDTO.getUserEmail(), "유효하지 않은 이메일 형식입니다.");
+        if (!applyDTO.getUserEmail().matches("^(?=.{1,30}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new Exception400(applyDTO.getUserEmail(), "유효하지 않은 이메일 형식입니다.");
         }
 
-        reservationService.applyReservation(pbId, applyInDTO, myUserDetails.getMember().getId());
+        reservationService.applyReservation(pbId, applyDTO, myUserDetails.getMember().getId());
 
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
         return ResponseEntity.ok(responseDTO);
@@ -96,6 +96,17 @@ public class ReservationController {
         PageDTO<ReservationResponse.ReviewDTO> reviewsOutDTO = reservationService.getReviews(myUserDetails.getMember().getId(), page);
 
         ResponseDTO<?> responseDTO = new ResponseDTO<>(reviewsOutDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @ApiOperation(value = "고객 관리 페이지 상담 현황 조회")
+    @SwaggerResponses.DefaultApiResponses
+    @MyLog
+    @GetMapping("/pb/management/recent")
+    public ResponseEntity<?> getRecentReservationInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.RecentInfoDTO recentInfoDTO = reservationService.getRecentReservationInfo(myUserDetails.getMember().getId());
+
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(recentInfoDTO);
         return ResponseEntity.ok(responseDTO);
     }
 }
