@@ -46,4 +46,14 @@ public class PBController {
 
         return ResponseEntity.ok(responseDTO);
     }
+
+    @GetMapping("/pbs")
+    public ResponseEntity<?> getPBWithName(@RequestParam(value = "name") String name) {
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        PageDTO<PBResponse.PBPageDTO> pageDTO = pbService.getPBWithName(name, pageable);
+        ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 }
