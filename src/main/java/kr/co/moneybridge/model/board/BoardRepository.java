@@ -24,7 +24,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "FROM Board b " +
             "JOIN b.pb p JOIN p.branch bh JOIN bh.company c " +
             "WHERE p.name LIKE CONCAT('%', :name, '%') AND b.status = :status")
-    Page<BoardResponse.BoardPageDTO> findByPbName(String name, BoardStatus active, Pageable pageable);
+    Page<BoardResponse.BoardPageDTO> findByPbName(@Param("name") String name, @Param("status") BoardStatus status, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) " +
             "FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c " +
