@@ -18,10 +18,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("select r from Review r where r.reservation.id = :reservationId")
     Optional<Review> findByReservationId(@Param("reservationId") Long reservationId);
 
-    @Query("select new kr.co.moneybridge.dto.reservation.ReservationResponse$ReviewDTO(rev, u) " +
+    @Query("select rev " +
             "from Review rev " +
             "join rev.reservation res " +
             "join res.user u " +
             "where res.pb.id = :pbId and res.process = :process")
-    Page<ReservationResponse.ReviewDTO> findAll(@Param("pbId") Long pbId, @Param("process") ReservationProcess process, Pageable pageable);
+    Page<Review> findAllByPbIdAndProcess(@Param("pbId") Long pbId, @Param("process") ReservationProcess process, Pageable pageable);
 }

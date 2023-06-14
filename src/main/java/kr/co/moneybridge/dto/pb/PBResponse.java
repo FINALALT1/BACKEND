@@ -26,12 +26,11 @@ public class PBResponse {
         private String profile;
         private String name;
         private String companyName;
+        private String branchName;
         private String msg;
-        private int career;
         private PBSpeciality speciality1;
         private PBSpeciality speciality2;
-        private String roadAddress;
-        private String streetAddress;
+        private int career;
         private int reserveCount;
         private int reviewCount;
 
@@ -40,12 +39,11 @@ public class PBResponse {
             this.profile = pb.getProfile();
             this.name = pb.getName();
             this.companyName = company.getName();
+            this.branchName = branch.getName();
             this.msg = pb.getMsg();
             this.career = pb.getCareer();
             this.speciality1 = pb.getSpeciality1();
             this.speciality2 = pb.getSpeciality2();
-            this.roadAddress = branch.getRoadAddress();
-            this.streetAddress = branch.getStreetAddress();
         }
     }
 }

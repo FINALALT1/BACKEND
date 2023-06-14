@@ -21,6 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
 import static kr.co.moneybridge.core.util.MyDateUtil.localTimeToString;
 
@@ -32,6 +35,7 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
+    private final StyleRepository styleRepository;
 
     @MyLog
     public ReservationResponse.BaseOutDTO getReservationBase(Long pbId, Long userId) {
@@ -124,13 +128,21 @@ public class ReservationService {
 
         try {
             // 페이징
-            Page<ReservationResponse.ReviewDTO> reviewPG = reviewRepository
-                    .findAll(pbId,
-                            ReservationProcess.COMPLETE,
-                            PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt"));
+            Page<Review> reviews = reviewRepository.findAllByPbIdAndProcess(
+                    pbId,
+                    ReservationProcess.COMPLETE,
+                    PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt")
+            );
+            List<ReservationResponse.ReviewDTO> reviewDTOs = new ArrayList<>();
+            for (Review review : reviews) {
+                User user = userRepository.findUserByReviewId(review.getId());
+                List<Style> styles = styleRepository.findAllByReviewId(review.getId());
+                reviewDTOs.add(new ReservationResponse.ReviewDTO(review, user, styles));
+            }
+
             // 응답
             return new PageDTO<>(
-                    reviewPG.getContent(), reviewPG
+                    reviewDTOs, reviews, Review.class
             );
         } catch (Exception e) {
             throw new Exception500("상담 후기 목록 조회 실패 : " + e.getMessage());

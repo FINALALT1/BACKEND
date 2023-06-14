@@ -29,10 +29,10 @@ public class Branch {
     private String streetAddress; // 지번 주소, varchar(255)
 
     @Column(nullable = false)
-    private String latitude; // 위도, varchar(255)
+    private Double latitude; // 위도
 
     @Column(nullable = false)
-    private String longitude; // 경도, varchar(255)
+    private Double longitude; // 경도
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
