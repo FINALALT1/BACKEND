@@ -139,7 +139,7 @@ public class BoardService {
                         .build();
                 boardBookmarkRepository.save(boardBookmarkUser);
             } catch (Exception e) {
-                throw new Exception500("북마크 실패" + e.getMessage());
+                throw new Exception500("북마크 실패: " + e.getMessage());
             }
 
         } else if (member.getRole().equals(Role.PB)) {
@@ -154,7 +154,7 @@ public class BoardService {
                         .build();
                 boardBookmarkRepository.save(boardBookmarkPB);
             } catch (Exception e) {
-                throw new Exception500("북마크 실패" + e.getMessage());
+                throw new Exception500("북마크 실패: " + e.getMessage());
             }
 
         } else {

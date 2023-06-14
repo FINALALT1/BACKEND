@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -27,8 +28,8 @@ import javax.servlet.http.Cookie;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("투자자 관련 API")
@@ -50,8 +51,169 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user1 = userRepository.save(dummy.newUser("로그인"));
+        User user2 = userRepository.save(User.builder()
+                .name("김비밀")
+                .password(passwordEncoder.encode("password1234"))
+                .email("jisu3148496@naver.com")
+                .phoneNumber("01012345678")
+                .role(Role.USER)
+                .profile("프로필.png")
+                .build());
         em.clear();
+    }
+
+    @DisplayName("개인 정보 수정 성공")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void updateMyInfo_test() throws Exception {
+        // given
+        UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO = new UserRequest.UpdateMyInfoInDTO();
+        updateMyInfoInDTO.setName("안비밀");
+        String requestBody = om.writeValueAsString(updateMyInfoInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(patch("/auth/myInfo").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+    }
+
+    @DisplayName("개인 정보 가져오기 성공")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void getMyInfo_test() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/auth/myInfo"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
+        resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.email").value("jisu3148496@naver.com"));
+    }
+
+    @DisplayName("비밀번호 확인 성공")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void checkPassword_test() throws Exception {
+        // given
+        UserRequest.CheckPasswordInDTO checkPasswordInDTO = new UserRequest.CheckPasswordInDTO();
+        checkPasswordInDTO.setPassword("password1234");
+        String requestBody = om.writeValueAsString(checkPasswordInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/auth/password").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+    }
+
+    @DisplayName("비밀번호 재설정 성공")
+    @Test
+    public void rePassword_test() throws Exception {
+        // given
+        UserRequest.RePasswordInDTO rePasswordInDTO = new UserRequest.RePasswordInDTO();
+        rePasswordInDTO.setId(1L);
+        rePasswordInDTO.setRole(Role.USER);
+        rePasswordInDTO.setPassword("1111abcd");
+        String requestBody = om.writeValueAsString(rePasswordInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(patch("/password").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+    }
+
+    @DisplayName("이메일 찾기 성공")
+    @Test
+    public void emailFind_test() throws Exception {
+        // given
+        UserRequest.EmailFindInDTO emailFindInDTO = new UserRequest.EmailFindInDTO();
+        emailFindInDTO.setRole(Role.USER);
+        emailFindInDTO.setName("김비밀");
+        emailFindInDTO.setPhoneNumber("01012345678");
+        String requestBody = om.writeValueAsString(emailFindInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/email").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data[0].name").value("김비밀"));
+        resultActions.andExpect(jsonPath("$.data[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data[0].email").value("jisu3148496@naver.com"));
+    }
+
+    @DisplayName("비밀번호 찾기시 이메일 인증 성공")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void password_test() throws Exception {
+        // given
+        UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
+        passwordInDTO.setRole(Role.USER);
+        passwordInDTO.setName("김비밀");
+        passwordInDTO.setEmail("jisu3148496@naver.com");
+        String requestBody = om.writeValueAsString(passwordInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/password").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.role").value("USER"));
+        resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
+        resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.email").value("jisu3148496@naver.com"));
+        String regex = "^[0-9A-Z]{8}$";
+        resultActions.andExpect(jsonPath("$.data.code").value(matchesPattern(regex)));
+    }
+
+    @DisplayName("이메일 인증 성공")
+    @Test
+    public void email_test() throws Exception {
+        // given
+        UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();
+        emailInDTO.setEmail("jisu3148496@naver.com");
+        String requestBody = om.writeValueAsString(emailInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/email/authentication").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        String regex = "^[0-9A-Z]{8}$"; // 이는 8자리 숫자와 대문자를 예상하는 정규식입니다.
+        resultActions.andExpect(jsonPath("$.data.code").value(matchesPattern(regex)));
     }
 
     @DisplayName("탈퇴 성공")

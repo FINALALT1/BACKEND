@@ -32,3 +32,5 @@ logging:
 
 SECRET_ACCESS: "originwasdonjul"
 SECRET_REFRESH: "backend"
+
+EMAIL_PASSWORD: "finalback1234!!"

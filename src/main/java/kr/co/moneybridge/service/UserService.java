@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nimbusds.jose.util.Pair;
-import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
@@ -17,12 +16,12 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreementRepository;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,9 +29,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -46,6 +49,117 @@ public class UserService {
     private final MyJwtProvider myJwtProvider;
     private final RedisUtil redisUtil;
     private final MyMemberUtil myMemberUtil;
+    private final JavaMailSender javaMailSender;
+
+    @MyLog
+    @Transactional
+    public void updateMyInfo(UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO, MyUserDetails myUserDetails) {
+        Member memberPS = myUserDetails.getMember();
+
+        if(updateMyInfoInDTO.getName() != null && !updateMyInfoInDTO.getName().isEmpty()) { // isEmpty()는 null이 아닐 때만 확인 가능
+            memberPS.updateName(updateMyInfoInDTO.getName());
+        }
+        if (updateMyInfoInDTO.getPhoneNumber() != null && !updateMyInfoInDTO.getPhoneNumber().isEmpty()){
+            memberPS.updatePhoneNumber(updateMyInfoInDTO.getPhoneNumber());
+        }
+    }
+
+    @MyLog
+    public UserResponse.MyInfoOutDTO getMyInfo(MyUserDetails myUserDetails) {
+        return new UserResponse.MyInfoOutDTO(myUserDetails.getMember());
+    }
+
+    @MyLog
+    public void checkPassword(UserRequest.CheckPasswordInDTO checkPasswordInDTO, MyUserDetails myUserDetails) {
+        if(!passwordEncoder.matches(checkPasswordInDTO.getPassword(), myUserDetails.getPassword())){
+            throw new Exception400("password", "비밀번호가 틀렸습니다");
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void updatePassword(UserRequest.RePasswordInDTO rePasswordInDTO) {
+        Member memberPS = myMemberUtil.findById(rePasswordInDTO.getId(), rePasswordInDTO.getRole());
+        String encPassword = passwordEncoder.encode(rePasswordInDTO.getPassword()); // 60Byte
+        memberPS.updatePassword(encPassword);
+    }
+
+    @MyLog
+    public List<UserResponse.EmailFindOutDTO> findEmail(UserRequest.EmailFindInDTO emailFindInDTO) {
+        List<Member> membersPS = myMemberUtil.findByNameAndPhoneNumber(emailFindInDTO.getName(),
+            emailFindInDTO.getPhoneNumber(), emailFindInDTO.getRole());
+        List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = new ArrayList<>();
+        membersPS.stream().forEach(memberPS -> emailFindOutDTOs.add(new UserResponse.EmailFindOutDTO(memberPS)));
+        return emailFindOutDTOs;
+    }
+
+    @MyLog
+    public UserResponse.PasswordOutDTO password(UserRequest.PasswordInDTO passwordInDTO) throws Exception {
+        Member memberPS = myMemberUtil.findByEmail(passwordInDTO.getEmail(), passwordInDTO.getRole());
+        if(!memberPS.getName().equals(passwordInDTO.getName())){
+            throw new Exception404("이름이 틀렸습니다");
+        }
+        String code = sendEmail(passwordInDTO.getEmail());
+        UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(memberPS, code);
+        return passwordOutDTO;
+    }
+
+    @MyLog
+    public UserResponse.EmailOutDTO email(String email) throws Exception {
+        String code = sendEmail(email);
+        UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
+        return emailOutDTO;
+    }
+
+    private String sendEmail(String email) throws Exception{
+        String code = createCode();
+        MimeMessage message = createMessage(email, code);
+        try {
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            throw new Exception500("인증 이메일 전송 실패");
+        }
+        return code;
+    }
+
+    private MimeMessage createMessage(String email, String code) throws Exception {
+        System.out.println("인증 번호 : " + code);
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.addRecipients(MimeMessage.RecipientType.TO, email); // 메일 받을 사용자
+        message.setSubject("[Money Bridge] 이메일 인증코드 입니다"); // 이메일 제목
+
+        String msg = "";
+        // msg += "<img src=../resources/static/image/emailheader.jpg />"; // header image
+        msg += "<div style='margin:20px;'>";
+        msg += "<h1> 안녕하세요. </h1>";
+        msg += "<br>";
+        msg += "<h1> Money Bridge 입니다</h1>";
+        msg += "<br>";
+        msg += "<p>아래 인증코드를 Money Bridge 페이지의 입력 칸에 입력해주세요</p>";
+        msg += "<br>";
+        msg += "<br>";
+        msg += "<div align='center' style='border:1px solid black; font-family:verdana';>";
+        msg += "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
+        msg += "<div style='font-size:130%'>";
+        msg += "CODE : <strong>";
+        msg += code + "</strong><div><br/> ";
+        msg += "</div>";
+        // msg += "<img src=../resources/static/image/emailfooter.jpg />"; // footer image
+        message.setText(msg, "utf-8", "html"); // 메일 내용, charset타입, subtype
+        message.setFrom(new InternetAddress("moneybridge@naver.com", "Money-Bridge")); // 보내는 사람의 이메일 주소, 보내는 사람 이름
+
+        return message;
+    }
+
+    public String createCode() {
+        Random random = new Random();
+        return random.ints('0', 'z' + 1)
+                .filter(i -> (i <= '9' || i >= 'A') && (i <= 'Z' || i > 'z'))
+                .limit(8) // 인증코드 8자리
+                .collect(StringBuffer::new, StringBuffer::appendCodePoint, StringBuffer::append)
+                .toString();
+    }
 
     @MyLog
     @Transactional
@@ -63,7 +177,9 @@ public class UserService {
         if(userOP.isPresent()){
             throw new Exception400("email", "이미 투자자로 회원가입된 이메일입니다");
         }
+        System.out.println(joinInDTO.getPassword());
         String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte
+        System.out.println(encPassword);
         joinInDTO.setPassword(encPassword);
 
         try {
@@ -82,18 +198,19 @@ public class UserService {
     @MyLog
     public Pair<String, String> issue(Role role, String email, String password) {
         try {
+            // 인증
             String username = role + "-" + email;
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                     = new UsernamePasswordAuthenticationToken(username, password); // username과 password는 사용자가 제공한 인증 정보
             Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken); // 인증 매니저(authenticationManager)를 통해 인증되고, Authentication 객체를 반환
             MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal(); //  인증된 사용자의 주체(Principal)를 반환 - 주체는 보통 UserDetails 인터페이스를 구현한 사용자 정보 객체
 
-            //로그인 성공하면 액세스 토큰, 리프레시 토큰 발급.
+            // 로그인 성공하면 액세스 토큰, 리프레시 토큰 발급.
             String accessToken = myJwtProvider.createAccess(myUserDetails.getMember());
             String refreshToken = myJwtProvider.createRefresh(myUserDetails.getMember());
             return Pair.of(accessToken, refreshToken);
         }catch (Exception e){
-            throw new Exception500("토큰발급 실패" + e.getMessage());
+            throw new Exception500("토큰 발급 실패: " + e.getMessage());
         }
     }
 
@@ -136,7 +253,7 @@ public class UserService {
             String newRefreshToken = myJwtProvider.createRefresh(memberPS);
             return Pair.of(newAccessToken, newRefreshToken);
         } catch (Exception e){
-            throw new Exception500("토큰 재발급 실패 " + e.getMessage());
+            throw new Exception500("토큰 재발급 실패: " + e.getMessage());
         }
     }
 
@@ -170,15 +287,6 @@ public class UserService {
         Long remainingTimeMillis = decodedJWT.getExpiresAt().getTime() - System.currentTimeMillis();
         redisUtil.setBlackList(accessJwt, "access_token_blacklist", remainingTimeMillis);
         log.info("로그아웃한 액세스 토큰 블랙리스트로 등록");
-    }
-
-    @MyLog
-    public UserResponse.DetailOutDTO 회원상세보기(Long id) {
-        User userPS = userRepository.findById(id).orElseThrow(
-                ()-> new Exception404("해당 유저를 찾을 수 없습니다")
-
-        );
-        return new UserResponse.DetailOutDTO(userPS);
     }
 
     public User getUser(Long id) {

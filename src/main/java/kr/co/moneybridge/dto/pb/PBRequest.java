@@ -2,7 +2,6 @@ package kr.co.moneybridge.dto.pb;
 
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

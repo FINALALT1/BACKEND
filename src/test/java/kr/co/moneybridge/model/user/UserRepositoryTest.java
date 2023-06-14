@@ -1,7 +1,9 @@
-package kr.co.moneybridge.model;
+package kr.co.moneybridge.model.user;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.core.exception.Exception400;
+import kr.co.moneybridge.core.exception.Exception404;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -15,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Import(BCryptPasswordEncoder.class)
@@ -34,6 +37,53 @@ public class UserRepositoryTest extends DummyEntity {
         em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         userRepository.save(newUser("김투자"));
         em.clear();
+    }
+
+    @Test
+    public void findByNameAndPhoneNumber() {
+        // given
+        String name = "김투자";
+        String phoneNumber = "01012345678";
+
+        // when
+        List<User> userPSs = userRepository.findByNameAndPhoneNumber(name, phoneNumber);
+        User userPS = userPSs.get(0);
+
+        // then
+        Assertions.assertThat(userPS.getId()).isEqualTo(1L);
+        Assertions.assertThat(userPS.getName()).isEqualTo("김투자");
+        Assertions.assertThat(
+                passwordEncoder.matches("password1234", userPS.getPassword())
+        ).isEqualTo(true);
+        Assertions.assertThat(userPS.getEmail()).isEqualTo("김투자@nate.com");
+        Assertions.assertThat(userPS.getPhoneNumber()).isEqualTo("01012345678");
+        Assertions.assertThat(userPS.getRole()).isEqualTo(Role.USER);
+        Assertions.assertThat(userPS.getProfile()).isEqualTo("프로필.png");
+        Assertions.assertThat(userPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
+        Assertions.assertThat(userPS.getUpdatedAt()).isNull();
+    }
+
+    @Test
+    public void findById() {
+        // given
+        Long id = 1L;
+
+        // when
+        User userPS = userRepository.findById(id)
+                .orElseThrow(() -> new Exception404("해당하는 유저가 없습니다"));
+
+        // then
+        Assertions.assertThat(userPS.getId()).isEqualTo(1L);
+        Assertions.assertThat(userPS.getName()).isEqualTo("김투자");
+        Assertions.assertThat(
+                passwordEncoder.matches("password1234", userPS.getPassword())
+        ).isEqualTo(true);
+        Assertions.assertThat(userPS.getEmail()).isEqualTo("김투자@nate.com");
+        Assertions.assertThat(userPS.getPhoneNumber()).isEqualTo("01012345678");
+        Assertions.assertThat(userPS.getRole()).isEqualTo(Role.USER);
+        Assertions.assertThat(userPS.getProfile()).isEqualTo("프로필.png");
+        Assertions.assertThat(userPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
+        Assertions.assertThat(userPS.getUpdatedAt()).isNull();
     }
 
     @Test

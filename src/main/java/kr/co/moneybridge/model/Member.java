@@ -5,4 +5,9 @@ public interface Member {
     Role getRole();
     String getPassword();
     String getEmail();
+    String getName();
+    String getPhoneNumber();
+    void updatePassword(String password);
+    void updateName(String name);
+    void updatePhoneNumber(String phoneNumber);
 }
