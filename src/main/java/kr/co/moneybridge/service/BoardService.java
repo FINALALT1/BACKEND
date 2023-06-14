@@ -44,6 +44,14 @@ public class BoardService {
         return new PageDTO<>(list, boardPG);
     }
 
+    //PB 명으로 컨텐츠 검색
+    public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithPbName(String name, Pageable pageable) {
+
+        Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findByPbName(name, BoardStatus.ACTIVE, pageable);
+        List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+        return new PageDTO<>(list, boardPG);
+    }
+
     //최신컨텐츠순으로 가져오기
     public PageDTO<BoardResponse.BoardPageDTO> getBoardWithNew(Pageable pageable) {
 
@@ -288,4 +296,6 @@ public class BoardService {
             throw new Exception403("권한이 없습니다.");
         }
     }
+
+
 }
