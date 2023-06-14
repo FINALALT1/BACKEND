@@ -33,6 +33,6 @@ public interface PBRepository extends JpaRepository<PB, Long> {
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
             "JOIN Branch b ON pb.branch = b " +
             "JOIN Company c ON b.company = c " +
-            "WHERE pb.name = :name")
+            "WHERE pb.name LIKE CONCAT('%', :name, '%')")
     Page<PBResponse.PBPageDTO> findByName(@Param("name") String name, Pageable pageable);
 }
