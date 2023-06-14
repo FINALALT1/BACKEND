@@ -2,13 +2,8 @@ package kr.co.moneybridge.model.user;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.core.exception.Exception400;
-<<<<<<< HEAD:src/test/java/kr/co/moneybridge/model/user/UserRepositoryTest.java
 import kr.co.moneybridge.core.exception.Exception404;
-=======
->>>>>>> 6b6aac1 (Test: 상담 예약 후기 리스트 조회 Service 단위테스트 작성 및 테스트 완료):src/test/java/kr/co/moneybridge/model/UserRepositoryTest.java
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
