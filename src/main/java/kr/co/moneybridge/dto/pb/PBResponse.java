@@ -15,6 +15,33 @@ public class PBResponse {
     @ApiModel(description = "증권사 리스트 목록 로고 불포함 응답 데이터")
     @Setter
     @Getter
+    public static class BranchDTO {
+        private Long id;
+        private String name;
+        private String roadAddress;
+        private String streetAddress;
+
+        public BranchDTO(Branch branch) {
+
+            this.id = branch.getId();
+            this.name = branch.getName();
+            this.roadAddress = branch.getRoadAddress();
+            this.streetAddress = branch.getStreetAddress();
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class BranchOutDTO {
+        private List<BranchDTO> list;
+
+        public BranchOutDTO(List<BranchDTO> list) {
+            this.list = list;
+        }
+    }
+
+    @Setter
+    @Getter
     public static class CompanyNameDTO {
         @ApiModelProperty(example = "1", value = "증권사의 id")
         private Long id;
@@ -22,7 +49,6 @@ public class PBResponse {
         private String name;
 
         public CompanyNameDTO(Company company) {
-
             this.id = company.getId();
             this.name = company.getName();
         }
@@ -36,7 +62,6 @@ public class PBResponse {
         private List<CompanyNameDTO> list;
 
         public CompanyNameOutDTO(List<CompanyNameDTO> list) {
-
             this.list = list;
         }
     }
@@ -53,7 +78,6 @@ public class PBResponse {
         private String name;
 
         public CompanyDTO(Company company) {
-
             this.id = company.getId();
             this.logo = company.getLogo();
             this.name = company.getName();
@@ -68,7 +92,6 @@ public class PBResponse {
         private List<CompanyDTO> list;
 
         public CompanyOutDTO(List<CompanyDTO> list) {
-
             this.list = list;
         }
     }

@@ -27,11 +27,28 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @RestController
 public class PBController {
     private final PBService pbService;
+
+    // 지점 검색
+    @MyLog
+    @GetMapping("/branch")
+    public ResponseEntity<?> searchBranch(@RequestParam Long companyId,
+                                          @RequestParam(required = false) String keyword) {
+        keyword = keyword == null ? "" : keyword.replaceAll("\\s", "");
+        if(keyword.isEmpty()){
+            ResponseDTO<?> responseDTO = new ResponseDTO<>(new PBResponse.BranchOutDTO(new ArrayList<>()));
+            return ResponseEntity.ok().body(responseDTO); // 빈칸 검색시
+        }
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        PageDTO<PBResponse.BranchDTO> pageDTO = pbService.searchBranch(companyId, keyword, pageable);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(pageDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
 
     // 증권사 리스트 가져오기 - 메인페이지, 회원가입시
     @MyLog

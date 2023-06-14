@@ -1,6 +1,5 @@
 package kr.co.moneybridge.service;
 
-import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
@@ -41,6 +40,16 @@ public class PBService {
     private final PBAgreementRepository pbAgreementRepository;
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+
+    @MyLog
+    public PageDTO<PBResponse.BranchDTO> searchBranch(Long companyId, String keyword, Pageable pageable) {
+        Page<Branch> branchPG = branchRepository.findByCompanyIdAndKeyword(companyId, keyword, pageable);
+        List<PBResponse.BranchDTO> list = branchPG.getContent().stream()
+                .map(branch -> new PBResponse.BranchDTO(branch))
+                .collect(Collectors.toList());
+        System.out.println(branchPG.getContent().get(0).getCompany().getName());
+        return new PageDTO<>(list, branchPG, Branch.class);
+    }
 
     @MyLog
     public PBResponse.CompanyNameOutDTO getCompanyNames() {
