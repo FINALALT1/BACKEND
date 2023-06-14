@@ -50,7 +50,6 @@ public class BoardController {
             throw new Exception404("요청오류");
         }
 
-
         ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
         return ResponseEntity.ok(responseDTO);
     }

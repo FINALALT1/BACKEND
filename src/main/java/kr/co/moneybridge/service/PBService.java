@@ -97,4 +97,12 @@ public class PBService {
                 () -> new Exception404("해당 PB 는 찾을 수 없습니다.")
         );
     }
+
+    //PB 검색하기
+    public PageDTO<PBResponse.PBPageDTO> getPBWithName(String name, Pageable pageable) {
+
+        Page<PBResponse.PBPageDTO> pbPG = pbRepository.findByName(name, pageable);
+        List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
+        return new PageDTO<>(list, pbPG);
+    }
 }
