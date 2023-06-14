@@ -1,19 +1,37 @@
 package kr.co.moneybridge.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.Setter;
 import org.checkerframework.checker.units.qual.K;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+@ApiModel
 @Getter
+@Setter
 public class PageDTO<T> {
+    @ApiModelProperty
     private List<T> list;
+
+    @ApiModelProperty(example = "5")
     private long totalElements;
+
+    @ApiModelProperty(example = "10")
     private int totalPages;
+
+    @ApiModelProperty(example = "0")
     private int curPage;
+
+    @ApiModelProperty(example = "true")
     private Boolean first;
+
+    @ApiModelProperty(example = "false")
     private Boolean last;
+
+    @ApiModelProperty(example = "false")
     private Boolean empty;
 
     public PageDTO(List<T> list, Page<T> page) {

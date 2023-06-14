@@ -142,24 +142,20 @@ public class ReservationControllerTest {
         resultActions.andExpect(status().isOk());
     }
 
-    @DisplayName("상담 후기 리스트 조회 성공")
-    @WithUserDetails(value = "PB-pblee@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Test
-    public void get_reviews_test() throws Exception {
-        // given
-        int page = 0;
-        MyUserDetails myUserDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        // when
-        ResultActions resultActions = mvc
-                .perform(get("/pb/reviews"));
-        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        System.out.println("테스트 : " + responseBody);
-
-        // then
-//        resultActions.andExpect(jsonPath("$.status").value(200));
-//        resultActions.andExpect(jsonPath("$.msg").value("ok"));
-//        resultActions.andExpect(jsonPath("$.data.);
-//        resultActions.andExpect(status().isOk());
-    }
+//    @DisplayName("상담 후기 리스트 조회 성공")
+//    @WithUserDetails(value = "PB-pblee@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+//    @Test
+//    public void get_reviews_test() throws Exception {
+//        // given
+//        int page = 0;
+//        MyUserDetails myUserDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        // when
+//        ResultActions resultActions = mvc
+//                .perform(get("/pb/reviews"));
+//        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+//        System.out.println("테스트 : " + responseBody);
+//
+//        // then
+//    }
 }

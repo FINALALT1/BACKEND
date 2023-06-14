@@ -1,5 +1,6 @@
 package kr.co.moneybridge.dto.reservation;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.reservation.LocationType;
 import kr.co.moneybridge.model.reservation.ReservationGoal;
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 public class ReservationRequest {
     // validation은 controller에서 수행
+    @ApiModel
     @Getter
     @Setter
     public static class ApplyInDTO {

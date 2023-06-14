@@ -1,5 +1,6 @@
 package kr.co.moneybridge.dto.reservation;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.reservation.Review;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
 
 public class ReservationResponse {
+    @ApiModel
     @Getter
     @Setter
     public static class BaseOutDTO {
@@ -34,6 +36,7 @@ public class ReservationResponse {
         }
     }
 
+    @ApiModel
     @Getter
     @Setter
     public static class pbInfoDTO {
@@ -61,6 +64,7 @@ public class ReservationResponse {
         }
     }
 
+    @ApiModel
     @Getter
     @Setter
     public static class consultInfoDTO {
@@ -80,6 +84,7 @@ public class ReservationResponse {
         }
     }
 
+    @ApiModel
     @Getter
     @Setter
     public static class userInfoDTO {
@@ -99,6 +104,7 @@ public class ReservationResponse {
         }
     }
 
+    @ApiModel
     @Getter
     @Setter
     public static class ReviewDTO {
@@ -121,9 +127,11 @@ public class ReservationResponse {
         }
     }
 
+    @ApiModel
     @Getter
     @Setter
     public static class StyleDTO {
+        @ApiModelProperty(example = "HONEST")
         private StyleStyle style;
 
         public StyleDTO(StyleStyle style) {

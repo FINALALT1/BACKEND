@@ -88,7 +88,7 @@ public class ReservationController {
     }
 
     @ApiOperation(value = "상담 후기 리스트 조회")
-    @SwaggerResponses.DefaultApiResponses
+    @SwaggerResponses.GetReviews
     @MyLog
     @GetMapping("/pb/reviews")
     public ResponseEntity<?> getReviews(@RequestParam(defaultValue = "0") int page,
