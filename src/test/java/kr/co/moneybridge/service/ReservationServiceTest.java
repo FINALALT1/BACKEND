@@ -3,12 +3,13 @@ package kr.co.moneybridge.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
-import kr.co.moneybridge.model.reservation.ReservationRepository;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -18,11 +19,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 @ActiveProfiles("test")
@@ -36,6 +42,10 @@ public class ReservationServiceTest extends MockDummyEntity {
     private UserRepository userRepository;
     @Mock
     private ReservationRepository reservationRepository;
+    @Mock
+    private ReviewRepository reviewRepository;
+    @Mock
+    private StyleRepository styleRepository;
     @Spy
     private ObjectMapper om;
 
@@ -139,4 +149,76 @@ public class ReservationServiceTest extends MockDummyEntity {
 //        assertThat(reservation.getEmail()).isEqualTo(applyReservationInDTO.getUserEmail());
 //        assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.ACTIVE);
 //    }
+
+    @Test
+    public void get_reviews_test() {
+        // given
+        int page = 0;
+        Long pbId = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(pbId, "이피비", branch);
+        User user = newMockUser(1L, "lee");
+        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
+        Review review = newMockReview(1L, reservation);
+        Review review2 = newMockReview(2L, reservation2);
+        Review review3 = newMockReview(3L, reservation3);
+        Review review4 = newMockReview(4L, reservation4);
+        Review review5 = newMockReview(5L, reservation5);
+        Style style = newMockStyle(1L, review, StyleStyle.FAST);
+        Style style2 = newMockStyle(2L, review, StyleStyle.KIND);
+        Style style3 = newMockStyle(3L, review, StyleStyle.DIRECTIONAL);
+
+        // stub
+        Mockito.when(pbRepository.findById(anyLong()))
+                .thenReturn(Optional.of(pb));
+        Mockito.when(reviewRepository.findAllByPbIdAndProcess(anyLong(), any(), any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(Arrays.asList(
+                        review5,
+                        review4,
+                        review3,
+                        review2,
+                        review)))
+                );
+        Mockito.when(userRepository.findUserByReviewId(anyLong()))
+                .thenReturn(user);
+        List<Style> styles = new ArrayList<>();
+        styles.add(style);
+        styles.add(style2);
+        Mockito.when(styleRepository.findAllByReviewId(anyLong()))
+                .thenReturn(styles);
+
+        // when
+        PageDTO<ReservationResponse.ReviewDTO> reviewsOutDTO = reservationService.getReviews(pbId, 0);
+
+        // then
+        assertThat(reviewsOutDTO.getList().get(0).getReviewId()).isEqualTo(5L);
+        assertThat(reviewsOutDTO.getList().get(0).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(0).getContent()).isEqualTo("content 입니다");
+        assertThat(reviewsOutDTO.getList().get(0).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
+        assertThat(reviewsOutDTO.getList().get(0).getList().get(0).getStyle()).isEqualTo(StyleStyle.FAST);
+        assertThat(reviewsOutDTO.getList().get(0).getList().get(1).getStyle()).isEqualTo(StyleStyle.KIND);
+        assertThat(reviewsOutDTO.getList().get(1).getReviewId()).isEqualTo(4L);
+        assertThat(reviewsOutDTO.getList().get(1).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(1).getContent()).isEqualTo("content 입니다");
+        assertThat(reviewsOutDTO.getList().get(1).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
+        assertThat(reviewsOutDTO.getList().get(1).getList().get(0).getStyle()).isEqualTo(StyleStyle.FAST);
+        assertThat(reviewsOutDTO.getList().get(1).getList().get(1).getStyle()).isEqualTo(StyleStyle.KIND);
+        assertThat(reviewsOutDTO.getList().get(2).getReviewId()).isEqualTo(3L);
+        assertThat(reviewsOutDTO.getList().get(2).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(2).getContent()).isEqualTo("content 입니다");
+        assertThat(reviewsOutDTO.getList().get(2).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
+        assertThat(reviewsOutDTO.getList().get(3).getReviewId()).isEqualTo(2L);
+        assertThat(reviewsOutDTO.getList().get(3).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(3).getContent()).isEqualTo("content 입니다");
+        assertThat(reviewsOutDTO.getList().get(3).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
+        assertThat(reviewsOutDTO.getList().get(4).getReviewId()).isEqualTo(1L);
+        assertThat(reviewsOutDTO.getList().get(4).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(4).getContent()).isEqualTo("content 입니다");
+        assertThat(reviewsOutDTO.getList().get(4).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
+    }
 }

@@ -21,6 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
 import static kr.co.moneybridge.core.util.MyDateUtil.localTimeToString;
 
@@ -32,6 +35,7 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
+    private final StyleRepository styleRepository;
 
     @MyLog
     public ReservationResponse.BaseOutDTO getReservationBase(Long pbId, Long userId) {
@@ -113,27 +117,6 @@ public class ReservationService {
                     .build());
         } catch (Exception e) {
             throw new Exception500("상담 예약 저장 실패 : " + e.getMessage());
-        }
-    }
-
-    @MyLog
-    public PageDTO<ReservationResponse.ReviewDTO> getReviews(Long pbId, int page) {
-        pbRepository.findById(pbId).orElseThrow(
-                () -> new Exception404("존재하지 않는 PB입니다.")
-        );
-
-        try {
-            // 페이징
-            Page<ReservationResponse.ReviewDTO> reviewPG = reviewRepository
-                    .findAll(pbId,
-                            ReservationProcess.COMPLETE,
-                            PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt"));
-            // 응답
-            return new PageDTO<>(
-                    reviewPG.getContent(), reviewPG
-            );
-        } catch (Exception e) {
-            throw new Exception500("상담 후기 목록 조회 실패 : " + e.getMessage());
         }
     }
 }

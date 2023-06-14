@@ -3,9 +3,16 @@ package kr.co.moneybridge.dto.reservation;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.reservation.Review;
+import kr.co.moneybridge.model.reservation.Style;
+import kr.co.moneybridge.model.reservation.StyleStyle;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
 
 public class ReservationResponse {
     @Getter
@@ -99,12 +106,28 @@ public class ReservationResponse {
         private String username;
         private String content;
         private String createdAt;
+        private List<StyleDTO> list;
 
-        public ReviewDTO(Review review, User user) {
+        public ReviewDTO(Review review, User user, List<Style> styles) {
             this.reviewId = review.getId();
             this.username = user.getName();
             this.content = review.getContent();
-            this.createdAt = MyDateUtil.localDateTimeToString(review.getCreatedAt());
+            this.createdAt = localDateTimeToString(review.getCreatedAt());
+            this.list = styles.stream()
+                    .map(style -> {
+                        return new ReservationResponse.StyleDTO(style.getStyle());
+                    })
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class StyleDTO {
+        private StyleStyle style;
+
+        public StyleDTO(StyleStyle style) {
+            this.style = style;
         }
     }
 }
