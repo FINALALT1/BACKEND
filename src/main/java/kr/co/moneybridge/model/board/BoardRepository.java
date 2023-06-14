@@ -21,6 +21,12 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<BoardResponse.BoardPageDTO> findByTitle(@Param("title") String title, @Param("status") BoardStatus status, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) " +
+            "FROM Board b " +
+            "JOIN b.pb p JOIN p.branch bh JOIN bh.company c " +
+            "WHERE p.name LIKE CONCAT('%', :name, '%') AND b.status = :status")
+    Page<BoardResponse.BoardPageDTO> findByPbName(@Param("name") String name, @Param("status") BoardStatus status, Pageable pageable);
+
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) " +
             "FROM Board b JOIN b.pb p JOIN p.branch bh JOIN bh.company c " +
             "WHERE b.status = :status")
     Page<BoardResponse.BoardPageDTO> findAll(@Param("status") BoardStatus status, Pageable pageable);
@@ -73,4 +79,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("select b from Board b where b.pb.id = :pbId")
     List<Board> findAllByPBId(@Param("pbId") Long pbId);
+
+
 }
