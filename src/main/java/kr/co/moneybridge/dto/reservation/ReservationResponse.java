@@ -3,9 +3,16 @@ package kr.co.moneybridge.dto.reservation;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.reservation.Review;
+import kr.co.moneybridge.model.reservation.Style;
+import kr.co.moneybridge.model.reservation.StyleStyle;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
 
 public class ReservationResponse {
     @Getter
@@ -29,7 +36,7 @@ public class ReservationResponse {
 
     @Getter
     @Setter
-    public static class pbInfoDTO{
+    public static class pbInfoDTO {
         @ApiModelProperty(example = "김피비")
         private String pbName;
 
@@ -40,12 +47,12 @@ public class ReservationResponse {
         private String branchAddress;
 
         @ApiModelProperty(example = "37.55628")
-        private String branchLatitude;
+        private Double branchLatitude;
 
         @ApiModelProperty(example = "126.97037")
-        private String branchLongitude;
+        private Double branchLongitude;
 
-        public pbInfoDTO(String pbName, String branchName, String branchAddress, String branchLatitude, String branchLongitude) {
+        public pbInfoDTO(String pbName, String branchName, String branchAddress, Double branchLatitude, Double branchLongitude) {
             this.pbName = pbName;
             this.branchName = branchName;
             this.branchAddress = branchAddress;
@@ -56,7 +63,7 @@ public class ReservationResponse {
 
     @Getter
     @Setter
-    public static class consultInfoDTO{
+    public static class consultInfoDTO {
         @ApiModelProperty(example = "09:00")
         private String consultStart;
 
@@ -75,7 +82,7 @@ public class ReservationResponse {
 
     @Getter
     @Setter
-    public static class userInfoDTO{
+    public static class userInfoDTO {
         @ApiModelProperty(example = "홍길동")
         private String userName;
 
@@ -99,12 +106,28 @@ public class ReservationResponse {
         private String username;
         private String content;
         private String createdAt;
+        private List<StyleDTO> list;
 
-        public ReviewDTO(Review review, User user) {
+        public ReviewDTO(Review review, User user, List<Style> styles) {
             this.reviewId = review.getId();
             this.username = user.getName();
             this.content = review.getContent();
-            this.createdAt = MyDateUtil.localDateTimeToString(review.getCreatedAt());
+            this.createdAt = localDateTimeToString(review.getCreatedAt());
+            this.list = styles.stream()
+                    .map(style -> {
+                        return new ReservationResponse.StyleDTO(style.getStyle());
+                    })
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class StyleDTO {
+        private StyleStyle style;
+
+        public StyleDTO(StyleStyle style) {
+            this.style = style;
         }
     }
 }

@@ -93,9 +93,9 @@ public class ReservationController {
     @GetMapping("/pb/reviews")
     public ResponseEntity<?> getReviews(@RequestParam(defaultValue = "0") int page,
                                         @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        PageDTO<ReservationResponse.ReviewDTO> reviews = reservationService.getReviews(myUserDetails.getMember().getId(), page);
+        PageDTO<ReservationResponse.ReviewDTO> reviewsOutDTO = reservationService.getReviews(myUserDetails.getMember().getId(), page);
 
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(reviews);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(reviewsOutDTO);
         return ResponseEntity.ok(responseDTO);
     }
 }

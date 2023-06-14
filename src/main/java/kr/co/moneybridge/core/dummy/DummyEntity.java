@@ -325,17 +325,15 @@ public class DummyEntity {
     }
 
     public Branch newBranch(Company company, int num) {
-        String latitude = "36.36671";
-        String longitude = "127.34451";
-        double lat = Double.parseDouble(latitude) + num;
-        double lon = Double.parseDouble(longitude) + num;
+        Double latitude = 36.36671 + num;
+        Double longitude = 127.34451 + num;
         return Branch.builder()
                 .company(company)
                 .name(company.getName() + " 여의도점")
                 .roadAddress(company.getName() + " 도로명주소")
                 .streetAddress(company.getName() + " 지번주소")
-                .latitude(String.valueOf(lat))
-                .longitude(String.valueOf(lon))
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
     }
 
