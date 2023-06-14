@@ -2,6 +2,7 @@ package kr.co.moneybridge.controller;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
+import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
@@ -35,9 +36,21 @@ public class BoardController {
     private final PBService pbService;
 
     @GetMapping("/lounge/boards")
-    public ResponseEntity<?> getBoardsWithTitle(@RequestParam(value = "title") String title) {
+    public ResponseEntity<?> getBoardsWithTitle(@RequestParam(value = "title", required = false) String title,
+                                                @RequestParam(value = "name", required = false) String name) {
+
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
-        PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getBoardsWithTitle(title, pageable);
+        PageDTO<BoardResponse.BoardPageDTO> pageDTO;
+
+        if (title != null) {
+            pageDTO = boardService.getBoardsWithTitle(title, pageable);
+        } else if (name != null) {
+            pageDTO = boardService.getBoardsWithPbName(name, pageable);
+        } else {
+            throw new Exception404("요청오류");
+        }
+
+
         ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
         return ResponseEntity.ok(responseDTO);
     }
