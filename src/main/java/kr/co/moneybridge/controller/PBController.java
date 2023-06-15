@@ -1,5 +1,7 @@
 package kr.co.moneybridge.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
@@ -37,6 +39,8 @@ public class PBController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @ApiOperation("북마크한 PB 목록 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/user/bookmarks/pb")
     public ResponseEntity<?> getBookmarkPBs(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
@@ -47,6 +51,9 @@ public class PBController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @ApiOperation("PB 검색하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "name", value = "김피비", dataType = "String", paramType = "query")})
     @GetMapping("/pbs")
     public ResponseEntity<?> getPBWithName(@RequestParam(value = "name") String name) {
 

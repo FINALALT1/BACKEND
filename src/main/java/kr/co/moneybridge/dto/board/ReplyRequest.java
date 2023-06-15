@@ -1,5 +1,6 @@
 package kr.co.moneybridge.dto.board;
 
+import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.board.ReReply;
 import kr.co.moneybridge.model.board.Reply;
@@ -13,6 +14,7 @@ public class ReplyRequest {
     @Setter
     public static class ReplyInDTO {
 
+        @ApiModelProperty(example = "댓글입니다.")
         private String content;
 
         public Reply toEntity(Long id, Board board, ReplyAuthorRole role) {
@@ -29,6 +31,7 @@ public class ReplyRequest {
     @Setter
     public static class ReReplyInDTO {
 
+        @ApiModelProperty(example = "대댓글입니다.")
         private String content;
 
         public ReReply toEntity(Reply reply) {
