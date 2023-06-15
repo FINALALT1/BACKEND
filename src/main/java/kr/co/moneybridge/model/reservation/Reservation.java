@@ -76,4 +76,28 @@ public class Reservation {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateTime(LocalDateTime time) {
+        this.time = time;
+    }
+
+    public void updateType(ReservationType type) {
+        this.type = type;
+    }
+
+    public void updateLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
+    public void updateLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
+    }
+
+    public void updateStatus(ReservationStatus status) {
+        this.status = status;
+    }
+
+    public void updateProcess(ReservationProcess process) {
+        this.process = process;
+    }
 }

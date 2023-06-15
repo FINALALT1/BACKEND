@@ -2,7 +2,9 @@ package kr.co.moneybridge.core.annotation;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
+import kr.co.moneybridge.dto.reservation.ReservationResponse;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -40,7 +42,7 @@ public class SwaggerResponses {
     @ApiResponses({
             @ApiResponse(code = 200,
                     message = OK,
-                    response = ResponseDTO.class),
+                    response = ReservationResponse.BaseDTO.class),
             @ApiResponse(code = 401,
                     message = UNAUTHORIZED),
             @ApiResponse(code = 403,
@@ -53,5 +55,41 @@ public class SwaggerResponses {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface GetReservationBase {
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = 200,
+                    message = OK,
+                    response = PageDTO.class),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetReviews {
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = 200,
+                    message = OK,
+                    response = ReservationResponse.RecentInfoDTO.class),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetRecentReservationInfo {
     }
 }
