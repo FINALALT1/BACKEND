@@ -85,7 +85,7 @@ public class UserControllerTest {
 
         // when
         ResultActions resultActions = mvc
-                .perform(patch("/auth/myInfo").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+                .perform(patch("/auth/myinfo").content(requestBody).contentType(MediaType.APPLICATION_JSON));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
 
@@ -100,7 +100,7 @@ public class UserControllerTest {
     public void getMyInfo_test() throws Exception {
         // when
         ResultActions resultActions = mvc
-                .perform(get("/auth/myInfo"));
+                .perform(get("/auth/myinfo"));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
 
