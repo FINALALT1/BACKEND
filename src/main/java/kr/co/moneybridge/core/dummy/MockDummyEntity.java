@@ -28,6 +28,19 @@ public class MockDummyEntity {
                 .createdAt(LocalDateTime.now())
                 .build();
     }
+    public User newMockUserADMIN(Long id, String username) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return User.builder()
+                .id(id)
+                .name(username)
+                .password(passwordEncoder.encode("password1234"))
+                .email("jisu8496@naver.com")
+                .phoneNumber("01012345678")
+                .role(Role.ADMIN)
+                .profile("profile.png")
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
 
     public User newMockUserWithPropensity(Long id, String username) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

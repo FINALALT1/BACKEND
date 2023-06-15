@@ -102,8 +102,15 @@ public class UserResponse {
         @ApiModelProperty(example = "1")
         private Long id;
 
+        @ApiModelProperty(example = "J46L4SBJ")
+        private String code;
+
         public LoginOutDTO(Member member) {
             this.id = member.getId();
+        }
+        public LoginOutDTO(Member member, String code) {
+            this.id = member.getId();
+            this.code = code;
         }
     }
 }
