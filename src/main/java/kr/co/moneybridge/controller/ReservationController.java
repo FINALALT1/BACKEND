@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
+import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
 import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 
 @RequiredArgsConstructor
@@ -107,9 +110,17 @@ public class ReservationController {
         if (!applyDTO.getCandidateTime1().matches("\\\\d{1,2}월 \\\\d{1,2}일 (오전|오후) \\\\d{1,2}시 \\\\d{1,2}분")) {
             throw new Exception400(applyDTO.getCandidateTime1(), "형식에 맞춰 입력해주세요.");
         }
+        // 현재 시간보다 이전 날짜인지 확인
+        if (StringToLocalDateTime(applyDTO.getCandidateTime1()).isBefore(LocalDateTime.now())) {
+            throw new Exception400(applyDTO.getCandidateTime1(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
+        }
 
         if (!applyDTO.getCandidateTime2().matches("\\\\d{1,2}월 \\\\d{1,2}일 (오전|오후) \\\\d{1,2}시 \\\\d{1,2}분")) {
             throw new Exception400(applyDTO.getCandidateTime2(), "형식에 맞춰 입력해주세요.");
+        }
+        // 현재 시간보다 이전 날짜인지 확인
+        if (StringToLocalDateTime(applyDTO.getCandidateTime2()).isBefore(LocalDateTime.now())) {
+            throw new Exception400(applyDTO.getCandidateTime2(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
         }
 
         if (!applyDTO.getQuestion().matches("^.{0,100}$")) {
@@ -223,9 +234,11 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation/{id}")
     public ResponseDTO<ReservationResponse.DetailDTO> getReservationDetail(@PathVariable("id") Long id,
-                                                                            @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
         ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(id, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>(detailDTO);
     }
+
+
 }

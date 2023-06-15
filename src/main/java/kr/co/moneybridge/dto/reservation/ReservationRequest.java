@@ -23,10 +23,10 @@ public class ReservationRequest {
         @ApiModelProperty(example = "BRANCH")
         private LocationType locationType;
 
-        @ApiModelProperty(example = "2023-05-15T09:00:00")
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
         private String candidateTime1;
 
-        @ApiModelProperty(example = "2023-05-15T10:00:00")
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
         private String candidateTime2;
 
         @ApiModelProperty(example = "잘 부탁드립니다.")
