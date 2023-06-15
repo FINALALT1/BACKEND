@@ -330,4 +330,25 @@ public class ReservationController {
 
         return new ResponseDTO<>();
     }
+
+    @MyLog
+    @ApiOperation(value = "예약 완료하기")
+    @ApiResponses({
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/auth/reservation/{id}/completed")
+    public ResponseDTO completeReservation(@PathVariable Long id,
+                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        reservationService.completeReservation(id, myUserDetails);
+
+        return new ResponseDTO<>();
+    }
 }

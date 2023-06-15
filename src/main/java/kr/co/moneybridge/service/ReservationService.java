@@ -362,4 +362,23 @@ public class ReservationService {
             throw new Exception500("예약 확정 실패 : " + e.getMessage());
         }
     }
+
+    @MyLog
+    @Transactional
+    public void completeReservation(Long reservationId, MyUserDetails myUserDetails) {
+        Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new Exception404("존재하지 않는 예약입니다.")
+        );
+        if (reservationPS.getStatus().equals(ReservationStatus.CANCEL)
+                || reservationPS.getProcess().equals(ReservationProcess.COMPLETE)
+                || reservationPS.getProcess().equals(ReservationProcess.APPLY)) {
+            throw new Exception400(String.valueOf(reservationId), "아직 확정되지 않았거나 완료 혹은 취소된 상담입니다.");
+        }
+
+        try {
+            reservationPS.updateProcess(ReservationProcess.COMPLETE);
+        } catch (Exception e) {
+            throw new Exception500("예약 완료 실패 : " + e.getMessage());
+        }
+    }
 }
