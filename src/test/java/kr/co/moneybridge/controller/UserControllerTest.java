@@ -5,6 +5,7 @@ import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,17 +49,26 @@ public class UserControllerTest {
     private EntityManager em;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PBRepository pbRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private BranchRepository branchRepository;
 
     @BeforeEach
     public void setUp() {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user1 = userRepository.save(dummy.newUser("로그인"));
+        Company company1 = companyRepository.save(dummy.newCompany("미래에셋증권"));
+        Branch branch1 = branchRepository.save(dummy.newBranch(company1, 0));
+        PB pb1 = pbRepository.save(dummy.newPB("김피비", branch1));
         User user2 = userRepository.save(User.builder()
                 .name("김비밀")
                 .password(passwordEncoder.encode("password1234"))
                 .email("jisu3148496@naver.com")
                 .phoneNumber("01012345678")
-                .role(Role.USER)
+                .role(Role.ADMIN)
                 .profile("프로필.png")
                 .build());
         em.clear();
@@ -187,7 +197,7 @@ public class UserControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.role").value("USER"));
+        resultActions.andExpect(jsonPath("$.data.role").value("ADMIN"));
         resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
         resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
         resultActions.andExpect(jsonPath("$.data.email").value("jisu3148496@naver.com"));
@@ -271,9 +281,9 @@ public class UserControllerTest {
         resultActions.andExpect(status().isOk());
     }
 
-    @DisplayName("로그인 성공")
+    @DisplayName("투자자 로그인 성공")
     @Test
-    public void login_test() throws Exception {
+    public void login_user_test() throws Exception {
         // given
         UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
         loginInDTO.setRole(Role.USER);
@@ -292,6 +302,56 @@ public class UserControllerTest {
         resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.code").isEmpty());
+    }
+
+    @DisplayName("PB 로그인 성공")
+    @Test
+    public void login_pb_test() throws Exception {
+        // given
+        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
+        loginInDTO.setRole(Role.PB);
+        loginInDTO.setEmail("김피비@nate.com");
+        loginInDTO.setPassword("password1234");
+        String requestBody = om.writeValueAsString(loginInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/login").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(header().exists(MyJwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
+        resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.code").isEmpty());
+    }
+
+    @DisplayName("관리자 로그인 성공")
+    @Test
+    public void login_admin_test() throws Exception {
+        // given
+        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
+        loginInDTO.setRole(Role.USER);
+        loginInDTO.setEmail("jisu3148496@naver.com");
+        loginInDTO.setPassword("password1234");
+        String requestBody = om.writeValueAsString(loginInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/login").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(header().exists(MyJwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
+        resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        String regex = "^[0-9A-Z]{8}$"; // 이는 8자리 숫자와 대문자를 예상하는 정규식입니다.
+        resultActions.andExpect(jsonPath("$.data.code").value(matchesPattern(regex)));
     }
 
     @DisplayName("토큰 재발급 성공")

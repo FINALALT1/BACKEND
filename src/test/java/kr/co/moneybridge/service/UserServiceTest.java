@@ -460,4 +460,42 @@ public class UserServiceTest extends MockDummyEntity {
         // then
         Assertions.assertThat(joinOutDTO.getId()).isEqualTo(1L);
     }
+    @Test
+    public void login_user_test() {
+        // given
+        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
+        loginInDTO.setRole(Role.USER);
+        loginInDTO.setEmail("lee@nate.com");
+        loginInDTO.setPassword("password1234");
+
+        // stub 1
+        User user = newMockUser(1L, "lee");
+        when(myMemberUtil.findByEmail(any(), any())).thenReturn(user);
+
+        // when
+        UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
+
+        // then
+        Assertions.assertThat(loginOutDTO.getCode()).isNull();
+    }
+
+    @Test
+    public void login_admin_test() {
+        // given
+        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
+        loginInDTO.setRole(Role.USER);
+        loginInDTO.setEmail("jisu8496@naver.com");
+        loginInDTO.setPassword("password1234");
+
+        // stub 1
+        User user = newMockUserADMIN(1L,"강투자");
+        when(myMemberUtil.findByEmail(any(), any())).thenReturn(user);
+        when(javaMailSender.createMimeMessage()).thenReturn(mock(MimeMessage.class));
+
+        // when
+        UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
+
+        // then
+        Assertions.assertThat(loginOutDTO.getCode()).isNotNull();
+    }
 }

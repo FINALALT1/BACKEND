@@ -139,6 +139,7 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(loginOutDTO);
+
         Pair<String, String> tokens = userService.issue(loginInDTO.getRole(), loginInDTO.getEmail(), loginInDTO.getPassword());
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");

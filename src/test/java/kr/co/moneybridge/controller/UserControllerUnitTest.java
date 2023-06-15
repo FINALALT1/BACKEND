@@ -344,4 +344,72 @@ public class UserControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(status().isOk());
         Mockito.verify(userService).logout(any(HttpServletRequest.class), eq(oldRefreshToken));  // Verifying that userService.logout was called
     }
+
+    @WithMockUser
+    @Test
+    public void login_user_test() throws Exception {
+        // Given
+        String oldRefreshToken = "oldRefreshToken";
+
+        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
+        loginInDTO.setRole(Role.USER);
+        loginInDTO.setEmail("로그인@nate.com");
+        loginInDTO.setPassword("password1234");
+        String requestBody = om.writeValueAsString(loginInDTO);
+
+        // stub
+        User mockUser = newMockUser(1L,"강투자");
+        UserResponse.LoginOutDTO loginOutDTO = new UserResponse.LoginOutDTO(mockUser);
+        Mockito.when(userService.login(any())).thenReturn(loginOutDTO);
+        Pair<String, String> tokens = Pair.of("accessToken", "refreshToken");
+        Mockito.when(userService.issue(any(), any(), any())).thenReturn(tokens);
+
+        // when
+        ResultActions resultActions = mvc.perform(post("/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.code").isEmpty());
+
+        // then
+        MvcResult mvcResult = resultActions.andReturn();
+        String actualResponse = mvcResult.getResponse().getHeader("Set-Cookie");
+        assertEquals("refreshToken=refreshToken; Path=/; HttpOnly", actualResponse);
+    }
+
+    @WithMockUser
+    @Test
+    public void login_admin_test() throws Exception {
+        // Given
+        String oldRefreshToken = "oldRefreshToken";
+
+        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
+        loginInDTO.setRole(Role.USER);
+        loginInDTO.setEmail("로그인@nate.com");
+        loginInDTO.setPassword("password1234");
+        String requestBody = om.writeValueAsString(loginInDTO);
+
+        // stub
+        User mockUser = newMockUserADMIN(1L,"강투자");
+        UserResponse.LoginOutDTO loginOutDTO = new UserResponse.LoginOutDTO(mockUser, "J46L4SBJ");
+        Mockito.when(userService.login(any())).thenReturn(loginOutDTO);
+        Pair<String, String> tokens = Pair.of("accessToken", "refreshToken");
+        Mockito.when(userService.issue(any(), any(), any())).thenReturn(tokens);
+
+        // when
+        ResultActions resultActions = mvc.perform(post("/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.code").value("J46L4SBJ"));
+
+        // then
+        MvcResult mvcResult = resultActions.andReturn();
+        String actualResponse = mvcResult.getResponse().getHeader("Set-Cookie");
+        assertEquals("refreshToken=refreshToken; Path=/; HttpOnly", actualResponse);
+    }
+
+
 }
