@@ -130,9 +130,9 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
         applyDTO.setGoal(ReservationGoal.PROFIT);
         applyDTO.setReservationType(ReservationType.VISIT);
         applyDTO.setLocationType(LocationType.BRANCH);
-        applyDTO.setCandidateTime1("2023-05-15T09:00:00");
-        applyDTO.setCandidateTime2("2023-05-15T10:00:00");
-        applyDTO.setQuestion("2023-05-15T10:00:00");
+        applyDTO.setCandidateTime1("2024년 6월 1일 오전 9시 20분");
+        applyDTO.setCandidateTime2("2024년 6월 1일 오전 9시 20분");
+        applyDTO.setQuestion("question입니다.");
         applyDTO.setUserName("lee");
         applyDTO.setUserPhoneNumber("01012345678");
         applyDTO.setUserEmail("lee@nate.com");

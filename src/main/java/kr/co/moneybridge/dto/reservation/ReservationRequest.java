@@ -68,7 +68,7 @@ public class ReservationRequest {
     @Setter
     public static class ConfirmDTO {
         @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
-        @Pattern(regexp = "\\\\d{1,2}월 \\\\d{1,2}일 (오전|오후) \\\\d{1,2}시 \\\\d{1,2}분",
+        @Pattern(regexp = "^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$",
                 message = "형식에 맞춰 입력해주세요.")
         @NotEmpty
         private String time;

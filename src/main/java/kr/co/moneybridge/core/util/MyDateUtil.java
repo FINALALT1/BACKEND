@@ -10,12 +10,12 @@ public class MyDateUtil {
     }
 
     public static String localDateTimeToStringV2(LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 dd일 a h시 mm분"));
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 mm분"));
     }
 
     public static LocalDateTime StringToLocalDateTime(String string) {
         return LocalDateTime.parse(string,
-                DateTimeFormatter.ofPattern("yyyy년 M월 dd일 a h시 mm분"));
+                DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 mm분"));
     }
 
     public static String localTimeToString(LocalTime localTime) {
