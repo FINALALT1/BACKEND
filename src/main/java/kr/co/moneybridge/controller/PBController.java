@@ -8,6 +8,7 @@ import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
@@ -108,6 +109,17 @@ public class PBController {
         }
 
         ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("/user/list/pb")
+    public ResponseEntity<?> getRecommendedPBList(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        PageDTOV2<PBResponse.PBPageDTO> pageDTO = pbService.getRecommendedPBList(myUserDetails, pageable);
+
+        ResponseDTO<PageDTOV2<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
 
         return ResponseEntity.ok(responseDTO);
     }

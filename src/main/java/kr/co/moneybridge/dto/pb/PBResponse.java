@@ -4,6 +4,7 @@ import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
+import kr.co.moneybridge.model.user.UserPropensity;
 import lombok.Getter;
 import lombok.Setter;
 

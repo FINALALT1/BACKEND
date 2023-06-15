@@ -7,10 +7,12 @@ import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +43,10 @@ public class PBService {
     @MyLog
     @MyErrorLog
     @Transactional
-    public PBResponse.JoinOutDTO joinPB(MultipartFile businessCard, PBRequest.JoinInDTO joinInDTO){
+    public PBResponse.JoinOutDTO joinPB(MultipartFile businessCard, PBRequest.JoinInDTO joinInDTO) {
         Optional<PB> pbOP = pbRepository.findByEmail(joinInDTO.getEmail());
-        if(pbOP.isPresent()){
-            if(pbOP.get().getStatus().equals(PBStatus.PENDING)){
+        if (pbOP.isPresent()) {
+            if (pbOP.get().getStatus().equals(PBStatus.PENDING)) {
                 throw new Exception400("email", "회원가입 후 승인을 기다리고 있는 PB 계정입니다");
             }
             throw new Exception400("email", "이미 PB로 회원가입된 이메일입니다");
@@ -63,12 +65,12 @@ public class PBService {
         try {
             PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, fileName));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
-            if(agreements != null){
+            if (agreements != null) {
                 agreements.stream().forEach(agreement ->
                         pbAgreementRepository.save(agreement.toEntity(pbPS)));
             }
             return new PBResponse.JoinOutDTO(pbPS);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception500("회원가입 실패 : " + e.getMessage());
         }
     }
@@ -146,9 +148,9 @@ public class PBService {
         final double KILL = 111.32; // 위도 1도 거리(킬로미터)
 
         double x = lat1 - lat2;
-        double y = (lon1 - lon2) * Math.cos((lat1+lat2)/2);
+        double y = (lon1 - lon2) * Math.cos((lat1 + lat2) / 2);
 
-        return KILL * Math.sqrt(x*x + y*y);
+        return KILL * Math.sqrt(x * x + y * y);
     }
 
     //경력순 PB리스트 가져오기(전문분야필터)
@@ -176,5 +178,43 @@ public class PBService {
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
 
         return new PageDTO<>(list, pbPG);
+    }
+
+    //맞춤 PB 리스트 가져오기
+    public PageDTOV2<PBResponse.PBPageDTO> getRecommendedPBList(MyUserDetails myUserDetails, Pageable pageable) {
+
+        User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+        UserPropensity propensity = user.getPropensity();
+        Page<PBResponse.PBPageDTO> pbPG;
+
+        if (propensity == null) {
+            throw new Exception404("투자성향 분석이 되지않았습니다.");
+        }else if (propensity.equals(UserPropensity.CONSERVATIVE)) {
+            pbPG = pbRepository.findRecommendedPBList(pageable, PBSpeciality.BOND,
+                                                                PBSpeciality.US_STOCK,
+                                                                PBSpeciality.KOREAN_STOCK,
+                                                                PBSpeciality.FUND,
+                                                                PBSpeciality.DERIVATIVE,
+                                                                PBSpeciality.ETF,
+                                                                PBSpeciality.WRAP);
+        } else if (propensity.equals(UserPropensity.CAUTIOUS)) {
+            pbPG = pbRepository.findRecommendedPBList(pageable, PBSpeciality.BOND,
+                                                                PBSpeciality.US_STOCK,
+                                                                PBSpeciality.KOREAN_STOCK,
+                                                                PBSpeciality.FUND,
+                                                                PBSpeciality.ETF,
+                                                                PBSpeciality.WRAP);
+        } else {
+            pbPG = pbRepository.findRecommendedPBList(pageable, PBSpeciality.BOND,
+                                                                PBSpeciality.FUND,
+                                                                PBSpeciality.WRAP);
+        }
+
+        List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
+
+        PageDTOV2<PBResponse.PBPageDTO> pageDTO = new PageDTOV2<>(list, pbPG);
+        pageDTO.setUserPropensity(propensity);
+
+        return pageDTO;
     }
 }
