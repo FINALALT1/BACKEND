@@ -300,9 +300,33 @@ public class ReservationController {
     })
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/auth/reservation/{id}")
-    public ResponseDTO cancelReservation(@PathVariable Long id,
-                                         @AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO cancelResrvation(@PathVariable Long id,
+                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
         reservationService.cancelReservation(id, myUserDetails);
+
+        return new ResponseDTO<>();
+    }
+
+    @MyLog
+    @ApiOperation(value = "예약 확정하기")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/pb/reservation/{id}/confirmed")
+    public ResponseDTO confirmReservation(@PathVariable Long id,
+                                          @RequestBody ReservationRequest.ConfirmDTO confirmDTO,
+                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        reservationService.confirmReservation(id, myUserDetails.getMember().getId(), confirmDTO);
 
         return new ResponseDTO<>();
     }

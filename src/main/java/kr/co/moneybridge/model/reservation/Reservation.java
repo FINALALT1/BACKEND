@@ -96,4 +96,8 @@ public class Reservation {
     public void updateStatus(ReservationStatus status) {
         this.status = status;
     }
+
+    public void updateProcess(ReservationProcess process) {
+        this.process = process;
+    }
 }

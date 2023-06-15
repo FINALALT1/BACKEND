@@ -2,6 +2,7 @@ package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
+import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception403;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
@@ -279,6 +280,10 @@ public class ReservationService {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
         );
+        if (reservationPS.getStatus().equals(ReservationStatus.CANCEL)
+                || reservationPS.getProcess().equals(ReservationProcess.COMPLETE)) {
+            throw new Exception400(String.valueOf(reservationId), "이미 완료되었거나 취소된 상담입니다.");
+        }
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
             userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                     () -> new Exception404("존재하지 않는 투자자입니다.")
@@ -313,6 +318,10 @@ public class ReservationService {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
         );
+        if (reservationPS.getStatus().equals(ReservationStatus.CANCEL)
+                || reservationPS.getProcess().equals(ReservationProcess.COMPLETE)) {
+            throw new Exception400(String.valueOf(reservationId), "이미 완료되었거나 취소된 상담입니다.");
+        }
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
             userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                     () -> new Exception404("존재하지 않는 투자자입니다.")
@@ -324,9 +333,33 @@ public class ReservationService {
         }
 
         try {
-            reservationPS.updateStatus(ReservationStatus.CANCEL);
+            if (reservationPS.getStatus().equals(ReservationStatus.ACTIVE)) {
+                reservationPS.updateStatus(ReservationStatus.CANCEL);
+            }
         } catch (Exception e) {
             throw new Exception500("예약 취소 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void confirmReservation(Long reservationId, Long pbId, ReservationRequest.ConfirmDTO confirmDTO) {
+        Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new Exception404("존재하지 않는 예약입니다.")
+        );
+        if (reservationPS.getStatus().equals(ReservationStatus.CANCEL)
+                || !reservationPS.getProcess().equals(ReservationProcess.APPLY)) {
+            throw new Exception400(String.valueOf(reservationId), "이미 확정, 혹은 완료되었거나 취소된 상담입니다.");
+        }
+        pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            reservationPS.updateTime(StringToLocalDateTime(confirmDTO.getTime()));
+            reservationPS.updateProcess(ReservationProcess.CONFIRM);
+        } catch (Exception e) {
+            throw new Exception500("예약 확정 실패 : " + e.getMessage());
         }
     }
 }

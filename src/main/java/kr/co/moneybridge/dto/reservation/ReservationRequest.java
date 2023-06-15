@@ -8,6 +8,9 @@ import kr.co.moneybridge.model.reservation.ReservationType;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
 public class ReservationRequest {
     // validation은 controller에서 수행
     @ApiModel
@@ -58,5 +61,16 @@ public class ReservationRequest {
 
         @ApiModelProperty(example = "서울특별시 용산구 한강로동 한강대로 92")
         private String locationAddress;
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class ConfirmDTO {
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
+        @Pattern(regexp = "\\\\d{1,2}월 \\\\d{1,2}일 (오전|오후) \\\\d{1,2}시 \\\\d{1,2}분",
+                message = "형식에 맞춰 입력해주세요.")
+        @NotEmpty
+        private String time;
     }
 }
