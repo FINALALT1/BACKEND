@@ -374,6 +374,15 @@ public class ReservationService {
                 || reservationPS.getProcess().equals(ReservationProcess.APPLY)) {
             throw new Exception400(String.valueOf(reservationId), "아직 확정되지 않았거나 완료 혹은 취소된 상담입니다.");
         }
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+                    () -> new Exception404("존재하지 않는 투자자입니다.")
+            );
+        } else { // PB
+            pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+        }
 
         try {
             reservationPS.updateProcess(ReservationProcess.COMPLETE);
