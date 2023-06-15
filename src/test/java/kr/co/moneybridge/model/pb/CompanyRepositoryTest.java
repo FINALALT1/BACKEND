@@ -1,8 +1,6 @@
 package kr.co.moneybridge.model.pb;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.core.util.MyDateUtil;
-import kr.co.moneybridge.model.Role;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
 import java.util.List;
 
 @Import(BCryptPasswordEncoder.class)

@@ -34,6 +34,36 @@ public class PBController {
 
     // 증권사 리스트 가져오기 - 메인페이지, 회원가입시
     @MyLog
+    @ApiOperation(value = "증권사 리스트 가져오기", notes = "메인페이지, 회원가입시 사용.\n" +
+            "<b>includeLogo=true면 증권사 로고 포함(디폴트) => 응답 데이터 예시</b>\n" +
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 200,\n" +
+            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
+            "&nbsp;&nbsp;\"data\": {\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"list\": [\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"logo\": \"logo.png\",\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"name\": \"미래에셋증권\"\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},&nbsp;<font color=\"#C0C0C0\">// ... 실제로는 30개</font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;]\n" +
+            "&nbsp;&nbsp;}\n" +
+            "}\n<br>" +
+            "<b>includeLogo=false면 증권사 로고 불포함 => 응답 데이터 예시</b>\n" +
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 200,\n" +
+            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
+            "&nbsp;&nbsp;\"data\": {\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"list\": [\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"name\": \"미래에셋증권\"\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},&nbsp;<font color=\"#C0C0C0\">// ... 실제로는 30개</font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;]\n" +
+            "&nbsp;&nbsp;}\n" +
+            "}")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/companies")
     public ResponseEntity<?> getCompanies(@RequestParam(defaultValue = "true") Boolean includeLogo) {
         ResponseDTO<?> responseDTO = null;

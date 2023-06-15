@@ -12,11 +12,13 @@ import lombok.Setter;
 import java.util.List;
 
 public class PBResponse {
-    @ApiModel(description = "PB 회원가입 완료시 응답 데이터")
+    @ApiModel(description = "증권사 리스트 목록 로고 불포함 응답 데이터")
     @Setter
     @Getter
     public static class CompanyNameDTO {
+        @ApiModelProperty(example = "1", value = "증권사의 id")
         private Long id;
+        @ApiModelProperty(example = "미래에셋증권", value = "증권사명")
         private String name;
 
         public CompanyNameDTO(Company company) {
@@ -26,9 +28,11 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "증권사 리스트 목록 로고 불포함 응답 데이터")
     @Setter
     @Getter
     public static class CompanyNameOutDTO {
+        @ApiModelProperty
         private List<CompanyNameDTO> list;
 
         public CompanyNameOutDTO(List<CompanyNameDTO> list) {
@@ -37,11 +41,15 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "증권사 리스트 목록 로고 포함 응답 데이터")
     @Setter
     @Getter
     public static class CompanyDTO {
+        @ApiModelProperty(example = "1", value = "증권사의 id")
         private Long id;
+        @ApiModelProperty(example = "logo.png", value = "로고 이미지 주소")
         private String logo;
+        @ApiModelProperty(example = "미래에셋증권", value = "증권사명")
         private String name;
 
         public CompanyDTO(Company company) {
@@ -52,9 +60,11 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "증권사 리스트 목록 로고 포함 응답 데이터")
     @Setter
     @Getter
     public static class CompanyOutDTO {
+        @ApiModelProperty
         private List<CompanyDTO> list;
 
         public CompanyOutDTO(List<CompanyDTO> list) {
@@ -63,6 +73,7 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "PB 회원가입 성공시 응답 데이터")
     @Setter
     @Getter
     public static class JoinOutDTO {
