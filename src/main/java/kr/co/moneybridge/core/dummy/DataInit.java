@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataInit extends DummyEntity{
 
-    @Profile({"dev", "prod"})
+    @Profile("dev")
     @Bean
     CommandLineRunner init(UserRepository userRepository,
                            CompanyRepository companyRepository,
