@@ -64,8 +64,8 @@ public class DataInit extends DummyEntity{
                     .name(c1.getName() + " 강남대로점")
                     .roadAddress("서울 강남구 강남대로 390")
                     .streetAddress("역삼동 825 미진프라자 1층 101호")
-                    .latitude(String.valueOf("36.36671"))
-                    .longitude(String.valueOf("127.34451"))
+                    .latitude(Double.valueOf(String.valueOf("36.36671")))
+                    .longitude(Double.valueOf(String.valueOf("127.34451")))
                     .build());
             branchRepository.save(newBranch(c3, 2));
             branchRepository.save(newBranch(c4, 3));

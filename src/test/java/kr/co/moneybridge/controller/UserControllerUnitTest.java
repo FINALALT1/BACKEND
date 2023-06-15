@@ -5,7 +5,6 @@ import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.WithMockUser;
 import kr.co.moneybridge.core.advice.MyLogAdvice;
 import kr.co.moneybridge.core.advice.MyValidAdvice;
-import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.config.MyFilterRegisterConfig;
 import kr.co.moneybridge.core.config.MySecurityConfig;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
@@ -39,7 +38,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

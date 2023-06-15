@@ -1,8 +1,6 @@
 package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.util.Pair;
-import kr.co.moneybridge.core.WithMockUser;
 import kr.co.moneybridge.core.advice.MyLogAdvice;
 import kr.co.moneybridge.core.advice.MyValidAdvice;
 import kr.co.moneybridge.core.config.MyFilterRegisterConfig;
@@ -11,13 +9,7 @@ import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.pb.PBResponse;
-import kr.co.moneybridge.dto.user.UserRequest;
-import kr.co.moneybridge.dto.user.UserResponse;
-import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserAgreementType;
 import kr.co.moneybridge.service.PBService;
-import kr.co.moneybridge.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,24 +18,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
