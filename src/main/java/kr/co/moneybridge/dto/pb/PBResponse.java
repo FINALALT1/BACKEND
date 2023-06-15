@@ -33,6 +33,8 @@ public class PBResponse {
         private int career;
         private int reserveCount;
         private int reviewCount;
+        private Double branchLat;
+        private Double branchLon;
 
         public PBPageDTO(PB pb, Branch branch, Company company) {
             this.id = pb.getId();
@@ -44,6 +46,8 @@ public class PBResponse {
             this.career = pb.getCareer();
             this.speciality1 = pb.getSpeciality1();
             this.speciality2 = pb.getSpeciality2();
+            this.branchLat = branch.getLatitude();
+            this.branchLon = branch.getLongitude();
         }
     }
 }

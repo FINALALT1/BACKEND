@@ -6,10 +6,12 @@ import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
+import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
+import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.service.PBService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -59,6 +61,52 @@ public class PBController {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<PBResponse.PBPageDTO> pageDTO = pbService.getPBWithName(name, pageable);
+        ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("/list/pb/distance")
+    public ResponseEntity<?> getDistancePBList(@RequestParam(value = "latitude") Double latitude,
+                                               @RequestParam(value = "longitude") Double longitude,
+                                               @RequestParam(value = "speciality", required = false) PBSpeciality speciality,
+                                               @RequestParam(value = "company", required = false) Long company) {
+
+        Pageable pageable = PageRequest.of(0, 10);
+        PageDTO<PBResponse.PBPageDTO> pageDTO;
+
+        if (speciality != null & company != null) {
+            throw new Exception404("잘못된 요청입니다.");
+        } else if (speciality != null) {
+            pageDTO = pbService.getSpecialityPBWithDistance(latitude, longitude, speciality, pageable);
+        } else if (company != null) {
+            pageDTO = pbService.getCompanyPBWithDistance(latitude, longitude, company, pageable);
+        } else {
+            pageDTO = pbService.getPBWithDistance(latitude, longitude, pageable);
+        }
+
+        ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("/list/pb/career")
+    public ResponseEntity<?> getCareerPBList(@RequestParam(value = "speciality", required = false) PBSpeciality speciality,
+                                             @RequestParam(value = "company", required = false) Long company) {
+
+        Pageable pageable = PageRequest.of(0, 10);
+        PageDTO<PBResponse.PBPageDTO> pageDTO;
+
+        if (speciality != null & company != null) {
+            throw new Exception404("잘못된 요청입니다.");
+        } else if (speciality != null) {
+            pageDTO = pbService.getSpecialityPBWithCareer(speciality, pageable);
+        } else if (company != null) {
+            pageDTO = pbService.getCompanyPBWithCareer(company, pageable);
+        } else {
+            pageDTO = pbService.getPBWithCareer(pageable);
+        }
+
         ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
 
         return ResponseEntity.ok(responseDTO);
