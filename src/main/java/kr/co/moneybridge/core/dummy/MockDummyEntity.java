@@ -26,6 +26,7 @@ public class MockDummyEntity {
                 .role(Role.USER)
                 .profile("profile.png")
                 .createdAt(LocalDateTime.now())
+                .propensity(UserPropensity.AGGRESSIVE)
                 .build();
     }
     public User newMockUserADMIN(Long id, String username) {

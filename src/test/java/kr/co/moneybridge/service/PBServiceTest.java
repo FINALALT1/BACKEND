@@ -1,9 +1,15 @@
 package kr.co.moneybridge.service;
 
+import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBResponse;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserPropensity;
+import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +24,11 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +40,8 @@ class PBServiceTest extends MockDummyEntity {
     PBService pbService;
     @Mock
     PBRepository pbRepository;
+    @Mock
+    UserRepository userRepository;
     @Mock
     PB pb;
     @Mock
@@ -196,5 +206,33 @@ class PBServiceTest extends MockDummyEntity {
         //then
         assertThat(result.getTotalElements()).isEqualTo(list.size());
         assertThat(result.getList()).isEqualTo(list);
+    }
+
+    @Test
+    @DisplayName("맞춤 PB 리스트 가져오기")
+    void getRecommendedPBList() {
+        // given
+        Long memberId = 1L; // Assume
+        User user = newMockUser(memberId, "김테스터");
+        MyUserDetails myUserDetails = new MyUserDetails(user);
+        Pageable pageable = PageRequest.of(0, 10);
+        PBResponse.PBPageDTO pbPageDTO1 = new PBResponse.PBPageDTO(pb, branch, company);
+        PBResponse.PBPageDTO pbPageDTO2 = new PBResponse.PBPageDTO(pb, branch, company);
+        List<PBResponse.PBPageDTO> list = Arrays.asList(pbPageDTO1, pbPageDTO2);
+        Page<PBResponse.PBPageDTO> pbPG = new PageImpl<>(list, pageable, list.size());
+
+        //stub
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+        when(pbRepository.findRecommendedPBList(any(Pageable.class), any(PBSpeciality.class), any(PBSpeciality.class), any(PBSpeciality.class))).thenReturn(pbPG);
+
+        // when
+        PageDTOV2<PBResponse.PBPageDTO> result = pbService.getRecommendedPBList(myUserDetails, pageable);
+
+        // then
+        assertThat(result.getTotalElements()).isEqualTo(pbPG.getTotalElements());
+        assertThat(result.getList().size()).isEqualTo(2);
+        assertThat(result.getCurPage()).isEqualTo(pageable.getPageNumber());
+        assertThat(result.getList()).isEqualTo(list);
+        assertThat(result.getUserPropensity()).isEqualTo(user.getPropensity());
     }
 }
