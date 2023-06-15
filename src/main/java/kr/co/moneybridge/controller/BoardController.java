@@ -1,5 +1,9 @@
 package kr.co.moneybridge.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
@@ -35,6 +39,12 @@ public class BoardController {
     private final UserService userService;
     private final PBService pbService;
 
+    @ApiOperation("컨텐츠 검색하기")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "title", value = "제목", required = false),
+            @ApiImplicitParam(name = "name", value = "김피비", required = false)
+    })
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/lounge/boards")
     public ResponseEntity<?> getBoardsWithTitle(@RequestParam(value = "title", required = false) String title,
                                                 @RequestParam(value = "name", required = false) String name) {
@@ -54,6 +64,8 @@ public class BoardController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @ApiOperation("최신 컨텐츠순 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/boards")
     public ResponseEntity<?> getBoardsByNew() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
@@ -62,6 +74,8 @@ public class BoardController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @ApiOperation("조회수 높은 컨텐츠순 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/boards/hot")
     public ResponseEntity<?> getBoardsByHot() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "clickCount"));
@@ -70,6 +84,8 @@ public class BoardController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @ApiOperation("최신 컨텐츠 2개 + 조회수 높은 컨텐츠 2개")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/lounge/board")
     public ResponseEntity<?> getNewHotBoards() {
         List<BoardResponse.BoardPageDTO> boardList = boardService.getNewHotContents();
@@ -78,6 +94,9 @@ public class BoardController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @ApiOperation("컨텐츠 상세 가져오기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @GetMapping("/board/{id}")
     public ResponseEntity<?> getBoardDetail(@PathVariable Long id) {
 
@@ -86,6 +105,9 @@ public class BoardController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @ApiOperation("컨텐츠 북마크하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PostMapping("/auth/bookmark/board/{id}")
     public ResponseEntity<?> addBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
@@ -94,6 +116,9 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
+    @ApiOperation("컨텐츠 북마크 삭제하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @DeleteMapping("/auth/bookmark/board/{id}")
     public ResponseEntity<?> deleteBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
@@ -103,6 +128,9 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
+    @ApiOperation("컨텐츠 댓글달기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PostMapping("/auth/board/{id}/reply")
     public ResponseEntity<?> postReply(@PathVariable Long id,
                                        @AuthenticationPrincipal MyUserDetails myUserDetails,
@@ -119,6 +147,9 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
+    @ApiOperation("대댓글달기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PostMapping("/auth/board/{id}/rereply")
     public ResponseEntity<?> postReReply(@PathVariable Long id, @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
 
@@ -127,6 +158,8 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
+    @ApiOperation("컨텐츠 등록하기")
+    @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/board")
     public ResponseEntity<?> saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -142,6 +175,8 @@ public class BoardController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @ApiOperation("컨텐츠 임시저장하기")
+    @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/board/temp")
     public ResponseEntity<?> saveTempBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
                                            @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -151,6 +186,8 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
+    @ApiOperation("임시저장 컨텐츠 목록 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/pb/boards/temp")
     public ResponseEntity<?> getTempBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
@@ -159,7 +196,9 @@ public class BoardController {
 
         return ResponseEntity.ok(responseDTO);
     }
-
+    @ApiOperation("임시저장 컨텐츠 가져오기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @GetMapping("/pb/board/{id}")
     public ResponseEntity<?> getTempBoard(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
 
@@ -170,6 +209,9 @@ public class BoardController {
 
     }
 
+    @ApiOperation("컨텐츠 수정하기/임시저장 컨텐츠 등록하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PutMapping("/pb/board/{id}")
     public ResponseEntity<?> putBoard(@AuthenticationPrincipal MyUserDetails myUserDetails,
                                       @RequestBody BoardRequest.BoardInDTO boardInDTO,
@@ -180,6 +222,9 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
+    @ApiOperation("컨텐츠 삭제하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @DeleteMapping("/pb/board/{id}")
     public ResponseEntity<?> deleteBoard(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
 
@@ -188,6 +233,8 @@ public class BoardController {
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
+    @ApiOperation("북마크한 컨텐츠 목록 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/auth/bookmarks/boards")
     public ResponseEntity<?> getBookmarkBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
