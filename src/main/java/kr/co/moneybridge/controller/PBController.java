@@ -35,7 +35,7 @@ public class PBController {
     // 증권사 리스트 가져오기 - 메인페이지, 회원가입시
     @MyLog
     @GetMapping("/companies")
-    public ResponseEntity<?> joinPB(@RequestParam(defaultValue = "true") Boolean includeLogo) {
+    public ResponseEntity<?> getCompanies(@RequestParam(defaultValue = "true") Boolean includeLogo) {
         ResponseDTO<?> responseDTO = null;
         if(includeLogo){
             PBResponse.CompanyOutDTO companyOutDTO = pbService.getCompanies();
