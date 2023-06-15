@@ -237,4 +237,35 @@ public class ReservationService {
             throw new Exception500("상담 목록 조회 실패 : " + e.getMessage());
         }
     }
+
+    @MyLog
+    public ReservationResponse.DetailDTO getReservationDetail(Long reservationId, Long pbId) {
+        Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new Exception404("존재하지 않는 예약입니다.")
+        );
+        pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            User userPS = reservationPS.getUser();
+            return new ReservationResponse.DetailDTO(
+                    userPS.getId(),
+                    userPS.getProfile(),
+                    userPS.getName(),
+                    userPS.getPhoneNumber(),
+                    userPS.getEmail(),
+                    reservationPS.getId(),
+                    localDateTimeToStringV2(reservationPS.getCandidateTime1()),
+                    localDateTimeToStringV2(reservationPS.getCandidateTime2()),
+                    localDateTimeToStringV2(reservationPS.getTime()),
+                    reservationPS.getLocationName(),
+                    reservationPS.getLocationAddress(),
+                    reservationPS.getGoal(),
+                    reservationPS.getQuestion()
+            );
+        } catch (Exception e) {
+            throw new Exception500("예약 조회 실패 : " + e.getMessage());
+        }
+    }
 }

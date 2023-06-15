@@ -207,4 +207,25 @@ public class ReservationController {
 
         return new ResponseDTO<>(recentReservationsDTO);
     }
+
+    @MyLog
+    @ApiOperation(value = "예약 확인하기")
+    @ApiResponses({
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/pb/reservation/{id}")
+    public ResponseDTO<ReservationResponse.DetailDTO> getReservationDetail(@PathVariable("id") Long id,
+                                                                            @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(id, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(detailDTO);
+    }
 }
