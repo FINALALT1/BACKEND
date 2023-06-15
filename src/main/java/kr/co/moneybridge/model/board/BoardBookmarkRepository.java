@@ -8,6 +8,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface BoardBookmarkRepository extends JpaRepository<BoardBookmark, Long> {
+    @Modifying
+    @Query("delete from BoardBookmark b where b.bookmarkerId = :bookmarkerId and b.bookmarkerRole = :bookmarkerRole")
+    void deleteByBookmarker(@Param("bookmarkerId") Long bookmarkerId, @Param("bookmarkerRole")BookmarkerRole bookmarkerRole);
 
     @Query("SELECT bm FROM BoardBookmark bm JOIN bm.board bd WHERE bm.bookmarkerId = :userId AND bd.id = :boardId AND bm.bookmarkerRole = 'USER'")
     Optional<BoardBookmark> findWithUserAndBoard(@Param("userId") Long userId, @Param("boardId") Long boardId);

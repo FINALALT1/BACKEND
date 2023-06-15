@@ -1,6 +1,6 @@
 package kr.co.moneybridge.controller;
 import com.nimbusds.jose.util.Pair;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
@@ -12,6 +12,7 @@ import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
@@ -31,93 +32,103 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
-    @ApiOperation(value = "개인 정보 수정")
-    @SwaggerResponses.DefaultApiResponses
     @MyLog
-    @PatchMapping("/auth/myInfo")
-    public ResponseEntity<?> updateMyInfo(@RequestBody @Valid UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO,
-                                          Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+    @ApiOperation(value = "개인 정보 수정", notes = "i 소문자")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/auth/myinfo")
+    public ResponseDTO updateMyInfo(@RequestBody @Valid UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO,
+                                    Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.updateMyInfo(updateMyInfoInDTO, myUserDetails);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>();
     }
 
-    @ApiOperation(value = "개인 정보 가져오기")
-    @SwaggerResponses.DefaultApiResponses
     @MyLog
-    @GetMapping("/auth/myInfo")
-    public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    @ApiOperation(value = "개인 정보 가져오기", notes = "i 소문자")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/auth/myinfo")
+    public ResponseDTO<UserResponse.MyInfoOutDTO> getMyInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         UserResponse.MyInfoOutDTO myInfoOutDTO = userService.getMyInfo(myUserDetails);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(myInfoOutDTO);
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>(myInfoOutDTO);
     }
 
+    @MyLog
     @ApiOperation(value = "개인정보 수정시 비밀번호 확인")
     @SwaggerResponses.DefaultApiResponses
-    @MyLog
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/auth/password")
-    public ResponseEntity<?> checkPassword(@RequestBody @Valid UserRequest.CheckPasswordInDTO checkPasswordInDTO,
+    public ResponseDTO checkPassword(@RequestBody @Valid UserRequest.CheckPasswordInDTO checkPasswordInDTO,
                                            Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.checkPassword(checkPasswordInDTO, myUserDetails);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>();
     }
 
+    @MyLog
     @ApiOperation(value = "비밀번호 재설정")
     @SwaggerResponses.DefaultApiResponses
-    @MyLog
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/password")
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) {
+    public ResponseDTO updatePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) {
         userService.updatePassword(rePasswordInDTO);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>();
     }
 
+    @MyLog
     @ApiOperation(value = "이메일 찾기")
     @SwaggerResponses.DefaultApiResponses
-    @MyLog
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/email")
-    public ResponseEntity<?> findEmail(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) {
+    public ResponseDTO<List<UserResponse.EmailFindOutDTO>> findEmail(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) {
         List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = userService.findEmail(emailFindInDTO);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(emailFindOutDTOs);
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>(emailFindOutDTOs);
     }
 
     // 비밀번호 찾기 + 이메일 인증
+    @MyLog
     @ApiOperation(value = "비밀번호 찾기시 이메일 인증")
     @SwaggerResponses.DefaultApiResponses
-    @MyLog
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/password")
-    public ResponseEntity<?> password(@RequestBody @Valid UserRequest.PasswordInDTO passwordInDTO, Errors errors) throws Exception {
+    public ResponseDTO<UserResponse.PasswordOutDTO> password(@RequestBody @Valid UserRequest.PasswordInDTO passwordInDTO, Errors errors) throws Exception {
         UserResponse.PasswordOutDTO passwordOutDTO = userService.password(passwordInDTO);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(passwordOutDTO);
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>(passwordOutDTO);
     }
 
+    @MyLog
     @ApiOperation(value = "이메일 인증")
     @SwaggerResponses.DefaultApiResponses
-    @MyLog
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/email/authentication")
-    public ResponseEntity<?> email(@RequestBody @Valid UserRequest.EmailInDTO emailInDTO, Errors errors) throws Exception {
+    public ResponseDTO<UserResponse.EmailOutDTO> email(@RequestBody @Valid UserRequest.EmailInDTO emailInDTO, Errors errors) throws Exception {
         UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO.getEmail());
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(emailOutDTO);
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>(emailOutDTO);
     }
 
-    @ApiOperation(value = "탈퇴")
-    @SwaggerResponses.DefaultApiResponses
     @MyLog
+    @ApiOperation(value = "탈퇴", notes = "연관데이터 전부 즉시 삭제")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/auth/account")
-    public ResponseEntity<?> withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
+    public ResponseDTO withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.withdraw(withdrawInDTO, myUserDetails);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>();
     }
 
-    @ApiOperation(value = "투자자 회원가입")
-    @SwaggerResponses.DefaultApiResponses
     @MyLog
+    @ApiOperation(value = "투자자 회원가입", notes = "<b>성공시, 응답데이터</b>\n<br>" +
+            "Authorization: Bearer <JWT 토큰>&nbsp;<font color=\"#C0C0C0\">// 액세스 토큰</font>\n" +
+            "Set-Cookie: refreshToken=<JWT 토큰>; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 200,\n" +
+            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
+            "&nbsp;&nbsp;\"data\": {\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,&nbsp;<font color=\"#C0C0C0\">// 해당 투자자의 id</font>\n" +
+            "&nbsp;&nbsp;}\n" +
+            "}")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/join/user")
     public ResponseEntity<?> joinUser(@RequestBody @Valid UserRequest.JoinInDTO joinInDTO, Errors errors, HttpServletResponse response) {
         String rawPassword = joinInDTO.getPassword();
@@ -132,9 +143,20 @@ public class UserController {
     }
 
     // 로그인 성공시 access 토큰과 refresh 토큰 둘 다 발급.
-    @ApiOperation(value = "로그인")
-    @SwaggerResponses.DefaultApiResponses
     @MyLog
+    @ApiOperation(value = "로그인", notes = "<b>성공시, 응답 데이터</b>\n<br>" +
+            "Authorization: Bearer <JWT 토큰>&nbsp;<font color=\"#C0C0C0\">// 액세스 토큰</font>\n" +
+            "Set-Cookie: refreshToken=<JWT 토큰>; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 200,\n" +
+            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
+            "&nbsp;&nbsp;\"data\": {\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,&nbsp;<font color=\"#C0C0C0\">// 해당 투자자의 id</font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"code\": \"YFOEC1AC\"&nbsp;<font color=\"#C0C0C0\">// 관리자가 아닐때는 null</font>\n" +
+            "&nbsp;&nbsp;}\n" +
+            "}")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
@@ -149,9 +171,24 @@ public class UserController {
     }
 
     // AccessToken, RefreshToken 재발급을 위한 API
-    @ApiOperation(value = "토큰 재발급")
-    @SwaggerResponses.DefaultApiResponses
     @MyLog
+    @ApiOperation(value = "토큰 재발급", notes = "<b>401 에러 + data가 \"Access token expired\"일 때, 이 API 호출</b>\n<br>" +
+            "인증이 필요한 요청에서 응답 메세지가 다음과 같을 때 이 요청을 보낸다.\n"+
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 401,\n" +
+            "&nbsp;&nbsp;\"msg\": \"unAuthorized\",\n" +
+            "&nbsp;&nbsp;\"data\": \"Access token expired\"\n" +
+            "}\n<br><br>" +
+            "<b>성공시, 응답 데이터</b>\n<br>" +
+            "Authorization: Bearer <JWT 토큰>&nbsp;<font color=\"#C0C0C0\">// 액세스 토큰</font>\n" +
+            "Set-Cookie: refreshToken=<JWT 토큰>; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 200,\n" +
+            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
+            "&nbsp;&nbsp;\"data\": {}}\n" +
+            "}")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         Pair<String, String> tokens = userService.reissue(request, getRefreshToken(request));
@@ -162,14 +199,14 @@ public class UserController {
                 .body(responseDTO);
     }
 
+    @MyLog
     @ApiOperation(value = "로그아웃")
     @SwaggerResponses.DefaultApiResponses
-    @MyLog
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/auth/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request){
+    public ResponseDTO logout(HttpServletRequest request){
         userService.logout(request, getRefreshToken(request));
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>();
     }
 
     private String getRefreshToken(HttpServletRequest request){

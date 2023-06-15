@@ -80,7 +80,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         String requestBody = om.writeValueAsString(updateMyInfoInDTO);
 
         // When
-        ResultActions resultActions = mvc.perform(patch("/auth/myInfo")
+        ResultActions resultActions = mvc.perform(patch("/auth/myinfo")
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -99,7 +99,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         Mockito.when(userService.getMyInfo(any())).thenReturn(myInfoOutDTO);
 
         // When
-        ResultActions resultActions = mvc.perform(get("/auth/myInfo"));
+        ResultActions resultActions = mvc.perform(get("/auth/myinfo"));
 
         // Then
         resultActions.andExpect(status().isOk());

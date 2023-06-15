@@ -1,5 +1,6 @@
 package kr.co.moneybridge.dto.user;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
@@ -11,11 +12,12 @@ import javax.validation.constraints.*;
 import java.util.List;
 
 public class UserRequest {
+    @ApiModel(description = "개인 정보 수정시 요청 데이터")
     @Setter
     @Getter
     public static class UpdateMyInfoInDTO {
 
-        @ApiModelProperty(example = "김이름")
+        @ApiModelProperty(example = "김투자")
         private String name;
 
         @ApiModelProperty(example = "01011119999")
@@ -24,6 +26,7 @@ public class UserRequest {
         private String phoneNumber;
     }
 
+    @ApiModel(description = "개인정보 수정시 비밀번호 확인 요청 데이터")
     @Setter
     @Getter
     public static class CheckPasswordInDTO {
@@ -33,6 +36,7 @@ public class UserRequest {
         private String password;
     }
 
+    @ApiModel(description = "비밀번호 재설정시 요청 데이터")
     @Setter
     @Getter
     public static class RePasswordInDTO {
@@ -45,12 +49,13 @@ public class UserRequest {
         @NotNull
         private Role role;
 
-        @ApiModelProperty(example = "password1234")
+        @ApiModelProperty(example = "password12345")
         @NotEmpty
         @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
         private String password;
     }
 
+    @ApiModel(description = "이메일 찾기시 요청 데이터")
     @Setter
     @Getter
     public static class EmailFindInDTO {
@@ -69,6 +74,7 @@ public class UserRequest {
         private String phoneNumber;
     }
 
+    @ApiModel(description = "비밀번호 찾기시 이메일 인증 요청 데이터")
     @Setter
     @Getter
     public static class PasswordInDTO {
@@ -76,25 +82,27 @@ public class UserRequest {
         @NotNull
         private Role role;
 
-        @ApiModelProperty(example = "김투자")
+        @ApiModelProperty(example = "사용자")
         @NotEmpty
         private String name;
 
-        @ApiModelProperty(example = "jisu3148496@naver.com")
+        @ApiModelProperty(example = "jisu8496@naver.com")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         private String email;
     }
 
+    @ApiModel(description = "이메일 인증시 요청 데이터")
     @Setter
     @Getter
     public static class EmailInDTO {
-        @ApiModelProperty(example = "jisu3148496@naver.com")
+        @ApiModelProperty(example = "jisu8496@naver.com")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         private String email;
     }
 
+    @ApiModel(description = "탈퇴시 요청 데이터")
     @Setter
     @Getter
     public static class WithdrawInDTO {
@@ -104,10 +112,11 @@ public class UserRequest {
         private String password;
     }
 
+    @ApiModel(description = "투자자 회원가입시 약관 데이터")
     @Setter
     @Getter
     public static class AgreementDTO {
-        @ApiModelProperty(example = "돈줄 이용약관 동의")
+        @ApiModelProperty(example = "돈줄 이용약관 동의", value = "약관명")
         @NotEmpty
         private String title;
 
@@ -129,10 +138,11 @@ public class UserRequest {
         }
     }
 
+    @ApiModel(description = "투자자 회원가입시 요청 데이터")
     @Setter
     @Getter
     public static class JoinInDTO {
-        @ApiModelProperty(example = "investor2@naver.com")
+        @ApiModelProperty(example = "investor2@naver.com", value = "이메일 형식, 30바이트 초과 x")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         @Size(max = 30, message = "이메일은 30바이트를 초과할 수 없습니다")
@@ -169,6 +179,7 @@ public class UserRequest {
         }
     }
 
+    @ApiModel(description = "로그인시 요청 데이터")
     @Setter
     @Getter
     public static class LoginInDTO {

@@ -1,17 +1,20 @@
 package kr.co.moneybridge.dto.pb;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
-import kr.co.moneybridge.model.user.UserPropensity;
 import lombok.Getter;
 import lombok.Setter;
 
 public class PBResponse {
+    @ApiModel(description = "PB 회원가입 완료시 응답 데이터")
     @Setter
     @Getter
     public static class JoinOutDTO {
+        @ApiModelProperty(example = "1", value = "PB의 id")
         private Long id;
 
         public JoinOutDTO(PB pb) {
