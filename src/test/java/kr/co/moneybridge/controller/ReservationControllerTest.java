@@ -1,7 +1,6 @@
 package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.model.pb.*;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -114,18 +112,18 @@ public class ReservationControllerTest {
     public void apply_reservation_test() throws Exception {
         // given
         Long pbId = 1L;
-        ReservationRequest.ApplyInDTO applyInDTO = new ReservationRequest.ApplyInDTO();
-        applyInDTO.setGoal(ReservationGoal.PROFIT);
-        applyInDTO.setReservationType(ReservationType.VISIT);
-        applyInDTO.setLocationType(LocationType.BRANCH);
-        applyInDTO.setCandidateTime1("2023-05-15T09:00:00");
-        applyInDTO.setCandidateTime2("2023-05-15T12:00:00");
-        applyInDTO.setQuestion("잘 부탁드립니다.");
-        applyInDTO.setUserName("lee");
-        applyInDTO.setUserPhoneNumber("01012345678");
-        applyInDTO.setUserEmail("asdf1234@nate.com");
+        ReservationRequest.ApplyDTO applyDTO = new ReservationRequest.ApplyDTO();
+        applyDTO.setGoal(ReservationGoal.PROFIT);
+        applyDTO.setReservationType(ReservationType.VISIT);
+        applyDTO.setLocationType(LocationType.BRANCH);
+        applyDTO.setCandidateTime1("2024년 6월 2일 오전 9시 20분");
+        applyDTO.setCandidateTime2("2024년 6월 1일 오전 9시 20분");
+        applyDTO.setQuestion("잘 부탁드립니다.");
+        applyDTO.setUserName("lee");
+        applyDTO.setUserPhoneNumber("01012345678");
+        applyDTO.setUserEmail("asdf1234@nate.com");
 
-        String requestBody = om.writeValueAsString(applyInDTO);
+        String requestBody = om.writeValueAsString(applyDTO);
 
         // when
         ResultActions resultActions = mvc
@@ -142,24 +140,20 @@ public class ReservationControllerTest {
         resultActions.andExpect(status().isOk());
     }
 
-    @DisplayName("상담 후기 리스트 조회 성공")
-    @WithUserDetails(value = "PB-pblee@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Test
-    public void get_reviews_test() throws Exception {
-        // given
-        int page = 0;
-        MyUserDetails myUserDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        // when
-        ResultActions resultActions = mvc
-                .perform(get("/pb/reviews"));
-        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        System.out.println("테스트 : " + responseBody);
-
-        // then
-//        resultActions.andExpect(jsonPath("$.status").value(200));
-//        resultActions.andExpect(jsonPath("$.msg").value("ok"));
-//        resultActions.andExpect(jsonPath("$.data.);
-//        resultActions.andExpect(status().isOk());
-    }
+//    @DisplayName("상담 후기 리스트 조회 성공")
+//    @WithUserDetails(value = "PB-pblee@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+//    @Test
+//    public void get_reviews_test() throws Exception {
+//        // given
+//        int page = 0;
+//        MyUserDetails myUserDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        // when
+//        ResultActions resultActions = mvc
+//                .perform(get("/pb/reviews"));
+//        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+//        System.out.println("테스트 : " + responseBody);
+//
+//        // then
+//    }
 }

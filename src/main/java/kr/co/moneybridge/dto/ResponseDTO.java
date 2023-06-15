@@ -17,18 +17,18 @@ public class ResponseDTO<T> {
     @ApiModelProperty
     private T data; // 에러시에는 구체적인 에러 내용 ex) username이 입력되지 않았습니다
 
-    public ResponseDTO(){
+    public ResponseDTO() {
         this.status = HttpStatus.OK.value();
         this.msg = "ok";
     }
 
-    public ResponseDTO(T data){
+    public ResponseDTO(T data) {
         this.status = HttpStatus.OK.value();
         this.msg = "ok";
         this.data = data; // 응답할 데이터 바디
     }
 
-    public ResponseDTO(HttpStatus httpStatus, String msg, T data){
+    public ResponseDTO(HttpStatus httpStatus, String msg, T data) {
         this.status = httpStatus.value();
         this.msg = msg; // 에러 제목
         this.data = data; // 에러 내용
