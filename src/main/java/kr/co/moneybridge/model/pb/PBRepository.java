@@ -35,4 +35,24 @@ public interface PBRepository extends JpaRepository<PB, Long> {
             "JOIN Company c ON b.company = c " +
             "WHERE pb.name LIKE CONCAT('%', :name, '%')")
     Page<PBResponse.PBPageDTO> findByName(@Param("name") String name, Pageable pageable);
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) " +
+            "FROM PB pb " +
+            "JOIN Branch b ON pb.branch = b " +
+            "JOIN Company c ON b.company = c " +
+            "WHERE pb.speciality1 = :speciality OR pb.speciality2 = :speciality")
+    List<PBResponse.PBPageDTO> findByPBListSpeciality(@Param(("speciality")) PBSpeciality speciality);
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) " +
+            "FROM PB pb " +
+            "JOIN Branch b ON pb.branch = b " +
+            "JOIN Company c ON b.company = c " +
+            "WHERE c.id = :companyId")
+    List<PBResponse.PBPageDTO> findByPBListCompany(@Param("companyId") Long companyId);
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) " +
+            "FROM PB pb " +
+            "JOIN Branch b ON pb.branch = b " +
+            "JOIN Company c ON b.company = c ")
+    List<PBResponse.PBPageDTO> findAllPB();
 }

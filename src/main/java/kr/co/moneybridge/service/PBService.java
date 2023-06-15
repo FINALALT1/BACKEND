@@ -15,12 +15,14 @@ import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -105,4 +107,49 @@ public class PBService {
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
         return new PageDTO<>(list, pbPG);
     }
+
+    //거리순 PB리스트 가져오기(전문분야필터)
+    public PageDTO<PBResponse.PBPageDTO> getSpecialityPBWithDistance(Double latitude, Double longitude, PBSpeciality speciality, Pageable pageable) {
+
+        List<PBResponse.PBPageDTO> list = pbRepository.findByPBListSpeciality(speciality);
+        list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        Page<PBResponse.PBPageDTO> pbPG = new PageImpl(list.subList(start, end), pageable, list.size());
+        return new PageDTO<>(list, pbPG);
+    }
+
+    //거리순 PB리스트 가져오기(증권사필터)
+    public PageDTO<PBResponse.PBPageDTO> getCompanyPBWithDistance(Double latitude, Double longitude, Long companyId, Pageable pageable) {
+
+        List<PBResponse.PBPageDTO> list = pbRepository.findByPBListCompany(companyId);
+        list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        Page<PBResponse.PBPageDTO> pbPG = new PageImpl(list.subList(start, end), pageable, list.size());
+        return new PageDTO<>(list, pbPG);
+    }
+
+    //거리순 전체PB리스트 가져오기
+    public PageDTO<PBResponse.PBPageDTO> getPBWithDistance(Double latitude, Double longitude, Pageable pageable) {
+
+        List<PBResponse.PBPageDTO> list = pbRepository.findAllPB();
+        list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        Page<PBResponse.PBPageDTO> pbPG = new PageImpl(list.subList(start, end), pageable, list.size());
+        return new PageDTO<>(list, pbPG);
+    }
+
+    //거리계산 메서드
+    public static double calDistance(double lat1, double lon1, double lat2, double lon2) {
+        final double KILL = 111.32; // 위도 1도 거리(킬로미터)
+
+        double x = lat1 - lat2;
+        double y = (lon1 - lon2) * Math.cos((lat1+lat2)/2);
+
+        return KILL * Math.sqrt(x*x + y*y);
+    }
+
+
 }
