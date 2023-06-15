@@ -221,4 +221,39 @@ public class ReservationServiceTest extends MockDummyEntity {
         assertThat(reviewsOutDTO.getList().get(4).getContent()).isEqualTo("content 입니다");
         assertThat(reviewsOutDTO.getList().get(4).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
     }
+
+    @Test
+    public void get_recent_reservation_info_test() {
+        // given
+        Long pbId = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(pbId, "이피비", branch);
+        User user = newMockUser(1L, "lee");
+        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
+
+        // stub
+        Mockito.when(pbRepository.findById(anyLong()))
+                .thenReturn(Optional.of(pb));
+        Mockito.when(reservationRepository.countReservationByPBIdAndProcess(anyLong(), any()))
+                .thenReturn(10);
+        Mockito.when(reservationRepository.countRecentReservationByPBIdAndProcess(anyLong(), any()))
+                .thenReturn(1);
+
+
+        // when
+        ReservationResponse.RecentInfoDTO recentInfoDTO = reservationService.getRecentReservationInfo(pbId);
+
+        // then
+        assertThat(recentInfoDTO.getApplyCount()).isEqualTo(10);
+        assertThat(recentInfoDTO.getIsNewApply()).isEqualTo(true);
+        assertThat(recentInfoDTO.getConfirmCount()).isEqualTo(10);
+        assertThat(recentInfoDTO.getIsNewConfirm()).isEqualTo(true);
+        assertThat(recentInfoDTO.getCompleteCount()).isEqualTo(10);
+        assertThat(recentInfoDTO.getIsNewComplete()).isEqualTo(true);
+    }
 }
