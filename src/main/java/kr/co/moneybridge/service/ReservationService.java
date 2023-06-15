@@ -1,12 +1,14 @@
 package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception403;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.pb.PBStatus;
@@ -266,6 +268,42 @@ public class ReservationService {
             );
         } catch (Exception e) {
             throw new Exception500("예약 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void updateReservation(Long reservationId,
+                                  ReservationRequest.UpdateDTO updateDTO,
+                                  MyUserDetails myUserDetails) {
+        Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new Exception404("존재하지 않는 예약입니다.")
+        );
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+                    () -> new Exception404("존재하지 않는 투자자입니다.")
+            );
+        } else { // PB
+            pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+        }
+
+        try {
+            if (!updateDTO.getTime().isBlank()) {
+                reservationPS.updateTime(StringToLocalDateTime(updateDTO.getTime()));
+            }
+            if (updateDTO.getType() != null) {
+                reservationPS.updateType(updateDTO.getType());
+            }
+            if (!updateDTO.getLocationName().isBlank()) {
+                reservationPS.updateLocationName(updateDTO.getLocationName());
+            }
+            if (!updateDTO.getLocationAddress().isBlank()) {
+                reservationPS.updateLocationAddress(updateDTO.getLocationAddress());
+            }
+        } catch (Exception e) {
+            throw new Exception500("예약 변경 실패 : " + e.getMessage());
         }
     }
 }

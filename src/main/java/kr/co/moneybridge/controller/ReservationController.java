@@ -240,5 +240,49 @@ public class ReservationController {
         return new ResponseDTO<>(detailDTO);
     }
 
+    @MyLog
+    @ApiOperation(value = "예약 변경하기")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/auth/reservation/{id}")
+    public ResponseDTO updateReservation(@PathVariable("id") Long id,
+                                         @RequestBody ReservationRequest.UpdateDTO updateDTO,
+                                         @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        if (!updateDTO.getTime().isBlank() && !updateDTO.getTime().matches("\\\\d{1,2}월 \\\\d{1,2}일 (오전|오후) \\\\d{1,2}시 \\\\d{1,2}분")) {
+            throw new Exception400(updateDTO.getTime(), "형식에 맞춰 입력해주세요.");
+        }
+        // 현재 시간보다 이전 날짜인지 확인
+        if (!updateDTO.getTime().isBlank() && StringToLocalDateTime(updateDTO.getTime()).isBefore(LocalDateTime.now())) {
+            throw new Exception400(updateDTO.getTime(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
+        }
 
+        if (updateDTO.getType() != null && !isValidReservationType(updateDTO.getType())) {
+            throw new Exception400(updateDTO.getType().toString(), "Enum 형식에 맞춰 요청해주세요.");
+        }
+
+        if (updateDTO.getType().equals(ReservationType.VISIT)) {
+            if (updateDTO.getLocationName().isBlank()) {
+                throw new Exception400(updateDTO.getLocationName(), "상담 장소를 입력해주세요.");
+            }
+
+            if (updateDTO.getLocationAddress().isBlank()) {
+                throw new Exception400(updateDTO.getLocationAddress(), "상담 주소를 입력해주세요.");
+            }
+        }
+
+        reservationService.updateReservation(id, updateDTO, myUserDetails);
+
+        return new ResponseDTO<>();
+    }
 }

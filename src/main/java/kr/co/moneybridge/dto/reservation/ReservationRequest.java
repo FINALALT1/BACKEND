@@ -41,4 +41,22 @@ public class ReservationRequest {
         @ApiModelProperty(example = "asdf1234@gmail.com")
         private String userEmail;
     }
+
+    // validation은 controller에서 수행
+    @ApiModel
+    @Getter
+    @Setter
+    public static class UpdateDTO {
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
+        private String time;
+
+        @ApiModelProperty(example = "VISIT")
+        private ReservationType type;
+
+        @ApiModelProperty(example = "미래에셋증권 용산wm점")
+        private String locationName;
+
+        @ApiModelProperty(example = "서울특별시 용산구 한강로동 한강대로 92")
+        private String locationAddress;
+    }
 }
