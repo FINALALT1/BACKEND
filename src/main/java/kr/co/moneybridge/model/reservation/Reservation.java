@@ -92,4 +92,8 @@ public class Reservation {
     public void updateLocationAddress(String locationAddress) {
         this.locationAddress = locationAddress;
     }
+
+    public void updateStatus(ReservationStatus status) {
+        this.status = status;
+    }
 }

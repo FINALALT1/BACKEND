@@ -306,4 +306,27 @@ public class ReservationService {
             throw new Exception500("예약 변경 실패 : " + e.getMessage());
         }
     }
+
+    @MyLog
+    @Transactional
+    public void cancelReservation(Long reservationId, MyUserDetails myUserDetails) {
+        Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new Exception404("존재하지 않는 예약입니다.")
+        );
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+                    () -> new Exception404("존재하지 않는 투자자입니다.")
+            );
+        } else { // PB
+            pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+        }
+
+        try {
+            reservationPS.updateStatus(ReservationStatus.CANCEL);
+        } catch (Exception e) {
+            throw new Exception500("예약 취소 실패 : " + e.getMessage());
+        }
+    }
 }

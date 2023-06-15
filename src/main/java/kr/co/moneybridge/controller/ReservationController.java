@@ -233,7 +233,7 @@ public class ReservationController {
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation/{id}")
-    public ResponseDTO<ReservationResponse.DetailDTO> getReservationDetail(@PathVariable("id") Long id,
+    public ResponseDTO<ReservationResponse.DetailDTO> getReservationDetail(@PathVariable Long id,
                                                                            @AuthenticationPrincipal MyUserDetails myUserDetails) {
         ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(id, myUserDetails.getMember().getId());
 
@@ -256,7 +256,7 @@ public class ReservationController {
     })
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/auth/reservation/{id}")
-    public ResponseDTO updateReservation(@PathVariable("id") Long id,
+    public ResponseDTO updateReservation(@PathVariable Long id,
                                          @RequestBody ReservationRequest.UpdateDTO updateDTO,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
         if (!updateDTO.getTime().isBlank() && !updateDTO.getTime().matches("\\\\d{1,2}월 \\\\d{1,2}일 (오전|오후) \\\\d{1,2}시 \\\\d{1,2}분")) {
@@ -282,6 +282,27 @@ public class ReservationController {
         }
 
         reservationService.updateReservation(id, updateDTO, myUserDetails);
+
+        return new ResponseDTO<>();
+    }
+
+    @MyLog
+    @ApiOperation(value = "예약 취소하기")
+    @ApiResponses({
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/auth/reservation/{id}")
+    public ResponseDTO cancelReservation(@PathVariable Long id,
+                                         @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        reservationService.cancelReservation(id, myUserDetails);
 
         return new ResponseDTO<>();
     }
