@@ -74,4 +74,22 @@ public class SwaggerResponses {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface GetReviews {
     }
+
+    @ApiResponses({
+            @ApiResponse(code = 200,
+                    message = OK,
+                    response = ReservationResponse.RecentInfoDTO.class),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetRecentReservationInfo {
+    }
 }

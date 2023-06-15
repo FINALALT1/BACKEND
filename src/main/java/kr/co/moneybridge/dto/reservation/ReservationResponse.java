@@ -2,13 +2,12 @@ package kr.co.moneybridge.dto.reservation;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.moneybridge.model.reservation.Review;
-import kr.co.moneybridge.model.reservation.Style;
-import kr.co.moneybridge.model.reservation.StyleStyle;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -176,6 +175,62 @@ public class ReservationResponse {
             this.isNewConfirm = isNewConfirm;
             this.completeCount = completeCount;
             this.isNewComplete = isNewComplete;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class RecentPagingDTO { // 여기에 페이징해서 먼저 담고(-> RecentReservationDTO)
+        private Long reservationId;
+        private Long userId;
+        private String profileImage;
+        private String name;
+        private LocalDateTime createdAt;
+        private ReservationType type;
+
+        public RecentPagingDTO(Reservation reservation, User user) {
+            this.reservationId = reservation.getId();
+            this.userId = user.getId();
+            this.profileImage = user.getProfile();
+            this.name = user.getName();
+            this.createdAt = reservation.getCreatedAt();
+            this.type = reservation.getType();
+        }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class RecentReservationDTO { // (->RecentPagingDTO)그걸 가공한 뒤 여기에 담아서 응답
+        @ApiModelProperty(example = "1")
+        private Long reservationId;
+
+        @ApiModelProperty(example = "true")
+        private Boolean isNewReservation;
+
+        @ApiModelProperty(example = "1")
+        private Long userId;
+
+        @ApiModelProperty(example = "profile.png")
+        private String profileImage;
+
+        @ApiModelProperty(example = "홍길동")
+        private String name;
+
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
+        private String createdAt;
+
+        @ApiModelProperty(example = "CALL")
+        private ReservationType type;
+
+        public RecentReservationDTO(Long reservationId, Boolean isNewReservation, Long userId, String profileImage, String name, String createdAt, ReservationType type) {
+            this.reservationId = reservationId;
+            this.isNewReservation = isNewReservation;
+            this.userId = userId;
+            this.profileImage = profileImage;
+            this.name = name;
+            this.createdAt = createdAt;
+            this.type = type;
         }
     }
 }

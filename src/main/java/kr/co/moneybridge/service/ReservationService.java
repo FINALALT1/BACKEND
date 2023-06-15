@@ -16,15 +16,17 @@ import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
-import static kr.co.moneybridge.core.util.MyDateUtil.localTimeToString;
+import static kr.co.moneybridge.core.util.MyDateUtil.*;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -98,6 +100,7 @@ public class ReservationService {
                     locationAddress = pbPS.getBranch().getRoadAddress();
                 }
             }
+
             reservationRepository.save(Reservation.builder()
                     .user(userPS)
                     .pb(pbPS)
@@ -121,17 +124,18 @@ public class ReservationService {
 
     @MyLog
     public PageDTO<ReservationResponse.ReviewDTO> getReviews(Long pbId, int page) {
-        pbRepository.findById(pbId).orElseThrow(
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
 
         try {
             // 페이징
             Page<Review> reviews = reviewRepository.findAllByPbIdAndProcess(
-                    pbId,
+                    pbPS.getId(),
                     ReservationProcess.COMPLETE,
                     PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt")
             );
+
             List<ReservationResponse.ReviewDTO> reviewDTOs = new ArrayList<>();
             for (Review review : reviews) {
                 User user = userRepository.findUserByReviewId(review.getId());
@@ -150,21 +154,87 @@ public class ReservationService {
 
     @MyLog
     public ReservationResponse.RecentInfoDTO getRecentReservationInfo(Long pbId) {
-        pbRepository.findById(pbId).orElseThrow(
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
 
         try {
             return new ReservationResponse.RecentInfoDTO(
-                    reservationRepository.countReservationByPBIdAndProcess(pbId, ReservationProcess.APPLY),
-                    reservationRepository.countRecentReservationByPBIdAndProcess(pbId, ReservationProcess.APPLY) >= 1,
-                    reservationRepository.countReservationByPBIdAndProcess(pbId, ReservationProcess.CONFIRM),
-                    reservationRepository.countRecentReservationByPBIdAndProcess(pbId, ReservationProcess.CONFIRM) >= 1,
-                    reservationRepository.countReservationByPBIdAndProcess(pbId, ReservationProcess.COMPLETE),
-                    reservationRepository.countRecentReservationByPBIdAndProcess(pbId, ReservationProcess.COMPLETE) >= 1
+                    reservationRepository
+                            .countReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.APPLY),
+                    reservationRepository
+                            .countRecentReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.APPLY) >= 1,
+                    reservationRepository
+                            .countReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.CONFIRM),
+                    reservationRepository
+                            .countRecentReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.CONFIRM) >= 1,
+                    reservationRepository
+                            .countReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.COMPLETE),
+                    reservationRepository
+                            .countRecentReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.COMPLETE) >= 1
             );
         } catch (Exception e) {
-            throw new Exception500("??? : " + e.getMessage());
+            throw new Exception500("상담 현황 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    public PageDTO<ReservationResponse.RecentReservationDTO> gerRecentReservations(String type, int page, Long pbId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            // 페이징
+            Page<ReservationResponse.RecentPagingDTO> reservations = null;
+            Pageable pageable = PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt");
+            if (type.equals("APPLY")) {
+                reservations = reservationRepository
+                        .findAllByPbIdAndProcess(pbPS.getId(),
+                                ReservationProcess.APPLY,
+                                pageable
+                        );
+            } else if (type.equals("CONFIRM")) {
+                reservations = reservationRepository
+                        .findAllByPbIdAndProcess(pbPS.getId(),
+                                ReservationProcess.CONFIRM,
+                                pageable
+                        );
+            } else if (type.equals("COMPLETE")) {
+                reservations = reservationRepository
+                        .findAllByPbIdAndProcess(pbPS.getId(),
+                                ReservationProcess.COMPLETE,
+                                pageable
+                        );
+            } else { // WITHDRAW
+                reservations = reservationRepository
+                        .findAllByPbIdAndStatus(pbPS.getId(),
+                                ReservationStatus.CANCEL,
+                                pageable
+                        );
+            }
+
+            List<ReservationResponse.RecentReservationDTO> reservationDTOs = new ArrayList<>();
+            for (ReservationResponse.RecentPagingDTO reservation : reservations) {
+                reservationDTOs.add(
+                        new ReservationResponse.RecentReservationDTO(
+                                reservation.getReservationId(),
+                                Duration.between(LocalDateTime.now().minusHours(24),
+                                        reservation.getCreatedAt()).toHours() <= 24,
+                                reservation.getUserId(),
+                                reservation.getProfileImage(),
+                                reservation.getName(),
+                                localDateTimeToStringV2(reservation.getCreatedAt()),
+                                reservation.getType()
+                        )
+                );
+            }
+
+            return new PageDTO<>(
+                    reservationDTOs, reservations, ReservationResponse.RecentPagingDTO.class
+            );
+        } catch (Exception e) {
+            throw new Exception500("상담 목록 조회 실패 : " + e.getMessage());
         }
     }
 }
