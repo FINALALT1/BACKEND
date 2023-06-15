@@ -151,5 +151,30 @@ public class PBService {
         return KILL * Math.sqrt(x*x + y*y);
     }
 
+    //경력순 PB리스트 가져오기(전문분야필터)
+    public PageDTO<PBResponse.PBPageDTO> getSpecialityPBWithCareer(PBSpeciality speciality, Pageable pageable) {
 
+        Page<PBResponse.PBPageDTO> pbPG = pbRepository.findBySpecialityOrderedByCareer(speciality, pageable);
+        List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
+
+        return new PageDTO<>(list, pbPG);
+    }
+
+    //경력순 PB리스트 가져오기(증권사필터)
+    public PageDTO<PBResponse.PBPageDTO> getCompanyPBWithCareer(Long companyId, Pageable pageable) {
+
+        Page<PBResponse.PBPageDTO> pbPG = pbRepository.findByCompanyIdOrderedByCareer(companyId, pageable);
+        List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
+
+        return new PageDTO<>(list, pbPG);
+    }
+
+    //경력순 전체 PB리스트 가져오기
+    public PageDTO<PBResponse.PBPageDTO> getPBWithCareer(Pageable pageable) {
+
+        Page<PBResponse.PBPageDTO> pbPG = pbRepository.findAllPBWithCareer(pageable);
+        List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
+
+        return new PageDTO<>(list, pbPG);
+    }
 }

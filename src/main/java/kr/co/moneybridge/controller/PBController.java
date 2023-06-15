@@ -67,11 +67,10 @@ public class PBController {
     }
 
     @GetMapping("/list/pb/distance")
-    public ResponseEntity<?> getDistancePBList(
-                                                @RequestParam(value = "latitude") Double latitude,
-                                                @RequestParam(value = "longitude") Double longitude,
-                                                @RequestParam(value = "speciality", required = false) PBSpeciality speciality,
-                                                @RequestParam(value = "company", required = false) Long company) {
+    public ResponseEntity<?> getDistancePBList(@RequestParam(value = "latitude") Double latitude,
+                                               @RequestParam(value = "longitude") Double longitude,
+                                               @RequestParam(value = "speciality", required = false) PBSpeciality speciality,
+                                               @RequestParam(value = "company", required = false) Long company) {
 
         Pageable pageable = PageRequest.of(0, 10);
         PageDTO<PBResponse.PBPageDTO> pageDTO;
@@ -91,4 +90,25 @@ public class PBController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @GetMapping("/list/pb/career")
+    public ResponseEntity<?> getCareerPBList(@RequestParam(value = "speciality", required = false) PBSpeciality speciality,
+                                             @RequestParam(value = "company", required = false) Long company) {
+
+        Pageable pageable = PageRequest.of(0, 10);
+        PageDTO<PBResponse.PBPageDTO> pageDTO;
+
+        if (speciality != null & company != null) {
+            throw new Exception404("잘못된 요청입니다.");
+        } else if (speciality != null) {
+            pageDTO = pbService.getSpecialityPBWithCareer(speciality, pageable);
+        } else if (company != null) {
+            pageDTO = pbService.getCompanyPBWithCareer(company, pageable);
+        } else {
+            pageDTO = pbService.getPBWithCareer(pageable);
+        }
+
+        ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 }

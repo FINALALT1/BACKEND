@@ -55,4 +55,24 @@ public interface PBRepository extends JpaRepository<PB, Long> {
             "JOIN Branch b ON pb.branch = b " +
             "JOIN Company c ON b.company = c ")
     List<PBResponse.PBPageDTO> findAllPB();
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
+            "JOIN pb.branch b " +
+            "JOIN b.company c " +
+            "WHERE pb.speciality1 = :speciality OR pb.speciality2 = :speciality " +
+            "ORDER BY pb.career DESC")
+    Page<PBResponse.PBPageDTO> findBySpecialityOrderedByCareer(@Param("speciality") PBSpeciality speciality, Pageable pageable);
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
+            "JOIN pb.branch b " +
+            "JOIN b.company c " +
+            "WHERE c.id = :companyId " +
+            "ORDER BY pb.career DESC")
+    Page<PBResponse.PBPageDTO> findByCompanyIdOrderedByCareer(@Param("companyId") Long companyId, Pageable pageable);
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
+            "JOIN pb.branch b " +
+            "JOIN b.company c " +
+            "ORDER BY pb.career DESC")
+    Page<PBResponse.PBPageDTO> findAllPBWithCareer(Pageable pageable);
 }
