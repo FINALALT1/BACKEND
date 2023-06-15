@@ -32,6 +32,52 @@ import javax.validation.Valid;
 public class PBController {
     private final PBService pbService;
 
+    // 증권사 리스트 가져오기 - 메인페이지, 회원가입시
+    @MyLog
+    @ApiOperation(value = "증권사 리스트 가져오기", notes = "메인페이지, 회원가입시 사용.\n" +
+            "<b>includeLogo=true면 증권사 로고 포함(디폴트) => 응답 데이터 예시</b>\n" +
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 200,\n" +
+            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
+            "&nbsp;&nbsp;\"data\": {\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"list\": [\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"logo\": \"logo.png\",\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"name\": \"미래에셋증권\"\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},&nbsp;<font color=\"#C0C0C0\">// ... 실제로는 30개</font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;]\n" +
+            "&nbsp;&nbsp;}\n" +
+            "}\n<br>" +
+            "<b>includeLogo=false면 증권사 로고 불포함 => 응답 데이터 예시</b>\n" +
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 200,\n" +
+            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
+            "&nbsp;&nbsp;\"data\": {\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"list\": [\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"name\": \"미래에셋증권\"\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},&nbsp;<font color=\"#C0C0C0\">// ... 실제로는 30개</font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;]\n" +
+            "&nbsp;&nbsp;}\n" +
+            "}")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/companies")
+    public ResponseEntity<?> getCompanies(@RequestParam(defaultValue = "true") Boolean includeLogo) {
+        ResponseDTO<?> responseDTO = null;
+        if(includeLogo){
+            PBResponse.CompanyOutDTO companyOutDTO = pbService.getCompanies();
+            responseDTO = new ResponseDTO<>(companyOutDTO);
+        }
+        else {
+            PBResponse.CompanyNameOutDTO companyNameOutDTO = pbService.getCompanyNames();
+            responseDTO = new ResponseDTO<>(companyNameOutDTO);
+        }
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
     @MyLog
     @ApiOperation(value = "PB 회원가입", notes = "<b>joinInDTO 예시 및 설명</b>\n<br>{\n" +
             "&nbsp;&nbsp;\"email\": \"investor2@naver.com\",&nbsp;<font color=\"#C0C0C0\">// @ 포함해야함 + 30바이트 이내</font>\n" +
