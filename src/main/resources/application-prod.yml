@@ -1,5 +1,5 @@
 server:
-  port: 5000
+  port: 8080
   servlet:
     encoding:
       charset: utf-8
@@ -10,14 +10,14 @@ spring:
     host: ec2-3-37-11-7.ap-northeast-2.compute.amazonaws.com # 서버주소 넣어야 함.
     port: 6379
   datasource:
-    url: jdbc:mysql://finalproject.cdd2oclmksvc.ap-northeast-2.rds.amazonaws.com:3306/finalproject?allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://finalproject.cdd2oclmksvc.ap-northeast-2.rds.amazonaws.com:3306/finalproject?useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${RDS_USERNAME}
     password: ${RDS_PASSWORD}
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       default_batch_fetch_size: 100
       hibernate:
