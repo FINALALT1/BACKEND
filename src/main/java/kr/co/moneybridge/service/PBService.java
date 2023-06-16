@@ -236,4 +236,16 @@ public class PBService {
 
         return pageDTO;
     }
+
+    //거리순 PB 두명 가져오기
+    public List<PBResponse.PBSimpleDTO> getTwoPBWithDistance(Double latitude, Double longitude) {
+
+        List<PBResponse.PBSimpleDTO> pbList = new ArrayList<>();
+        List<PBResponse.PBPageDTO> list = pbRepository.findAllPB();
+        list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
+        pbList.add(new PBResponse.PBSimpleDTO(list.get(0)));
+        pbList.add(new PBResponse.PBSimpleDTO(list.get(1)));
+
+        return pbList;
+    }
 }
