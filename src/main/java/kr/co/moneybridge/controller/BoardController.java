@@ -250,6 +250,8 @@ public class BoardController {
         return new ResponseDTO<>(list);
     }
 
+    @ApiOperation("컨텐츠 2개 가져오기(성향X)")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/main/board")
     public ResponseDTO<List<BoardResponse.BoardPageDTO>> getBoards() {
 
