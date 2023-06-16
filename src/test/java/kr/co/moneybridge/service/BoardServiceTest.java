@@ -9,10 +9,7 @@ import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.*;
-import kr.co.moneybridge.model.pb.Branch;
-import kr.co.moneybridge.model.pb.Company;
-import kr.co.moneybridge.model.pb.PB;
-import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -26,13 +23,12 @@ import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 
 @ActiveProfiles("test")
@@ -61,6 +57,8 @@ class BoardServiceTest extends MockDummyEntity {
     private BoardBookmark boardBookmark;
     @Mock
     private PB pb;
+    @Mock
+    private Company company;
     @Mock
     private User user;
     @Spy
@@ -500,5 +498,30 @@ class BoardServiceTest extends MockDummyEntity {
 
         //then
         Assertions.assertThat(result.getList().size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("맞춤컨텐츠 2개 가져오기")
+    void getRecommendedBoards() {
+        //given
+        Long memberId = 1L; // Assume
+        User user = newMockUser(memberId, "김테스터");
+        Board board1 = newMockBoard(1L, "테스트입니다1", pb);
+        Board board2 = newMockBoard(2L, "테스트입니다2", pb);
+        MyUserDetails myUserDetails = new MyUserDetails(user);
+        BoardResponse.BoardPageDTO boardDTO1 = new BoardResponse.BoardPageDTO(board1, pb, company);
+        BoardResponse.BoardPageDTO boardDTO2 = new BoardResponse.BoardPageDTO(board2, pb, company);
+        List<BoardResponse.BoardPageDTO> list = Arrays.asList(boardDTO1, boardDTO2);
+
+        //stub
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+        when(boardRepository.findRecommendedBoards(any(PageRequest.class), any(PBSpeciality.class),
+                any(PBSpeciality.class), any(PBSpeciality.class))).thenReturn(list);
+
+        //when
+        List<BoardResponse.BoardPageDTO> result = boardService.getRecommendedBoards(myUserDetails);
+
+        //then
+        assertThat(result).isEqualTo(list);
     }
 }

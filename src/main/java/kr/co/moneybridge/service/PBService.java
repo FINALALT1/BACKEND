@@ -1,6 +1,5 @@
 package kr.co.moneybridge.service;
 
-import kr.co.moneybridge.core.annotation.MyErrorLog;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
@@ -41,6 +40,15 @@ public class PBService {
     private final PBAgreementRepository pbAgreementRepository;
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+
+    @MyLog
+    public PageDTO<PBResponse.BranchDTO> searchBranch(Long companyId, String keyword, Pageable pageable) {
+        Page<Branch> branchPG = branchRepository.findByCompanyIdAndKeyword(companyId, keyword, pageable);
+        List<PBResponse.BranchDTO> list = branchPG.getContent().stream()
+                .map(branch -> new PBResponse.BranchDTO(branch))
+                .collect(Collectors.toList());
+        return new PageDTO<>(list, branchPG, Branch.class);
+    }
 
     @MyLog
     public PBResponse.CompanyNameOutDTO getCompanyNames() {
@@ -208,7 +216,7 @@ public class PBService {
 
         if (propensity == null) {
             throw new Exception404("투자성향 분석이 되지않았습니다.");
-        }else if (propensity.equals(UserPropensity.CONSERVATIVE)) {
+        } else if (propensity.equals(UserPropensity.CONSERVATIVE)) {
             pbPG = pbRepository.findRecommendedPBList(pageable, PBSpeciality.BOND,
                                                                 PBSpeciality.US_STOCK,
                                                                 PBSpeciality.KOREAN_STOCK,
