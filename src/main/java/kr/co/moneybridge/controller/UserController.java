@@ -33,11 +33,12 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    @MyLog
+    @SwaggerResponses.GetMyPageUser
     @GetMapping("/user/mypage")
-    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<UserResponse.MyPageOutDTO> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         UserResponse.MyPageOutDTO myPageUserOutDTO = userService.getMyPage(myUserDetails);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(myPageUserOutDTO);
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>(myPageUserOutDTO);
     }
 
     @MyLog

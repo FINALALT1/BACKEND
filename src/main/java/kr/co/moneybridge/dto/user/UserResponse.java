@@ -14,10 +14,13 @@ import lombok.Setter;
 import java.util.List;
 
 public class UserResponse {
+    @ApiModel
     @Setter
     @Getter
     public static class BookmarkDTO {
+        @ApiModelProperty(example = "1", value = "id - 두 개만 보여줌")
         private Long id;
+        @ApiModelProperty(example = "thumbnail.png", value = "이미지 - 두 개만 보여줌")
         private String thumbnail;
 
         public BookmarkDTO(Board board) {
@@ -30,10 +33,13 @@ public class UserResponse {
         }
     }
 
+    @ApiModel
     @Setter
     @Getter
     public static class BookmarkListDTO {
+        @ApiModelProperty
         private List<BookmarkDTO> list;
+        @ApiModelProperty(example = "0", value = "북마크한 개수")
         private Integer count;
 
         public BookmarkListDTO(List<BookmarkDTO> list, Integer count) {
@@ -42,11 +48,15 @@ public class UserResponse {
         }
     }
 
+    @ApiModel
     @Setter
     @Getter
     public static class ReservationCountsDTO {
+        @ApiModelProperty(example = "0", value = "예약 신청 개수")
         private Integer apply;
+        @ApiModelProperty(example = "0", value = "예약 확정 개수")
         private Integer confirm;
+        @ApiModelProperty(example = "0", value = "상담 완료 개수")
         private Integer complete;
 
         public ReservationCountsDTO(Integer apply, Integer comfirm, Integer complete) {
@@ -56,12 +66,17 @@ public class UserResponse {
         }
     }
 
+    @ApiModel
     @Setter
     @Getter
     public static class StepDTO {
+        @ApiModelProperty(example = "true", value = "투자 성향 검사 한 적 있는지")
         private Boolean hasDonePropensity;
+        @ApiModelProperty(example = "false", value = "콘텐츠 북마크 한 적 있는지")
         private Boolean hasDoneBoardBookmark;
+        @ApiModelProperty(example = "false", value = "상담 예약 신청한 적있는지")
         private Boolean hasDoneReservation;
+        @ApiModelProperty(example = "false", value = "후기작성 완료한 적 있는지")
         private Boolean hasDoneReview;
 
         public StepDTO(User user) {
@@ -72,15 +87,23 @@ public class UserResponse {
         }
     }
 
+    @ApiModel(description = "투자자 마이페이지 가져오기시 응답 데이터")
     @Setter
     @Getter
     public static class MyPageOutDTO {
+        @ApiModelProperty(example = "1", value = "투자자 id")
         private Long id;
+        @ApiModelProperty(example = "김투자", value = "투자자 이름")
         private String name;
+        @ApiModelProperty(example = "AGGRESSIVE", value = "투자 성향")
         private UserPropensity propensity;
+        @ApiModelProperty
         private StepDTO step;
+        @ApiModelProperty
         private ReservationCountsDTO reservationCount;
+        @ApiModelProperty
         private BookmarkListDTO boardBookmark;
+        @ApiModelProperty
         private BookmarkListDTO pbBookmark;
 
         public MyPageOutDTO(User user, StepDTO step,ReservationCountsDTO reservationCount,
