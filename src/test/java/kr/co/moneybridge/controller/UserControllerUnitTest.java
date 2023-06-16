@@ -71,6 +71,26 @@ public class UserControllerUnitTest extends MockDummyEntity {
 
     @WithMockUser
     @Test
+    public void updatePropensity_test() throws Exception {
+        // Given
+        UserRequest.UpdatePropensityInDTO updatePropensityInDTO = new UserRequest.UpdatePropensityInDTO();
+        updatePropensityInDTO.setQ1(2);
+        updatePropensityInDTO.setQ6(1);
+        String requestBody = om.writeValueAsString(updatePropensityInDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(patch("/user/propensity")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @WithMockUser
+    @Test
     public void testPropensity_test() throws Exception {
         // Given
         UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
