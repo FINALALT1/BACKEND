@@ -69,36 +69,6 @@ public class SwaggerResponses {
     })
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface GetReservationBase {
-    }
-
-    @ApiResponses({
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface GetReviews {
-    }
-
-    @ApiResponses({
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface GetRecentReservationInfo {
+    public @interface ApiResponsesWithout400 {
     }
 }

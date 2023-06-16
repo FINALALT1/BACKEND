@@ -265,6 +265,9 @@ public class ReservationResponse {
         @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
         private String time;
 
+        @ApiModelProperty(example = "VISIT")
+        private ReservationType type;
+
         @ApiModelProperty(example = "미래에셋증권 용산 WM점")
         private String location;
 
@@ -277,7 +280,7 @@ public class ReservationResponse {
         @ApiModelProperty(example = "잘 부탁드립니다.")
         private String question;
 
-        public DetailDTO(Long userId, String profileImage, String name, String phoneNumber, String email, Long reservationId, String candidateTime1, String candidateTime2, String time, String location, String locationAddress, ReservationGoal goal, String question) {
+        public DetailDTO(Long userId, String profileImage, String name, String phoneNumber, String email, Long reservationId, String candidateTime1, String candidateTime2, String time, ReservationType type, String location, String locationAddress, ReservationGoal goal, String question) {
             this.userId = userId;
             this.profileImage = profileImage;
             this.name = name;
@@ -287,6 +290,7 @@ public class ReservationResponse {
             this.candidateTime1 = candidateTime1;
             this.candidateTime2 = candidateTime2;
             this.time = time;
+            this.type = type;
             this.location = location;
             this.locationAddress = locationAddress;
             this.goal = goal;
