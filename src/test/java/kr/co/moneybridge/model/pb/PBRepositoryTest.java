@@ -1,11 +1,12 @@
 package kr.co.moneybridge.model.pb;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserBookmarkRepository;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -32,18 +36,39 @@ public class PBRepositoryTest extends DummyEntity {
     @Autowired
     private PBRepository pbRepository;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserBookmarkRepository userBookmarkRepository;
+    @Autowired
     private EntityManager em;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-//    private Branch b = newBranch(newCompany("미래에셋증권"), 0);
 
     @BeforeEach
     public void setUp() {
         em.createNativeQuery("ALTER TABLE pb_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE company_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE branch_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE user_bookmark_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         Company c = companyRepository.save(newCompany("미래에셋증권"));
         Branch b = branchRepository.save(newBranch(c, 0));
-        pbRepository.save(newPB("김피비", b));
+        PB pb = pbRepository.save(newPB("김피비", b));
+        User user = userRepository.save(newUser("lee"));
+        userBookmarkRepository.save(newUserBookmark(user, pb));
+
         em.clear();
+    }
+
+    @Test
+    public void findTwoByBookMarker() {
+        // when
+        Pageable topTwo = PageRequest.of(0, 2);
+        Page<UserResponse.BookmarkDTO> pbBookmarkTwo = pbRepository.findTwoByBookmarker(1L, topTwo);
+
+        // then
+        Assertions.assertThat(pbBookmarkTwo.getContent().get(0).getId()).isEqualTo(1L);
+        Assertions.assertThat(pbBookmarkTwo.getContent().get(0).getThumbnail()).isEqualTo("profile.png");
     }
 
     @Test

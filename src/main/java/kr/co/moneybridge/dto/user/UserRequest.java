@@ -175,6 +175,9 @@ public class UserRequest {
                     .phoneNumber(phoneNumber)
                     .role(Role.USER)
                     .profile("profile.png")
+                    .hasDoneReview(false)
+                    .hasDoneReservation(false)
+                    .hasDoneBoardBookmark(false)
                     .build();
         }
     }

@@ -71,6 +71,42 @@ public class UserControllerUnitTest extends MockDummyEntity {
 
     @WithMockUser
     @Test
+    public void getMyPage_test() throws Exception {
+        // given
+        User mockUser = newMockUser(1L, "lee");
+        UserResponse.StepDTO mockStep = new UserResponse.StepDTO(mockUser);
+        UserResponse.ReservationCountsDTO mockReservationCount = new UserResponse.ReservationCountsDTO(0, 0, 0);
+        UserResponse.BookmarkListDTO mockBoardBookmark = new UserResponse.BookmarkListDTO(new ArrayList<>(), 0);
+        UserResponse.BookmarkListDTO mockPbBookmark = new UserResponse.BookmarkListDTO(new ArrayList<>(), 0);
+
+        UserResponse.MyPageOutDTO myPageOutDTO = new UserResponse.MyPageOutDTO(mockUser, mockStep, mockReservationCount, mockBoardBookmark, mockPbBookmark);
+
+        //stub
+        Mockito.when(userService.getMyPage(any())).thenReturn(myPageOutDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/user/mypage"));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.data.id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.name").value("lee"));
+        resultActions.andExpect(jsonPath("$.data.propensity").value("AGGRESSIVE"));
+        resultActions.andExpect(jsonPath("$.data.step.hasDonePropensity").value(true));
+        resultActions.andExpect(jsonPath("$.data.step.hasDoneBoardBookmark").value(false));
+        resultActions.andExpect(jsonPath("$.data.step.hasDoneReservation").value(false));
+        resultActions.andExpect(jsonPath("$.data.step.hasDoneReview").value(false));
+        resultActions.andExpect(jsonPath("$.data.reservationCount.apply").value(0));
+        resultActions.andExpect(jsonPath("$.data.reservationCount.confirm").value(0));
+        resultActions.andExpect(jsonPath("$.data.reservationCount.complete").value(0));
+        resultActions.andExpect(jsonPath("$.data.boardBookmark.list").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.boardBookmark.count").value(0));
+        resultActions.andExpect(jsonPath("$.data.pbBookmark.list").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.pbBookmark.count").value(0));
+    }
+
+    @WithMockUser
+    @Test
     public void updateMyInfo_test() throws Exception {
         // given
         UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO = new UserRequest.UpdateMyInfoInDTO();

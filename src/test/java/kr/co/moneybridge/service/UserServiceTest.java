@@ -14,15 +14,23 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.board.BoardBookmarkRepository;
+import kr.co.moneybridge.model.board.BoardRepository;
+import kr.co.moneybridge.model.board.BookmarkerRole;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.reservation.ReservationProcess;
+import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.user.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -42,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +64,15 @@ public class UserServiceTest extends MockDummyEntity {
     private UserRepository userRepository;
     @Mock
     private UserAgreementRepository userAgreementRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
+    @Mock
+    private BoardRepository boardRepository;
+    @Mock
+    private PBRepository pbRepository;
+    @Mock
+    private BoardBookmarkRepository boardBookmarkRepository;
+    @Mock UserBookmarkRepository userBookmarkRepository;
 
     // 가짜 객체를 만들어서 Mockito 환경에 Load
     @Mock
@@ -75,7 +93,36 @@ public class UserServiceTest extends MockDummyEntity {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Test
-    public void updateMyInfo_test() throws Exception {
+    public void getMyPage() {
+        when(myUserDetails.getMember()).thenReturn(newMockUser(1L, "lee"));
+        when(reservationRepository.countByProcess(any())).thenReturn(0);
+        when(boardRepository.findTwoByBookmarker(any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<>()));
+        when(pbRepository.findTwoByBookmarker(any(), any())).thenReturn(new PageImpl<>(new ArrayList<>()));
+        when(boardBookmarkRepository.countByBookmarker(any(), any())).thenReturn(0);
+        when(userBookmarkRepository.countByUserId(any())).thenReturn(0);
+
+        // when
+        UserResponse.MyPageOutDTO myPageUserOutDTO = userService.getMyPage(myUserDetails);
+
+        // then
+        Assertions.assertThat(myPageUserOutDTO.getId()).isEqualTo(1L);
+        Assertions.assertThat(myPageUserOutDTO.getName()).isEqualTo("lee");
+        Assertions.assertThat(myPageUserOutDTO.getPropensity()).isEqualTo(UserPropensity.AGGRESSIVE);
+        Assertions.assertThat(myPageUserOutDTO.getStep().getHasDoneBoardBookmark()).isEqualTo(false);
+        Assertions.assertThat(myPageUserOutDTO.getStep().getHasDonePropensity()).isEqualTo(true);
+        Assertions.assertThat(myPageUserOutDTO.getStep().getHasDoneReservation()).isEqualTo(false);
+        Assertions.assertThat(myPageUserOutDTO.getStep().getHasDoneReview()).isEqualTo(false);
+        Assertions.assertThat(myPageUserOutDTO.getReservationCount().getApply()).isEqualTo(0);
+        Assertions.assertThat(myPageUserOutDTO.getReservationCount().getConfirm()).isEqualTo(0);
+        Assertions.assertThat(myPageUserOutDTO.getReservationCount().getComplete()).isEqualTo(0);
+        Assertions.assertThat(myPageUserOutDTO.getBoardBookmark().getList().size()).isEqualTo(0);
+        Assertions.assertThat(myPageUserOutDTO.getBoardBookmark().getCount()).isEqualTo(0);
+        Assertions.assertThat(myPageUserOutDTO.getPbBookmark().getList().size()).isEqualTo(0);
+        Assertions.assertThat(myPageUserOutDTO.getPbBookmark().getCount()).isEqualTo(0);
+    }
+
+    @Test
+    public void updateMyInfo_test() {
         // given
         String newPhoneNumber = "01011223344";
         UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO = new UserRequest.UpdateMyInfoInDTO();
@@ -99,11 +146,10 @@ public class UserServiceTest extends MockDummyEntity {
 
         // then
         Assertions.assertThat(mockUser.getPhoneNumber()).isEqualTo(newPhoneNumber);
-
     }
 
     @Test
-    public void getMyInfo_test() throws Exception {
+    public void getMyInfo_test() {
         // stub
         User user = newMockUser(1L, "lee");
         when(myUserDetails.getMember()).thenReturn(user);
@@ -132,7 +178,7 @@ public class UserServiceTest extends MockDummyEntity {
     }
 
     @Test
-    public void checkPassword_test() throws Exception {
+    public void checkPassword_test() {
         // given
         String password = "password1234";
         UserRequest.CheckPasswordInDTO checkPasswordInDTO = new UserRequest.CheckPasswordInDTO();
@@ -149,7 +195,7 @@ public class UserServiceTest extends MockDummyEntity {
     }
 
     @Test
-    public void updatePassword_test() throws Exception {
+    public void updatePassword_test() {
         // given
         UserRequest.RePasswordInDTO rePasswordInDTO = new UserRequest.RePasswordInDTO();
         rePasswordInDTO.setId(1L);
@@ -168,7 +214,7 @@ public class UserServiceTest extends MockDummyEntity {
     }
 
     @Test
-    public void findEmail_test() throws Exception {
+    public void findEmail_test() {
         // given
         UserRequest.EmailFindInDTO emailFindInDTO = new UserRequest.EmailFindInDTO();
         emailFindInDTO.setRole(Role.USER);
@@ -213,7 +259,7 @@ public class UserServiceTest extends MockDummyEntity {
     }
 
     @Test
-    public void email_test() throws Exception {
+    public void email_test() {
         // given
         String email = "lee@nate.com";
         UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();

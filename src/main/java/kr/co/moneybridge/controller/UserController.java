@@ -34,6 +34,14 @@ public class UserController {
     private final UserService userService;
 
     @MyLog
+    @SwaggerResponses.GetMyPageUser
+    @GetMapping("/user/mypage")
+    public ResponseDTO<UserResponse.MyPageOutDTO> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        UserResponse.MyPageOutDTO myPageUserOutDTO = userService.getMyPage(myUserDetails);
+        return new ResponseDTO<>(myPageUserOutDTO);
+    }
+
+    @MyLog
     @SwaggerResponses.UpdateMyInfo
     @PatchMapping("/auth/myinfo")
     public ResponseDTO updateMyInfo(@RequestBody @Valid UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO,

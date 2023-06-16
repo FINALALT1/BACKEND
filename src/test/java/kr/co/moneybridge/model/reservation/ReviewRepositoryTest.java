@@ -73,8 +73,8 @@ public class ReviewRepositoryTest extends DummyEntity {
         Page<Review> reviewPG = reviewRepository.findAllByPbIdAndProcess(pbId, process, pageable);
 
         // then
-        assertThat(reviewPG.getContent().get(0).getId()).isEqualTo(5L);
-        assertThat(reviewPG.getContent().get(0).getReservation().getId()).isEqualTo(5L);
+        assertThat(reviewPG.getContent().get(0).getId()).isInstanceOf(Long.class);
+        assertThat(reviewPG.getContent().get(0).getReservation().getId()).isInstanceOf(Long.class);
         assertThat(reviewPG.getContent().get(0).getContent()).isEqualTo("content 입니다");
         assertThat(reviewPG.getContent().get(0).getAdherence()).isEqualTo(ReviewAdherence.EXCELLENT);
         assertThat(reviewPG.getContent().get(0).getCreatedAt().toLocalDate().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");

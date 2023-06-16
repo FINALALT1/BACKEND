@@ -25,6 +25,9 @@ public class MockDummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.USER)
                 .profile("profile.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
                 .createdAt(LocalDateTime.now())
                 .propensity(UserPropensity.AGGRESSIVE)
                 .build();
@@ -39,6 +42,9 @@ public class MockDummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.ADMIN)
                 .profile("profile.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -54,6 +60,9 @@ public class MockDummyEntity {
                 .propensity(UserPropensity.AGGRESSIVE)
                 .role(Role.USER)
                 .profile("profile.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

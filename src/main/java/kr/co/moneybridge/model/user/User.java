@@ -41,6 +41,15 @@ public class User implements Member {
     private String profile;
 
     @Column(nullable = false)
+    private Boolean hasDoneBoardBookmark; // 콘텐츠 북마크 한 적 있는지
+
+    @Column(nullable = false)
+    private Boolean hasDoneReservation; // 상담 예약 신청한 적있는지
+
+    @Column(nullable = false)
+    private Boolean hasDoneReview; // 후기작성 완료한 적 있는지
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
