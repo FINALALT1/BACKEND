@@ -62,6 +62,18 @@ public class ReviewRepositoryTest extends DummyEntity {
     }
 
     @Test
+    public void count_by_pbId_test() {
+        // given
+        Long pbId = 1L;
+
+        // when
+        Integer count = reviewRepository.countByPBId(pbId);
+        System.out.println(count);
+        // then
+        assertThat(count).isEqualTo(5);
+    }
+
+    @Test
     public void find_all_by_pbId_and_process_test() throws Exception {
         // given
         Long pbId = 1L;

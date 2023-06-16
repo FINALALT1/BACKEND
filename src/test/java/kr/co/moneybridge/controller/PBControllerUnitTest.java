@@ -1,6 +1,8 @@
 package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.moneybridge.core.WithMockPB;
+import kr.co.moneybridge.core.WithMockUser;
 import kr.co.moneybridge.core.advice.MyLogAdvice;
 import kr.co.moneybridge.core.advice.MyValidAdvice;
 import kr.co.moneybridge.core.config.MyFilterRegisterConfig;
@@ -58,6 +60,33 @@ public class PBControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockPB
+    @Test
+    public void getMyPage_test() throws Exception {
+        //stub
+        PBResponse.MyPageOutDTO myPageOutDTO = new PBResponse.MyPageOutDTO(
+                newMockPB(1L, "김pb", newMockBranch(1L, newMockCompany(
+                        1L, "미래에셋증권"), 0)), 0,0);
+                Mockito.when(pbService.getMyPage(any())).thenReturn(myPageOutDTO);
+        // When
+        ResultActions resultActions = mvc.perform(get("/pb/mypage"));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.profile").value("profile.png"));
+        resultActions.andExpect(jsonPath("$.data.name").value("김pb"));
+        resultActions.andExpect(jsonPath("$.data.branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.msg").value("한줄메시지.."));
+        resultActions.andExpect(jsonPath("$.data.career").value("10"));
+        resultActions.andExpect(jsonPath("$.data.specialty1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.specialty2").doesNotExist());
+        resultActions.andExpect(jsonPath("$.data.reserveCount").value("0"));
+        resultActions.andExpect(jsonPath("$.data.reviewCount").value("0"));
+    }
+
     @Test
     public void searchBranch_test() throws Exception {
         // given
