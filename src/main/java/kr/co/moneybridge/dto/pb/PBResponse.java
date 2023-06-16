@@ -132,12 +132,17 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "메인페이지 PB 리스트 응답 데이터")
     @Getter
     public static class PBSimpleDTO {
 
+        @ApiModelProperty(example = "1", value = "PB의 id")
         private Long id;
+        @ApiModelProperty(example = "1", value = "PB의 이름")
         private String name;
+        @ApiModelProperty(example = "1", value = "PB 한줄메세지")
         private String msg;
+        @ApiModelProperty(example = "1", value = "PB의 프로필")
         private String profile;
 
         public PBSimpleDTO(PBPageDTO pbPageDTO) {

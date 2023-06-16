@@ -199,8 +199,12 @@ public class PBController {
         return new ResponseDTO<>(pageDTO);
     }
 
+    @ApiOperation("PB 리스트 가져오기(거리순)")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "latitude", value = "127.0000", dataType = "Double", paramType = "query", required = true),
+                        @ApiImplicitParam(name = "longitude", value = "81.1111", dataType = "Double", paramType = "query", required = true)})
     @GetMapping("/main/pb")
-    public ResponseDTO getRecommendedPB(@RequestParam(value = "latitude") Double latitude,
+    public ResponseDTO<List<PBResponse.PBSimpleDTO>> getRecommendedPB(@RequestParam(value = "latitude") Double latitude,
                                         @RequestParam(value = "longitude") Double longitude) {
 
         List<PBResponse.PBSimpleDTO> pbList = pbService.getTwoPBWithDistance(latitude, longitude);
