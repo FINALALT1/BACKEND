@@ -15,6 +15,7 @@ import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.service.PBService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,18 +38,18 @@ public class PBController {
 
     // 지점 검색
     @MyLog
+    @SwaggerResponses.SearchBranch
     @GetMapping("/branch")
-    public ResponseEntity<?> searchBranch(@RequestParam Long companyId,
+    public ResponseDTO<PageDTO<PBResponse.BranchDTO>> searchBranch(@RequestParam Long companyId,
                                           @RequestParam(required = false) String keyword) {
         keyword = keyword == null ? "" : keyword.replaceAll("\\s", "");
         if(keyword.isEmpty()){
-            ResponseDTO<?> responseDTO = new ResponseDTO<>(new PBResponse.BranchOutDTO(new ArrayList<>()));
-            return ResponseEntity.ok().body(responseDTO); // 빈칸 검색시
+            List<PBResponse.BranchDTO> empty = new ArrayList<>();
+            return new ResponseDTO<>(new PageDTO<>(empty, new PageImpl<>(empty))); // 빈칸 검색시
         }
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
         PageDTO<PBResponse.BranchDTO> pageDTO = pbService.searchBranch(companyId, keyword, pageable);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(pageDTO);
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>(pageDTO);
     }
 
     // 증권사 리스트 가져오기 - 메인페이지, 회원가입시

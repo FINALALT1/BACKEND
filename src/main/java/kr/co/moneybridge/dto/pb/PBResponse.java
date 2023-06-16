@@ -12,12 +12,17 @@ import lombok.Setter;
 import java.util.List;
 
 public class PBResponse {
+    @ApiModel(description = "지점 검색 응답 데이터")
     @Setter
     @Getter
     public static class BranchDTO {
+        @ApiModelProperty(example = "1", value = "지점의 id")
         private Long id;
+        @ApiModelProperty(example = "미래에셋증권 강남대로점", value = "지점명")
         private String name;
+        @ApiModelProperty(example = "서울 강남구 강남대로 390", value = "도로명주소")
         private String roadAddress;
+        @ApiModelProperty(example = "역삼동 825 미진프라자 1층 101", value = "지번주소")
         private String streetAddress;
 
         public BranchDTO(Branch branch) {
@@ -29,9 +34,11 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "지점 검색 리스트 응답 데이터")
     @Setter
     @Getter
     public static class BranchOutDTO {
+        @ApiModelProperty
         private List<BranchDTO> list;
 
         public BranchOutDTO(List<BranchDTO> list) {
