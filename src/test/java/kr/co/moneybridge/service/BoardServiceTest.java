@@ -524,4 +524,24 @@ class BoardServiceTest extends MockDummyEntity {
         //then
         assertThat(result).isEqualTo(list);
     }
+
+    @Test
+    @DisplayName("맞춤컨텐츠 2개 가져오기")
+    void getTwoBoards() {
+        //given
+        Board board1 = newMockBoard(1L, "테스트입니다1", pb);
+        Board board2 = newMockBoard(2L, "테스트입니다2", pb);
+        BoardResponse.BoardPageDTO boardDTO1 = new BoardResponse.BoardPageDTO(board1, pb, company);
+        BoardResponse.BoardPageDTO boardDTO2 = new BoardResponse.BoardPageDTO(board2, pb, company);
+        List<BoardResponse.BoardPageDTO> list = Arrays.asList(boardDTO1, boardDTO2);
+
+        //stub
+        when(boardRepository.findTwoBoards(any(PageRequest.class))).thenReturn(list);
+
+        //when
+        List<BoardResponse.BoardPageDTO> result = boardService.getTwoBoards();
+
+        //then
+        assertThat(result).isEqualTo(list);
+    }
 }

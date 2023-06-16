@@ -249,4 +249,12 @@ public class BoardController {
 
         return new ResponseDTO<>(list);
     }
+
+    @GetMapping("/main/board")
+    public ResponseDTO<List<BoardResponse.BoardPageDTO>> getBoards() {
+
+        List<BoardResponse.BoardPageDTO> list = boardService.getTwoBoards();
+
+        return new ResponseDTO(list);
+    }
 }

@@ -90,4 +90,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "WHERE (pb.speciality1 IN :specialities OR pb.speciality2 IN :specialities) " +
             "ORDER BY b.id DESC")
     List<BoardResponse.BoardPageDTO> findRecommendedBoards(Pageable pageable, @Param("specialities") PBSpeciality... specialities);
+
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, pb, c) FROM Board b " +
+            "JOIN PB pb ON b.pb = pb " +
+            "JOIN Branch br ON pb.branch = br " +
+            "JOIN Company c ON br.company = c " +
+            "ORDER BY b.id DESC")
+    List<BoardResponse.BoardPageDTO> findTwoBoards(Pageable pageable);
 }

@@ -335,4 +335,13 @@ public class BoardService {
 
         return boardList;
     }
+
+    //컨텐츠 가져오기(성향X)
+    public List<BoardResponse.BoardPageDTO> getTwoBoards() {
+
+        Pageable pageable= PageRequest.of(0, 2, Sort.by("id").descending());
+        List<BoardResponse.BoardPageDTO> boardList = boardRepository.findTwoBoards(pageable);
+
+        return boardList;
+    }
 }
