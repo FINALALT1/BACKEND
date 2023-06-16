@@ -1,8 +1,6 @@
 package kr.co.moneybridge.model.reservation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -10,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,21 +61,34 @@ public class ReviewRepositoryTest extends DummyEntity {
         em.clear();
     }
 
-//    @Test
-//    public void findAll_test() throws Exception {
-//        // given
-//        Long pbId = 1L;
-//        ReservationProcess process = ReservationProcess.COMPLETE;
-//        int page = 0;
-//        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
-//
-//        // when
-//        Page<Review> reviewPG = reviewRepository.findAllByPbIdAndProcess(pbId, process, pageable);
-//
-//        // then
-//        assertThat(reviewPG.getContent().get(0).getReviewId()).isEqualTo(5L);
-//        assertThat(reviewPG.getContent().get(0).getUsername()).isEqualTo("lee");
-//        assertThat(reviewPG.getContent().get(0).getContent()).isEqualTo("content 입니다");
-//        assertThat(reviewPG.getContent().get(0).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
-//    }
+    @Test
+    public void find_all_by_pbId_and_process_test() throws Exception {
+        // given
+        Long pbId = 1L;
+        ReservationProcess process = ReservationProcess.COMPLETE;
+        int page = 0;
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // when
+        Page<Review> reviewPG = reviewRepository.findAllByPbIdAndProcess(pbId, process, pageable);
+
+        // then
+        assertThat(reviewPG.getContent().get(0).getId()).isEqualTo(5L);
+        assertThat(reviewPG.getContent().get(0).getReservation().getId()).isEqualTo(5L);
+        assertThat(reviewPG.getContent().get(0).getContent()).isEqualTo("content 입니다");
+        assertThat(reviewPG.getContent().get(0).getAdherence()).isEqualTo(ReviewAdherence.EXCELLENT);
+        assertThat(reviewPG.getContent().get(0).getCreatedAt().toLocalDate().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
+    }
+
+    @Test
+    public void count_by_reservationId_test() {
+        // given
+        Long reservationId = 1L;
+
+        // when
+        Integer count = reviewRepository.countByReservationId(reservationId);
+
+        // then
+        assertThat(count).isEqualTo(1);
+    }
 }

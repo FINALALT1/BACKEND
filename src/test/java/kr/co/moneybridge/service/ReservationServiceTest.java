@@ -313,6 +313,8 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(Optional.of(reservation));
         Mockito.when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
+        Mockito.when(reviewRepository.countByReservationId(anyLong()))
+                .thenReturn(0);
 
         // when
         ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetailByPB(reservation.getId(), pbId);
@@ -332,6 +334,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         assertThat(detailByPBDTO.getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
         assertThat(detailByPBDTO.getGoal()).isEqualTo(ReservationGoal.PROFIT);
         assertThat(detailByPBDTO.getQuestion()).isEqualTo("질문입니다...");
+        assertThat(detailByPBDTO.getReviewCheck()).isEqualTo(false);
     }
 
 //    @Test
