@@ -127,7 +127,7 @@ public class ReservationController {
             throw new Exception400(applyDTO.getQuestion(), "최대 100자까지 입력 가능합니다.");
         }
 
-        if (applyDTO.getUserName().isBlank()) {
+        if (applyDTO.getUserName() == null || applyDTO.getUserName().isBlank()) {
             throw new Exception400(applyDTO.getUserName(), "이름을 입력해주세요.");
         }
 
@@ -259,12 +259,16 @@ public class ReservationController {
     public ResponseDTO updateReservation(@PathVariable Long id,
                                          @RequestBody ReservationRequest.UpdateDTO updateDTO,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        if (!updateDTO.getTime().isBlank() && !updateDTO.getTime().matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$")) {
-            throw new Exception400(updateDTO.getTime(), "형식에 맞춰 입력해주세요.");
+        if (updateDTO.getTime() != null && !updateDTO.getTime().isBlank()) {
+            if (!updateDTO.getTime().matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$")) {
+                throw new Exception400(updateDTO.getTime(), "형식에 맞춰 입력해주세요.");
+            }
         }
         // 현재 시간보다 이전 날짜인지 확인
-        if (!updateDTO.getTime().isBlank() && StringToLocalDateTime(updateDTO.getTime()).isBefore(LocalDateTime.now())) {
-            throw new Exception400(updateDTO.getTime(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
+        if (updateDTO.getTime() != null && !updateDTO.getTime().isBlank()) {
+            if (StringToLocalDateTime(updateDTO.getTime()).isBefore(LocalDateTime.now())) {
+                throw new Exception400(updateDTO.getTime(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
+            }
         }
 
         if (updateDTO.getType() != null && !isValidReservationType(updateDTO.getType())) {
@@ -272,11 +276,11 @@ public class ReservationController {
         }
 
         if (updateDTO.getType().equals(ReservationType.VISIT)) {
-            if (updateDTO.getLocationName().isBlank()) {
+            if (updateDTO.getLocationName() == null || updateDTO.getLocationName().isBlank()) {
                 throw new Exception400(updateDTO.getLocationName(), "상담 장소를 입력해주세요.");
             }
 
-            if (updateDTO.getLocationAddress().isBlank()) {
+            if (updateDTO.getLocationAddress() == null || updateDTO.getLocationAddress().isBlank()) {
                 throw new Exception400(updateDTO.getLocationAddress(), "상담 주소를 입력해주세요.");
             }
         }
@@ -300,8 +304,8 @@ public class ReservationController {
     })
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/auth/reservation/{id}")
-    public ResponseDTO cancelResrvation(@PathVariable Long id,
-                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO cancelReservation(@PathVariable Long id,
+                                         @AuthenticationPrincipal MyUserDetails myUserDetails) {
         reservationService.cancelReservation(id, myUserDetails);
 
         return new ResponseDTO<>();
@@ -346,7 +350,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/auth/reservation/{id}/completed")
     public ResponseDTO completeReservation(@PathVariable Long id,
-                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
         reservationService.completeReservation(id, myUserDetails);
 
         return new ResponseDTO<>();

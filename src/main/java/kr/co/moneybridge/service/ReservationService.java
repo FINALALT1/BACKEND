@@ -262,6 +262,7 @@ public class ReservationService {
                     localDateTimeToStringV2(reservationPS.getCandidateTime1()),
                     localDateTimeToStringV2(reservationPS.getCandidateTime2()),
                     localDateTimeToStringV2(reservationPS.getTime()),
+                    reservationPS.getType(),
                     reservationPS.getLocationName(),
                     reservationPS.getLocationAddress(),
                     reservationPS.getGoal(),
@@ -295,16 +296,16 @@ public class ReservationService {
         }
 
         try {
-            if (!updateDTO.getTime().isBlank()) {
+            if (updateDTO.getTime() != null && !updateDTO.getTime().isBlank()) {
                 reservationPS.updateTime(StringToLocalDateTime(updateDTO.getTime()));
             }
             if (updateDTO.getType() != null) {
                 reservationPS.updateType(updateDTO.getType());
             }
-            if (!updateDTO.getLocationName().isBlank()) {
+            if (updateDTO.getLocationName() != null && !updateDTO.getLocationName().isBlank()) {
                 reservationPS.updateLocationName(updateDTO.getLocationName());
             }
-            if (!updateDTO.getLocationAddress().isBlank()) {
+            if (updateDTO.getLocationAddress() != null && !updateDTO.getLocationAddress().isBlank()) {
                 reservationPS.updateLocationAddress(updateDTO.getLocationAddress());
             }
         } catch (Exception e) {

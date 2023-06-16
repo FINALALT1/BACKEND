@@ -1,9 +1,11 @@
 package kr.co.moneybridge.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
@@ -22,11 +24,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -307,11 +311,6 @@ public class ReservationServiceTest extends MockDummyEntity {
         PB pb = newMockPB(pbId, "이피비", branch);
         User user = newMockUser(1L, "lee");
         Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
-
 
         // stub
         Mockito.when(reservationRepository.findById(anyLong()))
@@ -332,49 +331,36 @@ public class ReservationServiceTest extends MockDummyEntity {
         assertThat(detailDTO.getCandidateTime1()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
         assertThat(detailDTO.getCandidateTime2()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
         assertThat(detailDTO.getTime()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailDTO.getType()).isEqualTo(ReservationType.VISIT);
         assertThat(detailDTO.getLocation()).isEqualTo("kb증권 강남중앙점");
         assertThat(detailDTO.getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
         assertThat(detailDTO.getGoal()).isEqualTo(ReservationGoal.PROFIT);
         assertThat(detailDTO.getQuestion()).isEqualTo("질문입니다...");
     }
 
-    @Test
-    public void get_reservation_detail_test() {
-        // given
-        Long pbId = 1L;
-        Company company = newMockCompany(1L, "미래에셋");
-        Branch branch = newMockBranch(1L, company, 1);
-        PB pb = newMockPB(pbId, "이피비", branch);
-        User user = newMockUser(1L, "lee");
-        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
-
-
-        // stub
-        Mockito.when(reservationRepository.findById(anyLong()))
-                .thenReturn(Optional.of(reservation));
-        Mockito.when(pbRepository.findById(anyLong()))
-                .thenReturn(Optional.of(pb));
-
-        // when
-        ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(reservation.getId(), pbId);
-
-        // then
-        assertThat(detailDTO.getUserId()).isEqualTo(1L);
-        assertThat(detailDTO.getProfileImage()).isEqualTo("profile.png");
-        assertThat(detailDTO.getName()).isEqualTo("lee");
-        assertThat(detailDTO.getPhoneNumber()).isEqualTo("01012345678");
-        assertThat(detailDTO.getEmail()).isEqualTo("lee@nate.com");
-        assertThat(detailDTO.getReservationId()).isEqualTo(1L);
-        assertThat(detailDTO.getCandidateTime1()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
-        assertThat(detailDTO.getCandidateTime2()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
-        assertThat(detailDTO.getTime()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
-        assertThat(detailDTO.getLocation()).isEqualTo("kb증권 강남중앙점");
-        assertThat(detailDTO.getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
-        assertThat(detailDTO.getGoal()).isEqualTo(ReservationGoal.PROFIT);
-        assertThat(detailDTO.getQuestion()).isEqualTo("질문입니다...");
-    }
+//    @Test
+//    public void update_reservation_test() {
+//        // given
+//        Long pbId = 1L;
+//        Company company = newMockCompany(1L, "미래에셋");
+//        Branch branch = newMockBranch(1L, company, 1);
+//        PB pb = newMockPB(pbId, "이피비", branch);
+//        User user = newMockUser(1L, "lee");
+//        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.APPLY);
+//        ReservationRequest.UpdateDTO updateDTO = new ReservationRequest.UpdateDTO();
+//        updateDTO.setTime("2024년 6월 1일 오전 9시 20분");
+//        updateDTO.setType(ReservationType.CALL);
+//
+//        // stub
+//        Mockito.when(reservationRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(reservation));
+//        Mockito.when(userRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(user));
+//
+//        // when
+//        LocalDateTime localDateTime = reservationService.updateReservation(reservation.getId(), updateDTO, new MyUserDetails(user));
+//
+//        // then
+//        assertThat(localDateTime).isEqualTo(StringToLocalDateTime("2024년 6월 1일 오전 9시 20분"));
+//    }
 }
