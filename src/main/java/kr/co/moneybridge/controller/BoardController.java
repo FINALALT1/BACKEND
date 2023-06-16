@@ -240,6 +240,8 @@ public class BoardController {
         return new ResponseDTO<>(pageDTO);
     }
 
+    @ApiOperation("맞춤컨텐츠 2개 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/user/main/board")
     public ResponseDTO<List<BoardResponse.BoardPageDTO>> getRecommendedBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 

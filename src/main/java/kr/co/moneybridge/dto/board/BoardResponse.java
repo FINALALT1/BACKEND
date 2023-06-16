@@ -1,5 +1,7 @@
 package kr.co.moneybridge.dto.board;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.board.BoardStatus;
 import kr.co.moneybridge.model.board.ReReply;
@@ -16,17 +18,25 @@ import java.util.List;
 
 public class BoardResponse {
 
+    @ApiModel(description = "메인페이지 맞춤성향 컨텐츠 데이터")
     @Getter
     @Setter
     public static class BoardPageDTO {
-
+        @ApiModelProperty(example = "1", value = "컨텐츠 id")
         private Long id;
+        @ApiModelProperty(example = "제목입니다", value = "컨텐츠 제목")
         private String title;
+        @ApiModelProperty(example = "김피비", value = "PB 이름")
         private String pbName;
+        @ApiModelProperty(example = "logo.png", value = "회사 로고")
         private String companyLogo;
+        @ApiModelProperty(example = "5", value = "연차")
         private int career;
+        @ApiModelProperty(example = "시장정보", value = "태그1")
         private String tag1;
+        @ApiModelProperty(example = "쉽게읽혀요", value = "태그2")
         private String tag2;
+        @ApiModelProperty(example = "안녕하세요", value = "한줄메세지")
         private String msg;
 
         public BoardPageDTO(Board board, PB pb, Company company) {
