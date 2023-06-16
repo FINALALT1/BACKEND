@@ -72,7 +72,10 @@ public class UserServiceTest extends MockDummyEntity {
     private PBRepository pbRepository;
     @Mock
     private BoardBookmarkRepository boardBookmarkRepository;
-    @Mock UserBookmarkRepository userBookmarkRepository;
+    @Mock
+    private UserBookmarkRepository userBookmarkRepository;
+    @Mock
+    private UserInvestInfoRepository userInvestInfoRepository;
 
     // 가짜 객체를 만들어서 Mockito 환경에 Load
     @Mock
@@ -91,6 +94,33 @@ public class UserServiceTest extends MockDummyEntity {
     // 진짜 객체를 만들어서 Mockito 환경에 Load
     @Spy
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Test
+    public void testPropensity_test() {
+        // given
+        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
+        testPropensityInDTO.setQ1(5);
+        testPropensityInDTO.setQ2(4);
+        testPropensityInDTO.setQ3(5);
+        testPropensityInDTO.setQ4(5);
+        testPropensityInDTO.setQ5(5);
+        testPropensityInDTO.setQ6(5);
+        Long id = 1L;
+
+        User user = newMockUserWithoutPropensity(1L, "lee");
+        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userInvestInfoRepository.findByUserId(any())).thenReturn(Optional.empty());
+        when(userInvestInfoRepository.save(any())).thenReturn(userInvestInfo);
+
+        // when
+        userService.testPropensity(testPropensityInDTO, id);
+
+        // then
+        verify(userRepository, times(1)).findById(any());
+        verify(userInvestInfoRepository, times(1)).findByUserId(any());
+        verify(userInvestInfoRepository, times(1)).save(any());
+    }
 
     @Test
     public void getMyPage() {
