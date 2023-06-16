@@ -69,8 +69,10 @@ public class User implements Member {
     public void updateName(String name){
         this.name = name;
     }
-
     public void updatePhoneNumber(String phoneNumber){
         this.phoneNumber = phoneNumber;
+    }
+    public void updatePropensity(UserPropensity propensity){
+        this.propensity = propensity;
     }
 }

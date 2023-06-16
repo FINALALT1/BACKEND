@@ -6,12 +6,48 @@ import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreement;
 import kr.co.moneybridge.model.user.UserAgreementType;
+import kr.co.moneybridge.model.user.UserInvestInfo;
 import lombok.*;
 
 import javax.validation.constraints.*;
 import java.util.List;
 
 public class UserRequest {
+    @Setter
+    @Getter
+    public static class TestPropensityInDTO {
+
+        @NotNull
+        private Integer q1;
+
+        @NotNull
+        private Integer q2;
+
+        @NotNull
+        private Integer q3;
+
+        @NotNull
+        private Integer q4;
+
+        @NotNull
+        private Integer q5;
+
+        @NotNull
+        private Integer q6;
+
+        public UserInvestInfo toEntity(User user) {
+            return UserInvestInfo.builder()
+                    .user(user)
+                    .q1(q1)
+                    .q2(q2)
+                    .q3(q3)
+                    .q4(q4)
+                    .q5(q5)
+                    .q6(q6)
+                    .build();
+        }
+    }
+
     @ApiModel(description = "개인 정보 수정시 요청 데이터")
     @Setter
     @Getter

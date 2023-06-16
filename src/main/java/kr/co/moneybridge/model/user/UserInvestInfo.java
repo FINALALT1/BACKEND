@@ -17,6 +17,7 @@ public class UserInvestInfo {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(unique = true)
     private User user;
 
     @Column(nullable = false)
@@ -50,5 +51,14 @@ public class UserInvestInfo {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public UserPropensity getPropensity() {
+        Integer score = q1 + q2 + q3 + q4 + q5 + q6;
+        return score >= 27 ? UserPropensity.SPECULATIVE :
+                score >= 24 ? UserPropensity.AGGRESSIVE :
+                        score >= 18 ? UserPropensity.BALANCED :
+                                score >= 14 ? UserPropensity.CAUTIOUS :
+                                        UserPropensity.CONSERVATIVE;
     }
 }
