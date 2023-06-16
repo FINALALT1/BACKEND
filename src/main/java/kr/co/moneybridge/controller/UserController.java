@@ -33,12 +33,13 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    @MyLog
+    @SwaggerResponses.TestPropensity
     @PostMapping("/user/propensity")
-    public ResponseEntity<?> testPropensity(@RequestBody @Valid UserRequest.TestPropensityInDTO testPropensityInDTO,
+    public ResponseDTO testPropensity(@RequestBody @Valid UserRequest.TestPropensityInDTO testPropensityInDTO,
                                             Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.testPropensity(testPropensityInDTO, myUserDetails.getMember().getId());
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>();
     }
 
     @MyLog

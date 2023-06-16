@@ -2,6 +2,7 @@ package kr.co.moneybridge.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import kr.co.moneybridge.core.annotation.ValidNumbers;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreement;
@@ -13,26 +14,39 @@ import javax.validation.constraints.*;
 import java.util.List;
 
 public class UserRequest {
+    @ApiModel(description = "투자자 성향 체크시 요청 데이터")
     @Setter
     @Getter
     public static class TestPropensityInDTO {
 
+        @ApiModelProperty(example = "5", value = "1번 문항의 점수. 2, 3, 4, 5 중 하나")
         @NotNull
+        @ValidNumbers(values = {2, 3, 4, 5}, message = "2, 3, 4, 5 중에 하나만 입력하세요")
         private Integer q1;
 
+        @ApiModelProperty(example = "5", value = "2번 문항의 점수. 2, 3, 4 중 하나")
         @NotNull
+        @ValidNumbers(values = {2, 3, 4}, message = "2, 3, 4 중에 하나만 입력하세요")
         private Integer q2;
 
+        @ApiModelProperty(example = "5", value = "3번 문항의 점수. 1, 3, 4, 5 중 하나")
         @NotNull
+        @ValidNumbers(values = {1, 3, 4, 5}, message = "1, 3, 4, 5 중에 하나만 입력하세요")
         private Integer q3;
 
+        @ApiModelProperty(example = "5", value = "4번 문항의 점수. 1, 3, 4, 5 중 하나")
         @NotNull
+        @ValidNumbers(values = {1, 3, 4, 5}, message = "1, 3, 4, 5 중에 하나만 입력하세요")
         private Integer q4;
 
+        @ApiModelProperty(example = "5", value = "5번 문항의 점수. 2, 3, 4, 5 중 하나")
         @NotNull
+        @ValidNumbers(values = {2, 3, 4, 5}, message = "2, 3, 4, 5 중에 하나만 입력하세요")
         private Integer q5;
 
+        @ApiModelProperty(example = "5", value = "6번 문항의 점수. 1, 2, 4, 5 중 하나")
         @NotNull
+        @ValidNumbers(values = {1, 2, 4, 5}, message = "1, 2, 4, 5 중에 하나만 입력하세요")
         private Integer q6;
 
         public UserInvestInfo toEntity(User user) {
