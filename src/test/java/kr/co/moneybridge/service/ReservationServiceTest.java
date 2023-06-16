@@ -256,4 +256,125 @@ public class ReservationServiceTest extends MockDummyEntity {
         assertThat(recentInfoDTO.getCompleteCount()).isEqualTo(10);
         assertThat(recentInfoDTO.getIsNewComplete()).isEqualTo(true);
     }
+
+    @Test
+    public void get_recent_reservations_test() {
+        // given
+        String type = "COMPLETE";
+        int page = 0;
+        Long pbId = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(pbId, "이피비", branch);
+        User user = newMockUser(1L, "lee");
+        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
+
+        // stub
+        Mockito.when(pbRepository.findById(anyLong()))
+                .thenReturn(Optional.of(pb));
+        Mockito.when(reservationRepository.findAllByPbIdAndProcess(anyLong(), any(), any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(Arrays.asList(
+                        new ReservationResponse.RecentPagingDTO(reservation5, user),
+                        new ReservationResponse.RecentPagingDTO(reservation4, user),
+                        new ReservationResponse.RecentPagingDTO(reservation3, user),
+                        new ReservationResponse.RecentPagingDTO(reservation2, user),
+                        new ReservationResponse.RecentPagingDTO(reservation, user)
+                ))));
+
+        // when
+        PageDTO<ReservationResponse.RecentReservationDTO> recentReservationsDTO = reservationService.gerRecentReservations(type, page, pbId);
+
+        // then
+        assertThat(recentReservationsDTO.getList().get(0).getReservationId()).isEqualTo(5L);
+        assertThat(recentReservationsDTO.getList().get(0).getIsNewReservation()).isEqualTo(true);
+        assertThat(recentReservationsDTO.getList().get(0).getUserId()).isEqualTo(1L);
+        assertThat(recentReservationsDTO.getList().get(0).getProfileImage()).isEqualTo("profile.png");
+        assertThat(recentReservationsDTO.getList().get(0).getName()).isEqualTo("lee");
+        assertThat(recentReservationsDTO.getList().get(0).getCreatedAt()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(recentReservationsDTO.getList().get(0).getType()).isEqualTo(ReservationType.VISIT);
+    }
+
+    @Test
+    public void get_reservation_detail_test() {
+        // given
+        Long pbId = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(pbId, "이피비", branch);
+        User user = newMockUser(1L, "lee");
+        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
+
+
+        // stub
+        Mockito.when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(reservation));
+        Mockito.when(pbRepository.findById(anyLong()))
+                .thenReturn(Optional.of(pb));
+
+        // when
+        ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(reservation.getId(), pbId);
+
+        // then
+        assertThat(detailDTO.getUserId()).isEqualTo(1L);
+        assertThat(detailDTO.getProfileImage()).isEqualTo("profile.png");
+        assertThat(detailDTO.getName()).isEqualTo("lee");
+        assertThat(detailDTO.getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(detailDTO.getEmail()).isEqualTo("lee@nate.com");
+        assertThat(detailDTO.getReservationId()).isEqualTo(1L);
+        assertThat(detailDTO.getCandidateTime1()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailDTO.getCandidateTime2()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailDTO.getTime()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailDTO.getLocation()).isEqualTo("kb증권 강남중앙점");
+        assertThat(detailDTO.getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
+        assertThat(detailDTO.getGoal()).isEqualTo(ReservationGoal.PROFIT);
+        assertThat(detailDTO.getQuestion()).isEqualTo("질문입니다...");
+    }
+
+    @Test
+    public void get_reservation_detail_test() {
+        // given
+        Long pbId = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(pbId, "이피비", branch);
+        User user = newMockUser(1L, "lee");
+        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
+        Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
+
+
+        // stub
+        Mockito.when(reservationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(reservation));
+        Mockito.when(pbRepository.findById(anyLong()))
+                .thenReturn(Optional.of(pb));
+
+        // when
+        ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(reservation.getId(), pbId);
+
+        // then
+        assertThat(detailDTO.getUserId()).isEqualTo(1L);
+        assertThat(detailDTO.getProfileImage()).isEqualTo("profile.png");
+        assertThat(detailDTO.getName()).isEqualTo("lee");
+        assertThat(detailDTO.getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(detailDTO.getEmail()).isEqualTo("lee@nate.com");
+        assertThat(detailDTO.getReservationId()).isEqualTo(1L);
+        assertThat(detailDTO.getCandidateTime1()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailDTO.getCandidateTime2()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailDTO.getTime()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailDTO.getLocation()).isEqualTo("kb증권 강남중앙점");
+        assertThat(detailDTO.getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
+        assertThat(detailDTO.getGoal()).isEqualTo(ReservationGoal.PROFIT);
+        assertThat(detailDTO.getQuestion()).isEqualTo("질문입니다...");
+    }
 }
