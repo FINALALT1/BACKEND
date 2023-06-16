@@ -12,6 +12,43 @@ import lombok.Setter;
 import java.util.List;
 
 public class PBResponse {
+
+    @ApiModel(description = "PB 마이페이지 가져오기 응답 데이터")
+    @Setter
+    @Getter
+    public static class MyPageOutDTO {
+        @ApiModelProperty(example = "profile.png", value = "프로필 이미지 주소")
+        private String profile;
+        @ApiModelProperty(example = "김pb", value = "PB의 이름")
+        private String name;
+        @ApiModelProperty(example = "미래에셋증권 여의도점", value = "지점명")
+        private String branchName;
+        @ApiModelProperty(example = "한줄메시지..")
+        private String msg;
+        @ApiModelProperty(example = "10", value = "경력(연차)")
+        private Integer career;
+        @ApiModelProperty(example = "BOND", value = "전문 분야")
+        private PBSpeciality specialty1;
+        @ApiModelProperty(example = "null", value = "없으면 null")
+        private PBSpeciality specialty2;
+        @ApiModelProperty(example = "1", value = "총 상담 횟수")
+        private Integer reserveCount;
+        @ApiModelProperty(example = "1", value = "상담 후기")
+        private Integer reviewCount;
+
+        public MyPageOutDTO(PB pb, Integer reserveCount, Integer reviewCount) {
+            this.profile = pb.getProfile();
+            this.name = pb.getName();
+            this.branchName = pb.getBranch().getName();
+            this.msg = pb.getMsg();
+            this.career = pb.getCareer();
+            this.specialty1 = pb.getSpeciality1();
+            this.specialty2 = pb.getSpeciality2();
+            this.reserveCount = reserveCount;
+            this.reviewCount = reviewCount;
+        }
+    }
+
     @ApiModel(description = "지점 검색 응답 데이터")
     @Setter
     @Getter
