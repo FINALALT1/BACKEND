@@ -1,7 +1,6 @@
 package kr.co.moneybridge.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.PageDTO;
@@ -382,5 +381,54 @@ public class ReservationServiceTest extends MockDummyEntity {
 //
 //        // then
 //        assertThat(cancelReservation.getStatus()).isEqualTo(ReservationStatus.CANCEL);
+//    }
+
+//    @Test
+//    public void confirm_reservation_test() {
+//        // given
+//        Long pbId = 1L;
+//        Company company = newMockCompany(1L, "미래에셋");
+//        Branch branch = newMockBranch(1L, company, 1);
+//        PB pb = newMockPB(pbId, "이피비", branch);
+//        User user = newMockUser(1L, "lee");
+//        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.APPLY);
+//        ReservationRequest.ConfirmDTO confirmDTO = new ReservationRequest.ConfirmDTO();
+//        confirmDTO.setTime("2024년 6월 1일 오전 9시 20분");
+//
+//        // stub
+//        Mockito.when(reservationRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(reservation));
+//        Mockito.when(pbRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(pb));
+//
+//        // when
+//        Reservation confirmReservation = reservationService.confirmReservation(reservation.getId(), pbId, confirmDTO);
+//
+//        // then
+//        assertThat(confirmReservation.getTime()).isEqualTo(StringToLocalDateTime("2024년 6월 1일 오전 9시 20분"));
+//        assertThat(confirmReservation.getProcess()).isEqualTo(ReservationProcess.CONFIRM);
+//    }
+
+//    @Test
+//    public void complete_reservation_test() {
+//        // given
+//        Long pbId = 1L;
+//        Company company = newMockCompany(1L, "미래에셋");
+//        Branch branch = newMockBranch(1L, company, 1);
+//        PB pb = newMockPB(pbId, "이피비", branch);
+//        User user = newMockUser(1L, "lee");
+//        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.CONFIRM);
+//
+//        // stub
+//        Mockito.when(reservationRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(reservation));
+//        Mockito.when(pbRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(pb));
+//
+//        // when
+//        Reservation completeReservation = reservationService.completeReservation(reservation.getId(), new MyUserDetails(pb));
+//
+//        // then
+//        assertThat(completeReservation.getProcess()).isEqualTo(ReservationProcess.COMPLETE);
 //    }
 }
