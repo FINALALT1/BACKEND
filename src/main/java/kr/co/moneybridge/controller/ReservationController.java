@@ -149,11 +149,11 @@ public class ReservationController {
     @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation/{id}")
-    public ResponseDTO<ReservationResponse.DetailDTO> getReservationDetail(@PathVariable Long id,
-                                                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(id, myUserDetails.getMember().getId());
+    public ResponseDTO<ReservationResponse.DetailByPBDTO> getReservationDetail(@PathVariable Long id,
+                                                                               @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetailByPB(id, myUserDetails.getMember().getId());
 
-        return new ResponseDTO<>(detailDTO);
+        return new ResponseDTO<>(detailByPBDTO);
     }
 
     @MyLog

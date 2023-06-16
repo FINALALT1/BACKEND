@@ -66,26 +66,26 @@ public class ReservationRepositoryTest extends DummyEntity {
     }
 
     @Test
-    public void count_reservation_by_pbId_and_process_test() {
+    public void count_by_pbId_and_process_test() {
         // given
         Long pbId = 1L;
         ReservationProcess process = ReservationProcess.COMPLETE;
 
         // when
-        Integer count = reservationRepository.countReservationByPBIdAndProcess(pbId, process);
+        Integer count = reservationRepository.countByPBIdAndProcess(pbId, process);
 
         // then
         assertThat(count).isEqualTo(5);
     }
 
     @Test
-    public void count_recent_reservation_by_pbId_and_process_test() {
+    public void count_recent_by_pbId_and_process_test() {
         // given
         Long pbId = 1L;
         ReservationProcess process = ReservationProcess.COMPLETE;
 
         // when
-        Integer count = reservationRepository.countRecentReservationByPBIdAndProcess(pbId, process);
+        Integer count = reservationRepository.countRecentByPBIdAndProcess(pbId, process);
 
         // then
         assertThat(count).isEqualTo(5);

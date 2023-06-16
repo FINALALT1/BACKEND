@@ -24,4 +24,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "join res.user u " +
             "where res.pb.id = :pbId and res.process = :process")
     Page<Review> findAllByPbIdAndProcess(@Param("pbId") Long pbId, @Param("process") ReservationProcess process, Pageable pageable);
+
+    @Query("select count(r) " +
+            "from Review r " +
+            "where r.reservation.id = :reservationId")
+    Integer countByReservationId(@Param("reservationId") Long reservationId);
 }
