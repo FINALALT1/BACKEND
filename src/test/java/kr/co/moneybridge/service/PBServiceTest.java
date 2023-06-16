@@ -278,4 +278,26 @@ class PBServiceTest extends MockDummyEntity {
         assertThat(result.getList()).isEqualTo(list);
         assertThat(result.getUserPropensity()).isEqualTo(user.getPropensity());
     }
+
+    @Test
+    @DisplayName("거리순 PB 두명 가져오기")
+    void getTwoPBWithDistance() {
+        //given
+        PBResponse.PBPageDTO pbPageDTO1 = new PBResponse.PBPageDTO(pb, branch, company);
+        PBResponse.PBPageDTO pbPageDTO2 = new PBResponse.PBPageDTO(pb, branch, company);
+        PBResponse.PBSimpleDTO pbSimpleDTO1 = new PBResponse.PBSimpleDTO(pbPageDTO1);
+        PBResponse.PBSimpleDTO pbSimpleDTO2 = new PBResponse.PBSimpleDTO(pbPageDTO2);
+
+        List<PBResponse.PBPageDTO> list = Arrays.asList(pbPageDTO1, pbPageDTO2);
+        List<PBResponse.PBSimpleDTO> simpleList = Arrays.asList(pbSimpleDTO1, pbSimpleDTO2);
+
+        //stub
+        when(pbRepository.findAllPB()).thenReturn(list);
+
+        //when
+        List<PBResponse.PBSimpleDTO> result = pbService.getTwoPBWithDistance(100.0000, 99.9999);
+
+        //then
+        assertThat(result).hasSize(2);
+    }
 }
