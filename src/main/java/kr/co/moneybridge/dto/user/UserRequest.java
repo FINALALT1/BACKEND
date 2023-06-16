@@ -14,6 +14,22 @@ import javax.validation.constraints.*;
 import java.util.List;
 
 public class UserRequest {
+    @Setter
+    @Getter
+    public static class UpdatePropensityInDTO {
+        private Integer q1;
+
+        private Integer q2;
+
+        private Integer q3;
+
+        private Integer q4;
+
+        private Integer q5;
+
+        private Integer q6;
+    }
+
     @ApiModel(description = "투자자 성향 체크시 요청 데이터")
     @Setter
     @Getter
