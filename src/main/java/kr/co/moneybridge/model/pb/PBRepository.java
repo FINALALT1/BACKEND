@@ -1,6 +1,7 @@
 package kr.co.moneybridge.model.pb;
 
 import kr.co.moneybridge.dto.pb.PBResponse;
+import kr.co.moneybridge.dto.user.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PBRepository extends JpaRepository<PB, Long> {
+    @Query("SELECT new kr.co.moneybridge.dto.user.UserResponse$BookmarkDTO(pb) FROM PB pb " +
+            "JOIN UserBookmark ub ON ub.pb = pb WHERE ub.user.id = :userId")
+    Page<UserResponse.BookmarkDTO> findTwoByBookMarker(@Param("userId") Long userId, Pageable pageable);
+
     @Query("select p from PB p where p.email = :email")
     Optional<PB> findByEmail(@Param("email") String email);
 

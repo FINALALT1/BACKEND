@@ -33,6 +33,13 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/user/mypage")
+    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        UserResponse.MyPageUserOutDTO myPageUserOutDTO = userService.getMyPageUser(myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(myPageUserOutDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
     @MyLog
     @SwaggerResponses.UpdateMyInfo
     @PatchMapping("/auth/myinfo")

@@ -16,11 +16,21 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.board.BoardBookmarkRepository;
+import kr.co.moneybridge.model.board.BoardRepository;
+import kr.co.moneybridge.model.board.BookmarkerRole;
+import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.reservation.ReservationProcess;
+import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreementRepository;
+import kr.co.moneybridge.model.user.UserBookmarkRepository;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,6 +60,31 @@ public class UserService {
     private final RedisUtil redisUtil;
     private final MyMemberUtil myMemberUtil;
     private final JavaMailSender javaMailSender;
+    private final ReservationRepository reservationRepository;
+    private final BoardRepository boardRepository;
+    private final BoardBookmarkRepository boardBookmarkRepository;
+    private final UserBookmarkRepository userBookmarkRepository;
+    private final PBRepository pbRepository;
+
+    @MyLog
+    public UserResponse.MyPageUserOutDTO getMyPageUser(MyUserDetails myUserDetails) {
+        User user = (User) myUserDetails.getMember();
+        UserResponse.StepDTO step = new UserResponse.StepDTO(user);
+        UserResponse.ReservationCountsDTO reservationCount = new UserResponse.ReservationCountsDTO(
+                reservationRepository.countByProcess(ReservationProcess.APPLY),
+                reservationRepository.countByProcess(ReservationProcess.CONFIRM),
+                reservationRepository.countByProcess(ReservationProcess.COMPLETE));
+
+        Pageable topTwo = PageRequest.of(0, 2);
+        Page<UserResponse.BookmarkDTO> boardBookmarkTwo = boardRepository.findTwoByBookMarker(BookmarkerRole.USER, user.getId(), topTwo);
+        Page<UserResponse.BookmarkDTO> pbBookmarkTwo = pbRepository.findTwoByBookMarker(user.getId(), topTwo);
+
+        UserResponse.BookmarkListDTO boardBookmark = new UserResponse.BookmarkListDTO(
+                boardBookmarkTwo.getContent(), boardBookmarkRepository.countByBookMarker(BookmarkerRole.USER, user.getId()));
+        UserResponse.BookmarkListDTO pbBookmark = new UserResponse.BookmarkListDTO(
+                pbBookmarkTwo.getContent(), userBookmarkRepository.countByUserId(user.getId()));
+        return new UserResponse.MyPageUserOutDTO(user, step, reservationCount, boardBookmark, pbBookmark);
+    }
 
     @MyLog
     @Transactional

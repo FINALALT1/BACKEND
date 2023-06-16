@@ -24,6 +24,9 @@ public class DummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.USER)
                 .profile("프로필.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookMark(false)
                 .build();
     }
 
@@ -36,6 +39,9 @@ public class DummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.USER)
                 .profile("프로필.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookMark(false)
                 .build();
     }
 
@@ -49,6 +55,9 @@ public class DummyEntity {
                 .propensity(UserPropensity.AGGRESSIVE)
                 .role(Role.USER)
                 .profile("프로필.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookMark(false)
                 .build();
     }
 

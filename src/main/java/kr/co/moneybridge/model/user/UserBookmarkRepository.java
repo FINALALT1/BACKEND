@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface UserBookmarkRepository extends JpaRepository<UserBookmark, Long> {
+    @Query("SELECT COUNT(u) FROM UserBookmark u WHERE u.user.id = :userId")
+    Integer countByUserId(@Param("userId") Long userId);
+
     @Modifying
     @Query("delete from UserBookmark u where u.user.id = :userId")
     void deleteByUserId(@Param("userId") Long userId);

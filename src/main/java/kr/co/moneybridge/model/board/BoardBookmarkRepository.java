@@ -8,6 +8,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface BoardBookmarkRepository extends JpaRepository<BoardBookmark, Long> {
+    @Query("SELECT COUNT(bm) FROM BoardBookmark bm WHERE bm.bookmarkerRole = :role AND bm.bookmarkerId = :id")
+    Integer countByBookMarker(@Param("role") BookmarkerRole role, @Param("id") Long id);
+
     @Modifying
     @Query("delete from BoardBookmark b where b.bookmarkerId = :bookmarkerId and b.bookmarkerRole = :bookmarkerRole")
     void deleteByBookmarker(@Param("bookmarkerId") Long bookmarkerId, @Param("bookmarkerRole")BookmarkerRole bookmarkerRole);

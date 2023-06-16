@@ -4,13 +4,97 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.board.Board;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserPropensity;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
 public class UserResponse {
+    @Setter
+    @Getter
+    public static class BookmarkDTO {
+        private Long id;
+        private String thumbnail;
+
+        public BookmarkDTO(Board board) {
+            this.id = board.getId();
+            this.thumbnail = board.getThumbnail();
+        }
+        public BookmarkDTO(PB pb) { // 오버로딩
+            this.id = pb.getId();
+            this.thumbnail = pb.getProfile();
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class BookmarkListDTO {
+        private List<BookmarkDTO> list;
+        private Integer count;
+
+        public BookmarkListDTO(List<BookmarkDTO> list, Integer count) {
+            this.list = list;
+            this.count = count;
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class ReservationCountsDTO {
+        private Integer apply;
+        private Integer confirm;
+        private Integer complete;
+
+        public ReservationCountsDTO(Integer apply, Integer comfirm, Integer complete) {
+            this.apply = apply;
+            this.confirm = comfirm;
+            this.complete = complete;
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class StepDTO {
+        private Boolean hasDonePropensity;
+        private Boolean hasDoneBoardBookMark;
+        private Boolean hasDoneReservation;
+        private Boolean hasDoneReview;
+
+        public StepDTO(User user) {
+            this.hasDonePropensity = user.getPropensity() == null ? false : true;
+            this.hasDoneBoardBookMark = user.getHasDoneBoardBookMark();
+            this.hasDoneReservation = user.getHasDoneReservation();
+            this.hasDoneReview = user.getHasDoneReview();
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class MyPageUserOutDTO {
+        private Long id;
+        private String name;
+        private UserPropensity propensity;
+        private StepDTO step;
+        private ReservationCountsDTO reservationCount;
+        private BookmarkListDTO boardBookmark;
+        private BookmarkListDTO pbBookmark;
+
+        public MyPageUserOutDTO(User user, StepDTO step,ReservationCountsDTO reservationCount,
+                                BookmarkListDTO boardBookmark, BookmarkListDTO pbBookmark) {
+            this.id = user.getId();
+            this.name = user.getName();
+            this.propensity = user.getPropensity();
+            this.step = step;
+            this.reservationCount = reservationCount;
+            this.boardBookmark = boardBookmark;
+            this.pbBookmark = pbBookmark;
+        }
+    }
+
     @ApiModel(description = "개인 정보 가져오기시 응답 데이터")
     @Setter
     @Getter
