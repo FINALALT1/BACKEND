@@ -237,7 +237,7 @@ public class ReservationResponse {
     @ApiModel
     @Getter
     @Setter
-    public static class DetailDTO {
+    public static class DetailByPBDTO {
         @ApiModelProperty(example = "1")
         private Long userId;
 
@@ -280,7 +280,10 @@ public class ReservationResponse {
         @ApiModelProperty(example = "잘 부탁드립니다.")
         private String question;
 
-        public DetailDTO(Long userId, String profileImage, String name, String phoneNumber, String email, Long reservationId, String candidateTime1, String candidateTime2, String time, ReservationType type, String location, String locationAddress, ReservationGoal goal, String question) {
+        @ApiModelProperty(example = "true")
+        private Boolean reviewCheck;
+
+        public DetailByPBDTO(Long userId, String profileImage, String name, String phoneNumber, String email, Long reservationId, String candidateTime1, String candidateTime2, String time, ReservationType type, String location, String locationAddress, ReservationGoal goal, String question, Boolean reviewCheck) {
             this.userId = userId;
             this.profileImage = profileImage;
             this.name = name;
@@ -295,6 +298,7 @@ public class ReservationResponse {
             this.locationAddress = locationAddress;
             this.goal = goal;
             this.question = question;
+            this.reviewCheck = reviewCheck;
         }
     }
 }

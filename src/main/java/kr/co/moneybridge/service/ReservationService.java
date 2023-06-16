@@ -164,17 +164,17 @@ public class ReservationService {
         try {
             return new ReservationResponse.RecentInfoDTO(
                     reservationRepository
-                            .countReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.APPLY),
+                            .countByPBIdAndProcess(pbPS.getId(), ReservationProcess.APPLY),
                     reservationRepository
-                            .countRecentReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.APPLY) >= 1,
+                            .countRecentByPBIdAndProcess(pbPS.getId(), ReservationProcess.APPLY) >= 1,
                     reservationRepository
-                            .countReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.CONFIRM),
+                            .countByPBIdAndProcess(pbPS.getId(), ReservationProcess.CONFIRM),
                     reservationRepository
-                            .countRecentReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.CONFIRM) >= 1,
+                            .countRecentByPBIdAndProcess(pbPS.getId(), ReservationProcess.CONFIRM) >= 1,
                     reservationRepository
-                            .countReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.COMPLETE),
+                            .countByPBIdAndProcess(pbPS.getId(), ReservationProcess.COMPLETE),
                     reservationRepository
-                            .countRecentReservationByPBIdAndProcess(pbPS.getId(), ReservationProcess.COMPLETE) >= 1
+                            .countRecentByPBIdAndProcess(pbPS.getId(), ReservationProcess.COMPLETE) >= 1
             );
         } catch (Exception e) {
             throw new Exception500("상담 현황 조회 실패 : " + e.getMessage());
@@ -242,7 +242,7 @@ public class ReservationService {
     }
 
     @MyLog
-    public ReservationResponse.DetailDTO getReservationDetail(Long reservationId, Long pbId) {
+    public ReservationResponse.DetailByPBDTO getReservationDetailByPB(Long reservationId, Long pbId) {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
         );
@@ -252,7 +252,7 @@ public class ReservationService {
 
         try {
             User userPS = reservationPS.getUser();
-            return new ReservationResponse.DetailDTO(
+            return new ReservationResponse.DetailByPBDTO(
                     userPS.getId(),
                     userPS.getProfile(),
                     userPS.getName(),
@@ -266,7 +266,8 @@ public class ReservationService {
                     reservationPS.getLocationName(),
                     reservationPS.getLocationAddress(),
                     reservationPS.getGoal(),
-                    reservationPS.getQuestion()
+                    reservationPS.getQuestion(),
+                    reviewRepository.countByReservationId(reservationPS.getId()) >= 1
             );
         } catch (Exception e) {
             throw new Exception500("예약 조회 실패 : " + e.getMessage());
