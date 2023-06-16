@@ -22,10 +22,7 @@ import kr.co.moneybridge.model.board.BookmarkerRole;
 import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
 import kr.co.moneybridge.model.reservation.ReservationRepository;
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserAgreementRepository;
-import kr.co.moneybridge.model.user.UserBookmarkRepository;
-import kr.co.moneybridge.model.user.UserRepository;
+import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -65,6 +62,24 @@ public class UserService {
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final UserBookmarkRepository userBookmarkRepository;
     private final PBRepository pbRepository;
+
+    private final UserInvestInfoRepository userInvestInfoRepository;
+    @MyLog
+    @Transactional
+    public void testPropensity(UserRequest.TestPropensityInDTO testPropensityInDTO, Long id) {
+        User userPS = userRepository.findById(id).orElseThrow(
+                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
+        Optional<UserInvestInfo> userInvestInfoPS = userInvestInfoRepository.findByUserId(id);
+        if(userInvestInfoPS.isPresent()){
+            throw new Exception500("이미 투자 성향 테스트 정보가 있습니다");
+        }
+        try{
+            UserInvestInfo userInvestInfo = userInvestInfoRepository.save(testPropensityInDTO.toEntity(userPS));
+            userPS.updatePropensity(userInvestInfo.getPropensity());
+        }catch (Exception e){
+            throw new Exception500("투자 성향 테스트 결과 저장 실패 : " + e.getMessage());
+        }
+    }
 
     @MyLog
     public UserResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {

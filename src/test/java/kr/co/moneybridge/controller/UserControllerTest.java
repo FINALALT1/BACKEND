@@ -77,6 +77,32 @@ public class UserControllerTest {
         em.clear();
     }
 
+    @DisplayName("투자자 성향 체크 성공")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void testPropensity_test() throws Exception {
+        // given
+        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
+        testPropensityInDTO.setQ1(5);
+        testPropensityInDTO.setQ2(4);
+        testPropensityInDTO.setQ3(5);
+        testPropensityInDTO.setQ4(5);
+        testPropensityInDTO.setQ5(5);
+        testPropensityInDTO.setQ6(5);
+        String requestBody = om.writeValueAsString(testPropensityInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/user/propensity").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").doesNotExist());
+    }
+
     @DisplayName("투자자 마이페이지 가져오기 성공")
     @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test

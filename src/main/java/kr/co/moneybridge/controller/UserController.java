@@ -34,6 +34,15 @@ public class UserController {
     private final UserService userService;
 
     @MyLog
+    @SwaggerResponses.TestPropensity
+    @PostMapping("/user/propensity")
+    public ResponseDTO testPropensity(@RequestBody @Valid UserRequest.TestPropensityInDTO testPropensityInDTO,
+                                            Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        userService.testPropensity(testPropensityInDTO, myUserDetails.getMember().getId());
+        return new ResponseDTO<>();
+    }
+
+    @MyLog
     @SwaggerResponses.GetMyPageUser
     @GetMapping("/user/mypage")
     public ResponseDTO<UserResponse.MyPageOutDTO> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
