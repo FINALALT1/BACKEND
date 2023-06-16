@@ -90,7 +90,7 @@ public class MySecurityConfig {
         // 11. 인증, 권한 필터 설정
         http.authorizeRequests(
                 authorize -> authorize.antMatchers("/auth/**").authenticated()
-                        .antMatchers("/user/**").hasRole("USER")
+                        .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .antMatchers("/pb/**").hasRole("PB")
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()

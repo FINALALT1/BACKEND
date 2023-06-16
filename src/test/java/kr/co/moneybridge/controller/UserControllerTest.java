@@ -70,8 +70,40 @@ public class UserControllerTest {
                 .phoneNumber("01012345678")
                 .role(Role.ADMIN)
                 .profile("프로필.png")
+                .hasDoneReview(false)
+                .hasDoneBoardBookmark(false)
+                .hasDoneReservation(false)
                 .build());
         em.clear();
+    }
+
+    @DisplayName("투자자 마이페이지 가져오기 성공")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void getMyPage_test() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/user/mypage"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.id").value("2"));
+        resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
+        resultActions.andExpect(jsonPath("$.data.propensity").doesNotExist());
+        resultActions.andExpect(jsonPath("$.data.step.hasDonePropensity").value(false));
+        resultActions.andExpect(jsonPath("$.data.step.hasDoneBoardBookmark").value(false));
+        resultActions.andExpect(jsonPath("$.data.step.hasDoneReservation").value(false));
+        resultActions.andExpect(jsonPath("$.data.step.hasDoneReview").value(false));
+        resultActions.andExpect(jsonPath("$.data.reservationCount.apply").value(0));
+        resultActions.andExpect(jsonPath("$.data.reservationCount.confirm").value(0));
+        resultActions.andExpect(jsonPath("$.data.reservationCount.complete").value(0));
+        resultActions.andExpect(jsonPath("$.data.boardBookmark.list").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.boardBookmark.count").value(0));
+        resultActions.andExpect(jsonPath("$.data.pbBookmark.list").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.pbBookmark.count").value(0));
     }
 
     @DisplayName("개인 정보 수정 성공")

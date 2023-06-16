@@ -67,7 +67,7 @@ public class UserService {
     private final PBRepository pbRepository;
 
     @MyLog
-    public UserResponse.MyPageUserOutDTO getMyPageUser(MyUserDetails myUserDetails) {
+    public UserResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {
         User user = (User) myUserDetails.getMember();
         UserResponse.StepDTO step = new UserResponse.StepDTO(user);
         UserResponse.ReservationCountsDTO reservationCount = new UserResponse.ReservationCountsDTO(
@@ -76,14 +76,14 @@ public class UserService {
                 reservationRepository.countByProcess(ReservationProcess.COMPLETE));
 
         Pageable topTwo = PageRequest.of(0, 2);
-        Page<UserResponse.BookmarkDTO> boardBookmarkTwo = boardRepository.findTwoByBookMarker(BookmarkerRole.USER, user.getId(), topTwo);
-        Page<UserResponse.BookmarkDTO> pbBookmarkTwo = pbRepository.findTwoByBookMarker(user.getId(), topTwo);
+        Page<UserResponse.BookmarkDTO> boardBookmarkTwo = boardRepository.findTwoByBookmarker(BookmarkerRole.USER, user.getId(), topTwo);
+        Page<UserResponse.BookmarkDTO> pbBookmarkTwo = pbRepository.findTwoByBookmarker(user.getId(), topTwo);
 
         UserResponse.BookmarkListDTO boardBookmark = new UserResponse.BookmarkListDTO(
-                boardBookmarkTwo.getContent(), boardBookmarkRepository.countByBookMarker(BookmarkerRole.USER, user.getId()));
+                boardBookmarkTwo.getContent(), boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, user.getId()));
         UserResponse.BookmarkListDTO pbBookmark = new UserResponse.BookmarkListDTO(
                 pbBookmarkTwo.getContent(), userBookmarkRepository.countByUserId(user.getId()));
-        return new UserResponse.MyPageUserOutDTO(user, step, reservationCount, boardBookmark, pbBookmark);
+        return new UserResponse.MyPageOutDTO(user, step, reservationCount, boardBookmark, pbBookmark);
     }
 
     @MyLog

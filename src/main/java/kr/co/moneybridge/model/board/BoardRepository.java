@@ -18,7 +18,7 @@ import java.util.Optional;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT new kr.co.moneybridge.dto.user.UserResponse$BookmarkDTO(b) FROM Board b " +
             "JOIN BoardBookmark bb ON bb.board = b WHERE bb.bookmarkerRole = :role AND bb.bookmarkerId = :id")
-    Page<UserResponse.BookmarkDTO> findTwoByBookMarker(@Param("role") BookmarkerRole role, @Param("id") Long id, Pageable pageable);
+    Page<UserResponse.BookmarkDTO> findTwoByBookmarker(@Param("role") BookmarkerRole role, @Param("id") Long id, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) " +
             "FROM Board b " +

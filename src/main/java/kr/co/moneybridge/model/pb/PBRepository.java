@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PBRepository extends JpaRepository<PB, Long> {
-    @Query("SELECT new kr.co.moneybridge.dto.user.UserResponse$BookmarkDTO(pb) FROM PB pb " +
-            "JOIN UserBookmark ub ON ub.pb = pb WHERE ub.user.id = :userId")
-    Page<UserResponse.BookmarkDTO> findTwoByBookMarker(@Param("userId") Long userId, Pageable pageable);
+    @Query("select new kr.co.moneybridge.dto.user.UserResponse$BookmarkDTO(pb) from PB pb " +
+            "join UserBookmark ub on ub.pb = pb where ub.user.id = :userId")
+    Page<UserResponse.BookmarkDTO> findTwoByBookmarker(@Param("userId") Long userId, Pageable pageable);
 
     @Query("select p from PB p where p.email = :email")
     Optional<PB> findByEmail(@Param("email") String email);

@@ -177,7 +177,7 @@ public class UserRequest {
                     .profile("profile.png")
                     .hasDoneReview(false)
                     .hasDoneReservation(false)
-                    .hasDoneBoardBookMark(false)
+                    .hasDoneBoardBookmark(false)
                     .build();
         }
     }

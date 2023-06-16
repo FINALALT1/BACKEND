@@ -26,7 +26,7 @@ public class DummyEntity {
                 .profile("프로필.png")
                 .hasDoneReview(false)
                 .hasDoneReservation(false)
-                .hasDoneBoardBookMark(false)
+                .hasDoneBoardBookmark(false)
                 .build();
     }
 
@@ -41,7 +41,7 @@ public class DummyEntity {
                 .profile("프로필.png")
                 .hasDoneReview(false)
                 .hasDoneReservation(false)
-                .hasDoneBoardBookMark(false)
+                .hasDoneBoardBookmark(false)
                 .build();
     }
 
@@ -57,7 +57,7 @@ public class DummyEntity {
                 .profile("프로필.png")
                 .hasDoneReview(false)
                 .hasDoneReservation(false)
-                .hasDoneBoardBookMark(false)
+                .hasDoneBoardBookmark(false)
                 .build();
     }
 

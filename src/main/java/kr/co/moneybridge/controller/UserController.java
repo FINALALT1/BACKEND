@@ -35,7 +35,7 @@ public class UserController {
 
     @GetMapping("/user/mypage")
     public ResponseEntity<?> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
-        UserResponse.MyPageUserOutDTO myPageUserOutDTO = userService.getMyPageUser(myUserDetails);
+        UserResponse.MyPageOutDTO myPageUserOutDTO = userService.getMyPage(myUserDetails);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(myPageUserOutDTO);
         return ResponseEntity.ok().body(responseDTO);
     }

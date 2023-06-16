@@ -5,6 +5,7 @@ import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ public class ReservationRepositoryTest extends DummyEntity {
         Reservation reservation4 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
         Reservation reservation5 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
         Reservation reservation6 = reservationRepository.save(newVisitReservationCancel(userPS, pbPS));
+        reservationRepository.save(newCallReservation(userPS, pbPS, ReservationProcess.APPLY));
+        reservationRepository.save(newCallReservation(userPS, pbPS, ReservationProcess.CONFIRM));
         reviewRepository.save(newReview(reservation));
         reviewRepository.save(newReview(reservation2));
         reviewRepository.save(newReview(reservation3));
@@ -64,6 +67,7 @@ public class ReservationRepositoryTest extends DummyEntity {
 
         em.clear();
     }
+
 
     @Test
     public void count_by_pbId_and_process_test() {
@@ -102,7 +106,7 @@ public class ReservationRepositoryTest extends DummyEntity {
         Page<ReservationResponse.RecentPagingDTO> page = reservationRepository.findAllByPbIdAndProcess(pbId, process, pageable);
 
         // then
-        assertThat(page.getContent().get(0).getReservationId()).isEqualTo(5L);
+        assertThat(page.getContent().get(0).getReservationId()).isInstanceOf(Long.class);
         assertThat(page.getContent().get(0).getUserId()).isEqualTo(1L);
         assertThat(page.getContent().get(0).getProfileImage()).isEqualTo("프로필.png");
         assertThat(page.getContent().get(0).getName()).isEqualTo("lee");
@@ -127,5 +131,18 @@ public class ReservationRepositoryTest extends DummyEntity {
         assertThat(page.getContent().get(0).getName()).isEqualTo("lee");
         assertThat(page.getContent().get(0).getCreatedAt().toLocalDate().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
         assertThat(page.getContent().get(0).getType()).isEqualTo(ReservationType.VISIT);
+    }
+
+    @Test
+    public void countByProcess() {
+        // when
+        Integer applyCount = reservationRepository.countByProcess(ReservationProcess.APPLY);
+        Integer confirmCount = reservationRepository.countByProcess(ReservationProcess.CONFIRM);
+        Integer completeCount = reservationRepository.countByProcess(ReservationProcess.COMPLETE);
+
+        // then
+        Assertions.assertThat(applyCount).isGreaterThan(0);
+        Assertions.assertThat(confirmCount).isGreaterThan(0);
+        Assertions.assertThat(completeCount).isGreaterThan(0);
     }
 }

@@ -60,13 +60,13 @@ public class UserResponse {
     @Getter
     public static class StepDTO {
         private Boolean hasDonePropensity;
-        private Boolean hasDoneBoardBookMark;
+        private Boolean hasDoneBoardBookmark;
         private Boolean hasDoneReservation;
         private Boolean hasDoneReview;
 
         public StepDTO(User user) {
             this.hasDonePropensity = user.getPropensity() == null ? false : true;
-            this.hasDoneBoardBookMark = user.getHasDoneBoardBookMark();
+            this.hasDoneBoardBookmark = user.getHasDoneBoardBookmark();
             this.hasDoneReservation = user.getHasDoneReservation();
             this.hasDoneReview = user.getHasDoneReview();
         }
@@ -74,7 +74,7 @@ public class UserResponse {
 
     @Setter
     @Getter
-    public static class MyPageUserOutDTO {
+    public static class MyPageOutDTO {
         private Long id;
         private String name;
         private UserPropensity propensity;
@@ -83,7 +83,7 @@ public class UserResponse {
         private BookmarkListDTO boardBookmark;
         private BookmarkListDTO pbBookmark;
 
-        public MyPageUserOutDTO(User user, StepDTO step,ReservationCountsDTO reservationCount,
+        public MyPageOutDTO(User user, StepDTO step,ReservationCountsDTO reservationCount,
                                 BookmarkListDTO boardBookmark, BookmarkListDTO pbBookmark) {
             this.id = user.getId();
             this.name = user.getName();

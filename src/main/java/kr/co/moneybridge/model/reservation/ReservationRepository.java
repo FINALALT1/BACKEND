@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    @Query(value = "SELECT COUNT(r) FROM Reservation r WHERE r.process = :process")
+    @Query(value = "select count(r) from Reservation r where r.process = :process")
     Integer countByProcess(@Param("process") ReservationProcess process);
 
     @Modifying

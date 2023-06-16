@@ -23,7 +23,7 @@ public class WithMockUserFactory implements WithSecurityContextFactory<WithMockU
                 .phoneNumber("01012345678")
                 .role(mockUser.role())
                 .profile("profile.png")
-                .hasDoneBoardBookMark(false)
+                .hasDoneBoardBookmark(false)
                 .hasDoneReservation(false)
                 .hasDoneReview(false)
                 .createdAt(LocalDateTime.now())
