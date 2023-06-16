@@ -16,7 +16,7 @@ public class ValidNumbersValidator implements ConstraintValidator<ValidNumbers, 
 
     @Override
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
-        return value != null && validNumbers.contains(value);
+        return value == null || validNumbers.contains(value);
     }
 }
 

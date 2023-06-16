@@ -33,6 +33,17 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    // 투자 성향 변경
+    @MyLog
+    @SwaggerResponses.UpdatePropensity
+    @PatchMapping("/user/propensity")
+    public ResponseDTO updatePropensity(@RequestBody @Valid UserRequest.UpdatePropensityInDTO updatePropensityInDTO,
+                                              Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        userService.updatePropensity(updatePropensityInDTO, myUserDetails.getMember().getId());
+        return  new ResponseDTO<>();
+    }
+
+    // 투자 성향 테스트
     @MyLog
     @SwaggerResponses.TestPropensity
     @PostMapping("/user/propensity")
@@ -42,6 +53,7 @@ public class UserController {
         return new ResponseDTO<>();
     }
 
+    // 투자자 마이페이지 가져오기
     @MyLog
     @SwaggerResponses.GetMyPageUser
     @GetMapping("/user/mypage")
@@ -50,6 +62,7 @@ public class UserController {
         return new ResponseDTO<>(myPageOutDTO);
     }
 
+    // 개인정보 수정 (투자자  + PB)
     @MyLog
     @SwaggerResponses.UpdateMyInfo
     @PatchMapping("/auth/myinfo")
@@ -59,6 +72,7 @@ public class UserController {
         return new ResponseDTO<>();
     }
 
+    // 개인정보 가져오기 (투자자  + PB)
     @MyLog
     @SwaggerResponses.GetMyInfo
     @GetMapping("/auth/myinfo")
@@ -67,6 +81,7 @@ public class UserController {
         return new ResponseDTO<>(myInfoOutDTO);
     }
 
+    // 비밀번호 확인하기
     @MyLog
     @SwaggerResponses.CheckPassword
     @PostMapping("/auth/password")
@@ -76,6 +91,7 @@ public class UserController {
         return new ResponseDTO<>();
     }
 
+    // 비밀번호 찾기
     @MyLog
     @SwaggerResponses.UpdatePassword
     @PatchMapping("/password")
@@ -84,6 +100,7 @@ public class UserController {
         return new ResponseDTO<>();
     }
 
+    // 이메일 찾기
     @MyLog
     @SwaggerResponses.FindEmail
     @PostMapping("/email")
@@ -101,6 +118,7 @@ public class UserController {
         return new ResponseDTO<>(passwordOutDTO);
     }
 
+    // 이메일 인증
     @MyLog
     @SwaggerResponses.Email
     @PostMapping("/email/authentication")
@@ -109,6 +127,7 @@ public class UserController {
         return new ResponseDTO<>(emailOutDTO);
     }
 
+    // 탈퇴하기
     @MyLog
     @SwaggerResponses.Withdraw
     @DeleteMapping("/auth/account")
@@ -118,6 +137,7 @@ public class UserController {
         return new ResponseDTO<>();
     }
 
+    // 투자자 회원가입
     @MyLog
     @SwaggerResponses.JoinUser
     @PostMapping("/join/user")
@@ -133,7 +153,7 @@ public class UserController {
                 .body(responseDTO);
     }
 
-    // 로그인 성공시 access 토큰과 refresh 토큰 둘 다 발급.
+    // 로그인 (성공시 access 토큰과 refresh 토큰 둘 다 발급)
     @MyLog
     @SwaggerResponses.Login
     @PostMapping("/login")
@@ -149,7 +169,7 @@ public class UserController {
                 .body(responseDTO);
     }
 
-    // AccessToken, RefreshToken 재발급을 위한 API
+    // AccessToken, RefreshToken 재발급
     @MyLog
     @SwaggerResponses.Reissue
     @PostMapping("/reissue")
@@ -162,6 +182,7 @@ public class UserController {
                 .body(responseDTO);
     }
 
+    // 로그아웃
     @MyLog
     @SwaggerResponses.Logout
     @PostMapping("/auth/logout")

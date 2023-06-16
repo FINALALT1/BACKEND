@@ -41,7 +41,6 @@ public class DataInit extends DummyEntity{
         return args -> {
             User user1 = userRepository.save(newUser("김투자"));
             User user2 = userRepository.save(newUser("이투자"));
-            User user3 = userRepository.save(newUserStatusFalse("윤투자"));
 
             userAgreementRepository.save(newUserAgreement(user1, UserAgreementType.REQUIRED));
             userAgreementRepository.save(newUserAgreement(user1, UserAgreementType.OPTIONAL));

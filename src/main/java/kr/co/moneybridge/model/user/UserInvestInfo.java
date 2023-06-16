@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.user;
 
+import kr.co.moneybridge.dto.user.UserRequest;
 import lombok.*;
 
 import javax.persistence.*;
@@ -60,5 +61,26 @@ public class UserInvestInfo {
                         score >= 18 ? UserPropensity.BALANCED :
                                 score >= 14 ? UserPropensity.CAUTIOUS :
                                         UserPropensity.CONSERVATIVE;
+    }
+
+    public void update(UserRequest.UpdatePropensityInDTO updatePropensityInDTO){
+        if(updatePropensityInDTO.getQ1() != null){
+            this.q1 = updatePropensityInDTO.getQ1();
+        }
+        if(updatePropensityInDTO.getQ2() != null){
+            this.q2 = updatePropensityInDTO.getQ2();
+        }
+        if(updatePropensityInDTO.getQ3() != null){
+            this.q3 = updatePropensityInDTO.getQ3();
+        }
+        if(updatePropensityInDTO.getQ4() != null){
+            this.q4 = updatePropensityInDTO.getQ4();
+        }
+        if(updatePropensityInDTO.getQ5() != null){
+            this.q5 = updatePropensityInDTO.getQ5();
+        }
+        if(updatePropensityInDTO.getQ6() != null){
+            this.q6 = updatePropensityInDTO.getQ6();
+        }
     }
 }

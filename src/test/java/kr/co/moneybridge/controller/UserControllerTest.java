@@ -7,6 +7,7 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.*;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,8 @@ public class UserControllerTest {
     private CompanyRepository companyRepository;
     @Autowired
     private BranchRepository branchRepository;
+    @Autowired
+    private UserInvestInfoRepository userInvestInfoRepository;
 
     @BeforeEach
     public void setUp() {
@@ -74,7 +77,33 @@ public class UserControllerTest {
                 .hasDoneBoardBookmark(false)
                 .hasDoneReservation(false)
                 .build());
+        User user3 = userRepository.save(dummy.newUserWithPropensity("김성향"));
+        UserInvestInfo userInvestInfo = userInvestInfoRepository.save(dummy.newUserInvestInfo(user3));
         em.clear();
+    }
+
+    @DisplayName("투자자 성향 변경 성공")
+    @WithUserDetails(value = "USER-김성향@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void updatePropensity_test() throws Exception {
+        // given
+        UserRequest.UpdatePropensityInDTO updatePropensityInDTO = new UserRequest.UpdatePropensityInDTO();
+        updatePropensityInDTO.setQ1(2);
+        updatePropensityInDTO.setQ6(1);
+        String requestBody = om.writeValueAsString(updatePropensityInDTO);
+
+        System.out.println(updatePropensityInDTO.getQ2());
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(patch("/user/propensity").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").doesNotExist());
     }
 
     @DisplayName("투자자 성향 체크 성공")

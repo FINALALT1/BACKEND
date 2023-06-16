@@ -96,6 +96,27 @@ public class UserServiceTest extends MockDummyEntity {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Test
+    public void updatePropensity_test() {
+        // given
+        UserRequest.UpdatePropensityInDTO updatePropensityInDTO = new UserRequest.UpdatePropensityInDTO();
+        updatePropensityInDTO.setQ1(2);
+        updatePropensityInDTO.setQ6(1);
+        Long id = 1L;
+
+        User user = newMockUser(id, "lee");
+        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userInvestInfoRepository.findByUserId(any())).thenReturn(Optional.of(userInvestInfo));
+
+        // when
+        userService.updatePropensity(updatePropensityInDTO, id);
+
+        // then
+        verify(userRepository, times(1)).findById(any());
+        verify(userInvestInfoRepository, times(1)).findByUserId(any());
+    }
+
+    @Test
     public void testPropensity_test() {
         // given
         UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
