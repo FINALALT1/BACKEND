@@ -85,22 +85,36 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "PB 리스트 응답 데이터")
     @Getter
     @Setter
     public static class PBPageDTO {
 
+        @ApiModelProperty(example = "1", value = "PB의 id")
         private Long id;
+        @ApiModelProperty(example = "profile.png", value = "PB의 프로필사진")
         private String profile;
+        @ApiModelProperty(example = "김피비", value = "PB의 이름")
         private String name;
+        @ApiModelProperty(example = "미래에셋", value = "PB의 회사명")
         private String companyName;
+        @ApiModelProperty(example = "여의도점", value = "PB의 지점명")
         private String branchName;
+        @ApiModelProperty(example = "주식전문가 김피비입니다", value = "한줄메세지")
         private String msg;
+        @ApiModelProperty(example = "ETF", value = "PB의 전문분야1")
         private PBSpeciality speciality1;
+        @ApiModelProperty(example = "BOND", value = "PB의 전문분야2")
         private PBSpeciality speciality2;
+        @ApiModelProperty(example = "5", value = "PB의 경력")
         private int career;
+        @ApiModelProperty(example = "11", value = "PB 예약건수")
         private int reserveCount;
+        @ApiModelProperty(example = "6", value = "PB 후기건수")
         private int reviewCount;
+        @ApiModelProperty(example = "127.0000", value = "지점 latitude")
         private Double branchLat;
+        @ApiModelProperty(example = "84.1111", value = "지점 longitude")
         private Double branchLon;
 
         public PBPageDTO(PB pb, Branch branch, Company company) {

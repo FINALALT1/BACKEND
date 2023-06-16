@@ -115,33 +115,37 @@ public class PBController {
     @ApiOperation("북마크한 PB 목록 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/user/bookmarks/pb")
-    public ResponseEntity<?> getBookmarkPBs(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getBookmarkPBs(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<PBResponse.PBPageDTO> pageDTO = pbService.getBookmarkPBs(myUserDetails, pageable);
-        ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
 
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(pageDTO);
     }
 
     @ApiOperation("PB 검색하기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "name", value = "김피비", dataType = "String", paramType = "query")})
     @GetMapping("/pbs")
-    public ResponseEntity<?> getPBWithName(@RequestParam(value = "name") String name) {
+    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getPBWithName(@RequestParam(value = "name") String name) {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<PBResponse.PBPageDTO> pageDTO = pbService.getPBWithName(name, pageable);
-        ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
 
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(pageDTO);
     }
 
+    @ApiOperation("PB 리스트 가져오기(거리순)")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "latitude", value = "127.0000", dataType = "Double", paramType = "query", required = true),
+                        @ApiImplicitParam(name = "longitude", value = "81.1111", dataType = "Double", paramType = "query", required = true),
+                        @ApiImplicitParam(name = "speciality", value = "ETF", dataType = "String", paramType = "query"),
+                        @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query")})
     @GetMapping("/list/pb/distance")
-    public ResponseEntity<?> getDistancePBList(@RequestParam(value = "latitude") Double latitude,
-                                               @RequestParam(value = "longitude") Double longitude,
-                                               @RequestParam(value = "speciality", required = false) PBSpeciality speciality,
-                                               @RequestParam(value = "company", required = false) Long company) {
+    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getDistancePBList(@RequestParam(value = "latitude") Double latitude,
+                                                                        @RequestParam(value = "longitude") Double longitude,
+                                                                        @RequestParam(value = "speciality", required = false) PBSpeciality speciality,
+                                                                        @RequestParam(value = "company", required = false) Long company) {
 
         Pageable pageable = PageRequest.of(0, 10);
         PageDTO<PBResponse.PBPageDTO> pageDTO;
@@ -156,13 +160,15 @@ public class PBController {
             pageDTO = pbService.getPBWithDistance(latitude, longitude, pageable);
         }
 
-        ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
-
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(pageDTO);
     }
 
+    @ApiOperation("PB 리스트 가져오기(경력순)")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "speciality", value = "ETF", dataType = "String", paramType = "query"),
+                        @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query")})
     @GetMapping("/list/pb/career")
-    public ResponseEntity<?> getCareerPBList(@RequestParam(value = "speciality", required = false) PBSpeciality speciality,
+    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getCareerPBList(@RequestParam(value = "speciality", required = false) PBSpeciality speciality,
                                              @RequestParam(value = "company", required = false) Long company) {
 
         Pageable pageable = PageRequest.of(0, 10);
@@ -178,19 +184,17 @@ public class PBController {
             pageDTO = pbService.getPBWithCareer(pageable);
         }
 
-        ResponseDTO<PageDTO<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
-
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(pageDTO);
     }
 
+    @ApiOperation("맞춤성향 PB 리스트")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/user/list/pb")
-    public ResponseEntity<?> getRecommendedPBList(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<PageDTOV2<PBResponse.PBPageDTO>> getRecommendedPBList(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTOV2<PBResponse.PBPageDTO> pageDTO = pbService.getRecommendedPBList(myUserDetails, pageable);
 
-        ResponseDTO<PageDTOV2<PBResponse.PBPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
-
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(pageDTO);
     }
 }
