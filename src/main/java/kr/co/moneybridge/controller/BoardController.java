@@ -46,7 +46,7 @@ public class BoardController {
     })
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/lounge/boards")
-    public ResponseEntity<?> getBoardsWithTitle(@RequestParam(value = "title", required = false) String title,
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsWithTitle(@RequestParam(value = "title", required = false) String title,
                                                 @RequestParam(value = "name", required = false) String name) {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
@@ -60,79 +60,78 @@ public class BoardController {
             throw new Exception404("요청오류");
         }
 
-        ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(pageDTO);
     }
 
     @ApiOperation("최신 컨텐츠순 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/boards")
-    public ResponseEntity<?> getBoardsByNew() {
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsByNew() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getBoardWithNew(pageable);
-        ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
-        return ResponseEntity.ok(responseDTO);
+
+        return new ResponseDTO<>(pageDTO);
     }
 
     @ApiOperation("조회수 높은 컨텐츠순 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/boards/hot")
-    public ResponseEntity<?> getBoardsByHot() {
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsByHot() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "clickCount"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getBoardWithHot(pageable);
-        ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
-        return ResponseEntity.ok(responseDTO);
+
+        return new ResponseDTO<>(pageDTO);
     }
 
     @ApiOperation("최신 컨텐츠 2개 + 조회수 높은 컨텐츠 2개")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/lounge/board")
-    public ResponseEntity<?> getNewHotBoards() {
+    public ResponseDTO<BoardResponse.BoardListOutDTO> getNewHotBoards() {
         List<BoardResponse.BoardPageDTO> boardList = boardService.getNewHotContents();
         BoardResponse.BoardListOutDTO boardListOutDTO = new BoardResponse.BoardListOutDTO(boardList);
-        ResponseDTO<BoardResponse.BoardListOutDTO> responseDTO = new ResponseDTO<>(boardListOutDTO);
-        return ResponseEntity.ok(responseDTO);
+
+        return new ResponseDTO<>(boardListOutDTO);
     }
 
     @ApiOperation("컨텐츠 상세 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @GetMapping("/board/{id}")
-    public ResponseEntity<?> getBoardDetail(@PathVariable Long id) {
+    public ResponseDTO<BoardResponse.BoardDetailDTO> getBoardDetail(@PathVariable Long id) {
 
         BoardResponse.BoardDetailDTO boardDetailDTO = boardService.getBoardDetail(id);
-        ResponseDTO<BoardResponse.BoardDetailDTO> responseDTO = new ResponseDTO<>(boardDetailDTO);
-        return ResponseEntity.ok(responseDTO);
+
+        return new ResponseDTO<>(boardDetailDTO);
     }
 
     @ApiOperation("컨텐츠 북마크하기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PostMapping("/auth/bookmark/board/{id}")
-    public ResponseEntity<?> addBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO addBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         boardService.bookmarkBoard(id, myUserDetails);
 
-        return ResponseEntity.ok(new ResponseDTO<>());
+        return new ResponseDTO<>();
     }
 
     @ApiOperation("컨텐츠 북마크 삭제하기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @DeleteMapping("/auth/bookmark/board/{id}")
-    public ResponseEntity<?> deleteBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO deleteBoardBookmark(@PathVariable Long id, @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         Long memberId = myUserDetails.getMember().getId();
         boardService.deleteBookmarkBoard(id, memberId);
 
-        return ResponseEntity.ok(new ResponseDTO<>());
+        return new ResponseDTO<>();
     }
 
     @ApiOperation("컨텐츠 댓글달기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PostMapping("/auth/board/{id}/reply")
-    public ResponseEntity<?> postReply(@PathVariable Long id,
+    public ResponseDTO postReply(@PathVariable Long id,
                                        @AuthenticationPrincipal MyUserDetails myUserDetails,
                                        @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
 
@@ -144,24 +143,24 @@ public class BoardController {
             replyService.postPbReply(replyInDTO, pb.getId(), id);
         }
 
-        return ResponseEntity.ok(new ResponseDTO<>());
+        return new ResponseDTO<>();
     }
 
     @ApiOperation("대댓글달기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PostMapping("/auth/board/{id}/rereply")
-    public ResponseEntity<?> postReReply(@PathVariable Long id, @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
+    public ResponseDTO postReReply(@PathVariable Long id, @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
 
         replyService.postReReply(id, reReplyInDTO);
 
-        return ResponseEntity.ok(new ResponseDTO<>());
+        return new ResponseDTO<>();
     }
 
     @ApiOperation("컨텐츠 등록하기")
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/board")
-    public ResponseEntity<?> saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
+    public ResponseDTO saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         if (boardInDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
@@ -170,42 +169,39 @@ public class BoardController {
         if (boardInDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
 
         Long id = boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE);
-        ResponseDTO<Long> responseDTO = new ResponseDTO<>(id);
 
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(id);
     }
 
     @ApiOperation("컨텐츠 임시저장하기")
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/board/temp")
-    public ResponseEntity<?> saveTempBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
+    public ResponseDTO saveTempBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
                                            @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.TEMP);
 
-        return ResponseEntity.ok(new ResponseDTO<>());
+        return new ResponseDTO<>();
     }
 
     @ApiOperation("임시저장 컨텐츠 목록 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/pb/boards/temp")
-    public ResponseEntity<?> getTempBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<List<BoardResponse.BoardTempDTO>> getTempBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         List<BoardResponse.BoardTempDTO> tempBoards = boardService.getTempBoards(myUserDetails);
-        ResponseDTO<List<BoardResponse.BoardTempDTO>> responseDTO = new ResponseDTO<>(tempBoards);
 
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(tempBoards);
     }
     @ApiOperation("임시저장 컨텐츠 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @GetMapping("/pb/board/{id}")
-    public ResponseEntity<?> getTempBoard(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
+    public ResponseDTO<BoardResponse.BoardOutDTO> getTempBoard(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
 
         BoardResponse.BoardOutDTO boardOutDTO = boardService.getBoard(myUserDetails, id);
-        ResponseDTO<BoardResponse.BoardOutDTO> responseDTO = new ResponseDTO<>(boardOutDTO);
 
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(boardOutDTO);
 
     }
 
@@ -213,35 +209,34 @@ public class BoardController {
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PutMapping("/pb/board/{id}")
-    public ResponseEntity<?> putBoard(@AuthenticationPrincipal MyUserDetails myUserDetails,
+    public ResponseDTO putBoard(@AuthenticationPrincipal MyUserDetails myUserDetails,
                                       @RequestBody BoardRequest.BoardInDTO boardInDTO,
                                       @PathVariable Long id) {
 
         boardService.putBoard(myUserDetails, boardInDTO, id);
 
-        return ResponseEntity.ok(new ResponseDTO<>());
+        return new ResponseDTO<>();
     }
 
     @ApiOperation("컨텐츠 삭제하기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @DeleteMapping("/pb/board/{id}")
-    public ResponseEntity<?> deleteBoard(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
+    public ResponseDTO deleteBoard(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
 
         boardService.deleteBoard(myUserDetails, id);
 
-        return ResponseEntity.ok(new ResponseDTO<>());
+        return new ResponseDTO<>();
     }
 
     @ApiOperation("북마크한 컨텐츠 목록 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/auth/bookmarks/boards")
-    public ResponseEntity<?> getBookmarkBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBookmarkBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getBookmarkBoards(myUserDetails, pageable);
-        ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> responseDTO = new ResponseDTO<>(pageDTO);
 
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(pageDTO);
     }
 }
