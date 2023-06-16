@@ -31,8 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("PB 관련 API")
@@ -62,6 +61,45 @@ public class PBControllerTest {
         Company company1 = companyRepository.save(dummy.newCompany("미래에셋증권"));
         Branch branch1 = branchRepository.save(dummy.newBranch(company1, 0));
         em.clear();
+    }
+
+    @DisplayName("증권사 리스트 가져오기 - 로고포함")
+    @Test
+    public void getCompanies_not_including_logos_test() throws Exception {
+        //given
+        Boolean param = false;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/companies?includeLogo="+param));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].logo").doesNotExist());
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("미래에셋증권"));
+        resultActions.andExpect(status().isOk());
+    }
+
+    @DisplayName("증권사 리스트 가져오기 - 로고포함")
+    @Test
+    public void getCompanies_including_logos_test() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/companies"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].logo").value("logo.png"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("미래에셋증권"));
+        resultActions.andExpect(status().isOk());
     }
 
     @DisplayName("PB 회원가입 성공")

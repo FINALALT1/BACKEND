@@ -50,7 +50,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
     private UserInvestInfoRepository userInvestInfoRepository;
 
     @Mock
-    private PBBookmarkRepository pbBookmarkRepository;
+    private UserBookmarkRepository userBookmarkRepository;
 
     @Mock
     private BoardBookmarkRepository boardBookmarkRepository;
@@ -242,8 +242,8 @@ public class MyMemberUtilTest extends MockDummyEntity {
         verify(userRepository, times(1)).deleteById(id);
         verify(userAgreementRepository, times(1)).deleteByUserId(id);
         verify(userInvestInfoRepository, times(1)).deleteByUserId(id);
-        verify(pbBookmarkRepository, times(1)).deleteByUserId(id);
-//        verify(boardBookmarkRepository, times(1)).deleteByUserId(id);
+        verify(userBookmarkRepository, times(1)).deleteByUserId(id);
+        verify(boardBookmarkRepository, times(1)).deleteByBookmarker(id, BookmarkerRole.USER);
         verify(answerRepository, times(1)).deleteByQuestionId(question1.getId());
         verify(answerRepository, times(1)).deleteByQuestionId(question2.getId());
         verify(questionRepository, times(1)).deleteByAuthor(id, QuestionAuthorRole.USER);
@@ -330,7 +330,8 @@ public class MyMemberUtilTest extends MockDummyEntity {
         verify(pbAgreementRepository, times(1)).deleteByPBId(id);
         verify(awardRepository, times(1)).deleteByPBId(id);
         verify(careerRepository, times(1)).deleteByPBId(id);
-        verify(pbBookmarkRepository, times(1)).deleteByPBId(id);
+        verify(userBookmarkRepository, times(1)).deleteByPBId(id);
+        verify(boardBookmarkRepository, times(1)).deleteByBookmarker(id, BookmarkerRole.PB);
         verify(boardRepository, times(1)).deleteByPBId(id);
         verify(boardRepository, times(1)).deleteByPBId(id);
         verify(boardBookmarkRepository, times(1)).deleteByBoardId(board1.getId());

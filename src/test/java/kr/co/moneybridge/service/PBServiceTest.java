@@ -43,6 +43,8 @@ class PBServiceTest extends MockDummyEntity {
     @Mock
     UserRepository userRepository;
     @Mock
+    CompanyRepository companyRepository;
+    @Mock
     PB pb;
     @Mock
     Branch branch;
@@ -57,6 +59,47 @@ class PBServiceTest extends MockDummyEntity {
 
     @Test
     void getBookmarkPBs() {
+    }
+
+    @Test
+    @DisplayName("증권사 리스트 이름만 가져오기")
+    void getCompanyNames() {
+        //given
+        List<Company> companies = Arrays.asList(
+                newMockCompany(1L, "미래에셋증권"),
+                newMockCompany(2L, "키움증권")
+        );
+
+        //stub
+        when(companyRepository.findAll()).thenReturn(companies);
+
+        //when
+        PBResponse.CompanyNameOutDTO companyNameOutDTO = pbService.getCompanyNames();
+
+        //then
+        assertThat(companyNameOutDTO.getList().size()).isEqualTo(companies.size());
+        Mockito.verify(companyRepository, Mockito.times(1)).findAll();
+    }
+
+    @Test
+    @DisplayName("증권사 리스트 가져오기")
+    void getCompanies() {
+        //given
+        List<Company> companies = Arrays.asList(
+                newMockCompany(1L, "미래에셋증권"),
+                newMockCompany(2L, "키움증권")
+        );
+
+        //stub
+        when(companyRepository.findAll()).thenReturn(companies);
+
+        //when
+        PBResponse.CompanyOutDTO companyOutDTO = pbService.getCompanies();
+
+        //then
+        assertThat(companyOutDTO.getList().size()).isEqualTo(companies.size());
+        assertThat(companyOutDTO.getList().get(0).getLogo()).isEqualTo("logo.png");
+        Mockito.verify(companyRepository, Mockito.times(1)).findAll();
     }
 
     @Test

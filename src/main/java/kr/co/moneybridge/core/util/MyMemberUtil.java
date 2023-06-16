@@ -31,7 +31,6 @@ public class MyMemberUtil {
     private final UserRepository userRepository;
     private final UserAgreementRepository userAgreementRepository;
     private final UserInvestInfoRepository userInvestInfoRepository;
-    private final PBBookmarkRepository pbBookmarkRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final QuestionRepository questionRepository;
     private final PBRepository pbRepository;
@@ -46,6 +45,7 @@ public class MyMemberUtil {
     private final ReviewRepository reviewRepository;
     private final AnswerRepository answerRepository;
     private final StyleRepository styleRepository;
+    private final UserBookmarkRepository userBookmarkRepository;
 
     public void deleteById(Long id, Role role) {
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
@@ -78,7 +78,8 @@ public class MyMemberUtil {
                 questionRepository.deleteByAuthor(id, QuestionAuthorRole.USER);
 
 //                boardBookmarkRepository.deleteByUserId(id);
-                pbBookmarkRepository.deleteByUserId(id);
+                boardBookmarkRepository.deleteByBookmarker(id, BookmarkerRole.USER);
+                userBookmarkRepository.deleteByUserId(id);
                 userInvestInfoRepository.deleteByUserId(id);
                 userAgreementRepository.deleteByUserId(id);
                 userRepository.deleteById(id);
@@ -124,7 +125,8 @@ public class MyMemberUtil {
                 });
                 boardRepository.deleteByPBId(id);
 
-                pbBookmarkRepository.deleteByPBId(id);
+                boardBookmarkRepository.deleteByBookmarker(id, BookmarkerRole.PB);
+                userBookmarkRepository.deleteByPBId(id);
                 careerRepository.deleteByPBId(id);
                 awardRepository.deleteByPBId(id);
                 pbAgreementRepository.deleteByPBId(id);

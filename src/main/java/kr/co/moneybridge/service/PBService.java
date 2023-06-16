@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,9 +40,27 @@ public class PBService {
     private final PBRepository pbRepository;
     private final PBAgreementRepository pbAgreementRepository;
     private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
 
     @MyLog
-    @MyErrorLog
+    public PBResponse.CompanyNameOutDTO getCompanyNames() {
+        List<PBResponse.CompanyNameDTO> list = new ArrayList<>();
+        companyRepository.findAll().stream().forEach(company -> {
+            list.add(new PBResponse.CompanyNameDTO(company));
+        });
+        return new PBResponse.CompanyNameOutDTO(list);
+    }
+
+    @MyLog
+    public PBResponse.CompanyOutDTO getCompanies() {
+        List<PBResponse.CompanyDTO> list = new ArrayList<>();
+        companyRepository.findAll().stream().forEach(company -> {
+            list.add(new PBResponse.CompanyDTO(company));
+        });
+        return new PBResponse.CompanyOutDTO(list);
+    }
+
+    @MyLog
     @Transactional
     public PBResponse.JoinOutDTO joinPB(MultipartFile businessCard, PBRequest.JoinInDTO joinInDTO) {
         Optional<PB> pbOP = pbRepository.findByEmail(joinInDTO.getEmail());
