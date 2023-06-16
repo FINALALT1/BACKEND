@@ -13,7 +13,6 @@ import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.board.BookmarkerRole;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreementType;
 import kr.co.moneybridge.service.UserService;

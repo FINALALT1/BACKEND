@@ -38,9 +38,6 @@ public class BoardBookmarkRepositoryTest extends DummyEntity {
     private BoardRepository boardRepository;
     @Autowired
     private EntityManager em;
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-//    private Branch b = newBranch(newCompany("미래에셋증권"), 0);
 
     @BeforeEach
     public void setUp() {
