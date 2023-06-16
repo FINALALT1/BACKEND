@@ -34,12 +34,13 @@ public class UserController {
     private final UserService userService;
 
     // 투자 성향 변경
+    @MyLog
+    @SwaggerResponses.UpdatePropensity
     @PatchMapping("/user/propensity")
-    public ResponseEntity<?> updatePropensity(@RequestBody @Valid UserRequest.UpdatePropensityInDTO updatePropensityInDTO,
+    public ResponseDTO updatePropensity(@RequestBody @Valid UserRequest.UpdatePropensityInDTO updatePropensityInDTO,
                                               Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.updatePropensity(updatePropensityInDTO, myUserDetails.getMember().getId());
-        ResponseDTO<?> responseDTO = new ResponseDTO<>();
-        return ResponseEntity.ok().body(responseDTO);
+        return  new ResponseDTO<>();
     }
 
     // 투자 성향 테스트

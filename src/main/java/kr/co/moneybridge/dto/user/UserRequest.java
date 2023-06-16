@@ -14,19 +14,32 @@ import javax.validation.constraints.*;
 import java.util.List;
 
 public class UserRequest {
+    @ApiModel(description = "투자자 성향 변경시 요청 데이터 (변경할 것만 보내기)")
     @Setter
     @Getter
     public static class UpdatePropensityInDTO {
+        @ApiModelProperty(example = "5", value = "1번 문항의 점수. 2, 3, 4, 5 중 하나")
+        @ValidNumbers(values = {2, 3, 4, 5}, message = "2, 3, 4, 5 중에 하나만 입력하세요")
         private Integer q1;
 
+        @ApiModelProperty(example = "5", value = "2번 문항의 점수. 2, 3, 4 중 하나")
+        @ValidNumbers(values = {2, 3, 4}, message = "2, 3, 4 중에 하나만 입력하세요")
         private Integer q2;
 
+        @ApiModelProperty(example = "5", value = "3번 문항의 점수. 1, 3, 4, 5 중 하나")
+        @ValidNumbers(values = {1, 3, 4, 5}, message = "1, 3, 4, 5 중에 하나만 입력하세요")
         private Integer q3;
 
+        @ApiModelProperty(example = "5", value = "4번 문항의 점수. 1, 3, 4, 5 중 하나")
+        @ValidNumbers(values = {1, 3, 4, 5}, message = "1, 3, 4, 5 중에 하나만 입력하세요")
         private Integer q4;
 
+        @ApiModelProperty(example = "5", value = "5번 문항의 점수. 2, 3, 4, 5 중 하나")
+        @ValidNumbers(values = {2, 3, 4, 5}, message = "2, 3, 4, 5 중에 하나만 입력하세요")
         private Integer q5;
 
+        @ApiModelProperty(example = "5", value = "6번 문항의 점수. 1, 2, 4, 5 중 하나")
+        @ValidNumbers(values = {1, 2, 4, 5}, message = "1, 2, 4, 5 중에 하나만 입력하세요")
         private Integer q6;
     }
 
