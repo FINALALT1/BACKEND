@@ -10,7 +10,9 @@ import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -298,4 +300,39 @@ public class BoardService {
     }
 
 
+    //맞춤컨텐츠 2개 가져오기
+    public List<BoardResponse.BoardPageDTO> getRecommendedBoards(MyUserDetails myUserDetails) {
+
+        User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 유저입니다."));
+        UserPropensity propensity = user.getPropensity();
+        List<BoardResponse.BoardPageDTO> boardList;
+
+        if (propensity == null) {
+            throw new Exception404("투자성향 분석이 되지않았습니다.");
+        } else if (propensity.equals(UserPropensity.CONSERVATIVE)) {
+            boardList = boardRepository.findRecommendedBoards(PageRequest.of(0, 2, Sort.by("id").descending()),
+                    PBSpeciality.BOND,
+                    PBSpeciality.US_STOCK,
+                    PBSpeciality.KOREAN_STOCK,
+                    PBSpeciality.FUND,
+                    PBSpeciality.DERIVATIVE,
+                    PBSpeciality.ETF,
+                    PBSpeciality.WRAP);
+        } else if (propensity.equals(UserPropensity.CAUTIOUS)) {
+            boardList = boardRepository.findRecommendedBoards(PageRequest.of(0, 2, Sort.by("id").descending()),
+                    PBSpeciality.BOND,
+                    PBSpeciality.US_STOCK,
+                    PBSpeciality.KOREAN_STOCK,
+                    PBSpeciality.FUND,
+                    PBSpeciality.ETF,
+                    PBSpeciality.WRAP);
+        } else {
+            boardList = boardRepository.findRecommendedBoards(PageRequest.of(0, 2, Sort.by("id").descending()),
+                    PBSpeciality.BOND,
+                    PBSpeciality.FUND,
+                    PBSpeciality.WRAP);
+        }
+
+        return boardList;
+    }
 }

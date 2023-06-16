@@ -208,7 +208,7 @@ public class PBService {
 
         if (propensity == null) {
             throw new Exception404("투자성향 분석이 되지않았습니다.");
-        }else if (propensity.equals(UserPropensity.CONSERVATIVE)) {
+        } else if (propensity.equals(UserPropensity.CONSERVATIVE)) {
             pbPG = pbRepository.findRecommendedPBList(pageable, PBSpeciality.BOND,
                                                                 PBSpeciality.US_STOCK,
                                                                 PBSpeciality.KOREAN_STOCK,

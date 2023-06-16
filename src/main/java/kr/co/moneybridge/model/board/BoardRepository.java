@@ -1,8 +1,10 @@
 package kr.co.moneybridge.model.board;
 
 import kr.co.moneybridge.dto.board.BoardResponse;
+import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.model.reservation.Reservation;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -81,4 +83,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByPBId(@Param("pbId") Long pbId);
 
 
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, pb, c) FROM Board b " +
+            "JOIN PB pb ON b.pb = pb " +
+            "JOIN Branch br ON pb.branch = br " +
+            "JOIN Company c ON br.company = c " +
+            "WHERE (pb.speciality1 IN :specialities OR pb.speciality2 IN :specialities) " +
+            "ORDER BY b.id DESC")
+    List<BoardResponse.BoardPageDTO> findRecommendedBoards(Pageable pageable, @Param("specialities") PBSpeciality... specialities);
 }

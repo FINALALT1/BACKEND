@@ -239,4 +239,12 @@ public class BoardController {
 
         return new ResponseDTO<>(pageDTO);
     }
+
+    @GetMapping("/user/main/board")
+    public ResponseDTO<List<BoardResponse.BoardPageDTO>> getRecommendedBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        List<BoardResponse.BoardPageDTO> list = boardService.getRecommendedBoards(myUserDetails);
+
+        return new ResponseDTO<>(list);
+    }
 }
