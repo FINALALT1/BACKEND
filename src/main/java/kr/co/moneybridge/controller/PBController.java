@@ -52,21 +52,6 @@ public class PBController {
 
     // 증권사 리스트 가져오기 - 메인페이지, 회원가입시
     @MyLog
-    @GetMapping("/companies")
-    public ResponseEntity<?> joinPB(@RequestParam(defaultValue = "true") Boolean includeLogo) {
-        ResponseDTO<?> responseDTO = null;
-        if(includeLogo){
-            PBResponse.CompanyOutDTO companyOutDTO = pbService.getCompanies();
-            responseDTO = new ResponseDTO<>(companyOutDTO);
-        }
-        else {
-            PBResponse.CompanyNameOutDTO companyNameOutDTO = pbService.getCompanyNames();
-            responseDTO = new ResponseDTO<>(companyNameOutDTO);
-        }
-        return ResponseEntity.ok().body(responseDTO);
-    }
-
-    @MyLog
     @ApiOperation(value = "증권사 리스트 가져오기", notes = "메인페이지, 회원가입시 사용.\n" +
             "<b>includeLogo=true면 증권사 로고 포함(디폴트) => 응답 데이터 예시</b>\n" +
             "{\n" +

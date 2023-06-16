@@ -47,7 +47,6 @@ public class PBService {
         List<PBResponse.BranchDTO> list = branchPG.getContent().stream()
                 .map(branch -> new PBResponse.BranchDTO(branch))
                 .collect(Collectors.toList());
-        System.out.println(branchPG.getContent().get(0).getCompany().getName());
         return new PageDTO<>(list, branchPG, Branch.class);
     }
 

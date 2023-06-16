@@ -8,7 +8,9 @@ import kr.co.moneybridge.core.config.MySecurityConfig;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
+import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.pb.PBResponse;
+import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.service.PBService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,13 +19,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Arrays;
+import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,6 +58,31 @@ public class PBControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+    @Test
+    public void searchBranch_test() throws Exception {
+        // given
+        Long companyId = 1L;
+        String keyword = "지번 주소";
+        Branch branch = newMockBranch(1L, newMockCompany(1L, "미래에셋증권"), 0);
+        List<PBResponse.BranchDTO> list = Arrays.asList(new PBResponse.BranchDTO(branch));
+        Page<Branch> branchPG =  new PageImpl<>(Arrays.asList(branch));
+        PageDTO<PBResponse.BranchDTO> pageDTO = new PageDTO<>(list, branchPG, Branch.class);
+
+        //stub
+        Mockito.when(pbService.searchBranch(any(), any(), any())).thenReturn(pageDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/branch?companyId="+companyId+"&keyword="+keyword));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].roadAddress").value("미래에셋증권 도로명주소"));
+        resultActions.andExpect(jsonPath("$.data.list[0].streetAddress").value("미래에셋증권 지번주소"));
+    }
 
     @Test
     public void getCompanies_without_logo_test() throws Exception {

@@ -59,13 +59,15 @@ public class DataInit extends DummyEntity{
 
             Branch b1 = branchRepository.save(newBranch(c1, 0));
             Branch b2 = branchRepository.save(newBranch(c2, 1));
+            Double latitude = 36.36671;
+            Double longitude = 127.34451;
             Branch b3 = branchRepository.save(Branch.builder()
                     .company(c1)
                     .name(c1.getName() + " 강남대로점")
                     .roadAddress("서울 강남구 강남대로 390")
                     .streetAddress("역삼동 825 미진프라자 1층 101호")
-                    .latitude(Double.valueOf(String.valueOf("36.36671")))
-                    .longitude(Double.valueOf(String.valueOf("127.34451")))
+                    .latitude(latitude)
+                    .longitude(longitude)
                     .build());
             branchRepository.save(newBranch(c3, 2));
             branchRepository.save(newBranch(c4, 3));

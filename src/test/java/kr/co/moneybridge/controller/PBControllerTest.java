@@ -55,8 +55,99 @@ public class PBControllerTest {
         Branch branch1 = branchRepository.save(dummy.newBranch(company1, 0));
         em.clear();
     }
+    @DisplayName("지점 검색 성공 -  지번 주소")
+    @Test
+    public void searchBranchStreet() throws Exception {
+        //given
+        Long companyId = 1L;
+        String keyword = "지번 주소";
 
-    @DisplayName("증권사 리스트 가져오기 - 로고포함")
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/branch?companyId="+companyId+"&keyword="+keyword));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].roadAddress").value("미래에셋증권 도로명주소"));
+        resultActions.andExpect(jsonPath("$.data.list[0].streetAddress").value("미래에셋증권 지번주소"));
+        resultActions.andExpect(status().isOk());
+    }
+
+    @DisplayName("지점 검색 성공 - 도로명 주소")
+    @Test
+    public void searchBranchRoad() throws Exception {
+        //given
+        Long companyId = 1L;
+        String keyword = "도로명 주소";
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/branch?companyId="+companyId+"&keyword="+keyword));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].roadAddress").value("미래에셋증권 도로명주소"));
+        resultActions.andExpect(jsonPath("$.data.list[0].streetAddress").value("미래에셋증권 지번주소"));
+        resultActions.andExpect(status().isOk());
+    }
+
+    @DisplayName("지점 검색 성공 - 빈칸있을 때")
+    @Test
+    public void searchBranchBlank() throws Exception {
+        //given
+        Long companyId = 1L;
+        String keyword = " 미래 에셋 증권여의도 ";
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/branch?companyId="+companyId+"&keyword="+keyword));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].roadAddress").value("미래에셋증권 도로명주소"));
+        resultActions.andExpect(jsonPath("$.data.list[0].streetAddress").value("미래에셋증권 지번주소"));
+        resultActions.andExpect(status().isOk());
+    }
+
+    @DisplayName("지점 검색 성공")
+    @Test
+    public void searchBranch() throws Exception {
+        //given
+        Long companyId = 1L;
+        String keyword = "미래에셋증권";
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/branch?companyId="+companyId+"&keyword="+keyword));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].roadAddress").value("미래에셋증권 도로명주소"));
+        resultActions.andExpect(jsonPath("$.data.list[0].streetAddress").value("미래에셋증권 지번주소"));
+        resultActions.andExpect(status().isOk());
+    }
+
+    @DisplayName("증권사 리스트 가져오기 - 로고포함 성공")
     @Test
     public void getCompanies_not_including_logos_test() throws Exception {
         //given
@@ -77,7 +168,7 @@ public class PBControllerTest {
         resultActions.andExpect(status().isOk());
     }
 
-    @DisplayName("증권사 리스트 가져오기 - 로고포함")
+    @DisplayName("증권사 리스트 가져오기 - 로고포함 성공")
     @Test
     public void getCompanies_including_logos_test() throws Exception {
         // when

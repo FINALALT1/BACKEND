@@ -45,6 +45,8 @@ class PBServiceTest extends MockDummyEntity {
     @Mock
     CompanyRepository companyRepository;
     @Mock
+    BranchRepository branchRepository;
+    @Mock
     PB pb;
     @Mock
     Branch branch;
@@ -54,11 +56,24 @@ class PBServiceTest extends MockDummyEntity {
     Pageable pageable;
 
     @Test
-    void joinPB() {
-    }
+    @DisplayName("지점 검색")
+    void searchBranch() {
+        //given
+        Long companyId = 1L;
+        String keyword = "지번 주소";
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Branch branch = newMockBranch(1L, newMockCompany(1L, "미래에셋증권"), 0);
+        Page<Branch> branchPG =  new PageImpl<>(Arrays.asList(branch));
 
-    @Test
-    void getBookmarkPBs() {
+        //stub
+        when(branchRepository.findByCompanyIdAndKeyword(any(), any(), any())).thenReturn(branchPG);
+
+        //when
+        PageDTO<PBResponse.BranchDTO> pageDTO = pbService.searchBranch(companyId, keyword, pageable);
+
+        //then
+        assertThat(pageDTO.getList().size()).isEqualTo(branchPG.getContent().size());
+        Mockito.verify(branchRepository, Mockito.times(1)).findByCompanyIdAndKeyword(any(), any(), any());
     }
 
     @Test

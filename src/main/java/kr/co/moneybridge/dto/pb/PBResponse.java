@@ -12,7 +12,6 @@ import lombok.Setter;
 import java.util.List;
 
 public class PBResponse {
-    @ApiModel(description = "증권사 리스트 목록 로고 불포함 응답 데이터")
     @Setter
     @Getter
     public static class BranchDTO {
@@ -40,6 +39,7 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "증권사 리스트 목록 로고 불포함 응답 데이터")
     @Setter
     @Getter
     public static class CompanyNameDTO {
