@@ -5,7 +5,6 @@ import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.PageDTO;
-import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
@@ -24,13 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -362,5 +359,28 @@ public class ReservationServiceTest extends MockDummyEntity {
 //
 //        // then
 //        assertThat(localDateTime).isEqualTo(StringToLocalDateTime("2024년 6월 1일 오전 9시 20분"));
+//    }
+
+//    @Test
+//    public void cancel_reservation_test() {
+//        // given
+//        Long pbId = 1L;
+//        Company company = newMockCompany(1L, "미래에셋");
+//        Branch branch = newMockBranch(1L, company, 1);
+//        PB pb = newMockPB(pbId, "이피비", branch);
+//        User user = newMockUser(1L, "lee");
+//        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.APPLY);
+//
+//        // stub
+//        Mockito.when(reservationRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(reservation));
+//        Mockito.when(userRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(user));
+//
+//        // when
+//        Reservation cancelReservation = reservationService.cancelReservation(reservation.getId(), new MyUserDetails(user));
+//
+//        // then
+//        assertThat(cancelReservation.getStatus()).isEqualTo(ReservationStatus.CANCEL);
 //    }
 }
