@@ -15,6 +15,7 @@ import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.service.PBService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,44 +28,33 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 public class PBController {
     private final PBService pbService;
 
+    // 지점 검색
+    @MyLog
+    @SwaggerResponses.SearchBranch
+    @GetMapping("/branch")
+    public ResponseDTO<PageDTO<PBResponse.BranchDTO>> searchBranch(@RequestParam Long companyId,
+                                          @RequestParam(required = false) String keyword) {
+        keyword = keyword == null ? "" : keyword.replaceAll("\\s", "");
+        if(keyword.isEmpty()){
+            List<PBResponse.BranchDTO> empty = new ArrayList<>();
+            return new ResponseDTO<>(new PageDTO<>(empty, new PageImpl<>(empty))); // 빈칸 검색시
+        }
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        PageDTO<PBResponse.BranchDTO> pageDTO = pbService.searchBranch(companyId, keyword, pageable);
+        return new ResponseDTO<>(pageDTO);
+    }
+
     // 증권사 리스트 가져오기 - 메인페이지, 회원가입시
     @MyLog
-    @ApiOperation(value = "증권사 리스트 가져오기", notes = "메인페이지, 회원가입시 사용.\n" +
-            "<b>includeLogo=true면 증권사 로고 포함(디폴트) => 응답 데이터 예시</b>\n" +
-            "{\n" +
-            "&nbsp;&nbsp;\"status\": 200,\n" +
-            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
-            "&nbsp;&nbsp;\"data\": {\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;\"list\": [\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"logo\": \"logo.png\",\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"name\": \"미래에셋증권\"\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},&nbsp;<font color=\"#C0C0C0\">// ... 실제로는 30개</font>\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;]\n" +
-            "&nbsp;&nbsp;}\n" +
-            "}\n<br>" +
-            "<b>includeLogo=false면 증권사 로고 불포함 => 응답 데이터 예시</b>\n" +
-            "{\n" +
-            "&nbsp;&nbsp;\"status\": 200,\n" +
-            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
-            "&nbsp;&nbsp;\"data\": {\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;\"list\": [\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"name\": \"미래에셋증권\"\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},&nbsp;<font color=\"#C0C0C0\">// ... 실제로는 30개</font>\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;]\n" +
-            "&nbsp;&nbsp;}\n" +
-            "}")
-    @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
+    @SwaggerResponses.GetCompanies
     @GetMapping("/companies")
     public ResponseEntity<?> getCompanies(@RequestParam(defaultValue = "true") Boolean includeLogo) {
         ResponseDTO<?> responseDTO = null;
@@ -80,32 +70,7 @@ public class PBController {
     }
 
     @MyLog
-    @ApiOperation(value = "PB 회원가입", notes = "<b>joinInDTO 예시 및 설명</b>\n<br>{\n" +
-            "&nbsp;&nbsp;\"email\": \"investor2@naver.com\",&nbsp;<font color=\"#C0C0C0\">// @ 포함해야함 + 30바이트 이내</font>\n" +
-            "&nbsp;&nbsp;\"password\": \"abcd5678\",&nbsp;<font color=\"#C0C0C0\">// 영문(대소문자), 숫자 포함해서 8자 이상, 공백없이</font>\n" +
-            "&nbsp;&nbsp;\"name\": \"김피비\",&nbsp;<font color=\"#C0C0C0\">// 20바이트 이내</font>\n" +
-            "&nbsp;&nbsp;\"phoneNumber\": \"01012345678\",&nbsp;<font color=\"#C0C0C0\">// -없이 + (정규식: ^01(?:0|1|[6-9])(?:\\\\d{3}|\\\\d{4})\\\\d{4}$)</font>\n" +
-            "&nbsp;&nbsp;\"branchId\": 1,&nbsp;<font color=\"#C0C0C0\">// 지점id</font>\n" +
-            "&nbsp;&nbsp;\"career\": 5,&nbsp;<font color=\"#C0C0C0\">// 경력(연차) + 0 또는 양수만 가능</font>\n" +
-            "&nbsp;&nbsp;\"speciality1\": \"FUND\",&nbsp;<font color=\"#C0C0C0\">// 전문분야(enum)</font>\n" +
-            "&nbsp;&nbsp;\"speciality2\": \"US_STOCK\",&nbsp;<font color=\"#C0C0C0\">// 없어도 됨</font>\n" +
-            "&nbsp;&nbsp;\"agreements\": [&nbsp;<font color=\"#C0C0C0\">// 없어도 가능</font>\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"title\": \"돈줄 이용약관 동의\",&nbsp;<font color=\"#C0C0C0\">// 약관명</font>\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"type\": \"REQUIRED\",&nbsp;<font color=\"#C0C0C0\">// 약관 종류(enum)</font>\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"isAgreed\": true&nbsp;<font color=\"#C0C0C0\">// 동의 여부</font>\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;},\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"title\": \"마케팅 정보 수신 동의\",\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"type\": \"OPTIONAL\",\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"isAgreed\": true\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;}\n"+
-            "&nbsp;&nbsp;}")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="businessCard", value="명함 사진"),
-            @ApiImplicitParam(name="joinInDTO", value = "joinInDTO")})
-    @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
+    @SwaggerResponses.JoinPB
     @PostMapping("/join/pb")
     public ResponseDTO<PBResponse.JoinOutDTO> joinPB(@RequestPart(value = "businessCard") MultipartFile businessCard,
                                     @RequestPart(value = "joinInDTO") @Valid PBRequest.JoinInDTO joinInDTO, Errors errors) {

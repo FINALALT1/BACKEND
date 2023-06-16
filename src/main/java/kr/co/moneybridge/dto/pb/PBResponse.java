@@ -12,6 +12,40 @@ import lombok.Setter;
 import java.util.List;
 
 public class PBResponse {
+    @ApiModel(description = "지점 검색 응답 데이터")
+    @Setter
+    @Getter
+    public static class BranchDTO {
+        @ApiModelProperty(example = "1", value = "지점의 id")
+        private Long id;
+        @ApiModelProperty(example = "미래에셋증권 강남대로점", value = "지점명")
+        private String name;
+        @ApiModelProperty(example = "서울 강남구 강남대로 390", value = "도로명주소")
+        private String roadAddress;
+        @ApiModelProperty(example = "역삼동 825 미진프라자 1층 101", value = "지번주소")
+        private String streetAddress;
+
+        public BranchDTO(Branch branch) {
+
+            this.id = branch.getId();
+            this.name = branch.getName();
+            this.roadAddress = branch.getRoadAddress();
+            this.streetAddress = branch.getStreetAddress();
+        }
+    }
+
+    @ApiModel(description = "지점 검색 리스트 응답 데이터")
+    @Setter
+    @Getter
+    public static class BranchOutDTO {
+        @ApiModelProperty
+        private List<BranchDTO> list;
+
+        public BranchOutDTO(List<BranchDTO> list) {
+            this.list = list;
+        }
+    }
+
     @ApiModel(description = "증권사 리스트 목록 로고 불포함 응답 데이터")
     @Setter
     @Getter
@@ -22,7 +56,6 @@ public class PBResponse {
         private String name;
 
         public CompanyNameDTO(Company company) {
-
             this.id = company.getId();
             this.name = company.getName();
         }
@@ -36,7 +69,6 @@ public class PBResponse {
         private List<CompanyNameDTO> list;
 
         public CompanyNameOutDTO(List<CompanyNameDTO> list) {
-
             this.list = list;
         }
     }
@@ -53,7 +85,6 @@ public class PBResponse {
         private String name;
 
         public CompanyDTO(Company company) {
-
             this.id = company.getId();
             this.logo = company.getLogo();
             this.name = company.getName();
@@ -68,7 +99,6 @@ public class PBResponse {
         private List<CompanyDTO> list;
 
         public CompanyOutDTO(List<CompanyDTO> list) {
-
             this.list = list;
         }
     }
