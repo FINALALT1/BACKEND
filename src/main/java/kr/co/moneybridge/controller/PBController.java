@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -196,5 +197,14 @@ public class PBController {
         PageDTOV2<PBResponse.PBPageDTO> pageDTO = pbService.getRecommendedPBList(myUserDetails, pageable);
 
         return new ResponseDTO<>(pageDTO);
+    }
+
+    @GetMapping("/main/pb")
+    public ResponseDTO getRecommendedPB(@RequestParam(value = "latitude") Double latitude,
+                                        @RequestParam(value = "longitude") Double longitude) {
+
+        List<PBResponse.PBSimpleDTO> pbList = pbService.getTwoPBWithDistance(latitude, longitude);
+
+        return new ResponseDTO(pbList);
     }
 }

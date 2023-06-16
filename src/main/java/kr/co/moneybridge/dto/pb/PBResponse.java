@@ -131,4 +131,20 @@ public class PBResponse {
             this.branchLon = branch.getLongitude();
         }
     }
+
+    @Getter
+    public static class PBSimpleDTO {
+
+        private Long id;
+        private String name;
+        private String msg;
+        private String profile;
+
+        public PBSimpleDTO(PBPageDTO pbPageDTO) {
+            this.id = pbPageDTO.getId();
+            this.name = pbPageDTO.getName();
+            this.msg = pbPageDTO.getMsg();
+            this.profile = pbPageDTO.getProfile();
+        }
+    }
 }
