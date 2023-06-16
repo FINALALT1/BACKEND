@@ -10,6 +10,7 @@ import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.reservation.ReservationProcess;
 import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.User;
@@ -54,7 +55,7 @@ public class PBService {
             throw new Exception500("PB 계정이 없습니다");
         }
         return new PBResponse.MyPageOutDTO(pbOP.get(),
-                reservationRepository.countByPBId(pbOP.get().getId()),
+                reservationRepository.countByPBIdAndProcess(pbOP.get().getId(), ReservationProcess.COMPLETE),
                 reviewRepository.countByPBId(pbOP.get().getId()));
     }
 
