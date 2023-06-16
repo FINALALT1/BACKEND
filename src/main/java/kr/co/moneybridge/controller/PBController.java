@@ -38,13 +38,12 @@ public class PBController {
 
     // PB 마이페이지 가져오기
     @MyLog
+    @SwaggerResponses.GetMyPagePB
     @GetMapping("/pb/mypage")
-    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<PBResponse.MyPageOutDTO> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         PBResponse.MyPageOutDTO myPageOutDTO = pbService.getMyPage(myUserDetails);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(myPageOutDTO);
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>(myPageOutDTO);
     }
-
 
     // 지점 검색
     @MyLog
