@@ -70,7 +70,7 @@ public class UserService {
     public UserResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {
         User user = (User) myUserDetails.getMember();
         UserResponse.StepDTO step = new UserResponse.StepDTO(user);
-        UserResponse.ReservationCountsDTO reservationCount = new UserResponse.ReservationCountsDTO(
+        UserResponse.ReservationCountDTO reservationCount = new UserResponse.ReservationCountDTO(
                 reservationRepository.countByProcess(ReservationProcess.APPLY),
                 reservationRepository.countByProcess(ReservationProcess.CONFIRM),
                 reservationRepository.countByProcess(ReservationProcess.COMPLETE));

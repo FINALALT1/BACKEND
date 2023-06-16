@@ -51,7 +51,7 @@ public class UserResponse {
     @ApiModel
     @Setter
     @Getter
-    public static class ReservationCountsDTO {
+    public static class ReservationCountDTO {
         @ApiModelProperty(example = "0", value = "예약 신청 개수")
         private Integer apply;
         @ApiModelProperty(example = "0", value = "예약 확정 개수")
@@ -59,7 +59,7 @@ public class UserResponse {
         @ApiModelProperty(example = "0", value = "상담 완료 개수")
         private Integer complete;
 
-        public ReservationCountsDTO(Integer apply, Integer comfirm, Integer complete) {
+        public ReservationCountDTO(Integer apply, Integer comfirm, Integer complete) {
             this.apply = apply;
             this.confirm = comfirm;
             this.complete = complete;
@@ -100,13 +100,13 @@ public class UserResponse {
         @ApiModelProperty
         private StepDTO step;
         @ApiModelProperty
-        private ReservationCountsDTO reservationCount;
+        private ReservationCountDTO reservationCount;
         @ApiModelProperty
         private BookmarkListDTO boardBookmark;
         @ApiModelProperty
         private BookmarkListDTO pbBookmark;
 
-        public MyPageOutDTO(User user, StepDTO step,ReservationCountsDTO reservationCount,
+        public MyPageOutDTO(User user, StepDTO step,ReservationCountDTO reservationCount,
                                 BookmarkListDTO boardBookmark, BookmarkListDTO pbBookmark) {
             this.id = user.getId();
             this.name = user.getName();

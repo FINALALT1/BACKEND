@@ -12,6 +12,32 @@ import lombok.Setter;
 import java.util.List;
 
 public class PBResponse {
+    @Setter
+    @Getter
+    public static class MyPageOutDTO {
+        private String profile;
+        private String name;
+        private String branchName;
+        private String msg;
+        private Integer career;
+        private PBSpeciality specialty1;
+        private PBSpeciality specialty2;
+        private Integer reserveCount;
+        private Integer reviewCount;
+
+        public MyPageOutDTO(PB pb, Integer reserveCount, Integer reviewCount) {
+            this.profile = pb.getProfile();
+            this.name = pb.getName();
+            this.branchName = pb.getBranch().getName();
+            this.msg = pb.getMsg();
+            this.career = pb.getCareer();
+            this.specialty1 = pb.getSpeciality1();
+            this.specialty2 = pb.getSpeciality2();
+            this.reserveCount = reserveCount;
+            this.reviewCount = reviewCount;
+        }
+    }
+
     @ApiModel(description = "지점 검색 응답 데이터")
     @Setter
     @Getter

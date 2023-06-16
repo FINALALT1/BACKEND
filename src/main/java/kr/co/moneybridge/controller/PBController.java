@@ -36,6 +36,16 @@ import java.util.List;
 public class PBController {
     private final PBService pbService;
 
+    // PB 마이페이지 가져오기
+    @MyLog
+    @GetMapping("/pb/mypage")
+    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        PBResponse.MyPageOutDTO myPageOutDTO = pbService.getMyPage(myUserDetails);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(myPageOutDTO);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+
     // 지점 검색
     @MyLog
     @SwaggerResponses.SearchBranch

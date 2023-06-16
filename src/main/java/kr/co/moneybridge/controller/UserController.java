@@ -37,8 +37,8 @@ public class UserController {
     @SwaggerResponses.GetMyPageUser
     @GetMapping("/user/mypage")
     public ResponseDTO<UserResponse.MyPageOutDTO> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
-        UserResponse.MyPageOutDTO myPageUserOutDTO = userService.getMyPage(myUserDetails);
-        return new ResponseDTO<>(myPageUserOutDTO);
+        UserResponse.MyPageOutDTO myPageOutDTO = userService.getMyPage(myUserDetails);
+        return new ResponseDTO<>(myPageOutDTO);
     }
 
     @MyLog
