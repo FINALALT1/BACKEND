@@ -1,9 +1,8 @@
 package kr.co.moneybridge.controller;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.PageDTO;
@@ -54,16 +53,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "상담 예약 사전 정보 조회")
-    @ApiResponses({
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/reservation/{pbId}")
     public ResponseDTO<ReservationResponse.BaseDTO> getReservationBase(@PathVariable Long pbId,
@@ -75,18 +65,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "상담 예약 신청하기")
-    @ApiResponses({
-            @ApiResponse(code = 400,
-                    message = BAD_REQUEST),
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.DefaultApiResponses
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/user/reservation/{pbId}")
     public ResponseDTO applyReservation(@PathVariable Long pbId,
@@ -146,16 +125,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "상담 후기 리스트 조회")
-    @ApiResponses({
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reviews")
     public ResponseDTO<PageDTO<ReservationResponse.ReviewDTO>> getReviews(@RequestParam(defaultValue = "0") int page,
@@ -167,16 +137,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "고객 관리 페이지 상담 현황 조회")
-    @ApiResponses({
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/management/recent")
     public ResponseDTO<ReservationResponse.RecentInfoDTO> getRecentReservationInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -187,18 +148,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "고객 관리 페이지 상담 목록 조회")
-    @ApiResponses({
-            @ApiResponse(code = 400,
-                    message = BAD_REQUEST),
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.DefaultApiResponses
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/management/reservations")
     public ResponseDTO<PageDTO<ReservationResponse.RecentReservationDTO>> getRecentReservations(String type,
@@ -221,16 +171,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "예약 확인하기")
-    @ApiResponses({
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation/{id}")
     public ResponseDTO<ReservationResponse.DetailDTO> getReservationDetail(@PathVariable Long id,
@@ -242,18 +183,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "예약 변경하기")
-    @ApiResponses({
-            @ApiResponse(code = 400,
-                    message = BAD_REQUEST),
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.DefaultApiResponses
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/auth/reservation/{id}")
     public ResponseDTO updateReservation(@PathVariable Long id,
@@ -292,16 +222,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "예약 취소하기")
-    @ApiResponses({
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/auth/reservation/{id}")
     public ResponseDTO cancelReservation(@PathVariable Long id,
@@ -313,18 +234,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "예약 확정하기")
-    @ApiResponses({
-            @ApiResponse(code = 400,
-                    message = BAD_REQUEST),
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.DefaultApiResponses
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/pb/reservation/{id}/confirmed")
     public ResponseDTO confirmReservation(@PathVariable Long id,
@@ -337,16 +247,7 @@ public class ReservationController {
 
     @MyLog
     @ApiOperation(value = "예약 완료하기")
-    @ApiResponses({
-            @ApiResponse(code = 401,
-                    message = UNAUTHORIZED),
-            @ApiResponse(code = 403,
-                    message = FORBIDDEN),
-            @ApiResponse(code = 404,
-                    message = NOT_FOUND),
-            @ApiResponse(code = 500,
-                    message = INTERNAL_SERVER_ERROR)
-    })
+    @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/auth/reservation/{id}/completed")
     public ResponseDTO completeReservation(@PathVariable Long id,
