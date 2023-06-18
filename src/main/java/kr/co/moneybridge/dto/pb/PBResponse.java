@@ -340,4 +340,52 @@ public class PBResponse {
         private String file;
     }
 
+    @ApiModel(description = "PB 프로필 수정용 데이터")
+    @Getter @Setter
+    public static class PBUpdateOutDTO {
+        @ApiModelProperty(example = "미래에셋", value = "회사명")
+        private String company;
+        @ApiModelProperty(example = "용산점", value = "지점명")
+        private String branchName;
+        @ApiModelProperty(example = "10", value = "pb의 경력")
+        private Integer career;
+        @ApiModelProperty
+        private List<CareerOutDTO> careers; //set해줘야함
+        @ApiModelProperty
+        private List<AwardOutDTO> awards;   //set해줘야함
+        @ApiModelProperty(example = "ETF", value = "전문분야1")
+        private PBSpeciality speciality1;
+        @ApiModelProperty(example = "BOND", value = "전문분야2")
+        private PBSpeciality speciality2;
+        @ApiModelProperty(example = "88.1", value = "누적손익률")
+        private Double cumulativeReturn;
+        @ApiModelProperty(example = "28.1", value = "최대자본인하율")
+        private Double maxDrawdown;
+        @ApiModelProperty(example = "1.44", value = "profit factor")
+        private Double profitFactor;
+        @ApiModelProperty(example = "34.7", value = "평균수익률")
+        private Double averageProfit;
+        @ApiModelProperty(example = "portfolio.pdf", value = "포트폴리오")
+        private String file;
+        @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "소개글")
+        private String intro;
+        @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "프로필제목")
+        private String msg;
+
+        public PBUpdateOutDTO(PB pb, Branch branch, Company company, Portfolio portfolio) {
+            this.company = company.getName();
+            this.branchName = branch.getName();
+            this.career = pb.getCareer();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
+            this.cumulativeReturn = portfolio.getCumulativeReturn();
+            this.maxDrawdown = portfolio.getMaxDrawdown();
+            this.profitFactor = portfolio.getProfitFactor();
+            this.averageProfit = portfolio.getAverageProfit();
+            this.file = portfolio.getFile();
+            this.intro = pb.getIntro();
+            this.msg = pb.getMsg();
+        }
+    }
+
 }

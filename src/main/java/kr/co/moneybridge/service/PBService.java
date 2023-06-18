@@ -9,6 +9,7 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
@@ -323,5 +324,17 @@ public class PBService {
         }
 
         return dto;
+    }
+
+    //PB 프로필 수정용 데이터 가져오기
+    public PBResponse.PBUpdateOutDTO getPBProfileForUpdate(MyUserDetails myUserDetails) {
+
+        PB pb = (PB) myUserDetails.getMember();
+        PBResponse.PBUpdateOutDTO updateDTO = pbRepository.findPBProfileForUpdate(pb.getId()).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다."));
+        updateDTO.setCareers(careerRepository.getCareers(pb.getId()));
+        updateDTO.setAwards(awardRepository.getAwards(pb.getId()));
+
+        return updateDTO;
     }
 }
