@@ -1,8 +1,6 @@
 package kr.co.moneybridge.core.dummy;
 
-import kr.co.moneybridge.model.backoffice.AnswerRepository;
-import kr.co.moneybridge.model.backoffice.Question;
-import kr.co.moneybridge.model.backoffice.QuestionRepository;
+import kr.co.moneybridge.model.backoffice.*;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
@@ -37,7 +35,9 @@ public class DataInit extends DummyEntity{
                            ReviewRepository reviewRepository,
                            StyleRepository styleRepository,
                            QuestionRepository questionRepository,
-                           AnswerRepository answerRepository){
+                           AnswerRepository answerRepository,
+                           FrequentQuestionRepository frequentQuestionRepository,
+                           NoticeRepository noticeRepository){
         return args -> {
             User user1 = userRepository.save(newUserWithPropensity("김투자"));
             User user2 = userRepository.save(newUserWithPropensity("이투자"));
@@ -148,6 +148,9 @@ public class DataInit extends DummyEntity{
             Question q4 = questionRepository.save(newPBQuestion(pb2));
             answerRepository.save(newAnswer(q1));
             answerRepository.save(newAnswer(q2));
+
+            frequentQuestionRepository.save(newFrequentQuestion());
+            noticeRepository.save(newNotice());
         };
     }
 }
