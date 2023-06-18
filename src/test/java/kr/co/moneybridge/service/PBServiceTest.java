@@ -354,4 +354,26 @@ class PBServiceTest extends MockDummyEntity {
         //then
         assertThat(result).hasSize(2);
     }
+
+    @Test
+    @DisplayName("PB 프로필가져오기(비회원)")
+    void getSimpleProfile() {
+        //given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(id, "김피비", this.branch);
+        PBResponse.PBSimpleProfileDTO dto = new PBResponse.PBSimpleProfileDTO(this.pb, company);
+
+        //stub
+        when(pbRepository.findSimpleProfile(id)).thenReturn(Optional.of(dto));
+
+        //when
+        PBResponse.PBSimpleProfileDTO result = pbService.getSimpleProfile(id);
+
+        //then
+        assertThat(result.getProfile()).isEqualTo(dto.getProfile());
+        assertThat(result.getMsg()).isEqualTo(dto.getMsg());
+        assertThat(result.getCompanyLogo()).isEqualTo(dto.getCompanyLogo());
+    }
 }
