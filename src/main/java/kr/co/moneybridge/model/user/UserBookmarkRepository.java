@@ -8,6 +8,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UserBookmarkRepository extends JpaRepository<UserBookmark, Long> {
+    @Query("select case when count(u) > 0 then true else false end from UserBookmark u where u.user.id = :userId and u.pb.id =:pbId")
+    Boolean existsByUserIdAndPBId(@Param("userId") Long userId, @Param("pbId") Long pbId);
+
     @Query("select count(u) from UserBookmark u where u.user.id = :userId")
     Integer countByUserId(@Param("userId") Long userId);
 

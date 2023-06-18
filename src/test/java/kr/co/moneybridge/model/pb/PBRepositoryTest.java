@@ -22,8 +22,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
@@ -58,6 +58,64 @@ public class PBRepositoryTest extends DummyEntity {
         userBookmarkRepository.save(newUserBookmark(user, pb));
 
         em.clear();
+    }
+
+    @Test
+    public void findByIdIn() {
+        // given
+        List<Long> pbIds = Arrays.asList(1L);
+
+        // when
+        List<PB> pbs = pbRepository.findByIdIn(pbIds);
+
+        // then
+        Assertions.assertThat(pbs.get(0).getId()).isEqualTo(1L);
+        Assertions.assertThat(pbs.get(0).getName()).isEqualTo("김피비");
+        Assertions.assertThat(
+                passwordEncoder.matches("password1234", pbs.get(0).getPassword())
+        ).isEqualTo(true);
+        Assertions.assertThat(pbs.get(0).getEmail()).isEqualTo("김피비@nate.com");
+        Assertions.assertThat(pbs.get(0).getPhoneNumber()).isEqualTo("01012345678");
+        Assertions.assertThat(pbs.get(0).getBranch().getCompany().getName()).isEqualTo("미래에셋증권");
+        Assertions.assertThat(pbs.get(0).getRole()).isEqualTo(Role.PB);
+        Assertions.assertThat(pbs.get(0).getProfile()).isEqualTo("profile.png");
+        Assertions.assertThat(pbs.get(0).getBusinessCard()).isEqualTo("card.png");
+        Assertions.assertThat(pbs.get(0).getCareer()).isEqualTo(10);
+        Assertions.assertThat(pbs.get(0).getSpeciality1()).isEqualTo(PBSpeciality.BOND);
+        Assertions.assertThat(pbs.get(0).getSpeciality2()).isNull();
+        Assertions.assertThat(pbs.get(0).getIntro()).isEqualTo("김피비 입니다");
+        Assertions.assertThat(pbs.get(0).getMsg()).isEqualTo("한줄메시지..");
+        Assertions.assertThat(pbs.get(0).getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
+        Assertions.assertThat(pbs.get(0).getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
+        Assertions.assertThat(pbs.get(0).getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        Assertions.assertThat(pbs.get(0).getConsultNotice()).isEqualTo("월요일 불가능합니다");
+        Assertions.assertThat(pbs.get(0).getStatus()).isEqualTo(PBStatus.ACTIVE);
+        Assertions.assertThat(pbs.get(0).getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
+        Assertions.assertThat(pbs.get(0).getUpdatedAt()).isNull();
+    }
+
+    @Test
+    public void findIdsBySpecialityIn() {
+        // given
+        List<PBSpeciality> list = Arrays.asList(PBSpeciality.BOND);
+
+        // when
+        List<Long> pbIds = pbRepository.findIdsBySpecialityIn(list);
+
+        // then
+        Assertions.assertThat(pbIds.get(0)).isInstanceOf(Long.class);
+    }
+
+    @Test
+    public void findIdsBySpecialityNotIn() {
+        // given
+        List<PBSpeciality> list = Arrays.asList(PBSpeciality.REAL_ESTATE);
+
+        // when
+        List<Long> pbIds = pbRepository.findIdsBySpecialityNotIn(list);
+
+        // then
+        Assertions.assertThat(pbIds.get(0)).isInstanceOf(Long.class);
     }
 
     @Test

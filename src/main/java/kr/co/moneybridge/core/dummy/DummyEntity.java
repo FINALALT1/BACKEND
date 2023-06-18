@@ -2,9 +2,7 @@ package kr.co.moneybridge.core.dummy;
 
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.backoffice.Answer;
-import kr.co.moneybridge.model.backoffice.Question;
-import kr.co.moneybridge.model.backoffice.QuestionAuthorRole;
+import kr.co.moneybridge.model.backoffice.*;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
@@ -37,7 +35,7 @@ public class DummyEntity {
                 .password(passwordEncoder.encode("password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
-                .propensity(UserPropensity.AGGRESSIVE)
+                .propensity(UserPropensity.SPECULATIVE)
                 .role(Role.USER)
                 .profile("프로필.png")
                 .hasDoneReview(false)
@@ -259,13 +257,6 @@ public class DummyEntity {
                 .build();
     }
 
-    public PBBookmark newPBBookmark(PB pb, User user) {
-        return PBBookmark.builder()
-                .user(user)
-                .pb(pb)
-                .build();
-    }
-
     public BoardBookmark newBoardBookmark(User user, Board board) {
         return BoardBookmark.builder()
                 .bookmarkerId(user.getId())
@@ -351,28 +342,20 @@ public class DummyEntity {
                 .build();
     }
 
-    public Question newUserQuestion(User user) {
-        return Question.builder()
-                .authorId(user.getId())
-                .authorRole(QuestionAuthorRole.USER)
-                .title("제목")
-                .content("1대1문의사항")
+    public FrequentQuestion newFrequentQuestion() {
+        return FrequentQuestion.builder()
+                .label("회원")
+                .title("이메일이 주소가 변경되었어요.")
+                .content("가입 이메일은 회원 식별 고유 키로 가입 후 변경이 불가능 하므로 개인 이메일로 가입하기를 권유드립니다.")
                 .build();
     }
 
-    public Question newPBQuestion(PB pb) {
-        return Question.builder()
-                .authorId(pb.getId())
-                .authorRole(QuestionAuthorRole.PB)
-                .title("제목")
-                .content("1대1문의사항")
-                .build();
-    }
-
-    public Answer newAnswer(Question question) {
-        return Answer.builder()
-                .question(question)
-                .content("답변")
+    public Notice newNotice() {
+        return Notice.builder()
+                .title("서버 점검 안내")
+                .content("보다 나은 환경을 제공하기 위해 개발진에서 발견한 문제 복구 및 업데이트 점검을 진행할 예정입니다.\n" +
+                        "업데이트 점검을 진행하는 동안에는 접속할 수 없으니 불필요한 손해가 발생치 않도록 주의해 주세요.\n" +
+                        "이로 인해 불편을 끼쳐 드려 죄송합니다.")
                 .build();
     }
 }

@@ -1,9 +1,6 @@
 package kr.co.moneybridge.model.user;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.core.exception.Exception404;
-import kr.co.moneybridge.core.util.MyDateUtil;
-import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
-import java.util.List;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
@@ -52,6 +47,15 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
 
     @Test
     public void countByUserId() {
+        // when
+        Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(1L, 1L);
+
+        // then
+        Assertions.assertThat(isBookmark).isEqualTo(true);
+    }
+
+    @Test
+    public void existsByUserIdAndPBId() {
         // when
         Integer count = userBookmarkRepository.countByUserId(1L);
 

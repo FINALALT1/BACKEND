@@ -8,14 +8,12 @@ import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
-import kr.co.moneybridge.model.reservation.ReservationProcess;
 import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserBookmarkRepository;
 import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -74,6 +71,50 @@ class PBServiceTest extends MockDummyEntity {
     Company company;
     @Mock
     Pageable pageable;
+
+    @Test
+    @DisplayName("나의 투자 성향 분석페이지 하단의 맞춤 PB리스트 3개 성공")
+    void getMyPropensityPB() {
+        // given
+        Long id = 1L;
+        Optional<User> userOP = Optional.of(newMockUser(id, "lee"));
+        PB pb = newMockPB(1L, "김pb",
+                newMockBranch(1L, newMockCompany(1L, "미래에셋증권"),0));
+        List<Long> pbIds = Arrays.asList(1L);
+        // stub
+        when(userRepository.findById(any())).thenReturn(userOP);
+        when(pbRepository.findIdsBySpecialityNotIn(any())).thenReturn(pbIds);
+        when(pbRepository.findIdsBySpecialityIn(any())).thenReturn(pbIds);
+        when(pbRepository.findByIdIn(any())).thenReturn(Arrays.asList(pb));
+        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0);
+        when(reviewRepository.countByPBId(any())).thenReturn(0);
+        when(userBookmarkRepository.existsByUserIdAndPBId(any(), any())).thenReturn(false);
+
+        // when
+        PBResponse.MyPropensityPBOutDTO myPropensityPBOutDTO =
+                pbService.getMyPropensityPB(id);
+
+        // then
+        assertThat(myPropensityPBOutDTO.getName()).isEqualTo("lee");
+        assertThat(myPropensityPBOutDTO.getPropensity()).isEqualTo(UserPropensity.AGGRESSIVE);
+        assertThat(myPropensityPBOutDTO.getList().get(0).getProfile()).isEqualTo("profile.png");
+        assertThat(myPropensityPBOutDTO.getList().get(0).getName()).isEqualTo("김pb");
+        assertThat(myPropensityPBOutDTO.getList().get(0).getBranchName()).isEqualTo("미래에셋증권 여의도점");
+        assertThat(myPropensityPBOutDTO.getList().get(0).getMsg()).isEqualTo("한줄메시지..");
+        assertThat(myPropensityPBOutDTO.getList().get(0).getCareer()).isEqualTo(10);
+        assertThat(myPropensityPBOutDTO.getList().get(0).getSpecialty1()).isEqualTo(PBSpeciality.BOND);
+        assertThat(myPropensityPBOutDTO.getList().get(0).getSpecialty2()).isNull();
+        assertThat(myPropensityPBOutDTO.getList().get(0).getReserveCount()).isEqualTo(0);
+        assertThat(myPropensityPBOutDTO.getList().get(0).getReviewCount()).isEqualTo(0);
+        assertThat(myPropensityPBOutDTO.getList().get(0).getIsBookmark()).isEqualTo(false);
+        Mockito.verify(userRepository, Mockito.times(1)).findById(any());
+        Mockito.verify(pbRepository, Mockito.times(1)).findIdsBySpecialityNotIn(any());
+        Mockito.verify(pbRepository, Mockito.times(1)).findIdsBySpecialityIn(any());
+        Mockito.verify(pbRepository, Mockito.times(1)).findByIdIn(any());
+        Mockito.verify(reservationRepository, Mockito.times(1)).countByPBIdAndProcess(any(), any());
+        Mockito.verify(reviewRepository, Mockito.times(1)).countByPBId(any());
+        Mockito.verify(userBookmarkRepository, Mockito.times(1)).existsByUserIdAndPBId(any(), any());
+    }
 
     @Test
     @DisplayName("PB 마이페이지 가져오기")

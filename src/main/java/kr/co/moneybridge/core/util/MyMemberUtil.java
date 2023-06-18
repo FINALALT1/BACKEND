@@ -4,10 +4,6 @@ import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.backoffice.AnswerRepository;
-import kr.co.moneybridge.model.backoffice.Question;
-import kr.co.moneybridge.model.backoffice.QuestionAuthorRole;
-import kr.co.moneybridge.model.backoffice.QuestionRepository;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
@@ -32,7 +28,6 @@ public class MyMemberUtil {
     private final UserAgreementRepository userAgreementRepository;
     private final UserInvestInfoRepository userInvestInfoRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
-    private final QuestionRepository questionRepository;
     private final PBRepository pbRepository;
     private final PortfolioRepository portfolioRepository;
     private final PBAgreementRepository pbAgreementRepository;
@@ -43,9 +38,9 @@ public class MyMemberUtil {
     private final ReplyRepository replyRepository;
     private final ReReplyRepository reReplyRepository;
     private final ReviewRepository reviewRepository;
-    private final AnswerRepository answerRepository;
     private final StyleRepository styleRepository;
     private final UserBookmarkRepository userBookmarkRepository;
+    private final S3Util s3Util;
 
     public void deleteById(Long id, Role role) {
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
@@ -70,14 +65,6 @@ public class MyMemberUtil {
                 replyRepository.deleteByAuthor(id, ReplyAuthorRole.USER); // 댓글 삭제
                 reReplyRepository.deleteByAuthor(id, ReplyAuthorRole.USER); // 대댓글 삭제
 
-                List<Question> questions = questionRepository.findAllByAuthor(id, QuestionAuthorRole.USER);
-                questions.stream().forEach(question -> {
-                    // question을 지우니, question을 연관관계로 가지고 있는 answer 삭제
-                    answerRepository.deleteByQuestionId(question.getId());
-                });
-                questionRepository.deleteByAuthor(id, QuestionAuthorRole.USER);
-
-//                boardBookmarkRepository.deleteByUserId(id);
                 boardBookmarkRepository.deleteByBookmarker(id, BookmarkerRole.USER);
                 userBookmarkRepository.deleteByUserId(id);
                 userInvestInfoRepository.deleteByUserId(id);
@@ -105,12 +92,6 @@ public class MyMemberUtil {
                 replyRepository.deleteByAuthor(id, ReplyAuthorRole.PB);
                 reReplyRepository.deleteByAuthor(id, ReplyAuthorRole.PB);
 
-                List<Question> questions = questionRepository.findAllByAuthor(id, QuestionAuthorRole.PB);
-                questions.stream().forEach(question -> {
-                    answerRepository.deleteByQuestionId(question.getId());
-                });
-                questionRepository.deleteByAuthor(id, QuestionAuthorRole.PB);
-
                 List<Board> boards = boardRepository.findAllByPBId(id);
                 boards.stream().forEach(board -> {
                     // board를 지우니, board를 연관관계로 가지고 있는 boardBookmark삭제
@@ -131,7 +112,10 @@ public class MyMemberUtil {
                 awardRepository.deleteByPBId(id);
                 pbAgreementRepository.deleteByPBId(id);
                 portfolioRepository.deleteByPBId(id);
+                // s3에서 명함사진도 삭제
+                s3Util.delete(pbRepository.findBusinessCardById(id));
                 pbRepository.deleteById(id);
+
             }catch (Exception e){
                 new Exception500("PB 계정 삭제 실패했습니다");
             }

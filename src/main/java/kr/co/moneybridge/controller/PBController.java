@@ -19,7 +19,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
@@ -29,12 +28,20 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 public class PBController {
     private final PBService pbService;
+
+    // 투자 성향에 따라 맞춤 분야별 PB리스트 필터링 3개 (나의 투자 성향 분석페이지 하단의 맞춤 PB리스트)
+    @MyLog
+    @SwaggerResponses.GetMyPropensityPB
+    @GetMapping("/user/mypage/list/pb")
+    public ResponseDTO<PBResponse.MyPropensityPBOutDTO> getMyPropensityPB(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        PBResponse.MyPropensityPBOutDTO myPropensityPBOutDTO = pbService.getMyPropensityPB(myUserDetails.getMember().getId());
+        return new ResponseDTO<>(myPropensityPBOutDTO);
+    }
 
     // PB 마이페이지 가져오기
     @MyLog
@@ -78,6 +85,7 @@ public class PBController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    // PB 회원가입
     @MyLog
     @SwaggerResponses.JoinPB
     @PostMapping("/join/pb")

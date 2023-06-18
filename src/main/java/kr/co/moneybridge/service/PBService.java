@@ -1,15 +1,17 @@
 package kr.co.moneybridge.service;
 
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
+import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
-import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
@@ -18,6 +20,7 @@ import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,10 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,7 +49,48 @@ public class PBService {
     private final CareerRepository careerRepository;
     private final UserBookmarkRepository userBookmarkRepository;
     private final PortfolioRepository portfolioRepository;
+    private final S3Util s3Util;
 
+    @MyLog
+    @Transactional
+    public PBResponse.MyPropensityPBOutDTO getMyPropensityPB(Long id) {
+        User userPS = userRepository.findById(id).orElseThrow(
+                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
+
+        if(userPS.getPropensity() == null){
+            throw new Exception404("투자 성향 정보가 없습니다. 검사 먼저 해주세요");
+        }
+
+        // 1) 투자 성향 별로 해당하는 PB id 리스트 가져오기
+        List<Long> pbIds = null;
+        // 공격형 - 전문분야가 부동산만 아니면 됨
+        if(userPS.getPropensity().equals(UserPropensity.SPECULATIVE)){
+            pbIds = pbRepository.findIdsBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE));
+        }
+        // 적극형 - 전문분야가 부동산과 파생만 아니면 됨
+        if(userPS.getPropensity().equals(UserPropensity.AGGRESSIVE)){
+            pbIds = pbRepository.findIdsBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE, PBSpeciality.DERIVATIVE));
+        }
+        // 그 외 - 전문분야가 채권, 펀드, 랩 중에 하나를 가지면 됨
+        pbIds = pbRepository.findIdsBySpecialityIn(Arrays.asList(PBSpeciality.FUND, PBSpeciality.BOND, PBSpeciality.WRAP));
+
+        // 2) 목록을 무작위로 섞음
+        Collections.shuffle(pbIds);
+
+        // 3) 섞인 목록에서 상위 3개의 id를 선택해서 가져오기 (최대 3개 - 전체가 2개면 2개 선택)
+        List<Long> randomIds = pbIds.subList(0, Math.min(pbIds.size(), 3));
+        List<PB> pbs = pbRepository.findByIdIn(randomIds);
+
+        List<PBResponse.MyPropensityPBDTO> list = new ArrayList<>();
+        pbs.stream().forEach(pb->{
+            Integer reserveCount = reservationRepository.countByPBIdAndProcess(pb.getId(), ReservationProcess.COMPLETE);
+            Integer reviewCount = reviewRepository.countByPBId(pb.getId());
+            Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(id, pb.getId());
+            list.add(new PBResponse.MyPropensityPBDTO(pb, reserveCount, reviewCount, isBookmark));
+        });
+
+        return new PBResponse.MyPropensityPBOutDTO(userPS, list);
+    }
 
     @MyLog
     @Transactional
@@ -110,18 +151,28 @@ public class PBService {
         if (businessCard == null || businessCard.isEmpty()) {
             throw new Exception400("businessCard", "명함 사진이 없습니다");
         }
-        // 압축해서 S3에 사진 저장하는 부분 추가 필요함
-        String fileName = businessCard.getOriginalFilename();
+        // S3에 사진 저장
         try {
-            PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, fileName));
+            String path = s3Util.upload(businessCard);
+            System.out.println(path);
+            PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if (agreements != null) {
                 agreements.stream().forEach(agreement ->
                         pbAgreementRepository.save(agreement.toEntity(pbPS)));
             }
             return new PBResponse.JoinOutDTO(pbPS);
+        } catch (AmazonS3Exception es) {
+            //  S3에 대한 액세스 권한이 없거나, 파일이 너무 크거나, S3 버킷이 존재하지 않는 경우
+            log.error("s3에 사진 저장 실패" + es.getMessage());
+            throw new Exception500("명함 사진 저장 실패: " + es.getMessage());
+        } catch (SdkClientException ec) {
+            //  네트워크 연결 문제나 클라이언트의 설정 문제
+            log.error("Amazon SDK에서 클라이언트 관련 오류" + ec.getMessage());
+            throw new Exception500("명함 사진 저장 실패: " + ec.getMessage());
         } catch (Exception e) {
-            throw new Exception500("회원가입 실패 : " + e.getMessage());
+            log.error(e.getMessage());
+            throw new Exception500("회원가입 실패: " + e.getMessage());
         }
     }
 

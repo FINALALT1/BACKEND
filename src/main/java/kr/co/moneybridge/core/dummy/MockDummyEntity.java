@@ -2,9 +2,7 @@ package kr.co.moneybridge.core.dummy;
 
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.backoffice.Answer;
-import kr.co.moneybridge.model.backoffice.Question;
-import kr.co.moneybridge.model.backoffice.QuestionAuthorRole;
+import kr.co.moneybridge.model.backoffice.*;
 import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
@@ -327,19 +325,21 @@ public class MockDummyEntity {
                 .build();
     }
 
-    public PBBookmark newMockPBBookmark(Long id, PB pb, User user) {
-        return PBBookmark.builder()
-                .id(id)
-                .user(user)
-                .pb(pb)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
     public BoardBookmark newMockBoardBookmark(Long id, User user, Board board) {
         return BoardBookmark.builder()
                 .id(id)
                 .bookmarkerId(user.getId())
+                .bookmarkerRole(BookmarkerRole.USER)
+                .board(board)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public BoardBookmark newMockBoardBookmarkByPB(Long id, PB pb, Board board) {
+        return BoardBookmark.builder()
+                .id(id)
+                .bookmarkerId(pb.getId())
+                .bookmarkerRole(BookmarkerRole.PB)
                 .board(board)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -438,33 +438,23 @@ public class MockDummyEntity {
                 .build();
     }
 
-    public Question newMockUserQuestion(Long id, User user) {
-        return Question.builder()
+    public FrequentQuestion newMockFrequentQuestion(Long id) {
+        return FrequentQuestion.builder()
                 .id(id)
-                .authorId(user.getId())
-                .authorRole(QuestionAuthorRole.USER)
-                .title("제목")
-                .content("1대1문의사항")
+                .label("회원")
+                .title("이메일이 주소가 변경되었어요.")
+                .content("가입 이메일은 회원 식별 고유 키로 가입 후 변경이 불가능 하므로 개인 이메일로 가입하기를 권유드립니다.")
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public Question newMockPBQuestion(Long id, PB pb) {
-        return Question.builder()
+    public Notice newMockNotice(Long id) {
+        return Notice.builder()
                 .id(id)
-                .authorId(pb.getId())
-                .authorRole(QuestionAuthorRole.PB)
-                .title("제목")
-                .content("1대1문의사항")
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
-    public Answer newMockAnswer(Long id, Question question) {
-        return Answer.builder()
-                .id(id)
-                .question(question)
-                .content("답변")
+                .title("서버 점검 안내")
+                .content("보다 나은 환경을 제공하기 위해 개발진에서 발견한 문제 복구 및 업데이트 점검을 진행할 예정입니다.\n" +
+                        "업데이트 점검을 진행하는 동안에는 접속할 수 없으니 불필요한 손해가 발생치 않도록 주의해 주세요.\n" +
+                        "이로 인해 불편을 끼쳐 드려 죄송합니다.")
                 .createdAt(LocalDateTime.now())
                 .build();
     }
