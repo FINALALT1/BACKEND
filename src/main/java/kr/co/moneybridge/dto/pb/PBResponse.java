@@ -235,27 +235,46 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "PB 상세프로필(로그인) 응답데이터")
     @Getter @Setter
     public static class PBProfileDTO {
-
+        @ApiModelProperty(example = "1", value = "PB의 id")
         private Long id;
+        @ApiModelProperty(example = "profile.png", value = "PB의 프로필")
         private String profile;
+        @ApiModelProperty(example = "김피비입니다.", value = "PB의 한줄메세지")
         private String msg;
+        @ApiModelProperty(example = "김피비", value = "PB의 이름")
         private String name;
+        @ApiModelProperty(example = "false", value = "PB 북마크여부")
         private Boolean isBookmarked;   //set해줘야함
+        @ApiModelProperty(example = "1", value = "PB의 증권사id")
         private Long companyId;
+        @ApiModelProperty(example = "미래에셋", value = "PB의 증권사명")
         private String companyName;
+        @ApiModelProperty(example = "logo.png", value = "PB의 증권사로고")
         private String companyLogo;
+        @ApiModelProperty(example = "성동점", value = "PB의 지점명")
         private String branchName;
+        @ApiModelProperty(example = "용산구 용산대로 12", value = "지점주소")
         private String branchAddress;
+        @ApiModelProperty(example = "87.1111", value = "지점위도")
         private Double branchLatitude;
+        @ApiModelProperty(example = "111.1111", value = "지점경도")
         private Double branchLongitude;
+        @ApiModelProperty(example = "12", value = "예약횟수")
         private Integer reserveCount;   //set해줘야함
+        @ApiModelProperty(example = "8", value = "리뷰횟수")
         private Integer reviewCount;    //set해줘야함
+        @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "소개글")
         private String intro;
+        @ApiModelProperty(example = "ETF", value = "전문분야1")
         private PBSpeciality speciality1;
+        @ApiModelProperty(example = "BOND", value = "전문분야2")
         private PBSpeciality speciality2;
+        @ApiModelProperty
         private List<CareerOutDTO> career;  //set해줘야함
+        @ApiModelProperty
         private List<AwardOutDTO> award;    //set해줘야함
 
         public PBProfileDTO(PB pb, Branch branch, Company company) {
