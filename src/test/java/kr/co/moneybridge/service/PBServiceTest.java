@@ -6,10 +6,13 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.Member;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.reservation.ReservationProcess;
 import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserBookmarkRepository;
 import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -53,6 +56,15 @@ class PBServiceTest extends MockDummyEntity {
     @Mock
     ReviewRepository reviewRepository;
     @Mock
+    AwardRepository awardRepository;
+    @Mock
+    CareerRepository careerRepository;
+    @Mock
+    UserBookmarkRepository userBookmarkRepository;
+    @Mock
+    PortfolioRepository portfolioRepository;
+    @Mock
+
     MyUserDetails myUserDetails;
     @Mock
     PB pb;
@@ -375,5 +387,54 @@ class PBServiceTest extends MockDummyEntity {
         assertThat(result.getProfile()).isEqualTo(dto.getProfile());
         assertThat(result.getMsg()).isEqualTo(dto.getMsg());
         assertThat(result.getCompanyLogo()).isEqualTo(dto.getCompanyLogo());
+    }
+
+    @Test
+    @DisplayName("PB 프로필가져오기(회원)")
+    void getPBProfile() {
+        //given
+        Long id = 1L;
+        Member member = User.builder()
+                .role(Role.USER).id(1L).build();
+        MyUserDetails myUserDetails = new MyUserDetails(member);
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(id, "김피비", this.branch);
+        PBResponse.PBProfileDTO dto = new PBResponse.PBProfileDTO(pb, branch, company);
+
+        //stub
+        when(pbRepository.findPBProfile(id)).thenReturn(Optional.of(dto));
+        when(awardRepository.getAwards(id)).thenReturn(new ArrayList<>());
+        when(careerRepository.getCareers(id)).thenReturn(new ArrayList<>());
+        when(reviewRepository.countByPBId(id)).thenReturn(1);
+
+        //when
+        PBResponse.PBProfileDTO result = pbService.getPBProfile(myUserDetails, id);
+
+        //then
+        assertThat(result).isEqualTo(dto);
+    }
+    @Test
+    @DisplayName("PB 포트폴리오 가져오기")
+    void getPortfolio() {
+        //given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(id, "김피비", branch);
+
+        Portfolio portfolio = newMockPortfolio(1L, pb);
+
+        //stub
+        when(pbRepository.findById(id)).thenReturn(Optional.of(pb));
+        when(portfolioRepository.findByPbId(id)).thenReturn(Optional.of(portfolio));
+
+        //when
+        PBResponse.PortfolioOutDTO result = pbService.getPortfolio(id);
+
+        //then
+        assertThat(result.getPbId()).isEqualTo(1L);
+        assertThat(result.getFile()).isEqualTo(portfolio.getFile());
+        assertThat(result.getAverageProfit()).isEqualTo(portfolio.getAverageProfit());
     }
 }

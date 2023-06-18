@@ -9,13 +9,12 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
 import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.reservation.ReviewRepository;
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserPropensity;
-import kr.co.moneybridge.model.user.UserRepository;
+import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,6 +44,11 @@ public class PBService {
     private final CompanyRepository companyRepository;
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
+    private final AwardRepository awardRepository;
+    private final CareerRepository careerRepository;
+    private final UserBookmarkRepository userBookmarkRepository;
+    private final PortfolioRepository portfolioRepository;
+
 
     @MyLog
     @Transactional
@@ -281,5 +285,43 @@ public class PBService {
         PBResponse.PBSimpleProfileDTO pbDTO = pbRepository.findSimpleProfile(id).orElseThrow(() -> new Exception404("해당 PB 존재하지 않습니다"));
 
         return pbDTO;
+    }
+
+    //PB 프로필가져오기(회원)
+    public PBResponse.PBProfileDTO getPBProfile(MyUserDetails myUserDetails, Long id) {
+
+        PBResponse.PBProfileDTO pbDTO = pbRepository.findPBProfile(id).orElseThrow(()-> new Exception404("해당 PB 존재하지 않습니다."));
+        pbDTO.setAward(awardRepository.getAwards(id));
+        pbDTO.setCareer(careerRepository.getCareers(id));
+        pbDTO.setReserveCount(reservationRepository.countByPBIdAndProcess(id, ReservationProcess.COMPLETE));
+        pbDTO.setReviewCount(reviewRepository.countByPBId(id));
+
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            Optional<UserBookmark> bookmark = userBookmarkRepository.findByUserIdWithPbId(myUserDetails.getMember().getId(), id);
+            if (bookmark.isPresent()) pbDTO.setIsBookmarked(true);
+        }
+
+        return pbDTO;
+    }
+
+    //PB 포트폴리오 가져오기
+    public PBResponse.PortfolioOutDTO getPortfolio(Long id) {
+
+        if(pbRepository.findById(id).isEmpty()) throw new Exception404("존재하지 않는 PB 입니다.");
+
+        Optional<Portfolio> portfolioOP = portfolioRepository.findByPbId(id);
+        PBResponse.PortfolioOutDTO dto = new PBResponse.PortfolioOutDTO();
+
+        if (portfolioOP.isPresent()) {
+            Portfolio portfolio = portfolioOP.get();
+            dto.setPbId(portfolio.getPb().getId());
+            dto.setCumulativeReturn(portfolio.getCumulativeReturn());
+            dto.setMaxDrawdown(portfolio.getMaxDrawdown());
+            dto.setProfitFactor(portfolio.getProfitFactor());
+            dto.setAverageProfit(portfolio.getAverageProfit());
+            dto.setFile(portfolio.getFile());
+        }
+
+        return dto;
     }
 }

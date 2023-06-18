@@ -2,10 +2,7 @@ package kr.co.moneybridge.dto.pb;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.moneybridge.model.pb.Branch;
-import kr.co.moneybridge.model.pb.Company;
-import kr.co.moneybridge.model.pb.PB;
-import kr.co.moneybridge.model.pb.PBSpeciality;
+import kr.co.moneybridge.model.pb.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -235,6 +232,112 @@ public class PBResponse {
             this.msg = pb.getMsg();
             this.companyLogo = company.getLogo();
         }
+    }
+
+    @ApiModel(description = "PB 상세프로필(로그인) 응답데이터")
+    @Getter @Setter
+    public static class PBProfileDTO {
+        @ApiModelProperty(example = "1", value = "PB의 id")
+        private Long id;
+        @ApiModelProperty(example = "profile.png", value = "PB의 프로필")
+        private String profile;
+        @ApiModelProperty(example = "김피비입니다.", value = "PB의 한줄메세지")
+        private String msg;
+        @ApiModelProperty(example = "김피비", value = "PB의 이름")
+        private String name;
+        @ApiModelProperty(example = "false", value = "PB 북마크여부")
+        private Boolean isBookmarked;   //set해줘야함
+        @ApiModelProperty(example = "1", value = "PB의 증권사id")
+        private Long companyId;
+        @ApiModelProperty(example = "미래에셋", value = "PB의 증권사명")
+        private String companyName;
+        @ApiModelProperty(example = "logo.png", value = "PB의 증권사로고")
+        private String companyLogo;
+        @ApiModelProperty(example = "성동점", value = "PB의 지점명")
+        private String branchName;
+        @ApiModelProperty(example = "용산구 용산대로 12", value = "지점주소")
+        private String branchAddress;
+        @ApiModelProperty(example = "87.1111", value = "지점위도")
+        private Double branchLatitude;
+        @ApiModelProperty(example = "111.1111", value = "지점경도")
+        private Double branchLongitude;
+        @ApiModelProperty(example = "12", value = "예약횟수")
+        private Integer reserveCount;   //set해줘야함
+        @ApiModelProperty(example = "8", value = "리뷰횟수")
+        private Integer reviewCount;    //set해줘야함
+        @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "소개글")
+        private String intro;
+        @ApiModelProperty(example = "ETF", value = "전문분야1")
+        private PBSpeciality speciality1;
+        @ApiModelProperty(example = "BOND", value = "전문분야2")
+        private PBSpeciality speciality2;
+        @ApiModelProperty
+        private List<CareerOutDTO> career;  //set해줘야함
+        @ApiModelProperty
+        private List<AwardOutDTO> award;    //set해줘야함
+
+        public PBProfileDTO(PB pb, Branch branch, Company company) {
+            this.id = pb.getId();
+            this.profile = pb.getProfile();
+            this.msg = pb.getMsg();
+            this.name = pb.getName();
+            this.isBookmarked = false;
+            this.companyId = company.getId();
+            this.companyName = company.getName();
+            this.companyLogo = company.getLogo();
+            this.branchName = branch.getName();
+            this.branchAddress = branch.getRoadAddress();
+            this.branchLatitude = branch.getLatitude();
+            this.branchLongitude = branch.getLongitude();
+            this.intro = pb.getIntro();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
+        }
+    }
+
+    @Getter
+    public static class CareerOutDTO {
+        private Long id;
+        private Integer start;
+        private Integer end;
+        private String career;
+
+        public CareerOutDTO(Career career) {
+            this.id = career.getId();
+            this.start = career.getStartYear();
+            this.end = career.getEndYear();
+            this.career = career.getCareer();
+        }
+    }
+
+    @Getter
+    public static class AwardOutDTO {
+        private Long id;
+        private Integer year;
+        private String record;
+
+        public AwardOutDTO(Award award) {
+            this.id = award.getId();
+            this.year = award.getCreatedAt().getYear();
+            this.record = award.getRecord();
+        }
+    }
+
+    @ApiModel(description = "PB 포트폴리오 응답데이터")
+    @Getter @Setter
+    public static class PortfolioOutDTO {
+        @ApiModelProperty(example = "1", value = "pb의 id")
+        private Long pbId;
+        @ApiModelProperty(example = "28.8", value = "누적손익률")
+        private Double cumulativeReturn;
+        @ApiModelProperty(example = "1.11", value = "최대자본인하율")
+        private Double maxDrawdown;
+        @ApiModelProperty(example = "1.44", value = "profit factor")
+        private Double profitFactor;
+        @ApiModelProperty(example = "88.1", value = "평균수익률")
+        private Double averageProfit;
+        @ApiModelProperty(example = "portfolio.pdf", value = "포트폴리오")
+        private String file;
     }
 
 }
