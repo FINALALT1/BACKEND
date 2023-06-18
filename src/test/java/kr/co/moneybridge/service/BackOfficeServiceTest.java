@@ -53,7 +53,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         assertThat(noticeDTO.getList().get(0).getContent()).isEqualTo("보다 나은 환경을 제공하기 위해 개발진에서 발견한 문제 복구 및 업데이트 점검을 진행할 예정입니다.\n" +
                 "업데이트 점검을 진행하는 동안에는 접속할 수 없으니 불필요한 손해가 발생치 않도록 주의해 주세요.\n" +
                 "이로 인해 불편을 끼쳐 드려 죄송합니다.");
-        assertThat(noticeDTO.getList().get(0).getDate()).isEqualTo(LocalDate.parse("2023-06-18"));
+        assertThat(noticeDTO.getList().get(0).getDate()).isEqualTo(LocalDate.now());
         assertThat(noticeDTO.getTotalElements()).isEqualTo(1);
         assertThat(noticeDTO.getTotalPages()).isEqualTo(1);
         assertThat(noticeDTO.getCurPage()).isEqualTo(0);

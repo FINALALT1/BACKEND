@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
 
+import java.time.LocalDate;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,7 +66,7 @@ public class BackOfficeControllerTest {
         resultActions.andExpect(jsonPath("$.data.list[0].content").value("보다 나은 환경을 제공하기 위해 개발진에서 발견한 문제 복구 및 업데이트 점검을 진행할 예정입니다.\n" +
                 "업데이트 점검을 진행하는 동안에는 접속할 수 없으니 불필요한 손해가 발생치 않도록 주의해 주세요.\n" +
                 "이로 인해 불편을 끼쳐 드려 죄송합니다."));
-        resultActions.andExpect(jsonPath("$.data.list[0].date").value("2023-06-18"));
+        resultActions.andExpect(jsonPath("$.data.list[0].date").value(LocalDate.now().toString()));
         resultActions.andExpect(jsonPath("$.data.totalElements").value("1"));
         resultActions.andExpect(jsonPath("$.data.totalPages").value("1"));
         resultActions.andExpect(jsonPath("$.data.curPage").value("0"));
