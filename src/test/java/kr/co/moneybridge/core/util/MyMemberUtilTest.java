@@ -13,16 +13,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -77,6 +78,9 @@ public class MyMemberUtilTest extends MockDummyEntity {
 
     @Mock
     private ReReplyRepository reReplyRepository;
+
+    @Mock
+    private S3Util s3Util;
 
     @Test
     void findByEmail_pb_test() {
@@ -241,7 +245,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
     }
 
     @Test
-    public void deleteById_pb_test() {
+    public void deleteById_pb_test() throws IOException {
         // given
         Long id = 1L;
         Company company = newMockCompany(1L, "미래에셋증권");
@@ -290,6 +294,10 @@ public class MyMemberUtilTest extends MockDummyEntity {
         Optional<Review> reviewOP = Optional.ofNullable(review);
         Style style1 = newMockStyle(1L, review, StyleStyle.FAST);
         Style style2 = newMockStyle(2L, review, StyleStyle.KIND);
+        MockMultipartFile init = new MockMultipartFile(
+                "init", "businessCard.png", "image/png"
+                , new FileInputStream("./src/main/resources/businessCard.png"));
+        String path = s3Util.upload(init);
 
         // stub
         when(boardRepository.findAllByPBId(id)).thenReturn(boards);
@@ -298,11 +306,14 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(replyRepository.findAllByAuthor(id, ReplyAuthorRole.PB)).thenReturn(replies);
         when(reservationRepository.findAllByPBId(id)).thenReturn(reservations);
         when(reviewRepository.findByReservationId(reservation1.getId())).thenReturn(reviewOP);
+        when(pbRepository.findBusinessCardById(id)).thenReturn(path);
+//        when(s3Util.delete(path)).then(doNothing());
 
         // when
         myMemberUtil.deleteById(id, Role.PB);
 
         // then
+        verify(pbRepository, times(1)).findBusinessCardById(id);
         verify(pbRepository, times(1)).deleteById(id);
         verify(portfolioRepository, times(1)).deleteByPBId(id);
         verify(pbAgreementRepository, times(1)).deleteByPBId(id);
