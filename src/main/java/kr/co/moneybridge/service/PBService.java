@@ -151,22 +151,16 @@ public class PBService {
         if (businessCard == null || businessCard.isEmpty()) {
             throw new Exception400("businessCard", "명함 사진이 없습니다");
         }
-        // 압축해서 S3에 사진 저장하는 부분 추가 필요함
-        // 서버에 사진 저장
+        // S3에 사진 저장
         try {
-            System.out.println(1);
             String path = s3Util.upload(businessCard);
-            System.out.println(2);
             System.out.println(path);
-            System.out.println(3);
             PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path));
-            System.out.println(4);
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if (agreements != null) {
                 agreements.stream().forEach(agreement ->
                         pbAgreementRepository.save(agreement.toEntity(pbPS)));
             }
-            System.out.println(5);
             return new PBResponse.JoinOutDTO(pbPS);
         } catch (AmazonS3Exception es) {
             //  S3에 대한 액세스 권한이 없거나, 파일이 너무 크거나, S3 버킷이 존재하지 않는 경우
