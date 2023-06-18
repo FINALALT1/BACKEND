@@ -25,31 +25,6 @@ import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 @RestController
 public class ReservationController {
     private final ReservationService reservationService;
-    private final String BAD_REQUEST = "{\n" +
-            "&nbsp;&nbsp;\"status\": \"badRequest\",\n" +
-            "&nbsp;&nbsp;\"msg\": 400,\n" +
-            "&nbsp;&nbsp;\"data\": \"에러 메세지\"\n" +
-            "}";
-    private final String UNAUTHORIZED = "{\n" +
-            "&nbsp;&nbsp;\"status\": \"unAuthorized\",\n" +
-            "&nbsp;&nbsp;\"msg\": 401,\n" +
-            "&nbsp;&nbsp;\"data\": \"에러 메세지\"\n" +
-            "}";
-    private final String FORBIDDEN = "{\n" +
-            "&nbsp;&nbsp;\"status\": \"forbidden\",\n" +
-            "&nbsp;&nbsp;\"msg\": 403,\n" +
-            "&nbsp;&nbsp;\"data\": \"에러 메세지\"\n" +
-            "}";
-    private final String NOT_FOUND = "{\n" +
-            "&nbsp;&nbsp;\"status\": \"notFound\",\n" +
-            "&nbsp;&nbsp;\"msg\": 404,\n" +
-            "&nbsp;&nbsp;\"data\": \"에러 메세지\"\n" +
-            "}";
-    private final String INTERNAL_SERVER_ERROR = "{\n" +
-            "&nbsp;&nbsp;\"status\": \"unknownServerError\",\n" +
-            "&nbsp;&nbsp;\"msg\": 500,\n" +
-            "&nbsp;&nbsp;\"data\": \"에러 메세지\"\n" +
-            "}";
 
     @MyLog
     @ApiOperation(value = "상담 예약 사전 정보 조회")
@@ -174,11 +149,11 @@ public class ReservationController {
     @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation/{id}")
-    public ResponseDTO<ReservationResponse.DetailDTO> getReservationDetail(@PathVariable Long id,
-                                                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(id, myUserDetails.getMember().getId());
+    public ResponseDTO<ReservationResponse.DetailByPBDTO> getReservationDetail(@PathVariable Long id,
+                                                                               @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetailByPB(id, myUserDetails.getMember().getId());
 
-        return new ResponseDTO<>(detailDTO);
+        return new ResponseDTO<>(detailByPBDTO);
     }
 
     @MyLog

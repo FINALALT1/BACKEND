@@ -7,6 +7,8 @@ import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.reservation.ReservationRepository;
+import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -47,6 +49,12 @@ class PBServiceTest extends MockDummyEntity {
     @Mock
     BranchRepository branchRepository;
     @Mock
+    ReservationRepository reservationRepository;
+    @Mock
+    ReviewRepository reviewRepository;
+    @Mock
+    MyUserDetails myUserDetails;
+    @Mock
     PB pb;
     @Mock
     Branch branch;
@@ -54,6 +62,37 @@ class PBServiceTest extends MockDummyEntity {
     Company company;
     @Mock
     Pageable pageable;
+
+    @Test
+    @DisplayName("PB 마이페이지 가져오기")
+    void getMyPage() {
+        //given
+        Optional<PB> pbOP = Optional.of(newMockPB(1L, "김pb",
+                newMockBranch(1L, newMockCompany(1L, "미래에셋증권"),0)));
+        //stub
+        when(myUserDetails.getMember()).thenReturn(pbOP.get());
+        when(pbRepository.findByEmail(any())).thenReturn(pbOP);
+        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0);
+        when(reviewRepository.countByPBId(any())).thenReturn(0);
+
+        //when
+        PBResponse.MyPageOutDTO myPageOutDTO = pbService.getMyPage(myUserDetails);
+
+        //then
+        assertThat(myPageOutDTO.getProfile()).isEqualTo("profile.png");
+        assertThat(myPageOutDTO.getName()).isEqualTo("김pb");
+        assertThat(myPageOutDTO.getBranchName()).isEqualTo("미래에셋증권 여의도점");
+        assertThat(myPageOutDTO.getMsg()).isEqualTo("한줄메시지..");
+        assertThat(myPageOutDTO.getCareer()).isEqualTo(10);
+        assertThat(myPageOutDTO.getSpecialty1()).isEqualTo(PBSpeciality.BOND);
+        assertThat(myPageOutDTO.getSpecialty2()).isNull();
+        assertThat(myPageOutDTO.getReserveCount()).isEqualTo(0);
+        assertThat(myPageOutDTO.getReviewCount()).isEqualTo(0);
+        Mockito.verify(myUserDetails, Mockito.times(1)).getMember();
+        Mockito.verify(pbRepository, Mockito.times(1)).findByEmail(any());
+        Mockito.verify(reservationRepository, Mockito.times(1)).countByPBIdAndProcess(any(), any());
+        Mockito.verify(reviewRepository, Mockito.times(1)).countByPBId(any());
+    }
 
     @Test
     @DisplayName("지점 검색")

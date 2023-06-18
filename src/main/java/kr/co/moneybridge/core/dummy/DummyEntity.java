@@ -24,18 +24,9 @@ public class DummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.USER)
                 .profile("프로필.png")
-                .build();
-    }
-
-    public User newUserStatusFalse(String username) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        return User.builder()
-                .name(username)
-                .password(passwordEncoder.encode("password1234"))
-                .email(username + "@nate.com")
-                .phoneNumber("01012345678")
-                .role(Role.USER)
-                .profile("프로필.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
                 .build();
     }
 
@@ -49,6 +40,9 @@ public class DummyEntity {
                 .propensity(UserPropensity.AGGRESSIVE)
                 .role(Role.USER)
                 .profile("프로필.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
                 .build();
     }
 

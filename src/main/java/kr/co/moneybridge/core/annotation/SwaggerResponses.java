@@ -14,8 +14,8 @@ public class SwaggerResponses {
             "&nbsp;&nbsp;\"status\": 400,\n" +
             "&nbsp;&nbsp;\"msg\": \"badRequest\",\n" +
             "&nbsp;&nbsp;\"data\": {\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;\"key\": \"name\",\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;\"value\": \"오류메세지\"\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"key\": \"변수명\",\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"value\": \"에러 메세지\"\n" +
             "&nbsp;&nbsp;}\n" +
             "}";
     private static final String UNAUTHORIZED = "{\n" +
@@ -55,6 +55,78 @@ public class SwaggerResponses {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface DefaultApiResponses {
+    }
+
+    @ApiOperation(value = "투자자 성향 변경")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface UpdatePropensity {
+    }
+
+    @ApiOperation(value = "투자자 성향 체크")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface TestPropensity {
+    }
+
+    @ApiOperation(value = "PB 마이페이지 가져오기")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetMyPagePB {
+    }
+
+    @ApiOperation(value = "투자자 마이페이지 가져오기")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetMyPageUser {
     }
 
     @ApiOperation(value = "지점 검색")

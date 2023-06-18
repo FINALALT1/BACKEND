@@ -1,7 +1,6 @@
 package kr.co.moneybridge.core;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
-import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +22,9 @@ public class WithMockUserFactory implements WithSecurityContextFactory<WithMockU
                 .phoneNumber("01012345678")
                 .role(mockUser.role())
                 .profile("profile.png")
+                .hasDoneBoardBookmark(false)
+                .hasDoneReservation(false)
+                .hasDoneReview(false)
                 .createdAt(LocalDateTime.now())
                 .build();
         MyUserDetails userDetails = new MyUserDetails(user);

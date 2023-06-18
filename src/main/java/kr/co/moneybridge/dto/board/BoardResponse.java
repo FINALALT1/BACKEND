@@ -18,7 +18,7 @@ import java.util.List;
 
 public class BoardResponse {
 
-    @ApiModel(description = "메인페이지 맞춤성향 컨텐츠 데이터")
+    @ApiModel(description = "메인페이지 컨텐츠 데이터")
     @Getter
     @Setter
     public static class BoardPageDTO {

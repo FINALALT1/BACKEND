@@ -41,6 +41,15 @@ public class User implements Member {
     private String profile;
 
     @Column(nullable = false)
+    private Boolean hasDoneBoardBookmark; // 콘텐츠 북마크 한 적 있는지
+
+    @Column(nullable = false)
+    private Boolean hasDoneReservation; // 상담 예약 신청한 적있는지
+
+    @Column(nullable = false)
+    private Boolean hasDoneReview; // 후기작성 완료한 적 있는지
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -60,8 +69,10 @@ public class User implements Member {
     public void updateName(String name){
         this.name = name;
     }
-
     public void updatePhoneNumber(String phoneNumber){
         this.phoneNumber = phoneNumber;
+    }
+    public void updatePropensity(UserPropensity propensity){
+        this.propensity = propensity;
     }
 }

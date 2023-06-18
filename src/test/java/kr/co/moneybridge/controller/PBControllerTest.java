@@ -2,7 +2,9 @@ package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;
+import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.pb.PBRequest;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -13,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -47,14 +52,62 @@ public class PBControllerTest {
     private BranchRepository branchRepository;
     @Autowired
     private CompanyRepository companyRepository;
+    @Autowired
+    private PBRepository pbRepository;
 
     @BeforeEach
     public void setUp() {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user1 = userRepository.save(dummy.newUser("로그인"));
-        Company company1 = companyRepository.save(dummy.newCompany("미래에셋증권"));
-        Branch branch1 = branchRepository.save(dummy.newBranch(company1, 0));
+        Company company = companyRepository.save(dummy.newCompany("미래에셋증권"));
+        Branch branch = branchRepository.save(dummy.newBranch(company, 0));
+        PB pb = pbRepository.save(PB.builder()
+                .name("김pb")
+                .password(passwordEncoder.encode("password1234"))
+                .email("jisu3148496@naver.com")
+                .phoneNumber("01012345678")
+                .branch(branch)
+                .profile("profile.png")
+                .businessCard("card.png")
+                .career(10)
+                .speciality1(PBSpeciality.BOND)
+                .intro("김pb 입니다")
+                .msg("한줄메시지..")
+                .reservationInfo("10분 미리 도착해주세요")
+                .consultStart(MyDateUtil.StringToLocalTime("09:00"))
+                .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
+                .consultNotice("월요일 불가능합니다")
+                .role(Role.PB)
+                .status(PBStatus.ACTIVE)
+                .build());
         em.clear();
     }
+
+    @DisplayName("PB 마이페이지 가져오기 성공")
+    @WithUserDetails(value = "PB-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void getMyPage() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/pb/mypage"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.profile").value("profile.png"));
+        resultActions.andExpect(jsonPath("$.data.name").value("김pb"));
+        resultActions.andExpect(jsonPath("$.data.branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.msg").value("한줄메시지.."));
+        resultActions.andExpect(jsonPath("$.data.career").value("10"));
+        resultActions.andExpect(jsonPath("$.data.specialty1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.specialty2").doesNotExist());
+        resultActions.andExpect(jsonPath("$.data.reserveCount").value("0"));
+        resultActions.andExpect(jsonPath("$.data.reviewCount").value("0"));
+        resultActions.andExpect(status().isOk());
+    }
+
     @DisplayName("지점 검색 성공 -  지번 주소")
     @Test
     public void searchBranchStreet() throws Exception {

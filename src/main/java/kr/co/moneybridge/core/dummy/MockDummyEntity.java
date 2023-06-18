@@ -25,8 +25,27 @@ public class MockDummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.USER)
                 .profile("profile.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
                 .createdAt(LocalDateTime.now())
                 .propensity(UserPropensity.AGGRESSIVE)
+                .build();
+    }
+    public User newMockUserWithoutPropensity(Long id, String username) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return User.builder()
+                .id(id)
+                .name(username)
+                .password(passwordEncoder.encode("password1234"))
+                .email(username + "@nate.com")
+                .phoneNumber("01012345678")
+                .role(Role.USER)
+                .profile("profile.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
     public User newMockUserADMIN(Long id, String username) {
@@ -39,6 +58,9 @@ public class MockDummyEntity {
                 .phoneNumber("01012345678")
                 .role(Role.ADMIN)
                 .profile("profile.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -54,6 +76,9 @@ public class MockDummyEntity {
                 .propensity(UserPropensity.AGGRESSIVE)
                 .role(Role.USER)
                 .profile("profile.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

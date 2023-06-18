@@ -1,6 +1,7 @@
 package kr.co.moneybridge.model.board;
 
 import kr.co.moneybridge.dto.board.BoardResponse;
+import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.model.reservation.Reservation;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
+    @Query("SELECT new kr.co.moneybridge.dto.user.UserResponse$BookmarkDTO(b) FROM Board b " +
+            "JOIN BoardBookmark bb ON bb.board = b WHERE bb.bookmarkerRole = :role AND bb.bookmarkerId = :id")
+    Page<UserResponse.BookmarkDTO> findTwoByBookmarker(@Param("role") BookmarkerRole role, @Param("id") Long id, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) " +
             "FROM Board b " +
@@ -90,4 +94,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "WHERE (pb.speciality1 IN :specialities OR pb.speciality2 IN :specialities) " +
             "ORDER BY b.id DESC")
     List<BoardResponse.BoardPageDTO> findRecommendedBoards(Pageable pageable, @Param("specialities") PBSpeciality... specialities);
+
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, pb, c) FROM Board b " +
+            "JOIN PB pb ON b.pb = pb " +
+            "JOIN Branch br ON pb.branch = br " +
+            "JOIN Company c ON br.company = c " +
+            "ORDER BY b.id DESC")
+    List<BoardResponse.BoardPageDTO> findTwoBoards(Pageable pageable);
 }

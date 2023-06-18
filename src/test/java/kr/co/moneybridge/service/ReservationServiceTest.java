@@ -239,9 +239,9 @@ public class ReservationServiceTest extends MockDummyEntity {
         // stub
         Mockito.when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
-        Mockito.when(reservationRepository.countReservationByPBIdAndProcess(anyLong(), any()))
+        Mockito.when(reservationRepository.countByPBIdAndProcess(anyLong(), any()))
                 .thenReturn(10);
-        Mockito.when(reservationRepository.countRecentReservationByPBIdAndProcess(anyLong(), any()))
+        Mockito.when(reservationRepository.countRecentByPBIdAndProcess(anyLong(), any()))
                 .thenReturn(1);
 
 
@@ -313,25 +313,28 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(Optional.of(reservation));
         Mockito.when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
+        Mockito.when(reviewRepository.countByReservationId(anyLong()))
+                .thenReturn(0);
 
         // when
-        ReservationResponse.DetailDTO detailDTO = reservationService.getReservationDetail(reservation.getId(), pbId);
+        ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetailByPB(reservation.getId(), pbId);
 
         // then
-        assertThat(detailDTO.getUserId()).isEqualTo(1L);
-        assertThat(detailDTO.getProfileImage()).isEqualTo("profile.png");
-        assertThat(detailDTO.getName()).isEqualTo("lee");
-        assertThat(detailDTO.getPhoneNumber()).isEqualTo("01012345678");
-        assertThat(detailDTO.getEmail()).isEqualTo("lee@nate.com");
-        assertThat(detailDTO.getReservationId()).isEqualTo(1L);
-        assertThat(detailDTO.getCandidateTime1()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
-        assertThat(detailDTO.getCandidateTime2()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
-        assertThat(detailDTO.getTime()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
-        assertThat(detailDTO.getType()).isEqualTo(ReservationType.VISIT);
-        assertThat(detailDTO.getLocation()).isEqualTo("kb증권 강남중앙점");
-        assertThat(detailDTO.getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
-        assertThat(detailDTO.getGoal()).isEqualTo(ReservationGoal.PROFIT);
-        assertThat(detailDTO.getQuestion()).isEqualTo("질문입니다...");
+        assertThat(detailByPBDTO.getUserId()).isEqualTo(1L);
+        assertThat(detailByPBDTO.getProfileImage()).isEqualTo("profile.png");
+        assertThat(detailByPBDTO.getName()).isEqualTo("lee");
+        assertThat(detailByPBDTO.getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(detailByPBDTO.getEmail()).isEqualTo("lee@nate.com");
+        assertThat(detailByPBDTO.getReservationId()).isEqualTo(1L);
+        assertThat(detailByPBDTO.getCandidateTime1()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailByPBDTO.getCandidateTime2()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailByPBDTO.getTime()).matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$");
+        assertThat(detailByPBDTO.getType()).isEqualTo(ReservationType.VISIT);
+        assertThat(detailByPBDTO.getLocation()).isEqualTo("kb증권 강남중앙점");
+        assertThat(detailByPBDTO.getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
+        assertThat(detailByPBDTO.getGoal()).isEqualTo(ReservationGoal.PROFIT);
+        assertThat(detailByPBDTO.getQuestion()).isEqualTo("질문입니다...");
+        assertThat(detailByPBDTO.getReviewCheck()).isEqualTo(false);
     }
 
 //    @Test

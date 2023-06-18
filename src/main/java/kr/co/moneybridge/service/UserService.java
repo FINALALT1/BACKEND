@@ -16,11 +16,18 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserAgreementRepository;
-import kr.co.moneybridge.model.user.UserRepository;
+import kr.co.moneybridge.model.board.BoardBookmarkRepository;
+import kr.co.moneybridge.model.board.BoardRepository;
+import kr.co.moneybridge.model.board.BookmarkerRole;
+import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.reservation.ReservationProcess;
+import kr.co.moneybridge.model.reservation.ReservationRepository;
+import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,6 +57,65 @@ public class UserService {
     private final RedisUtil redisUtil;
     private final MyMemberUtil myMemberUtil;
     private final JavaMailSender javaMailSender;
+    private final ReservationRepository reservationRepository;
+    private final BoardRepository boardRepository;
+    private final BoardBookmarkRepository boardBookmarkRepository;
+    private final UserBookmarkRepository userBookmarkRepository;
+    private final PBRepository pbRepository;
+
+    private final UserInvestInfoRepository userInvestInfoRepository;
+
+    @MyLog
+    @Transactional
+    public void updatePropensity(UserRequest.UpdatePropensityInDTO updatePropensityInDTO, Long id) {
+        User userPS = userRepository.findById(id).orElseThrow(
+                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
+        UserInvestInfo userInvestInfoPS = userInvestInfoRepository.findByUserId(id)
+                .orElseThrow(() -> new Exception404("해당 유저의 투자 성향 정보를 찾을 수 없습니다"));
+        try{
+            userInvestInfoPS.update(updatePropensityInDTO);
+            userPS.updatePropensity(userInvestInfoPS.getPropensity());
+        }catch (Exception e){
+            throw new Exception500("투자 성향 테스트 결과 저장 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void testPropensity(UserRequest.TestPropensityInDTO testPropensityInDTO, Long id) {
+        User userPS = userRepository.findById(id).orElseThrow(
+                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
+        Optional<UserInvestInfo> userInvestInfoPS = userInvestInfoRepository.findByUserId(id);
+        if(userInvestInfoPS.isPresent()){
+            throw new Exception500("이미 투자 성향 테스트 정보가 있습니다");
+        }
+        try{
+            UserInvestInfo userInvestInfo = userInvestInfoRepository.save(testPropensityInDTO.toEntity(userPS));
+            userPS.updatePropensity(userInvestInfo.getPropensity());
+        }catch (Exception e){
+            throw new Exception500("투자 성향 테스트 결과 저장 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    public UserResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {
+        User user = (User) myUserDetails.getMember();
+        UserResponse.StepDTO step = new UserResponse.StepDTO(user);
+        UserResponse.ReservationCountDTO reservationCount = new UserResponse.ReservationCountDTO(
+                reservationRepository.countByProcess(ReservationProcess.APPLY),
+                reservationRepository.countByProcess(ReservationProcess.CONFIRM),
+                reservationRepository.countByProcess(ReservationProcess.COMPLETE));
+
+        Pageable topTwo = PageRequest.of(0, 2);
+        Page<UserResponse.BookmarkDTO> boardBookmarkTwo = boardRepository.findTwoByBookmarker(BookmarkerRole.USER, user.getId(), topTwo);
+        Page<UserResponse.BookmarkDTO> pbBookmarkTwo = pbRepository.findTwoByBookmarker(user.getId(), topTwo);
+
+        UserResponse.BookmarkListDTO boardBookmark = new UserResponse.BookmarkListDTO(
+                boardBookmarkTwo.getContent(), boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, user.getId()));
+        UserResponse.BookmarkListDTO pbBookmark = new UserResponse.BookmarkListDTO(
+                pbBookmarkTwo.getContent(), userBookmarkRepository.countByUserId(user.getId()));
+        return new UserResponse.MyPageOutDTO(user, step, reservationCount, boardBookmark, pbBookmark);
+    }
 
     @MyLog
     @Transactional

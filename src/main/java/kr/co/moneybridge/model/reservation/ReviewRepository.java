@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+    @Query(value = "select count(r) from Review r where r.reservation.pb.id = :pbId")
+    Integer countByPBId(@Param("pbId") Long pbId);
+
     @Modifying
     @Query("delete from Review r where r.reservation.id = :reservationId")
     void deleteByReservationId(@Param("reservationId") Long reservationId);
@@ -24,4 +27,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "join res.user u " +
             "where res.pb.id = :pbId and res.process = :process")
     Page<Review> findAllByPbIdAndProcess(@Param("pbId") Long pbId, @Param("process") ReservationProcess process, Pageable pageable);
+
+    @Query("select count(r) " +
+            "from Review r " +
+            "where r.reservation.id = :reservationId")
+    Integer countByReservationId(@Param("reservationId") Long reservationId);
 }

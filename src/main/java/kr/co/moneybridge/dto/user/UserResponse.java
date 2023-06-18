@@ -4,13 +4,120 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.board.Board;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserPropensity;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
 public class UserResponse {
+    @ApiModel
+    @Setter
+    @Getter
+    public static class BookmarkDTO {
+        @ApiModelProperty(example = "1", value = "id - 두 개만 보여줌")
+        private Long id;
+        @ApiModelProperty(example = "thumbnail.png", value = "이미지 - 두 개만 보여줌")
+        private String thumbnail;
+
+        public BookmarkDTO(Board board) {
+            this.id = board.getId();
+            this.thumbnail = board.getThumbnail();
+        }
+        public BookmarkDTO(PB pb) { // 오버로딩
+            this.id = pb.getId();
+            this.thumbnail = pb.getProfile();
+        }
+    }
+
+    @ApiModel
+    @Setter
+    @Getter
+    public static class BookmarkListDTO {
+        @ApiModelProperty
+        private List<BookmarkDTO> list;
+        @ApiModelProperty(example = "0", value = "북마크한 개수")
+        private Integer count;
+
+        public BookmarkListDTO(List<BookmarkDTO> list, Integer count) {
+            this.list = list;
+            this.count = count;
+        }
+    }
+
+    @ApiModel
+    @Setter
+    @Getter
+    public static class ReservationCountDTO {
+        @ApiModelProperty(example = "0", value = "예약 신청 개수")
+        private Integer apply;
+        @ApiModelProperty(example = "0", value = "예약 확정 개수")
+        private Integer confirm;
+        @ApiModelProperty(example = "0", value = "상담 완료 개수")
+        private Integer complete;
+
+        public ReservationCountDTO(Integer apply, Integer comfirm, Integer complete) {
+            this.apply = apply;
+            this.confirm = comfirm;
+            this.complete = complete;
+        }
+    }
+
+    @ApiModel
+    @Setter
+    @Getter
+    public static class StepDTO {
+        @ApiModelProperty(example = "true", value = "투자 성향 검사 한 적 있는지")
+        private Boolean hasDonePropensity;
+        @ApiModelProperty(example = "false", value = "콘텐츠 북마크 한 적 있는지")
+        private Boolean hasDoneBoardBookmark;
+        @ApiModelProperty(example = "false", value = "상담 예약 신청한 적있는지")
+        private Boolean hasDoneReservation;
+        @ApiModelProperty(example = "false", value = "후기작성 완료한 적 있는지")
+        private Boolean hasDoneReview;
+
+        public StepDTO(User user) {
+            this.hasDonePropensity = user.getPropensity() == null ? false : true;
+            this.hasDoneBoardBookmark = user.getHasDoneBoardBookmark();
+            this.hasDoneReservation = user.getHasDoneReservation();
+            this.hasDoneReview = user.getHasDoneReview();
+        }
+    }
+
+    @ApiModel(description = "투자자 마이페이지 가져오기시 응답 데이터")
+    @Setter
+    @Getter
+    public static class MyPageOutDTO {
+        @ApiModelProperty(example = "1", value = "투자자 id")
+        private Long id;
+        @ApiModelProperty(example = "김투자", value = "투자자 이름")
+        private String name;
+        @ApiModelProperty(example = "AGGRESSIVE", value = "투자 성향")
+        private UserPropensity propensity;
+        @ApiModelProperty
+        private StepDTO step;
+        @ApiModelProperty
+        private ReservationCountDTO reservationCount;
+        @ApiModelProperty
+        private BookmarkListDTO boardBookmark;
+        @ApiModelProperty
+        private BookmarkListDTO pbBookmark;
+
+        public MyPageOutDTO(User user, StepDTO step,ReservationCountDTO reservationCount,
+                                BookmarkListDTO boardBookmark, BookmarkListDTO pbBookmark) {
+            this.id = user.getId();
+            this.name = user.getName();
+            this.propensity = user.getPropensity();
+            this.step = step;
+            this.reservationCount = reservationCount;
+            this.boardBookmark = boardBookmark;
+            this.pbBookmark = pbBookmark;
+        }
+    }
+
     @ApiModel(description = "개인 정보 가져오기시 응답 데이터")
     @Setter
     @Getter

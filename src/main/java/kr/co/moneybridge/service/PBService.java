@@ -10,6 +10,9 @@ import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.reservation.ReservationProcess;
+import kr.co.moneybridge.model.reservation.ReservationRepository;
+import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -40,6 +43,21 @@ public class PBService {
     private final PBAgreementRepository pbAgreementRepository;
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+    private final ReservationRepository reservationRepository;
+    private final ReviewRepository reviewRepository;
+
+    @MyLog
+    @Transactional
+    public PBResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {
+        String email = myUserDetails.getMember().getEmail();
+        Optional<PB> pbOP = pbRepository.findByEmail(email);
+        if(!pbOP.isPresent()){
+            throw new Exception500("PB 계정이 없습니다");
+        }
+        return new PBResponse.MyPageOutDTO(pbOP.get(),
+                reservationRepository.countByPBIdAndProcess(pbOP.get().getId(), ReservationProcess.COMPLETE),
+                reviewRepository.countByPBId(pbOP.get().getId()));
+    }
 
     @MyLog
     public PageDTO<PBResponse.BranchDTO> searchBranch(Long companyId, String keyword, Pageable pageable) {
