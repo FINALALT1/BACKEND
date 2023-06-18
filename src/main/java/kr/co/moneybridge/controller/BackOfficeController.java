@@ -1,5 +1,7 @@
 package kr.co.moneybridge.controller;
 
+import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
@@ -16,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
+    // 자주 묻는 질문 목록 가져오기
+    @MyLog
+    @SwaggerResponses.GetFAQ
     @GetMapping("/FAQ")
-    public ResponseEntity<?> getFAQ() {
+    public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQ() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
         PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(faqDTO);
-        return ResponseEntity.ok().body(responseDTO);
+        return new ResponseDTO<>(faqDTO);
     }
 }
