@@ -340,4 +340,37 @@ public class PBResponse {
         private String file;
     }
 
+    @Getter @Setter
+    public static class PBUpdateOutDTO {
+        private String company;
+        private String branchName;
+        private Integer career;
+        private List<CareerOutDTO> careers; //set해줘야함
+        private List<AwardOutDTO> awards;   //set해줘야함
+        private PBSpeciality speciality1;
+        private PBSpeciality speciality2;
+        private Double cumulativeReturn;
+        private Double maxDrawdown;
+        private Double profitFactor;
+        private Double averageProfit;
+        private String file;
+        private String intro;
+        private String msg;
+
+        public PBUpdateOutDTO(PB pb, Branch branch, Company company, Portfolio portfolio) {
+            this.company = company.getName();
+            this.branchName = branch.getName();
+            this.career = pb.getCareer();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
+            this.cumulativeReturn = portfolio.getCumulativeReturn();
+            this.maxDrawdown = portfolio.getMaxDrawdown();
+            this.profitFactor = portfolio.getProfitFactor();
+            this.averageProfit = portfolio.getAverageProfit();
+            this.file = portfolio.getFile();
+            this.intro = pb.getIntro();
+            this.msg = pb.getMsg();
+        }
+    }
+
 }

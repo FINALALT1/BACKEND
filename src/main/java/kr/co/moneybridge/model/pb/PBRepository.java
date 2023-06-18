@@ -98,4 +98,12 @@ public interface PBRepository extends JpaRepository<PB, Long> {
             "JOIN b.company c " +
             "WHERE pb.id = :id")
     Optional<PBResponse.PBProfileDTO> findPBProfile(@Param("id") Long id);
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBUpdateOutDTO(pb, b, c, pf) " +
+            "FROM PB pb " +
+            "JOIN pb.branch b " +
+            "JOIN b.company c " +
+            "JOIN Portfolio pf on pb.id = pf.pb.id " +
+            "WHERE pb.id = :pbId")
+    Optional<PBResponse.PBUpdateOutDTO> findPBProfileForUpdate(@Param("pbId") Long pbId);
 }

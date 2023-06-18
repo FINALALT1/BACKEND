@@ -206,11 +206,21 @@ public class PBController {
         return new ResponseDTO<>(pbDTO);
     }
 
+    @ApiOperation("PB 프로필가져오기(회원)")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/auth/portfolio/{id}")
     public ResponseDTO<PBResponse.PortfolioOutDTO> getPBPortfolio(@PathVariable(value = "id") Long id) {
 
         PBResponse.PortfolioOutDTO portfolioDTO = pbService.getPortfolio(id);
 
         return new ResponseDTO<>(portfolioDTO);
+    }
+
+    @GetMapping("/pb/portfolio/update")
+    public ResponseDTO<PBResponse.PBUpdateOutDTO> getPBProfileForUpdate(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        PBResponse.PBUpdateOutDTO updateDTO = pbService.getPBProfileForUpdate(myUserDetails);
+
+        return new ResponseDTO<>(updateDTO);
     }
 }
