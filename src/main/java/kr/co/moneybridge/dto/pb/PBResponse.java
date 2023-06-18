@@ -2,10 +2,8 @@ package kr.co.moneybridge.dto.pb;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.moneybridge.model.pb.Branch;
-import kr.co.moneybridge.model.pb.Company;
-import kr.co.moneybridge.model.pb.PB;
-import kr.co.moneybridge.model.pb.PBSpeciality;
+import kr.co.moneybridge.model.board.BookmarkerRole;
+import kr.co.moneybridge.model.pb.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -234,6 +232,76 @@ public class PBResponse {
             this.profile = pb.getProfile();
             this.msg = pb.getMsg();
             this.companyLogo = company.getLogo();
+        }
+    }
+
+    @Getter @Setter
+    public static class PBProfileDTO {
+
+        private Long id;
+        private String profile;
+        private String msg;
+        private String name;
+        private Boolean isBookmarked;   //set해줘야함
+        private Long companyId;
+        private String companyName;
+        private String companyLogo;
+        private String branchName;
+        private String branchAddress;
+        private Double branchLatitude;
+        private Double branchLongitude;
+        private Integer reserveCount;   //set해줘야함
+        private Integer reviewCount;    //set해줘야함
+        private String intro;
+        private PBSpeciality speciality1;
+        private PBSpeciality speciality2;
+        private List<CareerOutDTO> career;  //set해줘야함
+        private List<AwardOutDTO> award;    //set해줘야함
+
+        public PBProfileDTO(PB pb, Branch branch, Company company) {
+            this.id = pb.getId();
+            this.profile = pb.getProfile();
+            this.msg = pb.getMsg();
+            this.name = pb.getName();
+            this.isBookmarked = false;
+            this.companyId = company.getId();
+            this.companyName = company.getName();
+            this.companyLogo = company.getLogo();
+            this.branchName = branch.getName();
+            this.branchAddress = branch.getRoadAddress();
+            this.branchLatitude = branch.getLatitude();
+            this.branchLongitude = branch.getLongitude();
+            this.intro = pb.getIntro();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
+        }
+    }
+
+    @Getter
+    public static class CareerOutDTO {
+        private Long id;
+        private Integer start;
+        private Integer end;
+        private String career;
+
+        public CareerOutDTO(Career career) {
+            this.id = career.getId();
+            this.start = career.getStartYear();
+            this.end = career.getEndYear();
+            this.career = career.getCareer();
+        }
+    }
+
+    @Getter
+    public static class AwardOutDTO {
+        private Long id;
+        private Integer year;
+        private String record;
+
+        public AwardOutDTO(Award award) {
+            this.id = award.getId();
+            this.year = award.getCreatedAt().getYear();
+            this.record = award.getRecord();
         }
     }
 
