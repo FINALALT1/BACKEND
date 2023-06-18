@@ -3,6 +3,7 @@ package kr.co.moneybridge.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
+import kr.co.moneybridge.model.backoffice.NoticeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
+
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,11 +39,41 @@ public class BackOfficeControllerTest {
     private EntityManager em;
     @Autowired
     private FrequentQuestionRepository frequentQuestionRepository;
+    @Autowired
+    private NoticeRepository noticeRepository;
 
     @BeforeEach
     public void setUp() {
         frequentQuestionRepository.save(dummy.newFrequentQuestion());
+        noticeRepository.save(dummy.newNotice());
         em.clear();
+    }
+
+    @DisplayName("공지사항 목록 가져오기 성공")
+    @Test
+    public void getNotice() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/notices"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].title").value("서버 점검 안내"));
+        resultActions.andExpect(jsonPath("$.data.list[0].content").value("보다 나은 환경을 제공하기 위해 개발진에서 발견한 문제 복구 및 업데이트 점검을 진행할 예정입니다.\n" +
+                "업데이트 점검을 진행하는 동안에는 접속할 수 없으니 불필요한 손해가 발생치 않도록 주의해 주세요.\n" +
+                "이로 인해 불편을 끼쳐 드려 죄송합니다."));
+        resultActions.andExpect(jsonPath("$.data.list[0].date").value(LocalDate.now().toString()));
+        resultActions.andExpect(jsonPath("$.data.totalElements").value("1"));
+        resultActions.andExpect(jsonPath("$.data.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.empty").value("false"));
+        resultActions.andExpect(status().isOk());
     }
 
     @DisplayName("자주 묻는 질문 목록 가져오기 성공")

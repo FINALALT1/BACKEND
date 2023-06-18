@@ -57,6 +57,17 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
+    @ApiOperation(value = "공지사항 목록 가져오기")
+    @ApiResponses({
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetNotice {
+    }
+
     @ApiOperation(value = "자주 묻는 질문 목록 가져오기")
     @ApiResponses({
             @ApiResponse(code = 500,

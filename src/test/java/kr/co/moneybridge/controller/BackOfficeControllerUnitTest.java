@@ -11,6 +11,7 @@ import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
+import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.service.BackOfficeService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -25,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,6 +59,37 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @Test
+    public void getNotice_test() throws Exception {
+        // given
+        Notice notice = newMockNotice(1L);
+        List<BackOfficeResponse.NoticeDTO> list = Arrays.asList(new BackOfficeResponse.NoticeDTO(notice));
+        Page<Notice> noticePG =  new PageImpl<>(Arrays.asList(notice));
+        PageDTO<BackOfficeResponse.NoticeDTO> noticeDTO = new PageDTO<>(list, noticePG, Notice.class);
+        // stub
+        Mockito.when(backOfficeService.getNotice(any())).thenReturn(noticeDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/notices"));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].title").value("서버 점검 안내"));
+        resultActions.andExpect(jsonPath("$.data.list[0].content").value("보다 나은 환경을 제공하기 위해 개발진에서 발견한 문제 복구 및 업데이트 점검을 진행할 예정입니다.\n" +
+                "업데이트 점검을 진행하는 동안에는 접속할 수 없으니 불필요한 손해가 발생치 않도록 주의해 주세요.\n" +
+                "이로 인해 불편을 끼쳐 드려 죄송합니다."));
+        resultActions.andExpect(jsonPath("$.data.list[0].date").value(LocalDate.now().toString()));
+        resultActions.andExpect(jsonPath("$.data.totalElements").value("1"));
+        resultActions.andExpect(jsonPath("$.data.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.empty").value("false"));
+    }
 
     @Test
     public void getFAQ_test() throws Exception {
