@@ -3,10 +3,29 @@ package kr.co.moneybridge.dto.backOffice;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
+import kr.co.moneybridge.model.backoffice.Notice;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 public class BackOfficeResponse {
+    @Getter
+    @Setter
+    public static class NoticeDTO {
+        private Long id;
+        private String title;
+        private String content;
+        private LocalDate date;
+
+        public NoticeDTO(Notice notice) {
+            this.id = notice.getId();
+            this.title = notice.getTitle();
+            this.content = notice.getContent();
+            this.date = notice.getCreatedAt().toLocalDate();
+        }
+    }
+
     @ApiModel(description = "자주 묻는 질문 목록 가져오기 응답 데이터")
     @Getter
     @Setter
