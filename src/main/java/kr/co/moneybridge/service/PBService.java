@@ -314,7 +314,7 @@ public class PBService {
         if (portfolioOP.isPresent()) {
             Portfolio portfolio = portfolioOP.get();
             dto.setPbId(portfolio.getPb().getId());
-            dto.setHighestReturn(portfolio.getHighestReturn());
+            dto.setCumulativeReturn(portfolio.getCumulativeReturn());
             dto.setMaxDrawdown(portfolio.getMaxDrawdown());
             dto.setProfitFactor(portfolio.getProfitFactor());
             dto.setAverageProfit(portfolio.getAverageProfit());

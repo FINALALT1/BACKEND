@@ -302,7 +302,7 @@ public class DummyEntity {
     public Portfolio newPortfolio(PB pb) {
         return Portfolio.builder()
                 .pb(pb)
-                .highestReturn(90.0)
+                .cumulativeReturn(90.0)
                 .averageProfit(10.1)
                 .profitFactor(1.54)
                 .maxDrawdown(101.1)

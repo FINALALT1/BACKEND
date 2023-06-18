@@ -380,7 +380,7 @@ public class MockDummyEntity {
         return Portfolio.builder()
                 .id(id)
                 .pb(pb)
-                .highestReturn(90.0)
+                .cumulativeReturn(90.0)
                 .maxDrawdown(101.1)
                 .averageProfit(14.4)
                 .profitFactor(1.32)

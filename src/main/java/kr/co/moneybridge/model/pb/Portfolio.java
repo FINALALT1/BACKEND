@@ -3,7 +3,6 @@ package kr.co.moneybridge.model.pb;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -20,7 +19,7 @@ public class Portfolio {
     @OneToOne(fetch = FetchType.LAZY)
     private PB pb;
 
-    private Double highestReturn; // 최고수익률
+    private Double cumulativeReturn; // 누적수익률
 
     private Double maxDrawdown; // 최대자본인하율
 
