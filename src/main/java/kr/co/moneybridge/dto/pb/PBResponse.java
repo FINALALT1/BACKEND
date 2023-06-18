@@ -2,7 +2,6 @@ package kr.co.moneybridge.dto.pb;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.moneybridge.model.board.BookmarkerRole;
 import kr.co.moneybridge.model.pb.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -322,6 +321,23 @@ public class PBResponse {
             this.year = award.getCreatedAt().getYear();
             this.record = award.getRecord();
         }
+    }
+
+    @ApiModel(description = "PB 포트폴리오 응답데이터")
+    @Getter @Setter
+    public static class PortfolioOutDTO {
+        @ApiModelProperty(example = "1", value = "pb의 id")
+        private Long pbId;
+        @ApiModelProperty(example = "28.8", value = "누적손익률")
+        private Double cumulativeReturn;
+        @ApiModelProperty(example = "1.11", value = "최대자본인하율")
+        private Double maxDrawdown;
+        @ApiModelProperty(example = "1.44", value = "profit factor")
+        private Double profitFactor;
+        @ApiModelProperty(example = "88.1", value = "평균수익률")
+        private Double averageProfit;
+        @ApiModelProperty(example = "portfolio.pdf", value = "포트폴리오")
+        private String file;
     }
 
 }

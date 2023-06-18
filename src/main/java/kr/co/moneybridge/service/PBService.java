@@ -47,6 +47,8 @@ public class PBService {
     private final AwardRepository awardRepository;
     private final CareerRepository careerRepository;
     private final UserBookmarkRepository userBookmarkRepository;
+    private final PortfolioRepository portfolioRepository;
+
 
     @MyLog
     @Transactional
@@ -300,5 +302,26 @@ public class PBService {
         }
 
         return pbDTO;
+    }
+
+    //PB 포트폴리오 가져오기
+    public PBResponse.PortfolioOutDTO getPortfolio(Long id) {
+
+        if(pbRepository.findById(id).isEmpty()) throw new Exception404("존재하지 않는 PB 입니다.");
+
+        Optional<Portfolio> portfolioOP = portfolioRepository.findByPbId(id);
+        PBResponse.PortfolioOutDTO dto = new PBResponse.PortfolioOutDTO();
+
+        if (portfolioOP.isPresent()) {
+            Portfolio portfolio = portfolioOP.get();
+            dto.setPbId(portfolio.getPb().getId());
+            dto.setCumulativeReturn(portfolio.getCumulativeReturn());
+            dto.setMaxDrawdown(portfolio.getMaxDrawdown());
+            dto.setProfitFactor(portfolio.getProfitFactor());
+            dto.setAverageProfit(portfolio.getAverageProfit());
+            dto.setFile(portfolio.getFile());
+        }
+
+        return dto;
     }
 }

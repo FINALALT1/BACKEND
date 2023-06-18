@@ -302,11 +302,10 @@ public class DummyEntity {
     public Portfolio newPortfolio(PB pb) {
         return Portfolio.builder()
                 .pb(pb)
-                .highestReturn(90)
-                .startDate(LocalDate.now().minusYears(1))
-                .endDate(LocalDate.now().minusMonths(1))
-                .propensity(PBPropensity.AGGRESSIVE)
-                .dangerRate(1)
+                .cumulativeReturn(90.0)
+                .averageProfit(10.1)
+                .profitFactor(1.54)
+                .maxDrawdown(101.1)
                 .file("file1.pdf")
                 .build();
     }
