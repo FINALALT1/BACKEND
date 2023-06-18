@@ -1,5 +1,6 @@
 package kr.co.moneybridge.dto.reservation;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.reservation.LocationType;
@@ -10,6 +11,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 
 public class ReservationRequest {
     // validation은 controller에서 수행
@@ -26,11 +28,13 @@ public class ReservationRequest {
         @ApiModelProperty(example = "BRANCH")
         private LocationType locationType;
 
-        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
-        private String candidateTime1;
+        @ApiModelProperty(example = "2023-06-01T10:00:00")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime candidateTime1;
 
-        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
-        private String candidateTime2;
+        @ApiModelProperty(example = "2023-06-01T11:00:00")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime candidateTime2;
 
         @ApiModelProperty(example = "잘 부탁드립니다.")
         private String question;
@@ -50,8 +54,9 @@ public class ReservationRequest {
     @Getter
     @Setter
     public static class UpdateDTO {
-        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
-        private String time;
+        @ApiModelProperty(example = "2023-06-01T11:00:00")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime time;
 
         @ApiModelProperty(example = "VISIT")
         private ReservationType type;

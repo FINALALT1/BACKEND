@@ -110,8 +110,8 @@ public class ReservationService {
                     .type(applyDTO.getReservationType())
                     .locationName(locationName)
                     .locationAddress(locationAddress)
-                    .candidateTime1(StringToLocalDateTime(applyDTO.getCandidateTime1()))
-                    .candidateTime2(StringToLocalDateTime(applyDTO.getCandidateTime2()))
+                    .candidateTime1(applyDTO.getCandidateTime1())
+                    .candidateTime2(applyDTO.getCandidateTime2())
                     .question(applyDTO.getQuestion())
                     .goal(applyDTO.getGoal())
                     .process(ReservationProcess.APPLY)
@@ -301,8 +301,8 @@ public class ReservationService {
         }
 
         try {
-            if (updateDTO.getTime() != null && !updateDTO.getTime().isBlank()) {
-                reservationPS.updateTime(StringToLocalDateTime(updateDTO.getTime()));
+            if (updateDTO.getTime() != null) {
+                reservationPS.updateTime(updateDTO.getTime());
             }
             if (updateDTO.getType() != null) {
                 reservationPS.updateType(updateDTO.getType());
