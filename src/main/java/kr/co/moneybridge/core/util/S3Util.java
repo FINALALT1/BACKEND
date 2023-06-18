@@ -12,7 +12,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +23,7 @@ import java.util.UUID;
 @Component
 public class S3Util {
     private AmazonS3 s3Client;
+    private String cloudFrontDomain = "https://d23znr2pczcvf6.cloudfront.net";
 
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
@@ -60,7 +60,8 @@ public class S3Util {
                 .withCannedAcl(CannedAccessControlList.PublicRead)
                 .withMetadata(objectMetadata));
 
-        return s3Client.getUrl(bucket, uuidFilename).toString();
+//        return s3Client.getUrl(bucket, uuidFilename).toString();
+        return cloudFrontDomain + "/"+ uuidFilename;
     }
 
     public void delete(String profile) throws IOException {
