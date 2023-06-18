@@ -324,4 +324,14 @@ public class PBResponse {
         }
     }
 
+    @Getter @Setter
+    public static class PortfolioOutDTO {
+        private Long pbId;
+        private Double highestReturn;
+        private Double maxDrawdown;
+        private Double profitFactor;
+        private Double averageProfit;
+        private String file;
+    }
+
 }

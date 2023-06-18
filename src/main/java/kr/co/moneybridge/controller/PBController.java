@@ -205,4 +205,12 @@ public class PBController {
 
         return new ResponseDTO<>(pbDTO);
     }
+
+    @GetMapping("/auth/portfolio/{id}")
+    public ResponseDTO<PBResponse.PortfolioOutDTO> getPBPortfolio(@PathVariable(value = "id") Long id) {
+
+        PBResponse.PortfolioOutDTO portfolioDTO = pbService.getPortfolio(id);
+
+        return new ResponseDTO<>(portfolioDTO);
+    }
 }
