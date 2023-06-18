@@ -216,6 +216,8 @@ public class PBController {
         return new ResponseDTO<>(portfolioDTO);
     }
 
+    @ApiOperation("PB 프로필 수정용 데이터 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/pb/portfolio/update")
     public ResponseDTO<PBResponse.PBUpdateOutDTO> getPBProfileForUpdate(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
