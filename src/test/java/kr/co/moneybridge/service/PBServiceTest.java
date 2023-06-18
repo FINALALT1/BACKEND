@@ -437,4 +437,31 @@ class PBServiceTest extends MockDummyEntity {
         assertThat(result.getFile()).isEqualTo(portfolio.getFile());
         assertThat(result.getAverageProfit()).isEqualTo(portfolio.getAverageProfit());
     }
+
+    @Test
+    @DisplayName("PB 프로필 수정용 데이터 가져오기")
+    void getPBProfileForUpdate() {
+        //given
+        Long id = 1L;
+        Member member = PB.builder()
+                .role(Role.PB).id(1L).build();
+        MyUserDetails myUserDetails = new MyUserDetails(member);
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(id, "김피비", branch);
+        Portfolio portfolio = newMockPortfolio(1L, pb);
+        PBResponse.PBUpdateOutDTO dto = new PBResponse.PBUpdateOutDTO(pb, branch, company, portfolio);
+
+        //stub
+        when(pbRepository.findPBProfileForUpdate(id)).thenReturn(Optional.of(dto));
+        when(careerRepository.getCareers(id)).thenReturn(new ArrayList<>());
+        when(awardRepository.getAwards(id)).thenReturn(new ArrayList<>());
+
+        //when
+        PBResponse.PBUpdateOutDTO result = pbService.getPBProfileForUpdate(myUserDetails);
+
+        //then
+        assertThat(result).isEqualTo(dto);
+        assertThat(result.getBranchName()).isEqualTo(dto.getBranchName());
+    }
 }
