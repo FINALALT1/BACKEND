@@ -85,6 +85,7 @@ public class PBController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    // PB 회원가입
     @MyLog
     @SwaggerResponses.JoinPB
     @PostMapping("/join/pb")
