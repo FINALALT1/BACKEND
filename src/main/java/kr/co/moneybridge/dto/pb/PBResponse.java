@@ -219,4 +219,18 @@ public class PBResponse {
             this.profile = pbPageDTO.getProfile();
         }
     }
+
+    @Getter
+    public static class PBSimpleProfileDTO {
+        private String profile;
+        private String msg;
+        private String companyLogo;
+
+        public PBSimpleProfileDTO(PB pb, Company company) {
+            this.profile = pb.getProfile();
+            this.msg = pb.getMsg();
+            this.companyLogo = company.getLogo();
+        }
+    }
+
 }

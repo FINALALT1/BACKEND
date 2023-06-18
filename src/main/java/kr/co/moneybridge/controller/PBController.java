@@ -185,4 +185,12 @@ public class PBController {
 
         return new ResponseDTO(pbList);
     }
+
+    @GetMapping("/profile/{id}")
+    public ResponseDTO<PBResponse.PBSimpleProfileDTO> getSimpleProfile(@PathVariable(value = "id") Long id) {
+
+        PBResponse.PBSimpleProfileDTO pbDTO = pbService.getSimpleProfile(id);
+
+        return new ResponseDTO<>(pbDTO);
+    }
 }
