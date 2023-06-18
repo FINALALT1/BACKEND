@@ -1,7 +1,5 @@
 package kr.co.moneybridge.model.board;
 
-import kr.co.moneybridge.model.backoffice.QuestionAuthorRole;
-import kr.co.moneybridge.model.user.User;
 import lombok.*;
 
 import javax.persistence.*;

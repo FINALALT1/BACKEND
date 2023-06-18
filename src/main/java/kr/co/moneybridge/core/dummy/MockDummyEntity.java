@@ -325,19 +325,21 @@ public class MockDummyEntity {
                 .build();
     }
 
-    public PBBookmark newMockPBBookmark(Long id, PB pb, User user) {
-        return PBBookmark.builder()
-                .id(id)
-                .user(user)
-                .pb(pb)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
     public BoardBookmark newMockBoardBookmark(Long id, User user, Board board) {
         return BoardBookmark.builder()
                 .id(id)
                 .bookmarkerId(user.getId())
+                .bookmarkerRole(BookmarkerRole.USER)
+                .board(board)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public BoardBookmark newMockBoardBookmarkByPB(Long id, PB pb, Board board) {
+        return BoardBookmark.builder()
+                .id(id)
+                .bookmarkerId(pb.getId())
+                .bookmarkerRole(BookmarkerRole.PB)
                 .board(board)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -432,37 +434,6 @@ public class MockDummyEntity {
                 .q4(5)
                 .q5(5)
                 .q6(5)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
-    public Question newMockUserQuestion(Long id, User user) {
-        return Question.builder()
-                .id(id)
-                .authorId(user.getId())
-                .authorRole(QuestionAuthorRole.USER)
-                .title("제목")
-                .content("1대1문의사항")
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
-    public Question newMockPBQuestion(Long id, PB pb) {
-        return Question.builder()
-                .id(id)
-                .authorId(pb.getId())
-                .authorRole(QuestionAuthorRole.PB)
-                .title("제목")
-                .content("1대1문의사항")
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
-    public Answer newMockAnswer(Long id, Question question) {
-        return Answer.builder()
-                .id(id)
-                .question(question)
-                .content("답변")
                 .createdAt(LocalDateTime.now())
                 .build();
     }

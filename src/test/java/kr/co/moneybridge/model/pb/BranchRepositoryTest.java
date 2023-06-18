@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
-import java.util.List;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
@@ -31,6 +30,7 @@ public class BranchRepositoryTest extends DummyEntity {
     @BeforeEach
     public void setUp() {
         em.createNativeQuery("ALTER TABLE company_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE branch_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         Company c1 = companyRepository.save(newCompany("미래에셋증권"));
         Company c2 = companyRepository.save(newCompany("키움증권"));
         Branch b1 = branchRepository.save(newBranch(c1, 0));

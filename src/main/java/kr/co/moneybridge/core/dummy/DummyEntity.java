@@ -257,13 +257,6 @@ public class DummyEntity {
                 .build();
     }
 
-    public PBBookmark newPBBookmark(PB pb, User user) {
-        return PBBookmark.builder()
-                .user(user)
-                .pb(pb)
-                .build();
-    }
-
     public BoardBookmark newBoardBookmark(User user, Board board) {
         return BoardBookmark.builder()
                 .bookmarkerId(user.getId())
@@ -346,31 +339,6 @@ public class DummyEntity {
                 .q4(5)
                 .q5(5)
                 .q6(5)
-                .build();
-    }
-
-    public Question newUserQuestion(User user) {
-        return Question.builder()
-                .authorId(user.getId())
-                .authorRole(QuestionAuthorRole.USER)
-                .title("제목")
-                .content("1대1문의사항")
-                .build();
-    }
-
-    public Question newPBQuestion(PB pb) {
-        return Question.builder()
-                .authorId(pb.getId())
-                .authorRole(QuestionAuthorRole.PB)
-                .title("제목")
-                .content("1대1문의사항")
-                .build();
-    }
-
-    public Answer newAnswer(Question question) {
-        return Answer.builder()
-                .question(question)
-                .content("답변")
                 .build();
     }
 

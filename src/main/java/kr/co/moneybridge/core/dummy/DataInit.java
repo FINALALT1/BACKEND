@@ -30,12 +30,9 @@ public class DataInit extends DummyEntity{
                            ReReplyRepository reReplyRepository,
                            UserBookmarkRepository userBookmarkRepository,
                            BoardBookmarkRepository boardBookmarkRepository,
-                           PBBookmarkRepository pbBookmarkRepository,
                            ReservationRepository reservationRepository,
                            ReviewRepository reviewRepository,
                            StyleRepository styleRepository,
-                           QuestionRepository questionRepository,
-                           AnswerRepository answerRepository,
                            FrequentQuestionRepository frequentQuestionRepository,
                            NoticeRepository noticeRepository){
         return args -> {
@@ -123,11 +120,6 @@ public class DataInit extends DummyEntity{
             boardBookmarkRepository.save(newBoardBookmark(user2, board2));
             boardBookmarkRepository.save(newBoardBookmark(user2, board5));
 
-            pbBookmarkRepository.save(newPBBookmark(pb1, user1));
-            pbBookmarkRepository.save(newPBBookmark(pb1, user2));
-            pbBookmarkRepository.save(newPBBookmark(pb2, user1));
-            pbBookmarkRepository.save(newPBBookmark(pb2, user2));
-
             reservationRepository.save(newCallReservation(user1, pb1, ReservationProcess.APPLY));
             reservationRepository.save(newCallReservation(user1, pb1, ReservationProcess.CONFIRM));
             Reservation reservation1 = reservationRepository.save(newCallReservation(user2, pb1, ReservationProcess.COMPLETE));
@@ -141,13 +133,6 @@ public class DataInit extends DummyEntity{
 
             styleRepository.save(newStyle(review1, StyleStyle.FAST));
             styleRepository.save(newStyle(review2, StyleStyle.KIND));
-
-            Question q1 = questionRepository.save(newUserQuestion(user1));
-            Question q2 = questionRepository.save(newPBQuestion(pb1));
-            Question q3 = questionRepository.save(newUserQuestion(user2));
-            Question q4 = questionRepository.save(newPBQuestion(pb2));
-            answerRepository.save(newAnswer(q1));
-            answerRepository.save(newAnswer(q2));
 
             frequentQuestionRepository.save(newFrequentQuestion());
             noticeRepository.save(newNotice());
