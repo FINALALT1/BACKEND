@@ -120,6 +120,10 @@ public class ReservationService {
                     .email(applyDTO.getUserEmail())
                     .status(ReservationStatus.ACTIVE)
                     .build());
+
+            if (!userPS.getHasDoneReservation()) {
+                userPS.updateHasDoneReservation(true);
+            }
         } catch (Exception e) {
             throw new Exception500("상담 예약 저장 실패 : " + e.getMessage());
         }
