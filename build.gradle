@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.12'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'jacoco'
 }
 
 group = 'kr.co.moneybridge'
@@ -56,4 +57,35 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jacoco {
+	toolVersion = '0.8.5'
+}
+
+jacocoTestReport {
+	reports {
+		html.enabled true
+		xml.enabled false
+		csv.enabled false
+
+// 리포트의 저장 경로를 설정합니다.
+		html.destination file("jacoco/jacocoHtml")
+		xml.destination file("jacoco/jacoco.xml")
+	}
+}
+
+jacocoTestCoverageVerification {
+
+	violationRules { // 커버리지의 범위와 퍼센테이지를 설정합니다.
+		rule {
+			element = 'CLASS'
+
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.60
+			}
+		}
+	}
 }

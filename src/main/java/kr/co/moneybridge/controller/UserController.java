@@ -11,6 +11,7 @@ import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.service.UserService;
+import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -189,6 +190,7 @@ public class UserController {
         return new ResponseDTO<>();
     }
 
+    @Generated
     private String getRefreshToken(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {

@@ -11,6 +11,7 @@ import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Generated
 @Slf4j
 public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final RedisUtil redisUtil;

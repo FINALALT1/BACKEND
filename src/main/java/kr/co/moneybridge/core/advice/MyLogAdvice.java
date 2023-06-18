@@ -1,5 +1,6 @@
 package kr.co.moneybridge.core.advice;
 
+import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 
+@Generated
 @Slf4j
 @RequiredArgsConstructor
 @Aspect
