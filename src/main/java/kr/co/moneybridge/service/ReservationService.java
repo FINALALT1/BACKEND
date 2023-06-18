@@ -250,7 +250,7 @@ public class ReservationService {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
         );
-        pbRepository.findById(pbId).orElseThrow(
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
 
@@ -271,6 +271,9 @@ public class ReservationService {
                     reservationPS.getLocationAddress(),
                     reservationPS.getGoal(),
                     reservationPS.getQuestion(),
+                    pbPS.getConsultStart().toString(),
+                    pbPS.getConsultEnd().toString(),
+                    pbPS.getConsultNotice(),
                     reviewRepository.countByReservationId(reservationPS.getId()) >= 1
             );
         } catch (Exception e) {

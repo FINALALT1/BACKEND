@@ -280,10 +280,19 @@ public class ReservationResponse {
         @ApiModelProperty(example = "잘 부탁드립니다.")
         private String question;
 
+        @ApiModelProperty(example = "09:00")
+        private String consultStart;
+
+        @ApiModelProperty(example = "09:00")
+        private String consultEnd;
+
+        @ApiModelProperty(example = "09:00")
+        private String notice;
+
         @ApiModelProperty(example = "true")
         private Boolean reviewCheck;
 
-        public DetailByPBDTO(Long userId, String profileImage, String name, String phoneNumber, String email, Long reservationId, String candidateTime1, String candidateTime2, String time, ReservationType type, String location, String locationAddress, ReservationGoal goal, String question, Boolean reviewCheck) {
+        public DetailByPBDTO(Long userId, String profileImage, String name, String phoneNumber, String email, Long reservationId, String candidateTime1, String candidateTime2, String time, ReservationType type, String location, String locationAddress, ReservationGoal goal, String question, String consultStart, String consultEnd, String notice, Boolean reviewCheck) {
             this.userId = userId;
             this.profileImage = profileImage;
             this.name = name;
@@ -298,6 +307,9 @@ public class ReservationResponse {
             this.locationAddress = locationAddress;
             this.goal = goal;
             this.question = question;
+            this.consultStart = consultStart;
+            this.consultEnd = consultEnd;
+            this.notice = notice;
             this.reviewCheck = reviewCheck;
         }
     }
