@@ -37,11 +37,12 @@ public class PBController {
     private final PBService pbService;
 
     //투자 성향에 따라 맞춤 분야별 PB리스트 필터링 3개 (나의 투자 성향 분석페이지 하단의 맞춤 PB리스트)
+    @MyLog
+    @SwaggerResponses.GetMyPropensityPB
     @GetMapping("/user/mypage/list/pb")
-    public ResponseEntity<?> getMyPropensityPB(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<PBResponse.MyPropensityPBOutDTO> getMyPropensityPB(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         PBResponse.MyPropensityPBOutDTO myPropensityPBOutDTO = pbService.getMyPropensityPB(myUserDetails.getMember().getId());
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(myPropensityPBOutDTO);
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseDTO<>(myPropensityPBOutDTO);
     }
 
     // PB 마이페이지 가져오기

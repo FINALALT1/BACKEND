@@ -12,19 +12,31 @@ import java.util.List;
 
 public class PBResponse {
 
+    @ApiModel
     @Setter
     @Getter
     public static class MyPropensityPBDTO {
+        @ApiModelProperty(example = "1", value = "PB의 id")
         private Long id;
+        @ApiModelProperty(example = "profile.png", value = "PB의 프로필 사진")
         private String profile;
+        @ApiModelProperty(example = "김PB", value = "PB의 이름")
         private String name;
+        @ApiModelProperty(example = "미래에셋증권 여의도점", value = "지점명")
         private String branchName;
+        @ApiModelProperty(example = "한줄메세지 ..", value = "한줄메세지")
         private String msg;
+        @ApiModelProperty(example = "10", value = "경력(연차)")
         private Integer career;
+        @ApiModelProperty(example = "BOND", value = "전문 분야1")
         private PBSpeciality specialty1;
+        @ApiModelProperty(example = "FUND", value = "전문 분야2")
         private PBSpeciality specialty2;
+        @ApiModelProperty(example = "0", value = "총 상담 횟수")
         private Integer reserveCount;
+        @ApiModelProperty(example = "0", value = "상담 후기")
         private Integer reviewCount;
+        @ApiModelProperty(example = "true", value = "해당 PB 북마크 여부")
         private Boolean isBookmark;
 
         public MyPropensityPBDTO(PB pb, Integer reserveCount, Integer reviewCount, Boolean isBookmark) {
@@ -42,11 +54,15 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "투자 성향에 따라 맞춤 분야별 PB리스트 필터링 3개 응답 데이터")
     @Setter
     @Getter
     public static class MyPropensityPBOutDTO {
+        @ApiModelProperty(example = "김투자", value = "로그인한 투자자 이름")
         private String name;
+        @ApiModelProperty(example = "SPECULATIVE", value = "로그인한 투자자의 투자 성향")
         private UserPropensity propensity;
+        @ApiModelProperty
         private List<MyPropensityPBDTO> list;
 
         public MyPropensityPBOutDTO(User user, List<MyPropensityPBDTO> list) {
