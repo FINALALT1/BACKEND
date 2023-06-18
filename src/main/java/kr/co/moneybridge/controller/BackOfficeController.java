@@ -18,6 +18,8 @@ public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
     // 공지사항 목록 가져오기
+    @MyLog
+    @SwaggerResponses.GetNotice
     @GetMapping("/notices")
     public ResponseDTO<PageDTO<BackOfficeResponse.NoticeDTO>> getNotice() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
