@@ -11,8 +11,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-//    @Query(value = "select count(r) from Reservation r where r.pb.id = :pbId")
-//    Integer countByPBId(@Param("pbId") Long pbId);
+    @Query(value = "select count(r) from Reservation r where r.pb.id = :pbId")
+    Integer countByPBId(@Param("pbId") Long pbId);
 
     @Query(value = "select count(r) from Reservation r where r.process = :process")
     Integer countByProcess(@Param("process") ReservationProcess process);

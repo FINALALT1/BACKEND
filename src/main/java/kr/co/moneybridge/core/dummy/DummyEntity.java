@@ -37,7 +37,7 @@ public class DummyEntity {
                 .password(passwordEncoder.encode("password1234"))
                 .email(username + "@nate.com")
                 .phoneNumber("01012345678")
-                .propensity(UserPropensity.AGGRESSIVE)
+                .propensity(UserPropensity.SPECULATIVE)
                 .role(Role.USER)
                 .profile("프로필.png")
                 .hasDoneReview(false)

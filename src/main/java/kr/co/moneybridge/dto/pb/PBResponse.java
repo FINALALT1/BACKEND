@@ -3,12 +3,58 @@ package kr.co.moneybridge.dto.pb;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserPropensity;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
 public class PBResponse {
+
+    @Setter
+    @Getter
+    public static class MyPropensityPBDTO {
+        private Long id;
+        private String profile;
+        private String name;
+        private String branchName;
+        private String msg;
+        private Integer career;
+        private PBSpeciality specialty1;
+        private PBSpeciality specialty2;
+        private Integer reserveCount;
+        private Integer reviewCount;
+        private Boolean isBookmark;
+
+        public MyPropensityPBDTO(PB pb, Integer reserveCount, Integer reviewCount, Boolean isBookmark) {
+            this.id = pb.getId();
+            this.profile = pb.getProfile();
+            this.name = pb.getName();
+            this.branchName = pb.getBranch().getName();
+            this.msg = pb.getMsg();
+            this.career = pb.getCareer();
+            this.specialty1 = pb.getSpeciality1();
+            this.specialty2 = pb.getSpeciality2();
+            this.reserveCount = reserveCount;
+            this.reviewCount = reviewCount;
+            this.isBookmark = isBookmark;
+        }
+    }
+
+    @Setter
+    @Getter
+    public static class MyPropensityPBOutDTO {
+        private String name;
+        private UserPropensity propensity;
+        private List<MyPropensityPBDTO> list;
+
+        public MyPropensityPBOutDTO(User user, List<MyPropensityPBDTO> list) {
+            this.name = user.getName();
+            this.propensity = user.getPropensity();
+            this.list = list;
+        }
+    }
 
     @ApiModel(description = "PB 마이페이지 가져오기 응답 데이터")
     @Setter

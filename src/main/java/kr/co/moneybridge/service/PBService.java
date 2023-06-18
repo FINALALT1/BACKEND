@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,6 +47,46 @@ public class PBService {
     private final UserBookmarkRepository userBookmarkRepository;
     private final PortfolioRepository portfolioRepository;
 
+    @MyLog
+    @Transactional
+    public PBResponse.MyPropensityPBOutDTO getMyPropensityPB(Long id) {
+        User userPS = userRepository.findById(id).orElseThrow(
+                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
+
+        if(userPS.getPropensity() == null){
+            throw new Exception404("투자 성향 정보가 없습니다. 검사 먼저 해주세요");
+        }
+
+        // 1) 투자 성향 별로 해당하는 PB id 리스트 가져오기
+        List<Long> pbIds = null;
+        // 공격형 - 전문분야가 부동산만 아니면 됨
+        if(userPS.getPropensity().equals(UserPropensity.SPECULATIVE)){
+            pbIds = pbRepository.findIdBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE));
+        }
+        // 적극형 - 전문분야가 부동산과 파생만 아니면 됨
+        if(userPS.getPropensity().equals(UserPropensity.AGGRESSIVE)){
+            pbIds = pbRepository.findIdBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE, PBSpeciality.DERIVATIVE));
+        }
+        // 그 외 - 전문분야가 채권, 펀드, 랩 중에 하나를 가지면 됨
+        pbIds = pbRepository.findIdBySpecialityIn(Arrays.asList(PBSpeciality.FUND, PBSpeciality.BOND, PBSpeciality.WRAP));
+
+        // 2) 목록을 무작위로 섞음
+        Collections.shuffle(pbIds);
+
+        // 3) 섞인 목록에서 상위 3개의 id를 선택해서 가져오기 (최대 3개 - 전체가 2개면 2개 선택)
+        List<Long> randomIds = pbIds.subList(0, Math.min(pbIds.size(), 3));
+        List<PB> pbs = pbRepository.findByIdIn(randomIds);
+
+        List<PBResponse.MyPropensityPBDTO> list = new ArrayList<>();
+        pbs.stream().forEach(pb->{
+            Integer reserveCount = reservationRepository.countByPBId(pb.getId());
+            Integer reviewCount = reviewRepository.countByPBId(pb.getId());
+            Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(id, pb.getId());
+            list.add(new PBResponse.MyPropensityPBDTO(pb, reserveCount, reviewCount, isBookmark));
+        });
+
+        return new PBResponse.MyPropensityPBOutDTO(userPS, list);
+    }
 
     @MyLog
     @Transactional
