@@ -59,6 +59,7 @@ public class PBControllerTest {
     public void setUp() {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user1 = userRepository.save(dummy.newUser("로그인"));
+        User user2 = userRepository.save(dummy.newUserWithPropensity("김투자"));
         Company company = companyRepository.save(dummy.newCompany("미래에셋증권"));
         Branch branch = branchRepository.save(dummy.newBranch(company, 0));
         PB pb = pbRepository.save(PB.builder()
@@ -83,6 +84,34 @@ public class PBControllerTest {
         em.clear();
     }
 
+    @DisplayName("나의 투자 성향 분석페이지 하단의 맞춤 PB리스트 3개 성공")
+    @WithUserDetails(value = "USER-김투자@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void getMyPropensityPB() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/user/mypage/list/pb"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.name").value("김투자"));
+        resultActions.andExpect(jsonPath("$.data.propensity").value("SPECULATIVE"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].profile").value("profile.png"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("김pb"));
+        resultActions.andExpect(jsonPath("$.data.list[0].branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].msg").value("한줄메시지.."));
+        resultActions.andExpect(jsonPath("$.data.list[0].career").value("10"));
+        resultActions.andExpect(jsonPath("$.data.list[0].specialty1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.list[0].specialty2").doesNotExist());
+        resultActions.andExpect(jsonPath("$.data.list[0].reserveCount").value("0"));
+        resultActions.andExpect(jsonPath("$.data.list[0].reviewCount").value("0"));
+        resultActions.andExpect(jsonPath("$.data.list[0].isBookmark").value("false"));
+        resultActions.andExpect(status().isOk());
+    }
     @DisplayName("PB 마이페이지 가져오기 성공")
     @WithUserDetails(value = "PB-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test

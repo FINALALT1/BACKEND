@@ -61,14 +61,14 @@ public class PBService {
         List<Long> pbIds = null;
         // 공격형 - 전문분야가 부동산만 아니면 됨
         if(userPS.getPropensity().equals(UserPropensity.SPECULATIVE)){
-            pbIds = pbRepository.findIdBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE));
+            pbIds = pbRepository.findIdsBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE));
         }
         // 적극형 - 전문분야가 부동산과 파생만 아니면 됨
         if(userPS.getPropensity().equals(UserPropensity.AGGRESSIVE)){
-            pbIds = pbRepository.findIdBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE, PBSpeciality.DERIVATIVE));
+            pbIds = pbRepository.findIdsBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE, PBSpeciality.DERIVATIVE));
         }
         // 그 외 - 전문분야가 채권, 펀드, 랩 중에 하나를 가지면 됨
-        pbIds = pbRepository.findIdBySpecialityIn(Arrays.asList(PBSpeciality.FUND, PBSpeciality.BOND, PBSpeciality.WRAP));
+        pbIds = pbRepository.findIdsBySpecialityIn(Arrays.asList(PBSpeciality.FUND, PBSpeciality.BOND, PBSpeciality.WRAP));
 
         // 2) 목록을 무작위로 섞음
         Collections.shuffle(pbIds);
@@ -79,7 +79,7 @@ public class PBService {
 
         List<PBResponse.MyPropensityPBDTO> list = new ArrayList<>();
         pbs.stream().forEach(pb->{
-            Integer reserveCount = reservationRepository.countByPBId(pb.getId());
+            Integer reserveCount = reservationRepository.countByPBIdAndProcess(pb.getId(), ReservationProcess.COMPLETE);
             Integer reviewCount = reviewRepository.countByPBId(pb.getId());
             Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(id, pb.getId());
             list.add(new PBResponse.MyPropensityPBDTO(pb, reserveCount, reviewCount, isBookmark));

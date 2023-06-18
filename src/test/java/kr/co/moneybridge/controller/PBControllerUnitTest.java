@@ -61,6 +61,42 @@ public class PBControllerUnitTest extends MockDummyEntity {
     @MockBean
     private MyMemberUtil myMemberUtil;
 
+    @WithMockUser
+    @Test
+    public void getMyPropensityPB_test() throws Exception {
+        //stub
+        PBResponse.MyPageOutDTO myPageOutDTO = new PBResponse.MyPageOutDTO(
+                newMockPB(1L, "김pb", newMockBranch(1L, newMockCompany(
+                        1L, "미래에셋증권"), 0)), 0,0);
+        List<PBResponse.MyPropensityPBDTO> list = Arrays.asList(new PBResponse.MyPropensityPBDTO(
+                newMockPB(1L, "김pb", newMockBranch(1L, newMockCompany(1L, "미래에셋증권"), 0)),
+                0, 0, false));
+        PBResponse.MyPropensityPBOutDTO myPropensityPBOutDTO = new PBResponse.MyPropensityPBOutDTO(
+                newMockUser(1L, "lee"), list);
+        Mockito.when(pbService.getMyPropensityPB(any())).thenReturn(myPropensityPBOutDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/user/mypage/list/pb"));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.name").value("lee"));
+        resultActions.andExpect(jsonPath("$.data.propensity").value("AGGRESSIVE"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].profile").value("profile.png"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("김pb"));
+        resultActions.andExpect(jsonPath("$.data.list[0].branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].msg").value("한줄메시지.."));
+        resultActions.andExpect(jsonPath("$.data.list[0].career").value("10"));
+        resultActions.andExpect(jsonPath("$.data.list[0].specialty1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.list[0].specialty2").doesNotExist());
+        resultActions.andExpect(jsonPath("$.data.list[0].reserveCount").value("0"));
+        resultActions.andExpect(jsonPath("$.data.list[0].reviewCount").value("0"));
+        resultActions.andExpect(jsonPath("$.data.list[0].isBookmark").value("false"));
+    }
+
     @WithMockPB
     @Test
     public void getMyPage_test() throws Exception {
