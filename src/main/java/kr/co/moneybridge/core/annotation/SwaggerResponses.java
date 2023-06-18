@@ -57,6 +57,31 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
+    @ApiOperation(value = "나의 투자 성향 분석페이지 하단의 맞춤 PB리스트", notes = "<b>투자 성향에 따라 맞춤 분야별 PB리스트 필터링 3개</b>\n<br>" +
+            "공격형 => 채권, 미국주식, 한국주식, 펀드, 파생, ETF, 랩\n" +
+            "적극형 => 채권, 미국주식, 한국주식, 펀드, ETF, 랩\n" +
+            "위험중립형 => 채권, 펀드, 랩\n" +
+            "안정추구형 => 채권, 펀드, 랩\n" +
+            "안정형 => 채권, 펀드, 랩\n<br>" +
+            "해당 분야에 속하는 PB중 랜덤으로 3명 리스트")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetMyPropensityPB {
+    }
+
     @ApiOperation(value = "투자자 성향 변경")
     @ApiResponses({
             @ApiResponse(code = 400,

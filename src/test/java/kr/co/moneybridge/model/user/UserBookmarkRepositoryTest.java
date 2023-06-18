@@ -18,6 +18,8 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
 @DataJpaTest
@@ -52,6 +54,15 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
 
     @Test
     public void countByUserId() {
+        // when
+        Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(1L, 1L);
+
+        // then
+        Assertions.assertThat(isBookmark).isEqualTo(true);
+    }
+
+    @Test
+    public void existsByUserIdAndPBId() {
         // when
         Integer count = userBookmarkRepository.countByUserId(1L);
 
