@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
 
+import java.time.LocalDateTime;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -116,8 +118,8 @@ public class ReservationControllerTest {
         applyDTO.setGoal(ReservationGoal.PROFIT);
         applyDTO.setReservationType(ReservationType.VISIT);
         applyDTO.setLocationType(LocationType.BRANCH);
-        applyDTO.setCandidateTime1("2024년 6월 2일 오전 9시 20분");
-        applyDTO.setCandidateTime2("2024년 6월 1일 오전 9시 20분");
+        applyDTO.setCandidateTime1(LocalDateTime.now().plusHours(10));
+        applyDTO.setCandidateTime2(LocalDateTime.now().plusHours(10));
         applyDTO.setQuestion("잘 부탁드립니다.");
         applyDTO.setUserName("lee");
         applyDTO.setUserPhoneNumber("01012345678");
