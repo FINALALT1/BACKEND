@@ -31,7 +31,7 @@ cloud:
       accessKey: ${S3_ACCESS_KEY}
       secretKey: ${S3_SECRET_KEY}
     s3:
-      bucket: lupinbucket
+      bucket: pb-business-card
     region:
       static: ap-northeast-2
     stack:
