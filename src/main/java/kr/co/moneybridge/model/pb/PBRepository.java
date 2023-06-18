@@ -12,16 +12,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PBRepository extends JpaRepository<PB, Long> {
+    @Query("select p.businessCard from PB p where p.id = :id")
+    String findBusinessCardById(@Param("id") Long id);
+
     @Query("select p from PB p where p.id in :list")
     List<PB> findByIdIn(@Param("list") List<Long> list);
 
     @Query("select p.id from PB p where p.speciality1 in :list or p.speciality2 in :list")
     List<Long> findIdsBySpecialityIn(@Param("list") List<PBSpeciality> list);
 
-//    @Query("select p.id from PB p where p.speciality1 not in :list and p.speciality2 not in :list")
-//    @Query("select p.id from PB p where ((p.speciality1 not in :list or p.speciality1 is null) " +
-//            "and (p.speciality2 not in :list or p.speciality2 is null))")
-//    List<Long> findIdsBySpecialityNotIn(@Param("list") List<PBSpeciality> list);
     @Query("select p.id from PB p where (p.speciality1 not in :list or p.speciality1 is null) " +
             "and (p.speciality2 not in :list or p.speciality2 is null)")
     List<Long> findIdsBySpecialityNotIn(@Param("list") List<PBSpeciality> list);

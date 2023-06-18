@@ -40,6 +40,7 @@ public class MyMemberUtil {
     private final ReviewRepository reviewRepository;
     private final StyleRepository styleRepository;
     private final UserBookmarkRepository userBookmarkRepository;
+    private final S3Util s3Util;
 
     public void deleteById(Long id, Role role) {
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
@@ -111,7 +112,10 @@ public class MyMemberUtil {
                 awardRepository.deleteByPBId(id);
                 pbAgreementRepository.deleteByPBId(id);
                 portfolioRepository.deleteByPBId(id);
+                // s3에서 명함사진도 삭제
+                s3Util.delete(pbRepository.findBusinessCardById(id));
                 pbRepository.deleteById(id);
+
             }catch (Exception e){
                 new Exception500("PB 계정 삭제 실패했습니다");
             }

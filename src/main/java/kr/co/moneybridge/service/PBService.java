@@ -1,10 +1,13 @@
 package kr.co.moneybridge.service;
 
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
+import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
@@ -17,6 +20,7 @@ import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +49,7 @@ public class PBService {
     private final CareerRepository careerRepository;
     private final UserBookmarkRepository userBookmarkRepository;
     private final PortfolioRepository portfolioRepository;
+    private final S3Util s3Util;
 
     @MyLog
     @Transactional
@@ -146,18 +151,28 @@ public class PBService {
         if (businessCard == null || businessCard.isEmpty()) {
             throw new Exception400("businessCard", "명함 사진이 없습니다");
         }
-        // 압축해서 S3에 사진 저장하는 부분 추가 필요함
-        String fileName = businessCard.getOriginalFilename();
+        // S3에 사진 저장
         try {
-            PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, fileName));
+            String path = s3Util.upload(businessCard);
+            System.out.println(path);
+            PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if (agreements != null) {
                 agreements.stream().forEach(agreement ->
                         pbAgreementRepository.save(agreement.toEntity(pbPS)));
             }
             return new PBResponse.JoinOutDTO(pbPS);
+        } catch (AmazonS3Exception es) {
+            //  S3에 대한 액세스 권한이 없거나, 파일이 너무 크거나, S3 버킷이 존재하지 않는 경우
+            log.error("s3에 사진 저장 실패" + es.getMessage());
+            throw new Exception500("명함 사진 저장 실패: " + es.getMessage());
+        } catch (SdkClientException ec) {
+            //  네트워크 연결 문제나 클라이언트의 설정 문제
+            log.error("Amazon SDK에서 클라이언트 관련 오류" + ec.getMessage());
+            throw new Exception500("명함 사진 저장 실패: " + ec.getMessage());
         } catch (Exception e) {
-            throw new Exception500("회원가입 실패 : " + e.getMessage());
+            log.error(e.getMessage());
+            throw new Exception500("회원가입 실패: " + e.getMessage());
         }
     }
 
