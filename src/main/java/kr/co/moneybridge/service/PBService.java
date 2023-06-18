@@ -274,4 +274,12 @@ public class PBService {
 
         return pbList;
     }
+
+    //PB 프로필가져오기(비회원)
+    public PBResponse.PBSimpleProfileDTO getSimpleProfile(Long id) {
+
+        PBResponse.PBSimpleProfileDTO pbDTO = pbRepository.findSimpleProfile(id).orElseThrow(() -> new Exception404("해당 PB 존재하지 않습니다"));
+
+        return pbDTO;
+    }
 }
