@@ -322,6 +322,7 @@ public class PBResponse {
             this.record = award.getRecord();
         }
     }
+
     @ApiModel(description = "PB 포트폴리오 응답데이터")
     @Getter @Setter
     public static class PortfolioOutDTO {

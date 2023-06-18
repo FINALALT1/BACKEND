@@ -64,6 +64,7 @@ class PBServiceTest extends MockDummyEntity {
     @Mock
     PortfolioRepository portfolioRepository;
     @Mock
+
     MyUserDetails myUserDetails;
     @Mock
     PB pb;
@@ -413,7 +414,6 @@ class PBServiceTest extends MockDummyEntity {
         //then
         assertThat(result).isEqualTo(dto);
     }
-
     @Test
     @DisplayName("PB 포트폴리오 가져오기")
     void getPortfolio() {

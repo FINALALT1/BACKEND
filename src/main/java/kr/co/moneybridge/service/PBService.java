@@ -49,6 +49,7 @@ public class PBService {
     private final UserBookmarkRepository userBookmarkRepository;
     private final PortfolioRepository portfolioRepository;
 
+
     @MyLog
     @Transactional
     public PBResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {
