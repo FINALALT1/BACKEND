@@ -110,8 +110,8 @@ public class ReservationService {
                     .type(applyDTO.getReservationType())
                     .locationName(locationName)
                     .locationAddress(locationAddress)
-                    .candidateTime1(StringToLocalDateTime(applyDTO.getCandidateTime1()))
-                    .candidateTime2(StringToLocalDateTime(applyDTO.getCandidateTime2()))
+                    .candidateTime1(applyDTO.getCandidateTime1())
+                    .candidateTime2(applyDTO.getCandidateTime2())
                     .question(applyDTO.getQuestion())
                     .goal(applyDTO.getGoal())
                     .process(ReservationProcess.APPLY)
@@ -120,6 +120,10 @@ public class ReservationService {
                     .email(applyDTO.getUserEmail())
                     .status(ReservationStatus.ACTIVE)
                     .build());
+
+            if (!userPS.getHasDoneReservation()) {
+                userPS.updateHasDoneReservation(true);
+            }
         } catch (Exception e) {
             throw new Exception500("상담 예약 저장 실패 : " + e.getMessage());
         }
@@ -246,7 +250,7 @@ public class ReservationService {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
         );
-        pbRepository.findById(pbId).orElseThrow(
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
 
@@ -267,6 +271,9 @@ public class ReservationService {
                     reservationPS.getLocationAddress(),
                     reservationPS.getGoal(),
                     reservationPS.getQuestion(),
+                    pbPS.getConsultStart().toString(),
+                    pbPS.getConsultEnd().toString(),
+                    pbPS.getConsultNotice(),
                     reviewRepository.countByReservationId(reservationPS.getId()) >= 1
             );
         } catch (Exception e) {
@@ -297,8 +304,8 @@ public class ReservationService {
         }
 
         try {
-            if (updateDTO.getTime() != null && !updateDTO.getTime().isBlank()) {
-                reservationPS.updateTime(StringToLocalDateTime(updateDTO.getTime()));
+            if (updateDTO.getTime() != null) {
+                reservationPS.updateTime(updateDTO.getTime());
             }
             if (updateDTO.getType() != null) {
                 reservationPS.updateType(updateDTO.getType());

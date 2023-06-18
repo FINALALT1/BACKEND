@@ -33,6 +33,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -130,8 +132,8 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
         applyDTO.setGoal(ReservationGoal.PROFIT);
         applyDTO.setReservationType(ReservationType.VISIT);
         applyDTO.setLocationType(LocationType.BRANCH);
-        applyDTO.setCandidateTime1("2024년 6월 1일 오전 9시 20분");
-        applyDTO.setCandidateTime2("2024년 6월 1일 오전 9시 20분");
+        applyDTO.setCandidateTime1(LocalDateTime.now().plusHours(10));
+        applyDTO.setCandidateTime2(LocalDateTime.now().plusHours(10));
         applyDTO.setQuestion("question입니다.");
         applyDTO.setUserName("lee");
         applyDTO.setUserPhoneNumber("01012345678");
