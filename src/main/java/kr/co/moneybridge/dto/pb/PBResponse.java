@@ -205,11 +205,11 @@ public class PBResponse {
 
         @ApiModelProperty(example = "1", value = "PB의 id")
         private Long id;
-        @ApiModelProperty(example = "1", value = "PB의 이름")
+        @ApiModelProperty(example = "김피비", value = "PB의 이름")
         private String name;
-        @ApiModelProperty(example = "1", value = "PB 한줄메세지")
+        @ApiModelProperty(example = "김피비입니다", value = "PB 한줄메세지")
         private String msg;
-        @ApiModelProperty(example = "1", value = "PB의 프로필")
+        @ApiModelProperty(example = "profile.png", value = "PB의 프로필")
         private String profile;
 
         public PBSimpleDTO(PBPageDTO pbPageDTO) {
@@ -220,10 +220,14 @@ public class PBResponse {
         }
     }
 
+    @ApiModel(description = "PB 상세프로필(비로그인) 응답데이터")
     @Getter
     public static class PBSimpleProfileDTO {
+        @ApiModelProperty(example = "profile.png", value = "PB의 프로필")
         private String profile;
+        @ApiModelProperty(example = "김피비입니다", value = "PB 한줄메세지")
         private String msg;
+        @ApiModelProperty(example = "logo.png", value = "회사 로고")
         private String companyLogo;
 
         public PBSimpleProfileDTO(PB pb, Company company) {

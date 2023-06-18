@@ -186,6 +186,8 @@ public class PBController {
         return new ResponseDTO(pbList);
     }
 
+    @ApiOperation("PB 프로필가져오기(비회원)")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/profile/{id}")
     public ResponseDTO<PBResponse.PBSimpleProfileDTO> getSimpleProfile(@PathVariable(value = "id") Long id) {
 
