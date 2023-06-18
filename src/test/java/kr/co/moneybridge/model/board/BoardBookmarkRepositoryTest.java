@@ -1,9 +1,6 @@
 package kr.co.moneybridge.model.board;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.core.exception.Exception404;
-import kr.co.moneybridge.core.util.MyDateUtil;
-import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -17,8 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
-import java.util.List;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
