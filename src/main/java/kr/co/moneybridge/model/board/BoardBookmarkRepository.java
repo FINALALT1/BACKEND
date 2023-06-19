@@ -34,4 +34,6 @@ public interface BoardBookmarkRepository extends JpaRepository<BoardBookmark, Lo
 
     @Query("SELECT bm FROM BoardBookmark bm WHERE bm.bookmarkerId = :bookmarkerId AND bm.board.id = :boardId")
     Optional<BoardBookmark> findByMemberAndBoardId(@Param("bookmarkerId") Long bookmarkerId, @Param("boardId") Long boardId);
+
+    Boolean existsByBookmarkerIdAndBookmarkerRole(Long bookmarkerId, BookmarkerRole bookmarkerRole);
 }

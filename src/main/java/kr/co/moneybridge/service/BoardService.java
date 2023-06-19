@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -343,5 +344,26 @@ public class BoardService {
         List<BoardResponse.BoardPageDTO> boardList = boardRepository.findTwoBoards(pageable);
 
         return boardList;
+    }
+
+    //해당 PB의 컨텐츠목록 가져오기
+    public PageDTO<BoardResponse.BoardPageDTO> getPBBoards(MyUserDetails myUserDetails, Long pbId, Pageable pageable) {
+
+        Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findByPBId(pbId, pageable);
+        BookmarkerRole bookmarkerRole;
+
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            bookmarkerRole = BookmarkerRole.USER;
+        } else {
+            bookmarkerRole = BookmarkerRole.PB;
+        }
+
+        for (BoardResponse.BoardPageDTO dto : boardPG) {
+            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(myUserDetails.getMember().getId(), bookmarkerRole));
+        }
+
+        List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+
+        return new PageDTO<>(list, boardPG);
     }
 }

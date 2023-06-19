@@ -21,6 +21,7 @@ import kr.co.moneybridge.service.PBService;
 import kr.co.moneybridge.service.ReplyService;
 import kr.co.moneybridge.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -257,5 +258,17 @@ public class BoardController {
         List<BoardResponse.BoardPageDTO> list = boardService.getTwoBoards();
 
         return new ResponseDTO(list);
+    }
+
+    @ApiOperation("특정 PB의 컨텐츠 리스트 가져오기")
+    @SwaggerResponses.DefaultApiResponses
+    @GetMapping("/auth/boards/{pbId}")
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getPBBoards(@AuthenticationPrincipal MyUserDetails myUserDetails,
+                                                                        @PathVariable(value = "pbId") Long pbId) {
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getPBBoards(myUserDetails, pbId, pageable);
+
+        return new ResponseDTO<>(pageDTO);
     }
 }

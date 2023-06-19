@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.pb;
 
+import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.dto.user.UserResponse;
 import org.springframework.data.domain.Page;
@@ -135,4 +136,6 @@ public interface PBRepository extends JpaRepository<PB, Long> {
             "WHERE pb.speciality1 = :speciality1 OR pb.speciality2 = :speciality1 " +
             "ORDER BY pb.id DESC")
     List<PBResponse.PBPageDTO> findBySpeciality1(@Param("speciality1")PBSpeciality speciality1, Pageable pageable);
+
+
 }
