@@ -380,12 +380,14 @@ public class ReservationService {
                 || reservationPS.getProcess().equals(ReservationProcess.COMPLETE)) {
             throw new Exception400(String.valueOf(reservationId), "이미 완료되었거나 취소된 상담입니다.");
         }
+        User userPS = null;
+        PB pbPS = null;
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+            userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                     () -> new Exception404("존재하지 않는 투자자입니다.")
             );
         } else { // PB
-            pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
+            pbPS = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                     () -> new Exception404("존재하지 않는 PB입니다.")
             );
         }
@@ -397,11 +399,19 @@ public class ReservationService {
             if (updateDTO.getType() != null) {
                 reservationPS.updateType(updateDTO.getType());
             }
-            if (updateDTO.getLocationName() != null && !updateDTO.getLocationName().isBlank()) {
-                reservationPS.updateLocationName(updateDTO.getLocationName());
-            }
-            if (updateDTO.getLocationAddress() != null && !updateDTO.getLocationAddress().isBlank()) {
-                reservationPS.updateLocationAddress(updateDTO.getLocationAddress());
+            if (updateDTO.getCategory() != null) {
+                if (updateDTO.getCategory().equals(LocationType.BRANCH)) {
+                    if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+                        pbPS = pbRepository.findById(reservationPS.getPb().getId()).orElseThrow(
+                                () -> new Exception500("현재는 존재하지 않는 PB입니다.")
+                        );
+                    }
+                    reservationPS.updateLocationName(pbPS.getBranch().getName());
+                    reservationPS.updateLocationAddress(pbPS.getBranch().getRoadAddress());
+                } else { // CALL
+                    reservationPS.updateLocationName(null);
+                    reservationPS.updateLocationAddress(null);
+                }
             }
         } catch (Exception e) {
             throw new Exception500("예약 변경 실패 : " + e.getMessage());

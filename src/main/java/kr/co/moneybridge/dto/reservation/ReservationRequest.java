@@ -61,11 +61,8 @@ public class ReservationRequest {
         @ApiModelProperty(example = "VISIT")
         private ReservationType type;
 
-        @ApiModelProperty(example = "미래에셋증권 용산wm점")
-        private String locationName;
-
-        @ApiModelProperty(example = "서울특별시 용산구 한강로동 한강대로 92")
-        private String locationAddress;
+        @ApiModelProperty(example = "BRANCH")
+        private LocationType category;
     }
 
     @ApiModel

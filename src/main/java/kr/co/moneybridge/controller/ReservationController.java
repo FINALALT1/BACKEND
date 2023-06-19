@@ -162,8 +162,8 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/reservations")
     public ResponseDTO<PageDTO<ReservationResponse.RecentReservationByUserDTO>> getRecentReservationsByUser(String type,
-                                                                                                @RequestParam(defaultValue = "0") int page,
-                                                                                                @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                                                                                            @RequestParam(defaultValue = "0") int page,
+                                                                                                            @AuthenticationPrincipal MyUserDetails myUserDetails) {
         switch (type) {
             case "APPLY":
             case "CONFIRM":
@@ -211,12 +211,8 @@ public class ReservationController {
         }
 
         if (updateDTO.getType().equals(ReservationType.VISIT)) {
-            if (updateDTO.getLocationName() == null || updateDTO.getLocationName().isBlank()) {
-                throw new Exception400(updateDTO.getLocationName(), "상담 장소를 입력해주세요.");
-            }
-
-            if (updateDTO.getLocationAddress() == null || updateDTO.getLocationAddress().isBlank()) {
-                throw new Exception400(updateDTO.getLocationAddress(), "상담 주소를 입력해주세요.");
+            if (!isValidLocationType(updateDTO.getCategory())) {
+                throw new Exception400(updateDTO.getCategory().toString(), "Enum 형식에 맞춰 요청해주세요.");
             }
         }
 
