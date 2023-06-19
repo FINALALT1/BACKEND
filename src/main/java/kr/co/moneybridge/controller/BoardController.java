@@ -260,6 +260,8 @@ public class BoardController {
         return new ResponseDTO(list);
     }
 
+    @ApiOperation("특정 PB의 컨텐츠 리스트 가져오기")
+    @SwaggerResponses.DefaultApiResponses
     @GetMapping("/auth/boards/{pbId}")
     public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getPBBoards(@AuthenticationPrincipal MyUserDetails myUserDetails,
                                                                         @PathVariable(value = "pbId") Long pbId) {
