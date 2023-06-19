@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "Award_tb")
+@Table(name = "award_tb")
 @Entity
 public class Award {
     @Id
@@ -21,6 +21,9 @@ public class Award {
 
     @Column(nullable = false, length = 90)
     private String record; // 수상내역
+
+    @Column(nullable = false)
+    private Integer awardYear;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

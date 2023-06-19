@@ -380,7 +380,7 @@ public class PBResponse {
 
         public AwardOutDTO(Award award) {
             this.id = award.getId();
-            this.year = award.getCreatedAt().getYear();
+            this.year = award.getAwardYear();
             this.record = award.getRecord();
         }
     }

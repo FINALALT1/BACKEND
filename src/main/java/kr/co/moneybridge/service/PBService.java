@@ -12,6 +12,7 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -387,5 +389,95 @@ public class PBService {
         updateDTO.setAwards(awardRepository.getAwards(pb.getId()));
 
         return updateDTO;
+    }
+
+    //PB 프로필 수정하기
+    @Transactional
+    public void updateProfile(MyUserDetails myUserDetails, PBRequest.UpdateProfileInDTO updateDTO, MultipartFile profileFile, MultipartFile portfolioFile) {
+
+        PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+
+        //career, award 컬럼 삭제
+        careerRepository.deleteByPBId(myUserDetails.getMember().getId());
+        awardRepository.deleteByPBId(myUserDetails.getMember().getId());
+
+        //portfolio 찾아오기
+        Optional<Portfolio> portfolioOP = portfolioRepository.findByPbId(myUserDetails.getMember().getId());
+        Portfolio portfolio;
+
+        if (!portfolioOP.isPresent()) {
+            portfolio = updateDTO.portfolioEntity(pb);
+            portfolioRepository.save(portfolio);
+        } else {
+            portfolio = portfolioOP.get();
+        }
+
+        //프로필 삭제요청시
+        if (updateDTO.getDeleteProfile().equals(true)) {
+            if (!pb.getProfile().equals("businessCard.png")) {
+                try {
+                    s3Util.delete(pb.getProfile());
+                    pb.updateProfile("businessCard.png");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        //포트폴리오파일 삭제요청시
+        if (updateDTO.getDeletePortfolio().equals(true)) {
+            if (portfolio.getFile() != null && !portfolio.getFile().isEmpty()) {
+                try {
+                    s3Util.delete(portfolio.getFile());
+                    portfolio.deleteFile();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        //프로필 사진 들어온경우
+        if (profileFile != null && !profileFile.isEmpty()) {
+            try {
+                String profilePath = s3Util.upload(profileFile);
+                pb.updateProfile(profilePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        //포트폴리오파일 들어온경우
+        if (portfolioFile != null && !portfolioFile.isEmpty()) {
+            try {
+                String portfolioPath = s3Util.upload(portfolioFile);
+                portfolio.updateFile(portfolioPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        //career, award 새로 저장
+        List<PBRequest.CareerInDTO> careerList = updateDTO.getCareers();
+        if (careerList != null) {
+            for (PBRequest.CareerInDTO careerInDTO : careerList) {
+                careerRepository.save(careerInDTO.toEntity(pb));
+            }
+        }
+        List<PBRequest.AwardInDTO> awardList = updateDTO.getAwards();
+        if (awardList != null) {
+            for (PBRequest.AwardInDTO awardInDTO : awardList) {
+                awardRepository.save(awardInDTO.toEntity(pb));
+            }
+        }
+
+        //나머지 PB 정보 업데이트
+        Branch newBranch = branchRepository.findByName(updateDTO.getBranchName()).orElseThrow(() -> new Exception404("해당 지점 존재하지 않습니다."));
+        pb.updateBranch(newBranch);
+        pb.updateCareer(updateDTO.getCareer());
+        pb.updateSpeciality1(updateDTO.getSpeciality1());
+        pb.updateSpeciality2(updateDTO.getSpeciality2());
+        pb.updateIntro(updateDTO.getIntro());
+        pb.updateMsg(updateDTO.getMsg());
+
     }
 }

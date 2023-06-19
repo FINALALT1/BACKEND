@@ -277,6 +277,7 @@ public class DummyEntity {
     public Award newAward(PB pb) {
         return Award.builder()
                 .pb(pb)
+                .awardYear(2020)
                 .record("수상이력입니다.")
                 .build();
     }
