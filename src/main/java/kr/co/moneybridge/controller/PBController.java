@@ -247,4 +247,14 @@ public class PBController {
         return new ResponseDTO<>();
     }
 
+    @ApiOperation("유사한 PB 가져오기")
+    @SwaggerResponses.DefaultApiResponses
+    @GetMapping("/auth/{pbId}/same")
+    public ResponseDTO getSamePBs(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable(value = "pbId") Long pbId) {
+
+        List<PBResponse.PBPageDTO> list = pbService.getSamePBs(myUserDetails, pbId);
+
+        return new ResponseDTO<>(list);
+    }
+
 }
