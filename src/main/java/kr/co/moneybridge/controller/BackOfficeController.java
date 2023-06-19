@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
-    // PB회원 가입 요청 승인 페이지 전체 가져오기
+    // PB 회원 가입 요청 승인 페이지 전체 가져오기
     @MyLog
     @SwaggerResponses.GetPBPending
     @GetMapping("/admin/pbs")

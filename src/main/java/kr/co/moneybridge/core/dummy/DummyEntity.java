@@ -28,6 +28,21 @@ public class DummyEntity {
                 .build();
     }
 
+    public User newAdmin(String username) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return User.builder()
+                .name(username)
+                .password(passwordEncoder.encode("password1234"))
+                .email(username + "@nate.com")
+                .phoneNumber("01012345678")
+                .role(Role.ADMIN)
+                .profile("프로필.png")
+                .hasDoneReview(false)
+                .hasDoneReservation(false)
+                .hasDoneBoardBookmark(false)
+                .build();
+    }
+
     public User newUserWithPropensity(String username) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return User.builder()
