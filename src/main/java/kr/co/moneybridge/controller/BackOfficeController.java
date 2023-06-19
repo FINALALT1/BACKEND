@@ -19,6 +19,7 @@ public class BackOfficeController {
 
     // PB회원 가입 요청 승인 페이지 전체 가져오기
     @MyLog
+    @SwaggerResponses.GetPBPending
     @GetMapping("/admin/pbs")
     public ResponseDTO<BackOfficeResponse.PBPendingOutDTO> getPBPending() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));

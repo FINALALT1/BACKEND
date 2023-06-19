@@ -13,17 +13,27 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 public class BackOfficeResponse {
+    @ApiModel
     @Getter
     @Setter
     public static class PBPendingDTO {
+        @ApiModelProperty(example = "4", value = "승인 대기 중인 pb id")
         private Long id;
+        @ApiModelProperty(example = "윤pb@nate.com", value = "이메일")
         private String email;
+        @ApiModelProperty(example = "윤pb", value = "이름")
         private String name;
+        @ApiModelProperty(example = "01012345678", value = "핸드폰 번호")
         private String phoneNumber;
+        @ApiModelProperty(example = "미래에셋증권 여의도점", value = "지점명")
         private String branchName;
+        @ApiModelProperty(example = "10", value = "경력(연차)")
         private Integer career;
+        @ApiModelProperty(example = "BOND", value = "전문분야1")
         private PBSpeciality speciality1;
+        @ApiModelProperty(example = "null", value = "전문분야2")
         private PBSpeciality speciality2;
+        @ApiModelProperty(example = "https://d23znr2pczcvf6.cloudfront.net/5fb1a367-f935-4905-a643-bbf8cd7afc19_%EB%8B%AC%ED%8C%BD%EC%9D%B4.jpg", value = "명함 사진")
         private String businessCard;
 
         public PBPendingDTO(PB pb, String branchName) {
@@ -39,10 +49,13 @@ public class BackOfficeResponse {
         }
     }
 
+    @ApiModel(description = "PB회원 가입 요청 승인 페이지 전체 가져오기 응답 데이터")
     @Getter
     @Setter
     public static class PBPendingOutDTO {
+        @ApiModelProperty(example = "2", value = "PB 승인 대기 건수")
         private Integer count;
+        @ApiModelProperty
         private PageDTO<PBPendingDTO> page;
 
         public PBPendingOutDTO(Integer count, PageDTO<PBPendingDTO> page) {
