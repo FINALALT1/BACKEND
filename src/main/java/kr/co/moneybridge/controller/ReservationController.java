@@ -31,6 +31,7 @@ public class ReservationController {
 
     //현재 나의 상담 가능 시간 불러오기
     @MyLog
+    @SwaggerResponses.GetMyConsultTime
     @GetMapping("/pb/consultTime")
     public ResponseDTO<ReservationResponse.MyConsultTimeDTO> getMyConsultTime(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         ReservationResponse.MyConsultTimeDTO myConsultTimeDTO = reservationService.getMyConsultTime(myUserDetails.getMember().getId());

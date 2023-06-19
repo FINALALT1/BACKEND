@@ -10,24 +10,29 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
 
 public class ReservationResponse {
+    @ApiModel(description = "현재 나의 상담 가능 시간 불러오기 응답 데이터")
     @Getter
     @Setter
     public static class MyConsultTimeDTO {
-        private LocalTime consultStart;
+        @ApiModelProperty(example = "09:00:00", value = "상담 가능 시작 시간")
+        private String consultStart;
 
-        private LocalTime consultEnd;
+        @ApiModelProperty(example = "18:00:00", value = "상담 가능 종료 시간")
+        private String consultEnd;
 
+        @ApiModelProperty(example = "월요일 불가능합니다", value = "상담 불가 시간 메시지")
         private String consultNotice;
 
         public MyConsultTimeDTO(PB pb) {
-            this.consultStart = pb.getConsultStart();
-            this.consultEnd = pb.getConsultEnd();
+            this.consultStart = pb.getConsultStart().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            this.consultEnd = pb.getConsultEnd().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
             this.consultNotice = pb.getConsultNotice();
         }
     }
