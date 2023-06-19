@@ -121,22 +121,36 @@ public class MyMemberUtil {
             }
         }
     }
-    public List<Member> findByNameAndPhoneNumber(String name, String phoneNumber, Role role) {
+    public List<Member> findByNameAndPhoneNumberWithoutException(String name, String phoneNumber, Role role) {
         List<Member> members = null;
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
             List<User> users = userRepository.findByNameAndPhoneNumber(name, phoneNumber);
             if(users.isEmpty()){
-                throw new Exception404("사용자가 존재하지 않습니다");
+                return null;
             }
             members = new ArrayList<>(users);
         } else if(role.equals(Role.PB)) {
             List<PB> pbs = pbRepository.findByNameAndPhoneNumber(name, phoneNumber);
             if (pbs.isEmpty()) {
-                throw new Exception404("사용자가 존재하지 않습니다");
+                return null;
             }
             members = new ArrayList<>(pbs);
         }
         return members;
+    }
+
+    public Member findByEmailWithoutException(String email, Role role) {
+        Member member = null;
+        if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
+            Optional<User> userOP = userRepository.findByEmail(email);
+            if(userOP.isEmpty()) return null;
+            member = userOP.get();
+        } else if(role.equals(Role.PB)){
+            Optional<PB> pbOP = pbRepository.findByEmail(email);
+            if(pbOP.isEmpty()) return null;
+             member = pbOP.get();
+        }
+        return member;
     }
 
     public Member findByEmail(String email, Role role) {

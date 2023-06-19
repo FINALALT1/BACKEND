@@ -42,4 +42,7 @@ public class Portfolio {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateFile(String file) { this.file = file; }
+    public void deleteFile() { this.file = null; }
 }
