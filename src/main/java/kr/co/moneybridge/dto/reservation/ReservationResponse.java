@@ -450,4 +450,16 @@ public class ReservationResponse {
             this.reviewCheck = reviewCheck;
         }
     }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class ReviewIdDTO {
+        @ApiModelProperty(example = "1")
+        private Long id;
+
+        public ReviewIdDTO(Long id) {
+            this.id = id;
+        }
+    }
 }

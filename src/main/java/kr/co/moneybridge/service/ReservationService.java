@@ -533,6 +533,42 @@ public class ReservationService {
         }
     }
 
+    @MyLog
+    @Transactional
+    public ReservationResponse.ReviewIdDTO writeReview(ReservationRequest.ReviewDTO reviewDTO, Long userId) {
+        userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+        Reservation reservationPS = reservationRepository.findById(reviewDTO.getReservationId()).orElseThrow(
+                () -> new Exception404("존재하지 않는 상담입니다.")
+        );
+        if (reviewRepository.countByReservationId(reviewDTO.getReservationId()) == 1) {
+            throw new Exception400(String.valueOf(reviewDTO.getReservationId()), "해당 상담에 이미 작성된 후기가 존재합니다.");
+        }
+
+        try {
+            Review reviewPS = reviewRepository.save(
+                    Review.builder()
+                            .reservation(reservationPS)
+                            .adherence(reviewDTO.getAdherence())
+                            .content(reviewDTO.getContent())
+                            .build()
+            );
+            for (StyleStyle style : reviewDTO.getStyleList()) {
+                styleRepository.save(
+                        Style.builder()
+                                .review(reviewPS)
+                                .style(style)
+                                .build()
+                );
+            }
+
+            return new ReservationResponse.ReviewIdDTO(reviewPS.getId());
+        } catch (Exception e) {
+            throw new Exception500("상담 후기 저장 실패 : " + e.getMessage());
+        }
+    }
+
     //PB의 최신리뷰 3개 가져오기
     public List<ReviewResponse.ReviewOutDTO> getPBReviews(Long pbId) {
 

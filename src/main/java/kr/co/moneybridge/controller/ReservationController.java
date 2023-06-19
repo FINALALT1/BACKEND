@@ -15,8 +15,10 @@ import kr.co.moneybridge.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -197,7 +199,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/reservation/{id}")
     public ResponseDTO<ReservationResponse.DetailByUserDTO> getReservationDetailByUser(@PathVariable Long id,
-                                                                               @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                                                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
         ReservationResponse.DetailByUserDTO detailByUserDTO = reservationService.getReservationDetailByUser(id, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>(detailByUserDTO);
@@ -251,7 +253,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/pb/reservation/{id}/confirmed")
     public ResponseDTO confirmReservation(@PathVariable Long id,
-                                          @RequestBody ReservationRequest.ConfirmDTO confirmDTO,
+                                          @Valid @RequestBody ReservationRequest.ConfirmDTO confirmDTO, Errors errors,
                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
         reservationService.confirmReservation(id, myUserDetails.getMember().getId(), confirmDTO);
 
@@ -268,6 +270,18 @@ public class ReservationController {
         reservationService.completeReservation(id, myUserDetails);
 
         return new ResponseDTO<>();
+    }
+
+    @MyLog
+    @ApiOperation(value = "후기 작성하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/user/review")
+    public ResponseDTO<ReservationResponse.ReviewIdDTO> writeReview(@Valid @RequestBody ReservationRequest.ReviewDTO reviewDTO, Errors errors,
+                                                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.ReviewIdDTO reviewIdDTO = reservationService.writeReview(reviewDTO, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(reviewIdDTO);
     }
 
     @ApiOperation(value = "PB 상담후기 최신 3개 가져오기")
