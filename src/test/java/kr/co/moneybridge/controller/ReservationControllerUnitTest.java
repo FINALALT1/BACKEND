@@ -15,9 +15,7 @@ import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
-import kr.co.moneybridge.model.reservation.LocationType;
-import kr.co.moneybridge.model.reservation.ReservationGoal;
-import kr.co.moneybridge.model.reservation.ReservationType;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.ReservationService;
 import org.junit.jupiter.api.Test;
@@ -34,6 +32,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -65,6 +65,39 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockUser
+    @Test
+    public void get_my_review_test() throws Exception {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "이피비", branch);
+        User user = newMockUser(1L, "lee");
+        Reservation reservation = newMockCallReservation(id, user, pb, ReservationProcess.COMPLETE);
+        Review review = newMockReview(1L, reservation);
+        List<ReservationResponse.StyleDTO> styleList = new ArrayList<>();
+
+        ReservationResponse.MyReviewDTO myReviewDTO = new ReservationResponse.MyReviewDTO(
+                review, styleList);
+
+        // stub
+        Mockito.when(reservationService.getMyReview(anyLong(), any())).thenReturn(myReviewDTO);
+
+        // when
+        ResultActions resultActions = mvc.perform(get("/user/review/{id}", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.adherence").value("EXCELLENT"));
+        resultActions.andExpect(jsonPath("$.data.styleList").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.content").value("content 입니다"));
+        resultActions.andExpect(status().isOk());
+    }
 
     @WithMockUser
     @Test
