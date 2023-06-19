@@ -234,6 +234,8 @@ public class PBController {
         return new ResponseDTO<>(updateDTO);
     }
 
+    @ApiOperation("PB 프로필 수정하기")
+    @SwaggerResponses.DefaultApiResponses
     @PutMapping("/pb/profile")
     public ResponseDTO updateProfile(@AuthenticationPrincipal MyUserDetails myUserDetails,
                                      @RequestPart(value = "profileFile", required = false) MultipartFile profileFile,
@@ -244,7 +246,5 @@ public class PBController {
 
         return new ResponseDTO<>();
     }
-
-
 
 }

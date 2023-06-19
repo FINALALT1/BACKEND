@@ -98,24 +98,39 @@ public class PBRequest {
         }
     }
 
+    @ApiModel(description = "PB 프로필 수정 시 요청")
     @Getter
     @Setter
     public static class UpdateProfileInDTO {
-
+        @ApiModelProperty(example = "미래에셋", value = "회사명")
         private String company;
+        @ApiModelProperty(example = "용산점", value = "지점명")
         private String branchName;
+        @ApiModelProperty(example = "10", value = "경력(연차)")
         private Integer career;
+        @ApiModelProperty
         private List<CareerInDTO> careers;
+        @ApiModelProperty
         private List<AwardInDTO> awards;
+        @ApiModelProperty(example = "ETF", value = "전문분야1")
         private PBSpeciality speciality1;
+        @ApiModelProperty(example = "BOND", value = "전문분야2")
         private PBSpeciality speciality2;
+        @ApiModelProperty(example = "10.11", value = "누적수익률")
         private Double cumulativeReturn;
+        @ApiModelProperty(example = "10.11", value = "최대자본인하율")
         private Double maxDrawdown;
+        @ApiModelProperty(example = "1.1", value = "profitFactor")
         private Double profitFactor;
+        @ApiModelProperty(example = "10.11", value = "평균손익률")
         private Double averageProfit;
+        @ApiModelProperty(example = "안녕하세요, 김피비입니다.", value = "한줄소개")
         private String intro;
+        @ApiModelProperty(example = "10", value = "한줄메세지")
         private String msg;
+        @ApiModelProperty(example = "false", value = "포트폴리오삭제여부")
         private Boolean deletePortfolio;
+        @ApiModelProperty(example = "false", value = "프로필삭제여부")
         private Boolean deleteProfile;
 
         public Portfolio portfolioEntity(PB pb) {
