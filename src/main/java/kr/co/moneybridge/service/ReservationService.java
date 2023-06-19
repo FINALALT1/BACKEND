@@ -213,7 +213,7 @@ public class ReservationService {
     }
 
     @MyLog
-    public PageDTO<ReservationResponse.RecentReservationDTO> gerRecentReservations(String type, int page, Long pbId) {
+    public PageDTO<ReservationResponse.RecentReservationDTO> getRecentReservations(String type, int page, Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
@@ -266,6 +266,66 @@ public class ReservationService {
 
             return new PageDTO<>(
                     reservationDTOs, reservations, ReservationResponse.RecentPagingDTO.class
+            );
+        } catch (Exception e) {
+            throw new Exception500("상담 목록 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    public PageDTO<ReservationResponse.RecentReservationByUserDTO> getRecentReservationsByUser(String type, int page, Long userId) {
+        User userPS = userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            // 페이징
+            Page<ReservationResponse.RecentPagingByUserDTO> reservations = null;
+            Pageable pageable = PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt");
+            if (type.equals("APPLY")) {
+                reservations = reservationRepository
+                        .findAllByUserIdAndProcess(userPS.getId(),
+                                ReservationProcess.APPLY,
+                                pageable
+                        );
+            } else if (type.equals("CONFIRM")) {
+                reservations = reservationRepository
+                        .findAllByUserIdAndProcess(userPS.getId(),
+                                ReservationProcess.CONFIRM,
+                                pageable
+                        );
+            } else if (type.equals("COMPLETE")) {
+                reservations = reservationRepository
+                        .findAllByUserIdAndProcess(userPS.getId(),
+                                ReservationProcess.COMPLETE,
+                                pageable
+                        );
+            } else { // WITHDRAW
+                reservations = reservationRepository
+                        .findAllByUserIdAndStatus(userPS.getId(),
+                                ReservationStatus.CANCEL,
+                                pageable
+                        );
+            }
+
+            List<ReservationResponse.RecentReservationByUserDTO> reservationDTOs = new ArrayList<>();
+            for (ReservationResponse.RecentPagingByUserDTO reservation : reservations) {
+                reservationDTOs.add(
+                        new ReservationResponse.RecentReservationByUserDTO(
+                                reservation.getReservationId(),
+                                Duration.between(LocalDateTime.now().minusHours(24),
+                                        reservation.getCreatedAt()).toHours() <= 24,
+                                reservation.getPbId(),
+                                reservation.getProfileImage(),
+                                reservation.getName(),
+                                localDateTimeToStringV2(reservation.getCreatedAt()),
+                                reservation.getType()
+                        )
+                );
+            }
+
+            return new PageDTO<>(
+                    reservationDTOs, reservations, ReservationResponse.RecentPagingByUserDTO.class
             );
         } catch (Exception e) {
             throw new Exception500("상담 목록 조회 실패 : " + e.getMessage());

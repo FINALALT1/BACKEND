@@ -151,7 +151,30 @@ public class ReservationController {
                 throw new Exception400(type, "Enum 형식에 맞춰 요청해주세요.");
         }
 
-        PageDTO<ReservationResponse.RecentReservationDTO> recentReservationsDTO = reservationService.gerRecentReservations(type, page, myUserDetails.getMember().getId());
+        PageDTO<ReservationResponse.RecentReservationDTO> recentReservationsDTO = reservationService.getRecentReservations(type, page, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(recentReservationsDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "나의 예약 페이지 상담 목록 조회")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/user/reservations")
+    public ResponseDTO<PageDTO<ReservationResponse.RecentReservationByUserDTO>> getRecentReservationsByUser(String type,
+                                                                                                @RequestParam(defaultValue = "0") int page,
+                                                                                                @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        switch (type) {
+            case "APPLY":
+            case "CONFIRM":
+            case "COMPLETE":
+            case "WITHDRAW":
+                break;
+            default:
+                throw new Exception400(type, "Enum 형식에 맞춰 요청해주세요.");
+        }
+
+        PageDTO<ReservationResponse.RecentReservationByUserDTO> recentReservationsDTO = reservationService.getRecentReservationsByUser(type, page, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>(recentReservationsDTO);
     }

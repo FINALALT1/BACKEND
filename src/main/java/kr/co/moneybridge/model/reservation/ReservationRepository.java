@@ -52,6 +52,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                                                                       @Param("process") ReservationProcess process,
                                                                       Pageable pageable);
 
+    @Query("select new kr.co.moneybridge.dto.reservation.ReservationResponse$RecentPagingByUserDTO(r, p) " +
+            "from Reservation r " +
+            "join r.pb p " +
+            "where r.user.id = :userId and r.process = :process")
+    Page<ReservationResponse.RecentPagingByUserDTO> findAllByUserIdAndProcess(@Param("userId") Long userId,
+                                                                              @Param("process") ReservationProcess process,
+                                                                              Pageable pageable);
+
     @Query("select new kr.co.moneybridge.dto.reservation.ReservationResponse$RecentPagingDTO(r, u) " +
             "from Reservation r " +
             "join r.user u " +
@@ -59,4 +67,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Page<ReservationResponse.RecentPagingDTO> findAllByPbIdAndStatus(@Param("pbId") Long pbId,
                                                                      @Param("status") ReservationStatus status,
                                                                      Pageable pageable);
+
+    @Query("select new kr.co.moneybridge.dto.reservation.ReservationResponse$RecentPagingByUserDTO(r, p) " +
+            "from Reservation r " +
+            "join r.pb p " +
+            "where r.user.id = :userId and r.status = :status")
+    Page<ReservationResponse.RecentPagingByUserDTO> findAllByUserIdAndStatus(@Param("userId") Long userId,
+                                                                             @Param("status") ReservationStatus status,
+                                                                             Pageable pageable);
 }

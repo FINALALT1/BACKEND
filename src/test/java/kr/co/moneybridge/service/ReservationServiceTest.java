@@ -286,7 +286,7 @@ public class ReservationServiceTest extends MockDummyEntity {
                 ))));
 
         // when
-        PageDTO<ReservationResponse.RecentReservationDTO> recentReservationsDTO = reservationService.gerRecentReservations(type, page, pbId);
+        PageDTO<ReservationResponse.RecentReservationDTO> recentReservationsDTO = reservationService.getRecentReservations(type, page, pbId);
 
         // then
         assertThat(recentReservationsDTO.getList().get(0).getReservationId()).isEqualTo(5L);

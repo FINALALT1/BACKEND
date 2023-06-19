@@ -2,6 +2,7 @@ package kr.co.moneybridge.dto.reservation;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
@@ -227,6 +228,62 @@ public class ReservationResponse {
             this.reservationId = reservationId;
             this.isNewReservation = isNewReservation;
             this.userId = userId;
+            this.profileImage = profileImage;
+            this.name = name;
+            this.createdAt = createdAt;
+            this.type = type;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class RecentPagingByUserDTO {
+        private Long reservationId;
+        private Long pbId;
+        private String profileImage;
+        private String name;
+        private LocalDateTime createdAt;
+        private ReservationType type;
+
+        public RecentPagingByUserDTO(Reservation reservation, PB pb) {
+            this.reservationId = reservation.getId();
+            this.pbId = pb.getId();
+            this.profileImage = pb.getProfile();
+            this.name = pb.getName();
+            this.createdAt = reservation.getCreatedAt();
+            this.type = reservation.getType();
+        }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class RecentReservationByUserDTO {
+        @ApiModelProperty(example = "1")
+        private Long reservationId;
+
+        @ApiModelProperty(example = "true")
+        private Boolean isNewReservation;
+
+        @ApiModelProperty(example = "1")
+        private Long pbId;
+
+        @ApiModelProperty(example = "profile.png")
+        private String profileImage;
+
+        @ApiModelProperty(example = "홍길동")
+        private String name;
+
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
+        private String createdAt;
+
+        @ApiModelProperty(example = "CALL")
+        private ReservationType type;
+
+        public RecentReservationByUserDTO(Long reservationId, Boolean isNewReservation, Long pbId, String profileImage, String name, String createdAt, ReservationType type) {
+            this.reservationId = reservationId;
+            this.isNewReservation = isNewReservation;
+            this.pbId = pbId;
             this.profileImage = profileImage;
             this.name = name;
             this.createdAt = createdAt;
