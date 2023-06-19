@@ -247,4 +247,12 @@ public class PBController {
         return new ResponseDTO<>();
     }
 
+    @GetMapping("/auth/{pbId}/same")
+    public ResponseDTO getSamePBs(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable(value = "pbId") Long pbId) {
+
+        List<PBResponse.PBPageDTO> list = pbService.getSamePBs(myUserDetails, pbId);
+
+        return new ResponseDTO<>(list);
+    }
+
 }

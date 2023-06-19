@@ -3,6 +3,7 @@ package kr.co.moneybridge.model.pb;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.dto.user.UserResponse;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -120,4 +121,18 @@ public interface PBRepository extends JpaRepository<PB, Long> {
             "JOIN Portfolio pf on pb.id = pf.pb.id " +
             "WHERE pb.id = :pbId")
     Optional<PBResponse.PBUpdateOutDTO> findPBProfileForUpdate(@Param("pbId") Long pbId);
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
+            "JOIN pb.branch b " +
+            "JOIN b.company c " +
+            "WHERE (pb.speciality1 = :speciality1 OR pb.speciality2 = :speciality1 OR pb.speciality1 = :speciality2 OR pb.speciality2 = :speciality2) " +
+            "ORDER BY pb.id DESC")
+    List<PBResponse.PBPageDTO> findBySpeciality1And2(@Param("speciality1") PBSpeciality speciality1, @Param("speciality2") PBSpeciality speciality2, Pageable pageable);
+
+    @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
+            "JOIN pb.branch b " +
+            "JOIN b.company c " +
+            "WHERE pb.speciality1 = :speciality1 OR pb.speciality2 = :speciality1 " +
+            "ORDER BY pb.id DESC")
+    List<PBResponse.PBPageDTO> findBySpeciality1(@Param("speciality1")PBSpeciality speciality1, Pageable pageable);
 }

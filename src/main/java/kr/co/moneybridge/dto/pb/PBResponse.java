@@ -242,6 +242,8 @@ public class PBResponse {
         private Double branchLat;
         @ApiModelProperty(example = "84.1111", value = "지점 longitude")
         private Double branchLon;
+        @ApiModelProperty(example = "false", value = "pb북마크여부")
+        private Boolean isBookmark; //set해줘야함
 
         public PBPageDTO(PB pb, Branch branch, Company company) {
             this.id = pb.getId();
