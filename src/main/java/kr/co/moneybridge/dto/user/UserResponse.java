@@ -154,6 +154,12 @@ public class UserResponse {
             this.email = member.getEmail();
             this.phoneNumber = member.getPhoneNumber();
         }
+
+        public EmailFindOutDTO() {
+            this.name = null;
+            this.email = null;
+            this.phoneNumber = null;
+        }
     }
 
     @ApiModel(description = "비밀번호 찾기시 이메일 인증 응답 데이터")
@@ -186,6 +192,8 @@ public class UserResponse {
             this.phoneNumber = member.getPhoneNumber();
             this.code = code;
         }
+
+        public PasswordOutDTO() {}
     }
 
     @ApiModel(description = "이메일 인증시 응답 데이터")
@@ -218,14 +226,19 @@ public class UserResponse {
         @ApiModelProperty(example = "1")
         private Long id;
 
+        @ApiModelProperty(example = "김투자")
+        private String name;
+
         @ApiModelProperty(example = "J46L4SBJ")
         private String code;
 
         public LoginOutDTO(Member member) {
             this.id = member.getId();
+            this.name = member.getName();
         }
         public LoginOutDTO(Member member, String code) {
             this.id = member.getId();
+            this.name = member.getName();
             this.code = code;
         }
     }

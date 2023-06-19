@@ -39,10 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -152,8 +149,11 @@ public class UserService {
 
     @MyLog
     public List<UserResponse.EmailFindOutDTO> findEmail(UserRequest.EmailFindInDTO emailFindInDTO) {
-        List<Member> membersPS = myMemberUtil.findByNameAndPhoneNumber(emailFindInDTO.getName(),
+        List<Member> membersPS = myMemberUtil.findByNameAndPhoneNumberWithoutException(emailFindInDTO.getName(),
             emailFindInDTO.getPhoneNumber(), emailFindInDTO.getRole());
+        if(membersPS == null){
+            return Arrays.asList(new UserResponse.EmailFindOutDTO());
+        }
         List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = new ArrayList<>();
         membersPS.stream().forEach(memberPS -> emailFindOutDTOs.add(new UserResponse.EmailFindOutDTO(memberPS)));
         return emailFindOutDTOs;
@@ -161,9 +161,9 @@ public class UserService {
 
     @MyLog
     public UserResponse.PasswordOutDTO password(UserRequest.PasswordInDTO passwordInDTO) throws Exception {
-        Member memberPS = myMemberUtil.findByEmail(passwordInDTO.getEmail(), passwordInDTO.getRole());
-        if(!memberPS.getName().equals(passwordInDTO.getName())){
-            throw new Exception404("이름이 틀렸습니다");
+        Member memberPS = myMemberUtil.findByEmailWithoutException(passwordInDTO.getEmail(), passwordInDTO.getRole());
+        if(memberPS == null || !memberPS.getName().equals(passwordInDTO.getName())){
+            return new UserResponse.PasswordOutDTO();
         }
         String code = sendEmail(passwordInDTO.getEmail());
         UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(memberPS, code);
