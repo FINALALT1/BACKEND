@@ -16,6 +16,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
@@ -61,6 +63,21 @@ public class ReviewRepositoryTest extends DummyEntity {
         reviewRepository.save(newReview(reservation5));
 
         em.clear();
+    }
+
+    @Test
+    public void find_by_id_test() throws Exception {
+        // given
+        Long id = 1L;
+
+        // when
+        Optional<Review> review = reviewRepository.findById(id);
+
+        // then
+        assertThat(review.get().getId()).isEqualTo(id);
+        assertThat(review.get().getAdherence()).isEqualTo(ReviewAdherence.EXCELLENT);
+        assertThat(review.get().getContent()).isEqualTo("content 입니다");
+        assertThat(review.get().getReservation().getId()).isInstanceOf(Long.class);
     }
 
     @Test

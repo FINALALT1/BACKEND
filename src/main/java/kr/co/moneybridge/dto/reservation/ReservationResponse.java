@@ -15,6 +15,26 @@ import java.util.stream.Collectors;
 import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
 
 public class ReservationResponse {
+    @ApiModel(description = "나의 후기 하나 가져오기 응답 데이터")
+    @Getter
+    @Setter
+    public static class MyReviewDTO {
+        @ApiModelProperty(example = "EXCELLENT", value = "상담 일정 준수 등급")
+        private ReviewAdherence adherence;
+
+        @ApiModelProperty(example = "FAST", value = "상담 스타일")
+        private List<StyleDTO> styleList;
+
+        @ApiModelProperty(example = "content 입니다", value = "후기 내용")
+        private String content;
+
+        public MyReviewDTO(Review review, List<StyleDTO> styleList) {
+            this.adherence = review.getAdherence();
+            this.styleList = styleList;
+            this.content = review.getContent();
+        }
+    }
+
     @ApiModel
     @Getter
     @Setter
