@@ -180,7 +180,7 @@ public class ReservationController {
     }
 
     @MyLog
-    @ApiOperation(value = "예약 확인하기")
+    @ApiOperation(value = "예약 확인하기(PB)")
     @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation/{id}")
@@ -189,6 +189,18 @@ public class ReservationController {
         ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetailByPB(id, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>(detailByPBDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "예약 확인하기(투자자)")
+    @SwaggerResponses.ApiResponsesWithout400
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/user/reservation/{id}")
+    public ResponseDTO<ReservationResponse.DetailByUserDTO> getReservationDetailByUser(@PathVariable Long id,
+                                                                               @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.DetailByUserDTO detailByUserDTO = reservationService.getReservationDetailByUser(id, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(detailByUserDTO);
     }
 
     @MyLog

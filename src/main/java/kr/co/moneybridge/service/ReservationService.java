@@ -369,6 +369,42 @@ public class ReservationService {
     }
 
     @MyLog
+    public ReservationResponse.DetailByUserDTO getReservationDetailByUser(Long reservationId, Long userId) {
+        Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
+                () -> new Exception404("존재하지 않는 예약입니다.")
+        );
+        userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+
+        try {
+            PB pbPS = reservationPS.getPb();
+            return new ReservationResponse.DetailByUserDTO(
+                    pbPS.getId(),
+                    pbPS.getProfile(),
+                    pbPS.getName(),
+                    pbPS.getPhoneNumber(),
+                    pbPS.getEmail(),
+                    reservationPS.getId(),
+                    localDateTimeToStringV2(reservationPS.getCandidateTime1()),
+                    localDateTimeToStringV2(reservationPS.getCandidateTime2()),
+                    localDateTimeToStringV2(reservationPS.getTime()),
+                    reservationPS.getType(),
+                    reservationPS.getLocationName(),
+                    reservationPS.getLocationAddress(),
+                    reservationPS.getGoal(),
+                    reservationPS.getQuestion(),
+                    pbPS.getConsultStart().toString(),
+                    pbPS.getConsultEnd().toString(),
+                    pbPS.getConsultNotice(),
+                    reviewRepository.countByReservationId(reservationPS.getId()) >= 1
+            );
+        } catch (Exception e) {
+            throw new Exception500("예약 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
     @Transactional
     public void updateReservation(Long reservationId,
                                   ReservationRequest.UpdateDTO updateDTO,

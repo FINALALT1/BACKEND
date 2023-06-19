@@ -371,5 +371,83 @@ public class ReservationResponse {
         }
     }
 
+    @ApiModel
+    @Getter
+    @Setter
+    public static class DetailByUserDTO {
+        @ApiModelProperty(example = "1")
+        private Long pbId;
 
+        @ApiModelProperty(example = "profile.png")
+        private String profileImage;
+
+        @ApiModelProperty(example = "홍길동")
+        private String name;
+
+        @ApiModelProperty(example = "01012345678")
+        private String phoneNumber;
+
+        @ApiModelProperty(example = "gildong123@gmail.com")
+        private String email;
+
+        @ApiModelProperty(example = "1")
+        private Long reservationId;
+
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
+        private String candidateTime1;
+
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 50분")
+        private String candidateTime2;
+
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
+        private String time;
+
+        @ApiModelProperty(example = "VISIT")
+        private ReservationType type;
+
+        @ApiModelProperty(example = "미래에셋증권 용산 WM점")
+        private String location;
+
+        @ApiModelProperty(example = "서울특별시 용산구 한강로동 한강대로 92")
+        private String locationAddress;
+
+        @ApiModelProperty(example = "TAX")
+        private ReservationGoal goal;
+
+        @ApiModelProperty(example = "잘 부탁드립니다.")
+        private String question;
+
+        @ApiModelProperty(example = "09:00")
+        private String consultStart;
+
+        @ApiModelProperty(example = "09:00")
+        private String consultEnd;
+
+        @ApiModelProperty(example = "09:00")
+        private String notice;
+
+        @ApiModelProperty(example = "true")
+        private Boolean reviewCheck;
+
+        public DetailByUserDTO(Long pbId, String profileImage, String name, String phoneNumber, String email, Long reservationId, String candidateTime1, String candidateTime2, String time, ReservationType type, String location, String locationAddress, ReservationGoal goal, String question, String consultStart, String consultEnd, String notice, Boolean reviewCheck) {
+            this.pbId = pbId;
+            this.profileImage = profileImage;
+            this.name = name;
+            this.phoneNumber = phoneNumber;
+            this.email = email;
+            this.reservationId = reservationId;
+            this.candidateTime1 = candidateTime1;
+            this.candidateTime2 = candidateTime2;
+            this.time = time;
+            this.type = type;
+            this.location = location;
+            this.locationAddress = locationAddress;
+            this.goal = goal;
+            this.question = question;
+            this.consultStart = consultStart;
+            this.consultEnd = consultEnd;
+            this.notice = notice;
+            this.reviewCheck = reviewCheck;
+        }
+    }
 }
