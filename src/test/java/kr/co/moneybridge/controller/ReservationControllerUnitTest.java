@@ -1,6 +1,7 @@
 package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.moneybridge.core.WithMockPB;
 import kr.co.moneybridge.core.WithMockUser;
 import kr.co.moneybridge.core.advice.MyLogAdvice;
 import kr.co.moneybridge.core.advice.MyValidAdvice;
@@ -65,6 +66,33 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockPB
+    @Test
+    public void get_my_consult_time_test() throws Exception {
+        // given
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "이피비", branch);
+
+        ReservationResponse.MyConsultTimeDTO myConsultTimeDTO = new ReservationResponse.MyConsultTimeDTO(pb);
+
+        // stub
+        Mockito.when(reservationService.getMyConsultTime(anyLong())).thenReturn(myConsultTimeDTO);
+
+        // when
+        ResultActions resultActions = mvc.perform(get("/pb/consultTime"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.consultStart").value("09:00:00"));
+        resultActions.andExpect(jsonPath("$.data.consultEnd").value("18:00:00"));
+        resultActions.andExpect(jsonPath("$.data.consultNotice").value("월요일 불가능합니다"));
+        resultActions.andExpect(status().isOk());
+    }
 
     @WithMockUser
     @Test

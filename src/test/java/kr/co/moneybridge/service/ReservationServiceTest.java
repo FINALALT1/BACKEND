@@ -52,6 +52,26 @@ public class ReservationServiceTest extends MockDummyEntity {
     private ObjectMapper om;
 
     @Test
+    public void get_my_consult_time_test() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "이피비", branch);
+
+        // stub
+        Mockito.when(pbRepository.findById(anyLong())).thenReturn(Optional.of(pb));
+
+        // when
+        ReservationResponse.MyConsultTimeDTO myConsultTimeDTO = reservationService.getMyConsultTime(pb.getId());
+
+        // then
+        assertThat(myConsultTimeDTO.getConsultStart()).isEqualTo("09:00:00");
+        assertThat(myConsultTimeDTO.getConsultEnd()).isEqualTo("18:00:00");
+        assertThat(myConsultTimeDTO.getConsultNotice()).isEqualTo("월요일 불가능합니다");
+    }
+
+    @Test
     public void get_my_review_test() {
         // given
         Long id = 1L;
