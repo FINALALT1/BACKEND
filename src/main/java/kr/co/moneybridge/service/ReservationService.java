@@ -635,4 +635,17 @@ public class ReservationService {
 
         return styleDTO;
     }
+
+    @MyLog
+    public List<ReservationResponse.ReservationInfoDTO> getReservationsByDate(int year, int month, Long pbId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            return reservationRepository.findAllByPbIdAndYearAndMonth(pbPS.getId(), year, month);
+        } catch (Exception e) {
+            throw new Exception500("예약 정보 조회 실패 : " + e.getMessage());
+        }
+    }
 }

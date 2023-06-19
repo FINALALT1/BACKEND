@@ -75,4 +75,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Page<ReservationResponse.RecentPagingByUserDTO> findAllByUserIdAndStatus(@Param("userId") Long userId,
                                                                              @Param("status") ReservationStatus status,
                                                                              Pageable pageable);
+
+    @Query("select new kr.co.moneybridge.model.reservation.Reservation$ReservationInfoDTO(r.id, u.name, " +
+            "case when r.time is not null then function('DATE', r.time) else function('DATE', r.candidateTime1) end, " +
+            "case when r.time is not null then function('TIME', r.time) else function('TIME', r.candidateTime1) end, " +
+            "r.type, r.process) " +
+            "from Reservation r " +
+            "join r.user u " +
+            "where r.pb.id = :pbId " +
+            "and function('YEAR', case when r.time is not null then r.time else r.candidateTime1 end) = :year " +
+            "and function('MONTH', case when r.time is not null then r.time else r.candidateTime1 end) = :month")
+    List<ReservationResponse.ReservationInfoDTO> findAllByPbIdAndYearAndMonth(@Param("pbId") Long pbId,
+                                                                              @Param("year") int year,
+                                                                              @Param("month") int month);
 }

@@ -313,6 +313,7 @@ public class ReservationController {
         return new ResponseDTO(reviewListOutDTO);
     }
 
+
     @ApiOperation(value = "PB 상담스타일 탑3 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/review/style/{pbId}")
@@ -321,5 +322,28 @@ public class ReservationController {
         ReviewResponse.PBTopStyleDTO styleDTO = reservationService.getPBStyles(pbId);
 
         return new ResponseDTO(styleDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "월별/일별 예약 정보 조회")
+    @SwaggerResponses.ApiResponsesWithout400
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/pb/reservation")
+    public ResponseDTO<List<ReservationResponse.ReservationInfoDTO>> getReservationsByDate(@RequestParam(defaultValue = "0") int year,
+                                                                                           @RequestParam(defaultValue = "0") int month,
+                                                                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        if (year == 0) {
+            year = LocalDateTime.now().getYear();
+        } else if (year < LocalDateTime.now().getYear() - 5 || year > LocalDateTime.now().getYear() + 5) { // 현재 연도를 기준으로 +-5 이내의 값만 허용
+            throw new Exception400(String.valueOf(year), "현재 연도를 기준으로 +-5 이내의 값만 입력해주세요.");
+        }
+        if (month == 0) {
+            month = LocalDateTime.now().getMonth().getValue();
+        } else if (month < 1 || month > 12) { // 1 ~ 12 사이의 값만 허용
+            throw new Exception400(String.valueOf(month), "1 ~ 12 사이의 값만 입력해주세요.");
+        }
+        List<ReservationResponse.ReservationInfoDTO> reservations = reservationService.getReservationsByDate(year, month, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(reservations);
     }
 }

@@ -7,7 +7,9 @@ import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
+import org.checkerframework.checker.units.qual.A;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -503,5 +505,28 @@ public class ReservationResponse {
         public ReviewIdDTO(Long id) {
             this.id = id;
         }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class ReservationInfoDTO {
+        @ApiModelProperty(example = "1")
+        private Long id;
+
+        @ApiModelProperty(example = "이승민")
+        private String userName;
+
+        @ApiModelProperty(example = "2023-05-15")
+        private LocalDate day;
+
+        @ApiModelProperty(example = "09:00")
+        private LocalTime time;
+
+        @ApiModelProperty(example = "CALL")
+        private ReservationType type;
+
+        @ApiModelProperty(example = "APPLY")
+        private ReservationProcess process;
     }
 }
