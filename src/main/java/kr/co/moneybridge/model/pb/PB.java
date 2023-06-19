@@ -97,4 +97,18 @@ public class PB implements Member {
     public void updatePhoneNumber(String phoneNumber){
         this.phoneNumber = phoneNumber;
     }
+
+    public void updateProfile(String profile) { this.profile = profile; }
+
+    public void updateBranch(Branch branch) { this.branch = branch; }
+
+    public void updateCareer(Integer career) { this.career = career; }
+
+    public void updateSpeciality1(PBSpeciality speciality1) { this.speciality1 = speciality1; }
+
+    public void updateSpeciality2(PBSpeciality speciality2) { this.speciality1 = speciality2; }
+
+    public void updateIntro(String intro) { this.intro = intro; }
+
+    public void updateMsg(String msg) { this.msg = msg; }
 }

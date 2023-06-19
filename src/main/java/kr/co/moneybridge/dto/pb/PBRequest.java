@@ -97,4 +97,69 @@ public class PBRequest {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    public static class UpdateProfileInDTO {
+
+        private String company;
+        private String branchName;
+        private Integer career;
+        private List<CareerInDTO> careers;
+        private List<AwardInDTO> awards;
+        private PBSpeciality speciality1;
+        private PBSpeciality speciality2;
+        private Double cumulativeReturn;
+        private Double maxDrawdown;
+        private Double profitFactor;
+        private Double averageProfit;
+        private String intro;
+        private String msg;
+        private Boolean deletePortfolio;
+        private Boolean deleteProfile;
+
+        public Portfolio portfolioEntity(PB pb) {
+            return Portfolio.builder()
+                    .pb(pb)
+                    .cumulativeReturn(cumulativeReturn)
+                    .maxDrawdown(maxDrawdown)
+                    .profitFactor(profitFactor)
+                    .averageProfit(averageProfit)
+                    .build();
+        }
+
+    }
+
+    @Getter
+    @Setter
+    public static class CareerInDTO {
+        private String content;
+        private Integer start;
+        private Integer end;
+
+        public Career toEntity(PB pb) {
+            return Career.builder()
+                    .pb(pb)
+                    .startYear(start)
+                    .endYear(end)
+                    .career(content)
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class AwardInDTO {
+        private String record;
+        private Integer awardYear;
+
+        public Award toEntity(PB pb) {
+            return Award.builder()
+                    .pb(pb)
+                    .record(record)
+                    .awardYear(awardYear)
+                    .build();
+        }
+    }
+
 }
