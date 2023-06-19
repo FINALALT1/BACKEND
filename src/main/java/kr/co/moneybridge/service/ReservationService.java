@@ -9,6 +9,7 @@ import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
+import kr.co.moneybridge.dto.reservation.ReviewResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
@@ -398,5 +399,18 @@ public class ReservationService {
         } catch (Exception e) {
             throw new Exception500("예약 완료 실패 : " + e.getMessage());
         }
+    }
+
+    //PB의 최신리뷰 3개 가져오기
+    public List<ReviewResponse.ReviewOutDTO> getPBReviews(Long pbId) {
+
+        pbRepository.findById(pbId).orElseThrow(() -> new Exception404("존재하지 않는 PB입니다."));
+
+        List<ReviewResponse.ReviewOutDTO> list = reviewRepository.findReservationsByPBId(pbId, PageRequest.of(0, 3));
+        for (ReviewResponse.ReviewOutDTO dto : list) {
+            dto.setList(styleRepository.findByReviewId(dto.getReviewId()));
+        }
+
+        return list;
     }
 }
