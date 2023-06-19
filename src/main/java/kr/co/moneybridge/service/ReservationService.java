@@ -187,6 +187,32 @@ public class ReservationService {
     }
 
     @MyLog
+    public ReservationResponse.RecentInfoDTO getRecentReservationInfoByUser(Long userId) {
+        User userPS = userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+
+        try {
+            return new ReservationResponse.RecentInfoDTO(
+                    reservationRepository
+                            .countByUserIdAndProcess(userPS.getId(), ReservationProcess.APPLY),
+                    reservationRepository
+                            .countRecentByUserIdAndProcess(userPS.getId(), ReservationProcess.APPLY) >= 1,
+                    reservationRepository
+                            .countByUserIdAndProcess(userPS.getId(), ReservationProcess.CONFIRM),
+                    reservationRepository
+                            .countRecentByUserIdAndProcess(userPS.getId(), ReservationProcess.CONFIRM) >= 1,
+                    reservationRepository
+                            .countByUserIdAndProcess(userPS.getId(), ReservationProcess.COMPLETE),
+                    reservationRepository
+                            .countRecentByUserIdAndProcess(userPS.getId(), ReservationProcess.COMPLETE) >= 1
+            );
+        } catch (Exception e) {
+            throw new Exception500("상담 현황 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
     public PageDTO<ReservationResponse.RecentReservationDTO> gerRecentReservations(String type, int page, Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")

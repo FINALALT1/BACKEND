@@ -112,6 +112,17 @@ public class ReservationController {
     }
 
     @MyLog
+    @ApiOperation(value = "나의 예약 페이지 상담 현황 조회")
+    @SwaggerResponses.ApiResponsesWithout400
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/user/reservations/recent")
+    public ResponseDTO<ReservationResponse.RecentInfoDTO> getRecentReservationInfoByUser(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.RecentInfoDTO recentInfoDTO = reservationService.getRecentReservationInfoByUser(myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(recentInfoDTO);
+    }
+
+    @MyLog
     @ApiOperation(value = "고객 관리 페이지 상담 현황 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
