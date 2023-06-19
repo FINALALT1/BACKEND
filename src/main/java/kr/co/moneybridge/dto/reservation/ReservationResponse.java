@@ -15,6 +15,22 @@ import java.util.stream.Collectors;
 import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
 
 public class ReservationResponse {
+    @Getter
+    @Setter
+    public static class MyReviewDTO {
+        private ReviewAdherence adherence;
+
+        private List<StyleDTO> styleList;
+
+        private String content;
+
+        public MyReviewDTO(Review review, List<StyleDTO> styleList) {
+            this.adherence = review.getAdherence();
+            this.styleList = styleList;
+            this.content = review.getContent();
+        }
+    }
+
     @ApiModel
     @Getter
     @Setter

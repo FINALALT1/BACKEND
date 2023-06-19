@@ -29,6 +29,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static kr.co.moneybridge.core.util.MyDateUtil.*;
 
@@ -41,6 +42,23 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
     private final StyleRepository styleRepository;
+
+    @MyLog
+    public ReservationResponse.MyReviewDTO getMyReview(Long reviewId, Long userId) {
+        userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+        Review reviewPS = reviewRepository.findById(reviewId).orElseThrow(
+                () -> new Exception404("후기가 없습니다.")
+        );
+        if(!reviewPS.getReservation().getUser().getId().equals(userId)){
+            throw new Exception400("reviewId", "로그인한 투자자가 작성한 리뷰가 아닙니다.");
+        }
+        List<ReservationResponse.StyleDTO> styleList = styleRepository.findAllByReviewId(reviewId)
+                .stream().map(style -> new ReservationResponse.StyleDTO(style.getStyle()))
+                .collect(Collectors.toList());
+        return new ReservationResponse.MyReviewDTO(reviewPS, styleList);
+    }
 
     @MyLog
     public ReservationResponse.BaseDTO getReservationBase(Long pbId, Long userId) {

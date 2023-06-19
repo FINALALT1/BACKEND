@@ -29,6 +29,15 @@ import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 public class ReservationController {
     private final ReservationService reservationService;
 
+    //나의 후기 하나 가져오기
+    @MyLog
+    @GetMapping("/user/review/{id}")
+    public ResponseDTO<ReservationResponse.MyReviewDTO> getMyReview(@PathVariable Long id,
+                                                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.MyReviewDTO myReviewDTO = reservationService.getMyReview(id, myUserDetails.getMember().getId());
+        return new ResponseDTO<>(myReviewDTO);
+    }
+
     @MyLog
     @ApiOperation(value = "상담 예약 사전 정보 조회")
     @SwaggerResponses.ApiResponsesWithout400
