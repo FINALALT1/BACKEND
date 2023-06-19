@@ -44,6 +44,17 @@ public class ReservationService {
     private final StyleRepository styleRepository;
 
     @MyLog
+    public ReservationResponse.MyConsultTimeDTO getMyConsultTime(Long pbId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
+            throw new Exception403("승인 대기 중인 PB입니다.");
+        }
+        return new ReservationResponse.MyConsultTimeDTO(pbPS);
+    }
+
+    @MyLog
     public ReservationResponse.MyReviewDTO getMyReview(Long reviewId, Long userId) {
         userRepository.findById(userId).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")

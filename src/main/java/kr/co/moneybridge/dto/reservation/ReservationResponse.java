@@ -9,12 +9,29 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
 
 public class ReservationResponse {
+    @Getter
+    @Setter
+    public static class MyConsultTimeDTO {
+        private LocalTime consultStart;
+
+        private LocalTime consultEnd;
+
+        private String consultNotice;
+
+        public MyConsultTimeDTO(PB pb) {
+            this.consultStart = pb.getConsultStart();
+            this.consultEnd = pb.getConsultEnd();
+            this.consultNotice = pb.getConsultNotice();
+        }
+    }
+
     @ApiModel(description = "나의 후기 하나 가져오기 응답 데이터")
     @Getter
     @Setter
