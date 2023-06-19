@@ -139,6 +139,20 @@ public class MyMemberUtil {
         return members;
     }
 
+    public Member findByEmailWithoutException(String email, Role role) {
+        Member member = null;
+        if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
+            Optional<User> userOP = userRepository.findByEmail(email);
+            if(userOP.isEmpty()) return null;
+            member = userOP.get();
+        } else if(role.equals(Role.PB)){
+            Optional<PB> pbOP = pbRepository.findByEmail(email);
+            if(pbOP.isEmpty()) return null;
+             member = pbOP.get();
+        }
+        return member;
+    }
+
     public Member findByEmail(String email, Role role) {
         Member member = null;
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){

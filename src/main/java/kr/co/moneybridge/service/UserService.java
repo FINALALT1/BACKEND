@@ -161,9 +161,9 @@ public class UserService {
 
     @MyLog
     public UserResponse.PasswordOutDTO password(UserRequest.PasswordInDTO passwordInDTO) throws Exception {
-        Member memberPS = myMemberUtil.findByEmail(passwordInDTO.getEmail(), passwordInDTO.getRole());
-        if(!memberPS.getName().equals(passwordInDTO.getName())){
-            throw new Exception404("이름이 틀렸습니다");
+        Member memberPS = myMemberUtil.findByEmailWithoutException(passwordInDTO.getEmail(), passwordInDTO.getRole());
+        if(memberPS == null || !memberPS.getName().equals(passwordInDTO.getName())){
+            return new UserResponse.PasswordOutDTO();
         }
         String code = sendEmail(passwordInDTO.getEmail());
         UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(memberPS, code);

@@ -186,6 +186,8 @@ public class UserResponse {
             this.phoneNumber = member.getPhoneNumber();
             this.code = code;
         }
+
+        public PasswordOutDTO() {}
     }
 
     @ApiModel(description = "이메일 인증시 응답 데이터")
