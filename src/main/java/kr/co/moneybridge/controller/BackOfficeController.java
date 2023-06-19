@@ -17,6 +17,15 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
+    // PB회원 가입 요청 승인 페이지 전체 가져오기
+    @MyLog
+    @GetMapping("/admin/pbs")
+    public ResponseDTO<BackOfficeResponse.PBPendingOutDTO> getPBPending() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        BackOfficeResponse.PBPendingOutDTO pbPendingPageDTO = backOfficeService.getPBPending(pageable);
+        return new ResponseDTO<>(pbPendingPageDTO);
+    }
+
     // 공지사항 목록 가져오기
     @MyLog
     @SwaggerResponses.GetNotice

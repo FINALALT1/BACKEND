@@ -2,14 +2,55 @@ package kr.co.moneybridge.dto.backOffice;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
+import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.pb.PBSpeciality;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
 public class BackOfficeResponse {
+    @Getter
+    @Setter
+    public static class PBPendingDTO {
+        private Long id;
+        private String email;
+        private String name;
+        private String phoneNumber;
+        private String branchName;
+        private Integer career;
+        private PBSpeciality speciality1;
+        private PBSpeciality speciality2;
+        private String businessCard;
+
+        public PBPendingDTO(PB pb, String branchName) {
+            this.id = pb.getId();
+            this.email = pb.getEmail();
+            this.name = pb.getName();
+            this.phoneNumber = pb.getPhoneNumber();
+            this.branchName = branchName;
+            this.career = pb.getCareer();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
+            this.businessCard = pb.getBusinessCard();
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class PBPendingOutDTO {
+        private Integer count;
+        private PageDTO<PBPendingDTO> page;
+
+        public PBPendingOutDTO(Integer count, PageDTO<PBPendingDTO> page) {
+            this.count = count;
+            this.page = page;
+        }
+    }
+
     @ApiModel(description = "공지사항 목록 가져오기 응답 데이터")
     @Getter
     @Setter
