@@ -79,6 +79,25 @@ public class ReservationControllerTest {
         em.clear();
     }
 
+    @DisplayName("현재 나의 상담 가능 시간 불러오기")
+    @WithUserDetails(value = "PB-pblee@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void get_my_consult_time_test() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/pb/consultTime"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.consultStart").value("09:00:00"));
+        resultActions.andExpect(jsonPath("$.data.consultEnd").value("18:00:00"));
+        resultActions.andExpect(jsonPath("$.data.consultNotice").value("월요일 불가능합니다"));
+        resultActions.andExpect(status().isOk());
+    }
+
     @DisplayName("나의 후기 하나 가져오기 성공")
     @WithUserDetails(value = "USER-lee@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test

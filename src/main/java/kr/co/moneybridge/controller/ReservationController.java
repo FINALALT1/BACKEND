@@ -29,7 +29,7 @@ import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    //현재 나의 상담 가능 시간 불러오기
+    // 현재 나의 상담 가능 시간 불러오기
     @MyLog
     @SwaggerResponses.GetMyConsultTime
     @GetMapping("/pb/consultTime")
