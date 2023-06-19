@@ -9,6 +9,7 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
+import kr.co.moneybridge.dto.reservation.ReviewResponse;
 import kr.co.moneybridge.model.reservation.ReservationType;
 import kr.co.moneybridge.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 
@@ -224,5 +226,15 @@ public class ReservationController {
         reservationService.completeReservation(id, myUserDetails);
 
         return new ResponseDTO<>();
+    }
+
+    @ApiOperation(value = "PB 상담후기 최신 3개 가져오기")
+    @SwaggerResponses.DefaultApiResponses
+    @GetMapping("/reviews/{pbId}")
+    public ResponseDTO<List<ReviewResponse.ReviewOutDTO>> getPBReviews(@PathVariable(value = "pbId") Long id) {
+
+        List<ReviewResponse.ReviewOutDTO> reviewDTO = reservationService.getPBReviews(id);
+        ReviewResponse.ReviewListOutDTO reviewListOutDTO = new ReviewResponse.ReviewListOutDTO(reviewDTO);
+        return new ResponseDTO(reviewListOutDTO);
     }
 }

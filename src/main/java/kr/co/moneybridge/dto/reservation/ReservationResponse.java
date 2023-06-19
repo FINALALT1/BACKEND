@@ -313,4 +313,6 @@ public class ReservationResponse {
             this.reviewCheck = reviewCheck;
         }
     }
+
+
 }
