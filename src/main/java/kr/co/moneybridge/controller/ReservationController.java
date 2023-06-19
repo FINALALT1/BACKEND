@@ -15,8 +15,10 @@ import kr.co.moneybridge.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -112,6 +114,17 @@ public class ReservationController {
     }
 
     @MyLog
+    @ApiOperation(value = "나의 예약 페이지 상담 현황 조회")
+    @SwaggerResponses.ApiResponsesWithout400
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/user/reservations/recent")
+    public ResponseDTO<ReservationResponse.RecentInfoDTO> getRecentReservationInfoByUser(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.RecentInfoDTO recentInfoDTO = reservationService.getRecentReservationInfoByUser(myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(recentInfoDTO);
+    }
+
+    @MyLog
     @ApiOperation(value = "고객 관리 페이지 상담 현황 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
@@ -140,13 +153,36 @@ public class ReservationController {
                 throw new Exception400(type, "Enum 형식에 맞춰 요청해주세요.");
         }
 
-        PageDTO<ReservationResponse.RecentReservationDTO> recentReservationsDTO = reservationService.gerRecentReservations(type, page, myUserDetails.getMember().getId());
+        PageDTO<ReservationResponse.RecentReservationDTO> recentReservationsDTO = reservationService.getRecentReservations(type, page, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>(recentReservationsDTO);
     }
 
     @MyLog
-    @ApiOperation(value = "예약 확인하기")
+    @ApiOperation(value = "나의 예약 페이지 상담 목록 조회")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/user/reservations")
+    public ResponseDTO<PageDTO<ReservationResponse.RecentReservationByUserDTO>> getRecentReservationsByUser(String type,
+                                                                                                            @RequestParam(defaultValue = "0") int page,
+                                                                                                            @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        switch (type) {
+            case "APPLY":
+            case "CONFIRM":
+            case "COMPLETE":
+            case "WITHDRAW":
+                break;
+            default:
+                throw new Exception400(type, "Enum 형식에 맞춰 요청해주세요.");
+        }
+
+        PageDTO<ReservationResponse.RecentReservationByUserDTO> recentReservationsDTO = reservationService.getRecentReservationsByUser(type, page, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(recentReservationsDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "예약 확인하기(PB)")
     @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation/{id}")
@@ -155,6 +191,18 @@ public class ReservationController {
         ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetailByPB(id, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>(detailByPBDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "예약 확인하기(투자자)")
+    @SwaggerResponses.ApiResponsesWithout400
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/user/reservation/{id}")
+    public ResponseDTO<ReservationResponse.DetailByUserDTO> getReservationDetailByUser(@PathVariable Long id,
+                                                                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.DetailByUserDTO detailByUserDTO = reservationService.getReservationDetailByUser(id, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(detailByUserDTO);
     }
 
     @MyLog
@@ -177,12 +225,8 @@ public class ReservationController {
         }
 
         if (updateDTO.getType().equals(ReservationType.VISIT)) {
-            if (updateDTO.getLocationName() == null || updateDTO.getLocationName().isBlank()) {
-                throw new Exception400(updateDTO.getLocationName(), "상담 장소를 입력해주세요.");
-            }
-
-            if (updateDTO.getLocationAddress() == null || updateDTO.getLocationAddress().isBlank()) {
-                throw new Exception400(updateDTO.getLocationAddress(), "상담 주소를 입력해주세요.");
+            if (!isValidLocationType(updateDTO.getCategory())) {
+                throw new Exception400(updateDTO.getCategory().toString(), "Enum 형식에 맞춰 요청해주세요.");
             }
         }
 
@@ -209,7 +253,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/pb/reservation/{id}/confirmed")
     public ResponseDTO confirmReservation(@PathVariable Long id,
-                                          @RequestBody ReservationRequest.ConfirmDTO confirmDTO,
+                                          @Valid @RequestBody ReservationRequest.ConfirmDTO confirmDTO, Errors errors,
                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
         reservationService.confirmReservation(id, myUserDetails.getMember().getId(), confirmDTO);
 
@@ -226,6 +270,18 @@ public class ReservationController {
         reservationService.completeReservation(id, myUserDetails);
 
         return new ResponseDTO<>();
+    }
+
+    @MyLog
+    @ApiOperation(value = "후기 작성하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/user/review")
+    public ResponseDTO<ReservationResponse.ReviewIdDTO> writeReview(@Valid @RequestBody ReservationRequest.ReviewDTO reviewDTO, Errors errors,
+                                                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.ReviewIdDTO reviewIdDTO = reservationService.writeReview(reviewDTO, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(reviewIdDTO);
     }
 
     @ApiOperation(value = "PB 상담후기 최신 3개 가져오기")
