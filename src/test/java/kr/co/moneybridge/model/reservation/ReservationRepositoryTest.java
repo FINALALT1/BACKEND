@@ -70,7 +70,7 @@ public class ReservationRepositoryTest extends DummyEntity {
 
 
     @Test
-    public void count_by_pbId_and_process_test() {
+    public void count_by_pb_id_and_process_test() {
         // given
         Long pbId = 1L;
         ReservationProcess process = ReservationProcess.COMPLETE;
@@ -83,7 +83,20 @@ public class ReservationRepositoryTest extends DummyEntity {
     }
 
     @Test
-    public void count_recent_by_pbId_and_process_test() {
+    public void count_by_user_id_and_process_test() {
+        // given
+        Long userId = 1L;
+        ReservationProcess process = ReservationProcess.COMPLETE;
+
+        // when
+        Integer count = reservationRepository.countByUserIdAndProcess(userId, process);
+
+        // then
+        assertThat(count).isEqualTo(5);
+    }
+
+    @Test
+    public void count_recent_by_pb_id_and_process_test() {
         // given
         Long pbId = 1L;
         ReservationProcess process = ReservationProcess.COMPLETE;
@@ -96,7 +109,20 @@ public class ReservationRepositoryTest extends DummyEntity {
     }
 
     @Test
-    public void find_all_by_pbId_and_process_test() {
+    public void count_recent_by_user_id_and_process_test() {
+        // given
+        Long userId = 1L;
+        ReservationProcess process = ReservationProcess.COMPLETE;
+
+        // when
+        Integer count = reservationRepository.countRecentByUserIdAndProcess(userId, process);
+
+        // then
+        assertThat(count).isEqualTo(5);
+    }
+
+    @Test
+    public void find_all_by_pb_id_and_process_test() {
         // given
         Long pbId = 1L;
         ReservationProcess process = ReservationProcess.COMPLETE;
@@ -115,7 +141,26 @@ public class ReservationRepositoryTest extends DummyEntity {
     }
 
     @Test
-    public void find_all_by_pbId_and_status_test() {
+    public void find_all_by_user_id_and_process_test() {
+        // given
+        Long userId = 1L;
+        ReservationProcess process = ReservationProcess.COMPLETE;
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+
+        // when
+        Page<ReservationResponse.RecentPagingByUserDTO> page = reservationRepository.findAllByUserIdAndProcess(userId, process, pageable);
+
+        // then
+        assertThat(page.getContent().get(0).getReservationId()).isInstanceOf(Long.class);
+        assertThat(page.getContent().get(0).getPbId()).isEqualTo(1L);
+        assertThat(page.getContent().get(0).getProfileImage()).isEqualTo("profile.png");
+        assertThat(page.getContent().get(0).getName()).isEqualTo("이피비");
+        assertThat(page.getContent().get(0).getCreatedAt().toLocalDate().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
+        assertThat(page.getContent().get(0).getType()).isEqualTo(ReservationType.VISIT);
+    }
+
+    @Test
+    public void find_all_by_pb_id_and_status_test() {
         // given
         Long pbId = 1L;
         ReservationStatus status = ReservationStatus.CANCEL;
@@ -129,6 +174,25 @@ public class ReservationRepositoryTest extends DummyEntity {
         assertThat(page.getContent().get(0).getUserId()).isEqualTo(1L);
         assertThat(page.getContent().get(0).getProfileImage()).isEqualTo("프로필.png");
         assertThat(page.getContent().get(0).getName()).isEqualTo("lee");
+        assertThat(page.getContent().get(0).getCreatedAt().toLocalDate().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
+        assertThat(page.getContent().get(0).getType()).isEqualTo(ReservationType.VISIT);
+    }
+
+    @Test
+    public void find_all_by_user_id_and_status_test() {
+        // given
+        Long userId = 1L;
+        ReservationStatus status = ReservationStatus.CANCEL;
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+
+        // when
+        Page<ReservationResponse.RecentPagingByUserDTO> page = reservationRepository.findAllByUserIdAndStatus(userId, status, pageable);
+
+        // then
+        assertThat(page.getContent().get(0).getReservationId()).isEqualTo(6L);
+        assertThat(page.getContent().get(0).getPbId()).isEqualTo(1L);
+        assertThat(page.getContent().get(0).getProfileImage()).isEqualTo("profile.png");
+        assertThat(page.getContent().get(0).getName()).isEqualTo("이피비");
         assertThat(page.getContent().get(0).getCreatedAt().toLocalDate().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
         assertThat(page.getContent().get(0).getType()).isEqualTo(ReservationType.VISIT);
     }

@@ -287,12 +287,18 @@ public class BoardService {
             User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("존재하지 않는 유저입니다."));
             Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithUserId(user.getId(), pageable);
             List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+            for (BoardResponse.BoardPageDTO dto : list) {
+                dto.setIsBookmark(true);
+            }
             return new PageDTO<>(list, boardPG);
 
         } else if (member.getRole().equals(Role.PB)) {
             PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("존재하지 않는 PB 입니다."));
             Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithPbId(pb.getId(), pageable);
             List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+            for (BoardResponse.BoardPageDTO dto : list) {
+                dto.setIsBookmark(true);
+            }
             return new PageDTO<>(list, boardPG);
 
         } else {
@@ -332,6 +338,10 @@ public class BoardService {
                     PBSpeciality.BOND,
                     PBSpeciality.FUND,
                     PBSpeciality.WRAP);
+        }
+
+        for (BoardResponse.BoardPageDTO dto : boardList) {
+            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(dto.getId(),BookmarkerRole.USER));
         }
 
         return boardList;
