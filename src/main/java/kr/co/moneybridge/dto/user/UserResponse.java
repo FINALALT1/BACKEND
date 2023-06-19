@@ -218,14 +218,19 @@ public class UserResponse {
         @ApiModelProperty(example = "1")
         private Long id;
 
+        @ApiModelProperty(example = "김투자")
+        private String name;
+
         @ApiModelProperty(example = "J46L4SBJ")
         private String code;
 
         public LoginOutDTO(Member member) {
             this.id = member.getId();
+            this.name = member.getName();
         }
         public LoginOutDTO(Member member, String code) {
             this.id = member.getId();
+            this.name = member.getName();
             this.code = code;
         }
     }
