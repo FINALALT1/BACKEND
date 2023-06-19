@@ -38,6 +38,7 @@ public class BoardResponse {
         private String tag2;
         @ApiModelProperty(example = "안녕하세요", value = "한줄메세지")
         private String msg;
+        private Boolean isBookmark; //set해줘야함
 
         public BoardPageDTO(Board board, PB pb, Company company) {
             this.id = board.getId();
