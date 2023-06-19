@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -479,5 +480,28 @@ public class PBService {
         pb.updateIntro(updateDTO.getIntro());
         pb.updateMsg(updateDTO.getMsg());
 
+    }
+
+    //유사 PB 2명 가져오기
+    public List<PBResponse.PBPageDTO> getSamePBs(MyUserDetails myUserDetails, Long pbId) {
+
+        PB pb = pbRepository.findById(pbId).orElseThrow(() -> new Exception404("해당 PB 존재하지않습니다."));
+        PBSpeciality speciality1 = pb.getSpeciality1();
+        PBSpeciality speciality2 = pb.getSpeciality2();
+        List<PBResponse.PBPageDTO> list;
+
+        if (speciality2 != null) {
+            list = pbRepository.findBySpeciality1And2(speciality1, speciality2, PageRequest.of(0, 2));
+        } else {
+            list = pbRepository.findBySpeciality1(speciality1, PageRequest.of(0, 2));
+        }
+
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            for (PBResponse.PBPageDTO dto : list) {
+                dto.setIsBookmark(userBookmarkRepository.existsByUserIdAndPBId(myUserDetails.getMember().getId(), dto.getId()));
+            }
+        }
+
+        return list;
     }
 }
