@@ -7,6 +7,7 @@ import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
+import kr.co.moneybridge.model.pb.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 import java.util.Arrays;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +35,44 @@ class BackOfficeServiceTest extends MockDummyEntity {
     FrequentQuestionRepository frequentQuestionRepository;
     @Mock
     NoticeRepository noticeRepository;
+    @Mock
+    PBRepository pbRepository;
+
+    @Test
+    @DisplayName("PB 회원 가입 요청 승인 페이지 전체 가져오기")
+    void getPBPending() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        Page<PB> pbPG = new PageImpl<>(Arrays.asList(pb));
+
+        // stub
+        when(pbRepository.findAllByStatus(any(), any())).thenReturn(pbPG);
+
+        // when
+        BackOfficeResponse.PBPendingOutDTO pbPendingPageDTO = backOfficeService.getPBPending(pageable);
+
+        // then
+        assertThat(pbPendingPageDTO.getCount()).isEqualTo(1);
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getId()).isEqualTo(1L);
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getEmail()).isEqualTo("pblee@nate.com");
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getName()).isEqualTo("pblee");
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getBranchName()).isEqualTo("미래에셋증권 여의도점");
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getCareer()).isEqualTo(10);
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getSpeciality1()).isEqualTo(PBSpeciality.BOND);
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getSpeciality2()).isNull();
+        assertThat(pbPendingPageDTO.getPage().getList().get(0).getBusinessCard()).isEqualTo("card.png");
+        assertThat(pbPendingPageDTO.getPage().getTotalElements()).isEqualTo(1);
+        assertThat(pbPendingPageDTO.getPage().getTotalPages()).isEqualTo(1);
+        assertThat(pbPendingPageDTO.getPage().getCurPage()).isEqualTo(0);
+        assertThat(pbPendingPageDTO.getPage().getFirst()).isEqualTo(true);
+        assertThat(pbPendingPageDTO.getPage().getLast()).isEqualTo(true);
+        assertThat(pbPendingPageDTO.getPage().getEmpty()).isEqualTo(false);
+        Mockito.verify(pbRepository, Mockito.times(1)).findAllByStatus(any(), any());
+    }
 
     @Test
     @DisplayName("공지사항 목록 가져오기")

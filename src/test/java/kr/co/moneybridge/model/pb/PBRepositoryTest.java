@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -54,10 +55,46 @@ public class PBRepositoryTest extends DummyEntity {
         Company c = companyRepository.save(newCompany("미래에셋증권"));
         Branch b = branchRepository.save(newBranch(c, 0));
         PB pb = pbRepository.save(newPB("김피비", b));
+        PB pb2 = pbRepository.save(newPBwithStatus("김대기", b, PBStatus.PENDING));
         User user = userRepository.save(newUser("lee"));
         userBookmarkRepository.save(newUserBookmark(user, pb));
 
         em.clear();
+    }
+
+    @Test
+    public void findAllByStatus() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+
+        // when
+        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.PENDING, pageable);
+        PB pbPS = pbPG.getContent().get(0);
+
+        // then
+        Assertions.assertThat(pbPS.getId()).isInstanceOf(Long.class);
+        Assertions.assertThat(pbPS.getName()).isEqualTo("김대기");
+        Assertions.assertThat(
+                passwordEncoder.matches("password1234", pbPS.getPassword())
+        ).isEqualTo(true);
+        Assertions.assertThat(pbPS.getEmail()).isEqualTo("김대기@nate.com");
+        Assertions.assertThat(pbPS.getPhoneNumber()).isEqualTo("01012345678");
+        Assertions.assertThat(pbPS.getBranch().getCompany().getName()).isEqualTo("미래에셋증권");
+        Assertions.assertThat(pbPS.getRole()).isEqualTo(Role.PB);
+        Assertions.assertThat(pbPS.getProfile()).isEqualTo("profile.png");
+        Assertions.assertThat(pbPS.getBusinessCard()).isEqualTo("card.png");
+        Assertions.assertThat(pbPS.getCareer()).isEqualTo(10);
+        Assertions.assertThat(pbPS.getSpeciality1()).isEqualTo(PBSpeciality.BOND);
+        Assertions.assertThat(pbPS.getSpeciality2()).isNull();
+        Assertions.assertThat(pbPS.getIntro()).isEqualTo("김대기 입니다");
+        Assertions.assertThat(pbPS.getMsg()).isEqualTo("한줄메시지..");
+        Assertions.assertThat(pbPS.getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
+        Assertions.assertThat(pbPS.getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
+        Assertions.assertThat(pbPS.getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        Assertions.assertThat(pbPS.getConsultNotice()).isEqualTo("월요일 불가능합니다");
+        Assertions.assertThat(pbPS.getStatus()).isEqualTo(PBStatus.PENDING);
+        Assertions.assertThat(pbPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
+        Assertions.assertThat(pbPS.getUpdatedAt()).isNull();
     }
 
     @Test
