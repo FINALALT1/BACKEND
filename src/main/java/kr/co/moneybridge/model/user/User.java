@@ -64,23 +64,27 @@ public class User implements Member {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updatePassword(String password){
+    public void updatePassword(String password) {
         this.password = password;
     }
 
-    public void updateName(String name){
+    public void updateName(String name) {
         this.name = name;
     }
 
-    public void updatePhoneNumber(String phoneNumber){
+    public void updatePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public void updatePropensity(UserPropensity propensity){
+    public void updatePropensity(UserPropensity propensity) {
         this.propensity = propensity;
     }
 
     public void updateHasDoneReservation(Boolean value) {
         this.hasDoneReservation = value;
+    }
+
+    public void updateHasDoneReview(Boolean value) {
+        this.hasDoneReview = value;
     }
 }

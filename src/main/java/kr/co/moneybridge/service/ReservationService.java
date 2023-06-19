@@ -536,7 +536,7 @@ public class ReservationService {
     @MyLog
     @Transactional
     public ReservationResponse.ReviewIdDTO writeReview(ReservationRequest.ReviewDTO reviewDTO, Long userId) {
-        userRepository.findById(userId).orElseThrow(
+        User userPS = userRepository.findById(userId).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")
         );
         Reservation reservationPS = reservationRepository.findById(reviewDTO.getReservationId()).orElseThrow(
@@ -562,6 +562,7 @@ public class ReservationService {
                                 .build()
                 );
             }
+            userPS.updateHasDoneReview(true);
 
             return new ReservationResponse.ReviewIdDTO(reviewPS.getId());
         } catch (Exception e) {
