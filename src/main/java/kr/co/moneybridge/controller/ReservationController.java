@@ -228,11 +228,8 @@ public class ReservationController {
         return new ResponseDTO<>();
     }
 
-<<<<<<< HEAD
-=======
     @ApiOperation(value = "PB 상담후기 최신 3개 가져오기")
     @SwaggerResponses.DefaultApiResponses
->>>>>>> f140c581fb33fe5fa3974b892fe2204080288256
     @GetMapping("/reviews/{pbId}")
     public ResponseDTO<List<ReviewResponse.ReviewOutDTO>> getPBReviews(@PathVariable(value = "pbId") Long id) {
 
