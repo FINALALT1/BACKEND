@@ -127,58 +127,58 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(status().isOk());
     }
 
-//    @WithMockUser
-//    @Test
-//    public void get_reservation_base_test() throws Exception {
-//        // given
-//        Long pbId = 1L;
-//        Company company = newMockCompany(1L, "미래에셋");
-//        Branch branch = newMockBranch(1L, company, 1);
-//        PB pb = newMockPB(pbId, "이피비", branch);
-//        User user = newMockUser(1L, "lee");
-//
-//        // stub
-//        Mockito.when(reservationService.getReservationBase(anyLong(), any()))
-//                .thenReturn(new ReservationResponse.BaseDTO(
-//                        new ReservationResponse.PBInfoDTO(
-//                                pb.getName(),
-//                                pb.getBranch().getName(),
-//                                pb.getBranch().getRoadAddress(),
-//                                pb.getBranch().getLatitude(),
-//                                pb.getBranch().getLongitude()
-//                        ),
-//                        new ReservationResponse.ConsultInfoDTO(
-//                                MyDateUtil.localTimeToString(pb.getConsultStart()),
-//                                MyDateUtil.localTimeToString(pb.getConsultEnd()),
-//                                pb.getConsultNotice()
-//                        ),
-//                        new ReservationResponse.UserInfoDTO(
-//                                user.getName(),
-//                                user.getPhoneNumber(),
-//                                user.getEmail()
-//                        )
-//                ));
-//
-//        // when
-//        ResultActions resultActions = mvc.perform(get("/user/reservation/{pbId}", pbId));
-//        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-//        System.out.println("테스트 : " + responseBody);
-//
-//        // then
-//        resultActions.andExpect(jsonPath("$.data.pbInfo.pbName").value(pb.getName()));
-//        resultActions.andExpect(jsonPath("$.data.pbInfo.branchName").value(pb.getBranch().getName()));
-//        resultActions.andExpect(jsonPath("$.data.pbInfo.branchAddress").value(pb.getBranch().getRoadAddress()));
-//        resultActions.andExpect(jsonPath("$.data.pbInfo.branchLatitude").value(pb.getBranch().getLatitude()));
-//        resultActions.andExpect(jsonPath("$.data.pbInfo.branchLongitude").value(pb.getBranch().getLongitude()));
-//        resultActions.andExpect(jsonPath("$.data.consultInfo.consultStart").value(MyDateUtil.localTimeToString(pb.getConsultStart())));
-//        resultActions.andExpect(jsonPath("$.data.consultInfo.consultEnd").value(MyDateUtil.localTimeToString(pb.getConsultEnd())));
-//        resultActions.andExpect(jsonPath("$.data.consultInfo.notice").value(pb.getConsultNotice()));
-//        resultActions.andExpect(jsonPath("$.data.userInfo.userName").value(user.getName()));
-//        resultActions.andExpect(jsonPath("$.data.userInfo.userPhoneNumber").value(user.getPhoneNumber()));
-//        resultActions.andExpect(jsonPath("$.data.userInfo.userEmail").value(user.getEmail()));
-//
-//        resultActions.andExpect(status().isOk());
-//    }
+    @WithMockUser
+    @Test
+    public void get_reservation_base_test() throws Exception {
+        // given
+        Long pbId = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(pbId, "이피비", branch);
+        User user = newMockUser(1L, "lee");
+
+        // stub
+        Mockito.when(reservationService.getReservationBase(anyLong(), any()))
+                .thenReturn(new ReservationResponse.BaseDTO(
+                        new ReservationResponse.PBInfoDTO(
+                                pb.getName(),
+                                pb.getBranch().getName(),
+                                pb.getBranch().getRoadAddress(),
+                                pb.getBranch().getLatitude(),
+                                pb.getBranch().getLongitude()
+                        ),
+                        new ReservationResponse.ConsultInfoDTO(
+                                MyDateUtil.localTimeToString(pb.getConsultStart()),
+                                MyDateUtil.localTimeToString(pb.getConsultEnd()),
+                                pb.getConsultNotice()
+                        ),
+                        new ReservationResponse.UserInfoDTO(
+                                user.getName(),
+                                user.getPhoneNumber(),
+                                user.getEmail()
+                        )
+                ));
+
+        // when
+        ResultActions resultActions = mvc.perform(get("/user/reservation/base/{pbId}", pbId));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.data.pbInfo.pbName").value(pb.getName()));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.branchName").value(pb.getBranch().getName()));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.branchAddress").value(pb.getBranch().getRoadAddress()));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.branchLatitude").value(pb.getBranch().getLatitude()));
+        resultActions.andExpect(jsonPath("$.data.pbInfo.branchLongitude").value(pb.getBranch().getLongitude()));
+        resultActions.andExpect(jsonPath("$.data.consultInfo.consultStart").value(MyDateUtil.localTimeToString(pb.getConsultStart())));
+        resultActions.andExpect(jsonPath("$.data.consultInfo.consultEnd").value(MyDateUtil.localTimeToString(pb.getConsultEnd())));
+        resultActions.andExpect(jsonPath("$.data.consultInfo.notice").value(pb.getConsultNotice()));
+        resultActions.andExpect(jsonPath("$.data.userInfo.userName").value(user.getName()));
+        resultActions.andExpect(jsonPath("$.data.userInfo.userPhoneNumber").value(user.getPhoneNumber()));
+        resultActions.andExpect(jsonPath("$.data.userInfo.userEmail").value(user.getEmail()));
+
+        resultActions.andExpect(status().isOk());
+    }
 
     @WithMockUser
     @Test

@@ -52,7 +52,7 @@ public class ReservationController {
     @ApiOperation(value = "상담 예약 사전 정보 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/user/reservation/{pbId}")
+    @GetMapping("/user/reservation/base/{pbId}")
     public ResponseDTO<ReservationResponse.BaseDTO> getReservationBase(@PathVariable Long pbId,
                                                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
         ReservationResponse.BaseDTO baseDTO = reservationService.getReservationBase(pbId, myUserDetails.getMember().getId());
