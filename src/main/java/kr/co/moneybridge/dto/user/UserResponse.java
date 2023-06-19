@@ -154,6 +154,12 @@ public class UserResponse {
             this.email = member.getEmail();
             this.phoneNumber = member.getPhoneNumber();
         }
+
+        public EmailFindOutDTO() {
+            this.name = null;
+            this.email = null;
+            this.phoneNumber = null;
+        }
     }
 
     @ApiModel(description = "비밀번호 찾기시 이메일 인증 응답 데이터")
