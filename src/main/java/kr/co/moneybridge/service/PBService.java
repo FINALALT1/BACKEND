@@ -21,6 +21,7 @@ import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,6 +41,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class PBService {
+    @Value("${DEFAULT_PROFILE}")
+    private String defaultProfile;
     private final BCryptPasswordEncoder passwordEncoder;
     private final BranchRepository branchRepository;
     private final PBRepository pbRepository;
@@ -415,10 +418,10 @@ public class PBService {
 
         //프로필 삭제요청시
         if (updateDTO.getDeleteProfile().equals(true)) {
-            if (!pb.getProfile().equals("https://pb-business-card.s3.ap-northeast-2.amazonaws.com/profile.svg")) {
+            if (!pb.getProfile().equals(defaultProfile)) {
                 try {
                     s3Util.delete(pb.getProfile());
-                    pb.updateProfile("https://pb-business-card.s3.ap-northeast-2.amazonaws.com/profile.svg");
+                    pb.updateProfile(defaultProfile);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
