@@ -11,6 +11,7 @@ import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
@@ -59,8 +60,8 @@ public class UserService {
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final UserBookmarkRepository userBookmarkRepository;
     private final PBRepository pbRepository;
-
     private final UserInvestInfoRepository userInvestInfoRepository;
+    private final MyMsgUtil myMsgUtil;
 
     @MyLog
     @Transactional
@@ -179,47 +180,14 @@ public class UserService {
 
     private String sendEmail(String email) {
         String code = createCode();
-        MimeMessage message = createMessage(email, code);
+        MimeMessage message = myMsgUtil.createMessage(email, myMsgUtil.getSubjectAuthenticate(),
+                myMsgUtil.getMsgAuthenticate(code));
         try {
             javaMailSender.send(message);
         } catch (Exception e) {
             throw new Exception500("인증 이메일 전송 실패 " + e.getMessage());
         }
         return code;
-    }
-
-    private MimeMessage createMessage(String email, String code) {
-        System.out.println("인증 번호 : " + code);
-        try{
-            MimeMessage message = javaMailSender.createMimeMessage();
-            message.addRecipients(MimeMessage.RecipientType.TO, email); // 메일 받을 사용자
-            message.setSubject("[Money Bridge] 이메일 인증코드 입니다"); // 이메일 제목
-
-            String msg = "";
-            // msg += "<img src=../resources/static/image/emailheader.jpg />"; // header image
-            msg += "<div style='margin:20px;'>";
-            msg += "<h1> 안녕하세요. </h1>";
-            msg += "<br>";
-            msg += "<h1> Money Bridge 입니다</h1>";
-            msg += "<br>";
-            msg += "<p>아래 인증코드를 Money Bridge 페이지의 입력 칸에 입력해주세요</p>";
-            msg += "<br>";
-            msg += "<br>";
-            msg += "<div align='center' style='border:1px solid black; font-family:verdana';>";
-            msg += "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
-            msg += "<div style='font-size:130%'>";
-            msg += "CODE : <strong>";
-            msg += code + "</strong><div><br/> ";
-            msg += "</div>";
-            // msg += "<img src=../resources/static/image/emailfooter.jpg />"; // footer image
-            message.setText(msg, "utf-8", "html"); // 메일 내용, charset타입, subtype
-            message.setFrom(new InternetAddress("moneybridge@naver.com", "Money-Bridge")); // 보내는 사람의 이메일 주소, 보내는 사람 이름
-
-            return message;
-        }catch (Exception e){
-            throw new Exception500("인증 이메일 작성 실패 " + e.getMessage());
-        }
-
     }
 
     public String createCode() {

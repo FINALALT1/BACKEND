@@ -1,6 +1,8 @@
 package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
+import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
@@ -16,14 +18,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.mail.internet.MimeMessage;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +42,62 @@ class BackOfficeServiceTest extends MockDummyEntity {
     NoticeRepository noticeRepository;
     @Mock
     PBRepository pbRepository;
+    @Mock
+    MyMsgUtil myMsgUtil;
+    @Mock
+    JavaMailSender javaMailSender;
+    @Mock
+    MyMemberUtil myMemberUtil;
+
+    @Test
+    @DisplayName("해당 PB 승인 거부")
+    void approve_no_PB() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
+        Boolean approve = false;
+
+        // stub
+        when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
+        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+
+        // when
+        backOfficeService.approvePB(id, approve);
+
+        // then
+        verify(pbRepository, times(1)).findById(id);
+        verify(myMsgUtil, times(1)).createMessage(any(), any(), any());
+        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
+        verify(myMemberUtil, times(1)).deleteById(any(), any());
+    }
+
+    @Test
+    @DisplayName("해당 PB 승인/승인 거부")
+    void approvePB() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
+        Boolean approve = true;
+
+        // stub
+        when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
+        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+
+        // when
+        backOfficeService.approvePB(id, approve);
+
+        // then
+        verify(pbRepository, times(1)).findById(id);
+        verify(myMsgUtil, times(1)).createMessage(any(), any(), any());
+        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
+        assertThat(pb.getStatus()).isEqualTo(PBStatus.ACTIVE);
+    }
 
     @Test
     @DisplayName("PB 회원 가입 요청 승인 페이지 전체 가져오기")

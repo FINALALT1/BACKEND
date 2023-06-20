@@ -17,6 +17,7 @@ import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.pb.PBStatus;
 import kr.co.moneybridge.service.BackOfficeService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,6 +38,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,6 +66,28 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockAdmin
+    @Test
+    public void approvePB_test() throws Exception {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
+        // stub
+        Mockito.doNothing().when(backOfficeService).approvePB(any(), any());
+
+
+        // When
+        ResultActions resultActions = mvc.perform(post("/admin/pb/{id}?approve=true", id));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+    }
 
     @WithMockAdmin
     @Test

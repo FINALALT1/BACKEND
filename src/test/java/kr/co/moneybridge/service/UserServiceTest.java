@@ -9,6 +9,7 @@ import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
@@ -86,6 +87,8 @@ public class UserServiceTest extends MockDummyEntity {
     private MyUserDetails myUserDetails;
     @Mock
     private JavaMailSender javaMailSender;
+    @Mock
+    private MyMsgUtil myMsgUtil;
 
     // 진짜 객체를 만들어서 Mockito 환경에 Load
     @Spy
@@ -291,7 +294,8 @@ public class UserServiceTest extends MockDummyEntity {
 
         when(myMemberUtil.findByEmailWithoutException(passwordInDTO.getEmail(), passwordInDTO.getRole()))
                 .thenReturn(newMockUser(1L, "lee"));
-        when(javaMailSender.createMimeMessage()).thenReturn(mock(MimeMessage.class));
+        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
         UserResponse.PasswordOutDTO passwordOutDTO = userService.password(passwordInDTO);
@@ -312,7 +316,8 @@ public class UserServiceTest extends MockDummyEntity {
         UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();
         emailInDTO.setEmail(email);
 
-        when(javaMailSender.createMimeMessage()).thenReturn(mock(MimeMessage.class));
+        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
         UserResponse.EmailOutDTO emailOutDTO = userService.email(email);
@@ -583,7 +588,8 @@ public class UserServiceTest extends MockDummyEntity {
         // stub 1
         User user = newMockUserADMIN(1L,"강투자");
         when(myMemberUtil.findByEmail(any(), any())).thenReturn(user);
-        when(javaMailSender.createMimeMessage()).thenReturn(mock(MimeMessage.class));
+        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
