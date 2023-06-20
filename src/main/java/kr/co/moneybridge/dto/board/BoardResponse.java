@@ -61,6 +61,7 @@ public class BoardResponse {
         private String thumbnail;
         private String tag1;
         private String tag2;
+        private String title;
         private LocalDateTime createdAt;
         private Long pbId;
         private String name;
@@ -76,6 +77,7 @@ public class BoardResponse {
             this.thumbnail = board.getThumbnail();
             this.tag1 = board.getTag1();
             this.tag2 = board.getTag2();
+            this.title = board.getTitle();
             this.createdAt = board.getCreatedAt();
             this.pbId = pb.getId();
             this.name = pb.getName();
