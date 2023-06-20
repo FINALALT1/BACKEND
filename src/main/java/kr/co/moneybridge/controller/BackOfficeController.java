@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
-    //해당 PB 승인/승인 거부
+    // 해당 PB 승인/승인 거부
     @MyLog
+    @SwaggerResponses.ApprovePB
     @PostMapping("/admin/pb/{id}")
     public ResponseDTO approvePB(@PathVariable Long id, @RequestParam Boolean approve) {
         backOfficeService.approvePB(id, approve);
