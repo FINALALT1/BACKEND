@@ -183,7 +183,7 @@ public class ReservationResponse {
     @Getter
     @Setter
     public static class StyleDTO {
-        @ApiModelProperty(example = "HONEST")
+        @ApiModelProperty(example = "HONEST", value = "상담 스타일")
         private StyleStyle style;
 
         public StyleDTO(StyleStyle style) {

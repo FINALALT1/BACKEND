@@ -8,6 +8,7 @@ import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
+import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
@@ -16,6 +17,7 @@ import kr.co.moneybridge.model.backoffice.NoticeRepository;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.pb.PBStatus;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.internet.MimeMessage;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -42,6 +45,36 @@ public class BackOfficeService {
     private final JavaMailSender javaMailSender;
     private final MyMsgUtil myMsgUtil;
     private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
+    private final ReviewRepository reviewRepository;
+    private final StyleRepository styleRepository;
+
+    @MyLog
+    @Transactional
+    public BackOfficeResponse.ReservationOutDTO getReservations(Pageable pageable) {
+        Page<Reservation> reservationPG = reservationRepository.findAll(pageable);
+        List<BackOfficeResponse.ReservationTotalDTO> list = reservationPG.getContent().stream().map(
+                reservation-> {
+                    BackOfficeResponse.ReviewTotalDTO reviewTotalDTO = null;
+                    Optional<Review> reviewOP = reviewRepository.findByReservationId(reservation.getId());
+                    if(!reviewOP.isEmpty()){
+                        reviewTotalDTO =
+                                new BackOfficeResponse.ReviewTotalDTO(reviewOP.get(), styleRepository
+                                        .findAllByReviewId(reviewOP.get().getId()).stream().map(style ->
+                                                new ReservationResponse.StyleDTO(style.getStyle()))
+                                        .collect(Collectors.toList()));}
+                    return new BackOfficeResponse.ReservationTotalDTO(reservation,
+                            new BackOfficeResponse.UserDTO(reservation.getUser()),
+                            new BackOfficeResponse.PBDTO(reservation.getPb()),
+                            reviewTotalDTO);
+                }).collect(Collectors.toList());
+        return new BackOfficeResponse.ReservationOutDTO(new BackOfficeResponse.ReservationTotalCountDTO(
+                reservationRepository.countByProcess(ReservationProcess.APPLY),
+                reservationRepository.countByProcess(ReservationProcess.CONFIRM),
+                reservationRepository.countByProcess(ReservationProcess.COMPLETE),
+                reviewRepository.count()),
+                new PageDTO<>(list, reservationPG, Reservation.class));
+    }
 
     @MyLog
     @Transactional

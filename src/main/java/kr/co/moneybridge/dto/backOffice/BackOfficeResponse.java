@@ -3,18 +3,118 @@ package kr.co.moneybridge.dto.backOffice;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class BackOfficeResponse {
+    @ApiModel(description = "후기 리스트 데이터")
+    @Getter
+    @Setter
+    public static class ReviewTotalDTO {
+        @ApiModelProperty(example = "content 입니다", value = "후기 나용")
+        private String content;
+        @ApiModelProperty(example = "EXCELLENT", value = "상담 일정 준수 등급")
+        private ReviewAdherence adherence;
+        @ApiModelProperty
+        private List<ReservationResponse.StyleDTO> styles;
+
+        public ReviewTotalDTO(Review review, List<ReservationResponse.StyleDTO> styles) {
+            this.content = review.getContent();
+            this.adherence = review.getAdherence();
+            this.styles = styles;
+        }
+    }
+
+    @ApiModel(description = "예약 리스트 데이터")
+    @Getter
+    @Setter
+    public static class ReservationTotalDTO {
+        @ApiModelProperty(example = "1", value = "예약 id")
+        private Long id;
+        @ApiModelProperty(example = "APPLY", value = "예약 상태")
+        private ReservationProcess process;
+        @ApiModelProperty(example = "ACTIVE", value = "취소 여부")
+        private ReservationStatus status;
+        @ApiModelProperty(example = "2023년 6월 20일 오전 1시 39분", value = "확정 날짜")
+        private String time;
+        @ApiModelProperty(example = "VISIT", value = "유선/방문")
+        private ReservationType type;
+        @ApiModelProperty(example = "kb증권 강남중앙점", value = "상담 장소")
+        private String locationName;
+        @ApiModelProperty(example = "PROFIT", value = "상담 목적")
+        private ReservationGoal goal;
+        @ApiModelProperty(example = "질문입니다...", value = "문의 사항")
+        private String question;
+        @ApiModelProperty
+        private UserDTO user;
+        @ApiModelProperty
+        private PBDTO pb;
+        @ApiModelProperty
+        private ReviewTotalDTO review;
+
+        public ReservationTotalDTO(Reservation reservation, UserDTO user, PBDTO pb, ReviewTotalDTO review) {
+            this.id = reservation.getId();
+            this.process = reservation.getProcess();
+            this.status = reservation.getStatus();
+            this.time = reservation.getTime().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"));
+            this.type = reservation.getType();
+            this.locationName = reservation.getLocationName();
+            this.goal = reservation.getGoal();
+            this.question = reservation.getQuestion();
+            this.user = user;
+            this.pb = pb;
+            this.review = review;
+        }
+    }
+
+    @ApiModel(description = "예약 횟수 데이터")
+    @Getter
+    @Setter
+    public static class ReservationTotalCountDTO {
+        @ApiModelProperty(example = "2", value = "총 상담 신청 건수")
+        private Integer apply;
+        @ApiModelProperty(example = "3", value = "총 상담 확정 건수")
+        private Integer confirm;
+        @ApiModelProperty(example = "2", value = "총 상담 완료 건수")
+        private Integer complete;
+        @ApiModelProperty(example = "2", value = "총 후기 작성 건수")
+        private Long review;
+
+        public ReservationTotalCountDTO(Integer apply, Integer confirm, Integer complete, Long review) {
+            this.apply = apply;
+            this.confirm = confirm;
+            this.complete = complete;
+            this.review = review;
+        }
+    }
+
+    @ApiModel(description = "상담 현황 페이지 전체 가져오기 응답 데이터")
+    @Getter
+    @Setter
+    public static class ReservationOutDTO {
+        @ApiModelProperty
+        private ReservationTotalCountDTO count;
+        @ApiModelProperty
+        private PageDTO<ReservationTotalDTO> page;
+
+        public ReservationOutDTO(ReservationTotalCountDTO count, PageDTO<ReservationTotalDTO> page) {
+            this.count = count;
+            this.page = page;
+        }
+    }
+
     @ApiModel(description = "PB 리스트 데이터")
     @Getter
     @Setter
