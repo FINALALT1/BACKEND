@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -35,6 +39,29 @@ public class UserRepositoryTest extends DummyEntity {
         em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         userRepository.save(newUser("김투자"));
         em.clear();
+    }
+
+    @Test
+    public void findAll() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+
+        // when
+        Page<User> userPG = userRepository.findAll(pageable);
+        User userPS = userPG.getContent().get(0);
+
+        // then
+        Assertions.assertThat(userPS.getId()).isEqualTo(1L);
+        Assertions.assertThat(userPS.getName()).isEqualTo("김투자");
+        Assertions.assertThat(
+                passwordEncoder.matches("password1234", userPS.getPassword())
+        ).isEqualTo(true);
+        Assertions.assertThat(userPS.getEmail()).isEqualTo("김투자@nate.com");
+        Assertions.assertThat(userPS.getPhoneNumber()).isEqualTo("01012345678");
+        Assertions.assertThat(userPS.getRole()).isEqualTo(Role.USER);
+        Assertions.assertThat(userPS.getProfile()).isEqualTo("프로필.png");
+        Assertions.assertThat(userPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
+        Assertions.assertThat(userPS.getUpdatedAt()).isNull();
     }
 
     @Test
