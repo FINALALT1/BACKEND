@@ -57,7 +57,7 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
-    @ApiOperation(value = "해당 투자자 관리자 등록/취소")
+    @ApiOperation(value = "해당 투자자를 관리자로 등록/취소")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),

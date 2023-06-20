@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
-    // 해당 투자자 관리자 등록/취소
+    // 해당 투자자를 관리자로 등록/취소
     @MyLog
     @SwaggerResponses.AuthorizeAdmin
     @PostMapping("/admin/user/{id}")
