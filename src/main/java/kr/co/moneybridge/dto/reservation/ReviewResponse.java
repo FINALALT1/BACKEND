@@ -50,4 +50,12 @@ public class ReviewResponse {
             this.list = list;
         }
     }
+
+    @Getter
+    @Setter
+    public static class PBTopStyleDTO {
+        private StyleStyle style1;
+        private StyleStyle style2;
+        private StyleStyle style3;
+    }
 }

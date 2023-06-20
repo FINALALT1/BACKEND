@@ -611,4 +611,28 @@ public class ReservationService {
 
         return list;
     }
+
+    //PB의 상담후기 탑3 가져오기
+    public ReviewResponse.PBTopStyleDTO getPBStyles(Long pbId) {
+
+        pbRepository.findById(pbId).orElseThrow(() -> new Exception404("존재하지 않는 PB입니다."));
+        ReviewResponse.PBTopStyleDTO styleDTO = new ReviewResponse.PBTopStyleDTO();
+
+        List<StyleStyle> styleList = styleRepository.findStylesByPbId(pbId);
+
+        if (styleList.size() == 0) {
+            return styleDTO;
+        } else if (styleList.size() == 1) {
+            styleDTO.setStyle1(styleList.get(0));
+        } else if (styleList.size() == 2) {
+            styleDTO.setStyle1(styleList.get(0));
+            styleDTO.setStyle2(styleList.get(1));
+        } else {
+            styleDTO.setStyle1(styleList.get(0));
+            styleDTO.setStyle2(styleList.get(1));
+            styleDTO.setStyle3(styleList.get(2));
+        }
+
+        return styleDTO;
+    }
 }
