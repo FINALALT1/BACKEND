@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
-    //해당 투자자 강제 탈퇴
+    // 해당 투자자 강제 탈퇴
     @MyLog
+    @SwaggerResponses.ForceWithdrawUser
     @DeleteMapping("/admin/user/{id}")
     public ResponseDTO forceWithdrawUser(@PathVariable Long id) {
         backOfficeService.forceWithdraw(id, Role.USER);
@@ -28,6 +29,7 @@ public class BackOfficeController {
 
     // 해당 PB 강제 탈퇴
     @MyLog
+    @SwaggerResponses.ForceWithdrawPB
     @DeleteMapping("/admin/pb/{id}")
     public ResponseDTO forceWithdrawPB(@PathVariable Long id) {
         backOfficeService.forceWithdraw(id, Role.PB);
