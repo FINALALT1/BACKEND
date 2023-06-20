@@ -45,6 +45,12 @@ public class BackOfficeService {
 
     @MyLog
     @Transactional
+    public void forceWithdraw(Long memberId, Role role) {
+        myMemberUtil.deleteById(memberId, role);
+    }
+
+    @MyLog
+    @Transactional
     public void authorizeAdmin(Long userId, Boolean admin) {
         User userPS = userRepository.findById(userId).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")

@@ -108,9 +108,11 @@ public class MyMemberUtil {
 
                 boardBookmarkRepository.deleteByBookmarker(id, BookmarkerRole.PB);
                 userBookmarkRepository.deleteByPBId(id);
+                //s3에서 액셀데이터도 삭제(추가 필요)
                 careerRepository.deleteByPBId(id);
                 awardRepository.deleteByPBId(id);
                 pbAgreementRepository.deleteByPBId(id);
+                // s3에서 프로필 사진도 삭제(추가 필요)
                 portfolioRepository.deleteByPBId(id);
                 // s3에서 명함사진도 삭제
                 s3Util.delete(pbRepository.findBusinessCardById(id));
