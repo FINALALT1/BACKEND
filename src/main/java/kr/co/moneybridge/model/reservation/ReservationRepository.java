@@ -84,7 +84,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "join r.user u " +
             "where r.pb.id = :pbId " +
             "and function('YEAR', case when r.time is not null then r.time else r.candidateTime1 end) = :year " +
-            "and function('MONTH', case when r.time is not null then r.time else r.candidateTime1 end) = :month")
+            "and function('MONTH', case when r.time is not null then r.time else r.candidateTime1 end) = :month " +
+            "order by function('DATE', case when r.time is not null then r.time else r.candidateTime1 end)")
     List<ReservationResponse.ReservationInfoDTO> findAllByPbIdAndYearAndMonth(@Param("pbId") Long pbId,
                                                                               @Param("year") int year,
                                                                               @Param("month") int month);
