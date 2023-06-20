@@ -354,7 +354,25 @@ public class UserService {
                         .build());
             }
         } catch (Exception e) {
-            throw new Exception500("에러 : " + e);
+            throw new Exception500("북마크 실패 : " + e);
+        }
+    }
+
+    //PB 북마크 취소하기
+    @Transactional
+    public void deletePBBookmark(MyUserDetails myUserDetails, Long pbId) {
+
+        User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+        PB pb = pbRepository.findById(pbId).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+        Optional<UserBookmark> userBookmarkOP = userBookmarkRepository.findByUserIdWithPbId(user.getId(), pbId);
+
+        try {
+            if (userBookmarkOP.isPresent()) {
+                UserBookmark userBookmark = userBookmarkOP.get();
+                userBookmarkRepository.delete(userBookmark);
+            }
+        } catch (Exception e) {
+            throw new Exception500("북마크 취소 실패 : " + e);
         }
     }
 }

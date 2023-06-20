@@ -212,4 +212,12 @@ public class UserController {
 
         return new ResponseDTO<>();
     }
+
+    @DeleteMapping("/user/bookmark/{pbId}")
+    public ResponseDTO deletePBBookmark(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable(value = "pbId") Long pbId) {
+
+        userService.deletePBBookmark(myUserDetails, pbId);
+
+        return new ResponseDTO<>();
+    }
 }
