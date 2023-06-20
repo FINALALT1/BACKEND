@@ -52,7 +52,7 @@ public class ReservationController {
     @ApiOperation(value = "상담 예약 사전 정보 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/user/reservation/{pbId}")
+    @GetMapping("/user/reservation/base/{pbId}")
     public ResponseDTO<ReservationResponse.BaseDTO> getReservationBase(@PathVariable Long pbId,
                                                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
         ReservationResponse.BaseDTO baseDTO = reservationService.getReservationBase(pbId, myUserDetails.getMember().getId());
@@ -228,7 +228,7 @@ public class ReservationController {
     @ApiOperation(value = "예약 변경하기")
     @SwaggerResponses.DefaultApiResponses
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/auth/reservation/{id}")
+    @PatchMapping("/pb/reservation/{id}")
     public ResponseDTO updateReservation(@PathVariable Long id,
                                          @RequestBody ReservationRequest.UpdateDTO updateDTO,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -249,7 +249,7 @@ public class ReservationController {
             }
         }
 
-        reservationService.updateReservation(id, updateDTO, myUserDetails);
+        reservationService.updateReservation(id, updateDTO, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>();
     }
@@ -313,6 +313,7 @@ public class ReservationController {
         return new ResponseDTO(reviewListOutDTO);
     }
 
+
     @ApiOperation(value = "PB 상담스타일 탑3 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/review/style/{pbId}")
@@ -321,5 +322,53 @@ public class ReservationController {
         ReviewResponse.PBTopStyleDTO styleDTO = reservationService.getPBStyles(pbId);
 
         return new ResponseDTO(styleDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "월별/일별 예약 정보 조회")
+    @SwaggerResponses.ApiResponsesWithout400
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/pb/reservation")
+    public ResponseDTO<List<ReservationResponse.ReservationInfoDTO>> getReservationsByDate(@RequestParam(defaultValue = "0") int year,
+                                                                                           @RequestParam(defaultValue = "0") int month,
+                                                                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        if (year == 0) {
+            year = LocalDateTime.now().getYear();
+        } else if (year < LocalDateTime.now().getYear() - 5 || year > LocalDateTime.now().getYear() + 5) { // 현재 연도를 기준으로 +-5 이내의 값만 허용
+            throw new Exception400(String.valueOf(year), "현재 연도를 기준으로 +-5 사이의 값만 입력해주세요.");
+        }
+        if (month == 0) {
+            month = LocalDateTime.now().getMonth().getValue();
+        } else if (month < 1 || month > 12) { // 1 ~ 12 사이의 값만 허용
+            throw new Exception400(String.valueOf(month), "1 ~ 12 사이의 값만 입력해주세요.");
+        }
+
+        List<ReservationResponse.ReservationInfoDTO> reservations = reservationService.getReservationsByDate(year, month, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>(reservations);
+    }
+
+    @MyLog
+    @ApiOperation(value = "PB 상담시간 및 메시지 변경하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/pb/consultTime")
+    public ResponseDTO updateConsultTime(@RequestBody ReservationRequest.UpdateTimeDTO updateTimeDTO,
+                                         @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        if (updateTimeDTO.getConsultStart() != null && updateTimeDTO.getConsultEnd() != null) {
+            if (updateTimeDTO.getConsultStart().isAfter(updateTimeDTO.getConsultEnd())) {
+                throw new Exception400(updateTimeDTO.getConsultStart().toString(), "상담 시작 시간이 종료 시간보다 이전이어야 합니다.");
+            }
+        }
+
+        if (updateTimeDTO.getConsultNotice() != null && !updateTimeDTO.getConsultNotice().isBlank()) {
+            if (updateTimeDTO.getConsultNotice().length() > 100) {
+                throw new Exception400(updateTimeDTO.getConsultNotice(), "최대 100자까지 입력 가능합니다.");
+            }
+        }
+
+        reservationService.updateConsultTime(updateTimeDTO, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>();
     }
 }

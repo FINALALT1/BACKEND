@@ -415,10 +415,10 @@ public class PBService {
 
         //프로필 삭제요청시
         if (updateDTO.getDeleteProfile().equals(true)) {
-            if (!pb.getProfile().equals("businessCard.png")) {
+            if (!pb.getProfile().equals("https://pb-business-card.s3.ap-northeast-2.amazonaws.com/profile.svg")) {
                 try {
                     s3Util.delete(pb.getProfile());
-                    pb.updateProfile("businessCard.png");
+                    pb.updateProfile("https://pb-business-card.s3.ap-northeast-2.amazonaws.com/profile.svg");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

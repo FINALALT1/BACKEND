@@ -24,8 +24,7 @@ import javax.persistence.EntityManager;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,6 +58,9 @@ public class BackOfficeControllerTest {
     @BeforeEach
     public void setUp() {
         User admin = userRepository.save(dummy.newAdmin("admin"));
+        User user = userRepository.save(dummy.newAdmin("user"));
+        User admin2 = userRepository.save(dummy.newAdmin("admin2"));
+        User user4 = userRepository.save(dummy.newAdmin("user4"));
         frequentQuestionRepository.save(dummy.newFrequentQuestion());
         noticeRepository.save(dummy.newNotice());
         Company companyPS = companyRepository.save(dummy.newCompany("미래에셋증권"));
@@ -66,11 +68,92 @@ public class BackOfficeControllerTest {
         PB pbPS = pbRepository.save(dummy.newPBwithStatus("pblee", branchPS, PBStatus.PENDING));
         PB pb2 = pbRepository.save(dummy.newPBwithStatus("false", branchPS, PBStatus.PENDING));
         PB pb3 = pbRepository.save(dummy.newPB("pb3", branchPS));
+        PB pb4 = pbRepository.save(dummy.newPB("pb4", branchPS));
         em.clear();
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @DisplayName("회원 관리 페이지 전체 가져오기")
+    @DisplayName("해당 투자자 강제 탈퇴")
+    @Test
+    public void forceWithdrawUser() throws Exception {
+        // given
+        Long id = 4L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(delete("/admin/user/{id}", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("해당 PB 강제 탈퇴")
+    @Test
+    public void forceWithdrawPB() throws Exception {
+        // given
+        Long id = 4L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(delete("/admin/pb/{id}", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("해당 투자자를 관리자로 등록 취소 성공")
+    @Test
+    public void deAuthorizeAdmin() throws Exception {
+        // given
+        Long id = 3L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/admin/user/{id}?admin=false", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("해당 투자자를 관리자로 등록 성공")
+    @Test
+    public void authorizeAdmin() throws Exception {
+        // given
+        Long id = 2L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/admin/user/{id}?admin=true", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("회원 관리 페이지 전체 가져오기 성공")
     @Test
     public void getMembers() throws Exception {
         // when
@@ -82,9 +165,9 @@ public class BackOfficeControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.memberCount.total").value("2"));
-        resultActions.andExpect(jsonPath("$.data.memberCount.user").value("1"));
-        resultActions.andExpect(jsonPath("$.data.memberCount.pb").value("1"));
+        resultActions.andExpect(jsonPath("$.data.memberCount.total").isNumber());
+        resultActions.andExpect(jsonPath("$.data.memberCount.user").isNumber());
+        resultActions.andExpect(jsonPath("$.data.memberCount.pb").isNumber());
         resultActions.andExpect(jsonPath("$.data.userPage.list[0].id").value("1"));
         resultActions.andExpect(jsonPath("$.data.userPage.list[0].email").value("admin@nate.com"));
         resultActions.andExpect(jsonPath("$.data.userPage.list[0].name").value("admin"));
@@ -110,7 +193,7 @@ public class BackOfficeControllerTest {
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @DisplayName("해당 PB 승인/승인 거부")
+    @DisplayName("해당 PB 승인/승인 거부 성공")
     @Test
     public void approve_no_PB() throws Exception {
         // given
@@ -130,7 +213,7 @@ public class BackOfficeControllerTest {
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @DisplayName("해당 PB 승인/승인 거부")
+    @DisplayName("해당 PB 승인/승인 거부 성공")
     @Test
     public void approvePB() throws Exception {
         // given

@@ -5,6 +5,7 @@ import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.service.BackOfficeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,43 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
+
+    // 상담 현황 페이지 전체 가져오기
+    @MyLog
+    @SwaggerResponses.GetReservations
+    @GetMapping("/admin/reservations")
+    public ResponseDTO<BackOfficeResponse.ReservationOutDTO> getReservations() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        BackOfficeResponse.ReservationOutDTO reservationOutDTO = backOfficeService.getReservations(pageable);
+        return new ResponseDTO<>(reservationOutDTO);
+    }
+
+    // 해당 투자자 강제 탈퇴
+    @MyLog
+    @SwaggerResponses.ForceWithdrawUser
+    @DeleteMapping("/admin/user/{id}")
+    public ResponseDTO forceWithdrawUser(@PathVariable Long id) {
+        backOfficeService.forceWithdraw(id, Role.USER);
+        return new ResponseDTO<>();
+    }
+
+    // 해당 PB 강제 탈퇴
+    @MyLog
+    @SwaggerResponses.ForceWithdrawPB
+    @DeleteMapping("/admin/pb/{id}")
+    public ResponseDTO forceWithdrawPB(@PathVariable Long id) {
+        backOfficeService.forceWithdraw(id, Role.PB);
+        return new ResponseDTO<>();
+    }
+
+    // 해당 투자자를 관리자로 등록/취소
+    @MyLog
+    @SwaggerResponses.AuthorizeAdmin
+    @PostMapping("/admin/user/{id}")
+    public ResponseDTO authorizeAdmin(@PathVariable Long id, @RequestParam Boolean admin) {
+        backOfficeService.authorizeAdmin(id, admin);
+        return new ResponseDTO<>();
+    }
 
     // 회원 관리 페이지 전체 가져오기
     @MyLog
