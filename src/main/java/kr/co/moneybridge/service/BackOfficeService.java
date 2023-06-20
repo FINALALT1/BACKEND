@@ -44,6 +44,15 @@ public class BackOfficeService {
     private final UserRepository userRepository;
 
     @MyLog
+    @Transactional
+    public void authorizeAdmin(Long userId, Boolean admin) {
+        User userPS = userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+        userPS.authorize(admin);
+    }
+
+    @MyLog
     public BackOfficeResponse.MemberOutDTO getMembers(Pageable pageable) {
         Page<User> userPG = userRepository.findAll(pageable);
         Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pageable);
