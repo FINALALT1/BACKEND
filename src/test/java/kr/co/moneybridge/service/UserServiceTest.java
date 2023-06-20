@@ -24,6 +24,7 @@ import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.user.*;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -596,5 +597,31 @@ public class UserServiceTest extends MockDummyEntity {
 
         // then
         Assertions.assertThat(loginOutDTO.getCode()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("PB 북마크하기")
+    void bookmarkPB() {
+        //given
+        MyUserDetails mockUserDetails = mock(MyUserDetails.class);
+        Member mockMember = mock(Member.class);
+        User user = newMockUser(1L, "김투자");
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "김피비", branch);
+        UserBookmark userBookmark = newMockUserBookmark(1L, user, pb);
+
+        //stub
+        when(mockUserDetails.getMember()).thenReturn(mockMember);
+        when(mockMember.getId()).thenReturn(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(pbRepository.findById(1L)).thenReturn(Optional.of(pb));
+        when(userBookmarkRepository.findByUserIdWithPbId(1L, 1L)).thenReturn(Optional.empty());
+
+        //when
+        userService.bookmarkPB(mockUserDetails, 1L);
+
+        //then
+        verify(userBookmarkRepository, times(1)).save(any(UserBookmark.class));
     }
 }

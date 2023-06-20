@@ -20,6 +20,7 @@ import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.BoardBookmarkRepository;
 import kr.co.moneybridge.model.board.BoardRepository;
 import kr.co.moneybridge.model.board.BookmarkerRole;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
 import kr.co.moneybridge.model.reservation.ReservationRepository;
@@ -336,5 +337,24 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(
                 () -> new Exception404("해당 유저를 찾을 수 없습니다.")
         );
+    }
+
+    //PB 북마크하기
+    @Transactional
+    public void bookmarkPB(MyUserDetails myUserDetails, Long pbId) {
+
+        User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+        PB pb = pbRepository.findById(pbId).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+
+        try {
+            if (userBookmarkRepository.findByUserIdWithPbId(user.getId(), pbId).isEmpty()) {
+                userBookmarkRepository.save(UserBookmark.builder()
+                        .user(user)
+                        .pb(pb)
+                        .build());
+            }
+        } catch (Exception e) {
+            throw new Exception500("에러 : " + e);
+        }
     }
 }

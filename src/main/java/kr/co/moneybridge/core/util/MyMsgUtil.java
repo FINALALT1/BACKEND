@@ -1,6 +1,7 @@
 package kr.co.moneybridge.core.util;
 
 import kr.co.moneybridge.core.exception.Exception500;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -54,6 +55,7 @@ public class MyMsgUtil {
             + "<p>관리자 드림 </p>"
             + "</div>";
     // msg += "<img src=../resources/static/image/emailfooter.jpg />"; // footer image;
+
     @Getter
     public final String subjectAuthenticate = "[Money Bridge] 이메일 인증코드 입니다";
     public String getMsgAuthenticate(String code) {

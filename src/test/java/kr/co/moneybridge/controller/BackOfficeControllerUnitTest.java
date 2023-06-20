@@ -18,6 +18,7 @@ import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBStatus;
+import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.BackOfficeService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -69,15 +70,69 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
 
     @WithMockAdmin
     @Test
+    public void getMembers_test() throws Exception {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
+        List pbList = Arrays.asList(new BackOfficeResponse.PBDTO(pb));
+        User user = newMockUserADMIN(1L, "관리자");
+        List userList = Arrays.asList( new BackOfficeResponse.UserDTO(user));
+        Page<PB> pbPG =  new PageImpl<>(Arrays.asList(pb));
+        Page<User> userPG =  new PageImpl<>(Arrays.asList(user));
+        BackOfficeResponse.MemberOutDTO memberOutDTO = new BackOfficeResponse.MemberOutDTO(
+                new BackOfficeResponse.CountDTO(2,1,1),
+                new PageDTO<>(userList, userPG, User.class),
+                new PageDTO<>(pbList, pbPG, PB.class));
+
+        // stub
+        Mockito.when(backOfficeService.getMembers(any())).thenReturn(memberOutDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/admin/members"));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.memberCount.total").value("2"));
+        resultActions.andExpect(jsonPath("$.data.memberCount.user").value("1"));
+        resultActions.andExpect(jsonPath("$.data.memberCount.pb").value("1"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].email").value("jisu8496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].name").value("관리자"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].isAdmin").value("true"));
+        resultActions.andExpect(jsonPath("$.data.userPage.totalElements").isNumber());
+        resultActions.andExpect(jsonPath("$.data.userPage.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.userPage.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.userPage.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.userPage.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.userPage.empty").value("false"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].email").value("pblee@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].name").value("pblee"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.totalElements").isNumber());
+        resultActions.andExpect(jsonPath("$.data.pbPage.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.empty").value("false"));
+    }
+
+    @WithMockAdmin
+    @Test
     public void approvePB_test() throws Exception {
         // given
         Long id = 1L;
         Company company = newMockCompany(1L, "미래에셋증권");
         Branch branch = newMockBranch(1L, company, 1);
         PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
+
         // stub
         Mockito.doNothing().when(backOfficeService).approvePB(any(), any());
-
 
         // When
         ResultActions resultActions = mvc.perform(post("/admin/pb/{id}?approve=true", id));
