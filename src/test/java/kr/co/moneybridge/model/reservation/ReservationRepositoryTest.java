@@ -18,6 +18,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ActiveProfiles("test")
@@ -195,6 +197,22 @@ public class ReservationRepositoryTest extends DummyEntity {
         assertThat(page.getContent().get(0).getName()).isEqualTo("이피비");
         assertThat(page.getContent().get(0).getCreatedAt().toLocalDate().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
         assertThat(page.getContent().get(0).getType()).isEqualTo(ReservationType.VISIT);
+    }
+
+    @Test
+    public void find_all_by_pb_id_without_cancel_test() {
+        // given
+        Long pbId = 1L;
+
+        // when
+        List<ReservationResponse.ReservationInfoDTO> response = reservationRepository.findAllByPbIdWithoutCancel(pbId);
+
+        // then
+        assertThat(response.get(0).getId()).isEqualTo(1L);
+        assertThat(response.get(0).getUserName()).isEqualTo("lee");
+        assertThat(response.get(0).getDay()).isEqualTo("2023-06-20");
+        assertThat(response.get(0).getType()).isEqualTo(ReservationType.VISIT);
+        assertThat(response.get(0).getProcess()).isEqualTo(ReservationProcess.COMPLETE);
     }
 
     @Test

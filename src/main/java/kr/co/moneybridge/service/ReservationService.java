@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -630,7 +632,36 @@ public class ReservationService {
         );
 
         try {
-            return reservationRepository.findAllByPbIdAndYearAndMonth(pbPS.getId(), year, month);
+            List<ReservationResponse.ReservationInfoDTO> reservations = reservationRepository.findAllByPbIdWithoutCancel(pbPS.getId());
+
+            // 상담 날짜 기준 오름차순 정렬, 날짜가 같다면 시간을 기준으로 오름차순 정렬
+            Collections.sort(reservations, new Comparator<ReservationResponse.ReservationInfoDTO>() {
+                @Override
+                public int compare(ReservationResponse.ReservationInfoDTO r1, ReservationResponse.ReservationInfoDTO r2) {
+                    if (r1.getDay().isEqual(r2.getDay())) {
+                        if (r1.getTime().isBefore(r2.getTime())) {
+                            return 1;
+                        } else if (r1.getTime().equals(r2.getTime())) {
+                            return 0;
+                        } else {
+                            return -1;
+                        }
+                    } else {
+                        if (r1.getDay().isBefore(r2.getDay())) {
+                            return 1;
+                        } else if (r1.getDay().isEqual(r2.getDay())) {
+                            return 0;
+                        } else {
+                            return -1;
+                        }
+                    }
+                }
+            });
+
+            // year, month가 요청과 일치하는 개체들만 반환
+            return reservations.stream()
+                    .filter(dto -> dto.getDay().getYear() == year && dto.getDay().getMonthValue() == month)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new Exception500("예약 정보 조회 실패 : " + e.getMessage());
         }

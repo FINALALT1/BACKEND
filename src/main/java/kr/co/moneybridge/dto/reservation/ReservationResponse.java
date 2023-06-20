@@ -528,5 +528,20 @@ public class ReservationResponse {
 
         @ApiModelProperty(example = "APPLY")
         private ReservationProcess process;
+
+        // time 컬럼의 값이 null이라면 candidateTime1의 값을 가져온다.
+        public ReservationInfoDTO(Reservation reservation, User user) {
+            this.id = reservation.getId();
+            this.userName = user.getName();
+            if (reservation.getTime() != null) {
+                this.day = reservation.getTime().toLocalDate();
+                this.time = reservation.getTime().toLocalTime();
+            } else {
+                this.day = reservation.getCandidateTime1().toLocalDate();
+                this.time = reservation.getCandidateTime1().toLocalTime();
+            }
+            this.type = reservation.getType();
+            this.process = reservation.getProcess();
+        }
     }
 }
