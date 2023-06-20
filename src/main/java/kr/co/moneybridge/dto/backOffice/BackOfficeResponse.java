@@ -3,18 +3,94 @@ package kr.co.moneybridge.dto.backOffice;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class BackOfficeResponse {
+    @Getter
+    @Setter
+    public static class ReviewTotalDTO {
+        private String content;
+        private ReviewAdherence adherence;
+        private List<ReservationResponse.StyleDTO> styles;
+
+        public ReviewTotalDTO(Review review, List<ReservationResponse.StyleDTO> styles) {
+            this.content = review.getContent();
+            this.adherence = review.getAdherence();
+            this.styles = styles;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class ReservationTotalDTO {
+        private Long id;
+        private ReservationProcess process;
+        private ReservationStatus status;
+        private String time;
+        private ReservationType type;
+        private String locationName;
+        private ReservationGoal goal;
+        private String question;
+        private UserDTO user;
+        private PBDTO pb;
+        private ReviewTotalDTO review;
+
+        public ReservationTotalDTO(Reservation reservation, UserDTO user, PBDTO pb, ReviewTotalDTO review) {
+            this.id = reservation.getId();
+            this.process = reservation.getProcess();
+            this.status = reservation.getStatus();
+            this.time = reservation.getTime().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"));
+            this.type = reservation.getType();
+            this.locationName = reservation.getLocationName();
+            this.goal = reservation.getGoal();
+            this.question = reservation.getQuestion();
+            this.user = user;
+            this.pb = pb;
+            this.review = review;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class ReservationTotalCountDTO {
+        private Integer apply;
+        private Integer confirm;
+        private Integer complete;
+        private Long review;
+
+        public ReservationTotalCountDTO(Integer apply, Integer confirm, Integer complete, Long review) {
+            this.apply = apply;
+            this.confirm = confirm;
+            this.complete = complete;
+            this.review = review;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class ReservationOutDTO {
+        private ReservationTotalCountDTO count;
+        private PageDTO<ReservationTotalDTO> page;
+
+        public ReservationOutDTO(ReservationTotalCountDTO count, PageDTO<ReservationTotalDTO> page) {
+            this.count = count;
+            this.page = page;
+        }
+    }
+
     @ApiModel(description = "PB 리스트 데이터")
     @Getter
     @Setter
