@@ -103,7 +103,7 @@ public class BoardResponse {
         public ReplyOutDTO(Reply reply, User user) {
             this.id = reply.getId();
             this.name = user.getName();
-            this.profile = user.getProfile();
+            this.profile = null;
             this.content = reply.getContent();
             this.createdAt = reply.getCreatedAt();
         }
@@ -129,7 +129,7 @@ public class BoardResponse {
         public ReReplyOutDTO(ReReply reReply, User user) {
             this.id = reReply.getId();
             this.name = user.getName();
-            this.profile = user.getProfile();
+            this.profile = null;
             this.content = reReply.getContent();
             this.createdAt = reReply.getCreatedAt();
         }
