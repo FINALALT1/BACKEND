@@ -57,6 +57,23 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
+    @ApiOperation(value = "회원 관리 페이지 전체 가져오기")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetMembers {
+    }
+
     @ApiOperation(value = "해당 PB 승인/승인 거부")
     @ApiResponses({
             @ApiResponse(code = 400,
@@ -79,7 +96,7 @@ public class SwaggerResponses {
     public @interface ApprovePB {
     }
 
-    @ApiOperation(value = "PB회원 가입 요청 승인 페이지 전체 가져오기")
+    @ApiOperation(value = "PB 회원 가입 요청 승인 페이지 전체 가져오기")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),

@@ -3,16 +3,99 @@ package kr.co.moneybridge.dto.backOffice;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
+import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
 public class BackOfficeResponse {
+    @ApiModel(description = "PB 리스트 데이터")
+    @Getter
+    @Setter
+    public static class PBDTO {
+        @ApiModelProperty(example = "1", value = "PB id")
+        private Long id;
+        @ApiModelProperty(example = "김pb@nate.com", value = "이메일")
+        private String email;
+        @ApiModelProperty(example = "김pb", value = "이름")
+        private String name;
+        @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
+        private String phoneNumber;
+
+        public PBDTO(PB pb) {
+            this.id = pb.getId();
+            this.email = pb.getEmail();
+            this.name = pb.getName();
+            this.phoneNumber = pb.getPhoneNumber();
+        }
+    }
+
+    @ApiModel(description = "투자자 리스트 데이터")
+    @Getter
+    @Setter
+    public static class UserDTO {
+        @ApiModelProperty(example = "1", value = "투자자 id")
+        private Long id;
+        @ApiModelProperty(example = "김투자@nate.com", value = "이메일")
+        private String email;
+        @ApiModelProperty(example = "김투자", value = "이름")
+        private String name;
+        @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
+        private String phoneNumber;
+        @ApiModelProperty(example = "true", value = "관리자 여부")
+        private Boolean isAdmin;
+
+        public UserDTO(User user) {
+            this.id = user.getId();
+            this.email = user.getEmail();
+            this.name = user.getName();
+            this.phoneNumber = user.getPhoneNumber();
+            this.isAdmin = user.getRole() == Role.ADMIN ? true : false;
+        }
+    }
+
+    @ApiModel(description = "회원수")
+    @Getter
+    @Setter
+    public static class CountDTO {
+        @ApiModelProperty(example = "7", value = "전체 회원수")
+        private Integer total;
+        @ApiModelProperty(example = "4", value = "총 투자가 회원수")
+        private Integer user;
+        @ApiModelProperty(example = "3", value = "총 PB 회원수")
+        private Integer pb;
+
+        public CountDTO(Integer total, Integer user, Integer pb) {
+            this.total = total;
+            this.user = user;
+            this.pb = pb;
+        }
+    }
+
+    @ApiModel(description = "회원 관리 페이지 전체 가져오기 응답 데이터")
+    @Getter
+    @Setter
+    public static class MemberOutDTO {
+        @ApiModelProperty
+        private CountDTO memberCount;
+        @ApiModelProperty
+        private PageDTO<UserDTO> userPage;
+        @ApiModelProperty
+        private PageDTO<PBDTO> pbPage;
+
+        public MemberOutDTO(CountDTO memberCount, PageDTO<UserDTO> userPage, PageDTO<PBDTO> pbPage) {
+            this.memberCount = memberCount;
+            this.userPage = userPage;
+            this.pbPage = pbPage;
+        }
+    }
+
     @ApiModel
     @Getter
     @Setter

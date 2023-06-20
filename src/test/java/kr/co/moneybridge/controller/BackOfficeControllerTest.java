@@ -65,7 +65,48 @@ public class BackOfficeControllerTest {
         Branch branchPS = branchRepository.save(dummy.newBranch(companyPS, 1));
         PB pbPS = pbRepository.save(dummy.newPBwithStatus("pblee", branchPS, PBStatus.PENDING));
         PB pb2 = pbRepository.save(dummy.newPBwithStatus("false", branchPS, PBStatus.PENDING));
+        PB pb3 = pbRepository.save(dummy.newPB("pb3", branchPS));
         em.clear();
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("회원 관리 페이지 전체 가져오기")
+    @Test
+    public void getMembers() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/admin/members"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.memberCount.total").value("2"));
+        resultActions.andExpect(jsonPath("$.data.memberCount.user").value("1"));
+        resultActions.andExpect(jsonPath("$.data.memberCount.pb").value("1"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].email").value("admin@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].name").value("admin"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.userPage.list[0].isAdmin").value("true"));
+        resultActions.andExpect(jsonPath("$.data.userPage.totalElements").isNumber());
+        resultActions.andExpect(jsonPath("$.data.userPage.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.userPage.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.userPage.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.userPage.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.userPage.empty").value("false"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].id").value("3"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].email").value("pb3@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].name").value("pb3"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.totalElements").isNumber());
+        resultActions.andExpect(jsonPath("$.data.pbPage.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.pbPage.empty").value("false"));
+        resultActions.andExpect(status().isOk());
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
