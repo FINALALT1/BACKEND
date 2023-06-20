@@ -76,6 +76,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                                                                              @Param("status") ReservationStatus status,
                                                                              Pageable pageable);
 
+    /**
+     * time 컬럼의 값이 null이라면 candidateTime1의 값을 가져온다.
+     * DTO의 세 번째 변수에 들어갈 값을 기준으로 오름차순 정렬,
+     * 세 번째 변수에 들어갈 값이 동일하다면 네 번째 변수에 들어갈 값을 기준으로 오름차순 정렬한다.
+     */
     @Query("select new kr.co.moneybridge.model.reservation.Reservation$ReservationInfoDTO(r.id, u.name, " +
             "case when r.time is not null then function('DATE', r.time) else function('DATE', r.candidateTime1) end, " +
             "case when r.time is not null then function('TIME', r.time) else function('TIME', r.candidateTime1) end, " +
@@ -85,7 +90,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "where r.pb.id = :pbId " +
             "and function('YEAR', case when r.time is not null then r.time else r.candidateTime1 end) = :year " +
             "and function('MONTH', case when r.time is not null then r.time else r.candidateTime1 end) = :month " +
-            "order by function('DATE', case when r.time is not null then r.time else r.candidateTime1 end)")
+            "order by function('DATE', case when r.time is not null then r.time else r.candidateTime1 end), " +
+            "function('TIME', case when r.time is not null then r.time else r.candidateTime1 end) ")
     List<ReservationResponse.ReservationInfoDTO> findAllByPbIdAndYearAndMonth(@Param("pbId") Long pbId,
                                                                               @Param("year") int year,
                                                                               @Param("month") int month);
