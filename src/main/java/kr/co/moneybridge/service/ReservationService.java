@@ -635,24 +635,19 @@ public class ReservationService {
             List<ReservationResponse.ReservationInfoDTO> reservations = reservationRepository.findAllByPbIdWithoutCancel(pbPS.getId());
 
             // 상담 날짜 기준 오름차순 정렬, 날짜가 같다면 시간을 기준으로 오름차순 정렬
+            // 자바에서의 정렬은 오름차순이 default이므로(선행 원소가 후행 원소보다 작다.) 음수를 반환할 경우 위치를 바꾸지 않는다.
             Collections.sort(reservations, new Comparator<ReservationResponse.ReservationInfoDTO>() {
                 @Override
                 public int compare(ReservationResponse.ReservationInfoDTO r1, ReservationResponse.ReservationInfoDTO r2) {
                     if (r1.getDay().isEqual(r2.getDay())) {
-                        if (r1.getTime().isBefore(r2.getTime())) {
-                            return 1;
-                        } else if (r1.getTime().equals(r2.getTime())) {
-                            return 0;
-                        } else {
-                            return -1;
-                        }
+                        return r1.getTime().compareTo(r2.getTime());
                     } else {
                         if (r1.getDay().isBefore(r2.getDay())) {
-                            return 1;
+                            return -1;
                         } else if (r1.getDay().isEqual(r2.getDay())) {
                             return 0;
                         } else {
-                            return -1;
+                            return 1;
                         }
                     }
                 }

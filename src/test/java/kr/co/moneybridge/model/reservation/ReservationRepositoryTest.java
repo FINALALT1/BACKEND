@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
-
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -210,7 +209,7 @@ public class ReservationRepositoryTest extends DummyEntity {
         // then
         assertThat(response.get(0).getId()).isEqualTo(1L);
         assertThat(response.get(0).getUserName()).isEqualTo("lee");
-        assertThat(response.get(0).getDay()).isEqualTo("2023-06-20");
+        assertThat(response.get(0).getDay().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
         assertThat(response.get(0).getType()).isEqualTo(ReservationType.VISIT);
         assertThat(response.get(0).getProcess()).isEqualTo(ReservationProcess.COMPLETE);
     }

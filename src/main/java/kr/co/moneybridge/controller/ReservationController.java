@@ -342,6 +342,7 @@ public class ReservationController {
         } else if (month < 1 || month > 12) { // 1 ~ 12 사이의 값만 허용
             throw new Exception400(String.valueOf(month), "1 ~ 12 사이의 값만 입력해주세요.");
         }
+
         List<ReservationResponse.ReservationInfoDTO> reservations = reservationService.getReservationsByDate(year, month, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>(reservations);
