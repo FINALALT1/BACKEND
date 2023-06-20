@@ -19,6 +19,7 @@ public class BackOfficeController {
 
     // 해당 투자자 관리자 등록/취소
     @MyLog
+    @SwaggerResponses.AuthorizeAdmin
     @PostMapping("/admin/user/{id}")
     public ResponseDTO authorizeAdmin(@PathVariable Long id, @RequestParam Boolean admin) {
         backOfficeService.authorizeAdmin(id, admin);

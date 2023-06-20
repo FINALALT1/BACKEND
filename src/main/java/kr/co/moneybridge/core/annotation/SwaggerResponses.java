@@ -57,6 +57,28 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
+    @ApiOperation(value = "해당 투자자 관리자 등록/취소")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="id", example = "1", value="user의 id"),
+            @ApiImplicitParam(name="admin", example = "true", value = "관리자 등록하려면 true, 취소하려면 false")})
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface AuthorizeAdmin {
+    }
+
     @ApiOperation(value = "회원 관리 페이지 전체 가져오기")
     @ApiResponses({
             @ApiResponse(code = 400,
