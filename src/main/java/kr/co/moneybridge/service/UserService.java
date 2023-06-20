@@ -356,6 +356,5 @@ public class UserService {
         } catch (Exception e) {
             throw new Exception500("에러 : " + e);
         }
-
     }
 }
