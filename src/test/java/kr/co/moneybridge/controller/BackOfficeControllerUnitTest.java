@@ -1,6 +1,8 @@
 package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.moneybridge.core.WithMockAdmin;
+import kr.co.moneybridge.core.WithMockPB;
 import kr.co.moneybridge.core.advice.MyLogAdvice;
 import kr.co.moneybridge.core.advice.MyValidAdvice;
 import kr.co.moneybridge.core.config.MyFilterRegisterConfig;
@@ -12,6 +14,9 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
+import kr.co.moneybridge.model.pb.Branch;
+import kr.co.moneybridge.model.pb.Company;
+import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.service.BackOfficeService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -59,6 +64,45 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockAdmin
+    @Test
+    public void getPBPending_test() throws Exception {
+        // given
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        List<BackOfficeResponse.PBPendingDTO> list = Arrays.asList(new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName()));
+        Page<PB> pbPG =  new PageImpl<>(Arrays.asList(pb));
+        BackOfficeResponse.PBPendingOutDTO pbPendingPageDTO = new BackOfficeResponse.PBPendingOutDTO(
+                pbPG.getContent().size(), new PageDTO<>(list, pbPG, PB.class));
+        // stub
+        Mockito.when(backOfficeService.getPBPending(any())).thenReturn(pbPendingPageDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/admin/pbs"));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.count").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].email").value("pblee@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].name").value("pblee"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].career").value("10"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].speciality1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].speciality2").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.page.list[0].businessCard").value("card.png"));
+        resultActions.andExpect(jsonPath("$.data.page.totalElements").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.page.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.page.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.page.empty").value("false"));
+    }
 
     @Test
     public void getNotice_test() throws Exception {

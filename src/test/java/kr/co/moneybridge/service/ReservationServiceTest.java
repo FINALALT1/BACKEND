@@ -31,6 +31,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +50,52 @@ public class ReservationServiceTest extends MockDummyEntity {
     private StyleRepository styleRepository;
     @Spy
     private ObjectMapper om;
+
+    @Test
+    public void get_my_consult_time_test() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "이피비", branch);
+
+        // stub
+        Mockito.when(pbRepository.findById(anyLong())).thenReturn(Optional.of(pb));
+
+        // when
+        ReservationResponse.MyConsultTimeDTO myConsultTimeDTO = reservationService.getMyConsultTime(pb.getId());
+
+        // then
+        assertThat(myConsultTimeDTO.getConsultStart()).isEqualTo("09:00:00");
+        assertThat(myConsultTimeDTO.getConsultEnd()).isEqualTo("18:00:00");
+        assertThat(myConsultTimeDTO.getConsultNotice()).isEqualTo("월요일 불가능합니다");
+    }
+
+    @Test
+    public void get_my_review_test() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "이피비", branch);
+        User user = newMockUser(1L, "lee");
+        Reservation reservation = newMockCallReservation(id, user, pb, ReservationProcess.COMPLETE);
+        Review review = newMockReview(1L, reservation);
+        List<Style> styleList = new ArrayList<>();
+
+        // stub
+        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
+        Mockito.when(styleRepository.findAllByReviewId(anyLong())).thenReturn(styleList);
+
+        // when
+        ReservationResponse.MyReviewDTO myReviewDTO = reservationService.getMyReview(id, user.getId());
+
+        // then
+        assertThat(myReviewDTO.getAdherence()).isEqualTo(ReviewAdherence.EXCELLENT);
+        assertThat(myReviewDTO.getStyleList().size()).isEqualTo(0);
+        assertThat(myReviewDTO.getContent()).isEqualTo("content 입니다");
+    }
 
     @Test
     public void get_reservation_base_test() {

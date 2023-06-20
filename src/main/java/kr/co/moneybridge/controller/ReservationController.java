@@ -29,6 +29,25 @@ import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 public class ReservationController {
     private final ReservationService reservationService;
 
+    // 현재 나의 상담 가능 시간 불러오기
+    @MyLog
+    @SwaggerResponses.GetMyConsultTime
+    @GetMapping("/pb/consultTime")
+    public ResponseDTO<ReservationResponse.MyConsultTimeDTO> getMyConsultTime(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.MyConsultTimeDTO myConsultTimeDTO = reservationService.getMyConsultTime(myUserDetails.getMember().getId());
+        return new ResponseDTO<>(myConsultTimeDTO);
+    }
+
+    // 나의 후기 하나 가져오기
+    @MyLog
+    @SwaggerResponses.GetMyReview
+    @GetMapping("/user/review/{id}")
+    public ResponseDTO<ReservationResponse.MyReviewDTO> getMyReview(@PathVariable Long id,
+                                                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        ReservationResponse.MyReviewDTO myReviewDTO = reservationService.getMyReview(id, myUserDetails.getMember().getId());
+        return new ResponseDTO<>(myReviewDTO);
+    }
+
     @MyLog
     @ApiOperation(value = "상담 예약 사전 정보 조회")
     @SwaggerResponses.ApiResponsesWithout400

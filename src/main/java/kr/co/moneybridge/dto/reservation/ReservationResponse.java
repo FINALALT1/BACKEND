@@ -9,12 +9,54 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
 
 public class ReservationResponse {
+    @ApiModel(description = "현재 나의 상담 가능 시간 불러오기 응답 데이터")
+    @Getter
+    @Setter
+    public static class MyConsultTimeDTO {
+        @ApiModelProperty(example = "09:00:00", value = "상담 가능 시작 시간")
+        private String consultStart;
+
+        @ApiModelProperty(example = "18:00:00", value = "상담 가능 종료 시간")
+        private String consultEnd;
+
+        @ApiModelProperty(example = "월요일 불가능합니다", value = "상담 불가 시간 메시지")
+        private String consultNotice;
+
+        public MyConsultTimeDTO(PB pb) {
+            this.consultStart = pb.getConsultStart().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            this.consultEnd = pb.getConsultEnd().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            this.consultNotice = pb.getConsultNotice();
+        }
+    }
+
+    @ApiModel(description = "나의 후기 하나 가져오기 응답 데이터")
+    @Getter
+    @Setter
+    public static class MyReviewDTO {
+        @ApiModelProperty(example = "EXCELLENT", value = "상담 일정 준수 등급")
+        private ReviewAdherence adherence;
+
+        @ApiModelProperty(example = "FAST", value = "상담 스타일")
+        private List<StyleDTO> styleList;
+
+        @ApiModelProperty(example = "content 입니다", value = "후기 내용")
+        private String content;
+
+        public MyReviewDTO(Review review, List<StyleDTO> styleList) {
+            this.adherence = review.getAdherence();
+            this.styleList = styleList;
+            this.content = review.getContent();
+        }
+    }
+
     @ApiModel
     @Getter
     @Setter

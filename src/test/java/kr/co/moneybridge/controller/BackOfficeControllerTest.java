@@ -4,12 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
+import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,12 +46,56 @@ public class BackOfficeControllerTest {
     private FrequentQuestionRepository frequentQuestionRepository;
     @Autowired
     private NoticeRepository noticeRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+    @Autowired
+    private BranchRepository branchRepository;
+    @Autowired
+    private PBRepository pbRepository;
 
     @BeforeEach
     public void setUp() {
+        User admin = userRepository.save(dummy.newAdmin("admin"));
         frequentQuestionRepository.save(dummy.newFrequentQuestion());
         noticeRepository.save(dummy.newNotice());
+        Company companyPS = companyRepository.save(dummy.newCompany("미래에셋증권"));
+        Branch branchPS = branchRepository.save(dummy.newBranch(companyPS, 1));
+        PB pbPS = pbRepository.save(dummy.newPBwithStatus("pblee", branchPS, PBStatus.PENDING));
         em.clear();
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("PB 회원 가입 요청 승인 페이지 전체 가져오기 성공")
+    @Test
+    public void getPBPending() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/admin/pbs"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.count").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].email").value("pblee@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].name").value("pblee"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].career").value("10"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].speciality1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].speciality2").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.page.list[0].businessCard").value("card.png"));
+        resultActions.andExpect(jsonPath("$.data.page.totalElements").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.page.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.page.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.page.empty").value("false"));
+        resultActions.andExpect(status().isOk());
     }
 
     @DisplayName("공지사항 목록 가져오기 성공")

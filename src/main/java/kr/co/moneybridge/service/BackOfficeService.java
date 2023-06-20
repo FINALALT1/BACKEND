@@ -7,6 +7,9 @@ import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
+import kr.co.moneybridge.model.pb.PB;
+import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.pb.PBStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +27,15 @@ import java.util.stream.Collectors;
 public class BackOfficeService {
     private final FrequentQuestionRepository frequentQuestionRepository;
     private final NoticeRepository noticeRepository;
+    private final PBRepository pbRepository;
+
+    @MyLog
+    public BackOfficeResponse.PBPendingOutDTO getPBPending(Pageable pageable) {
+        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.PENDING, pageable);
+        List<BackOfficeResponse.PBPendingDTO> list = pbPG.getContent().stream().map(pb ->
+                new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName())).collect(Collectors.toList());
+        return new BackOfficeResponse.PBPendingOutDTO(pbPG.getContent().size(), new PageDTO<>(list, pbPG, PB.class));
+    }
 
     @MyLog
     public PageDTO<BackOfficeResponse.NoticeDTO> getNotice(Pageable pageable) {
