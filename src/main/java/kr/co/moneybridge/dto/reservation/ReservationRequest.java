@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class ReservationRequest {
@@ -98,5 +99,20 @@ public class ReservationRequest {
 
         @ApiModelProperty(example = "도움이 많이 되었습니다.")
         private String content;
+    }
+
+    // validation은 controller에서 수행
+    @ApiModel
+    @Getter
+    @Setter
+    public static class UpdateTimeDTO {
+        @ApiModelProperty(example = "09:00")
+        private LocalTime consultStart;
+
+        @ApiModelProperty(example = "09:00")
+        private LocalTime consultEnd;
+
+        @ApiModelProperty(example = "월요일 13:00 제외")
+        private String consultNotice;
     }
 }

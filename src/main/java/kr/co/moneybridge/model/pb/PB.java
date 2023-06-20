@@ -86,32 +86,59 @@ public class PB implements Member {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updatePassword(String password){
+    public void updatePassword(String password) {
         this.password = password;
     }
 
-    public void updateName(String name){
+    public void updateName(String name) {
         this.name = name;
     }
 
-    public void updatePhoneNumber(String phoneNumber){
+    public void updatePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public void updateProfile(String profile) { this.profile = profile; }
+    public void updateProfile(String profile) {
+        this.profile = profile;
+    }
 
-    public void updateBranch(Branch branch) { this.branch = branch; }
+    public void updateBranch(Branch branch) {
+        this.branch = branch;
+    }
 
-    public void updateCareer(Integer career) { this.career = career; }
+    public void updateCareer(Integer career) {
+        this.career = career;
+    }
 
-    public void updateSpeciality1(PBSpeciality speciality1) { this.speciality1 = speciality1; }
+    public void updateSpeciality1(PBSpeciality speciality1) {
+        this.speciality1 = speciality1;
+    }
 
-    public void updateSpeciality2(PBSpeciality speciality2) { this.speciality1 = speciality2; }
+    public void updateSpeciality2(PBSpeciality speciality2) {
+        this.speciality1 = speciality2;
+    }
 
-    public void updateIntro(String intro) { this.intro = intro; }
+    public void updateIntro(String intro) {
+        this.intro = intro;
+    }
 
-    public void updateMsg(String msg) { this.msg = msg; }
-    public void approved(){
+    public void updateMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public void approved() {
         this.status = PBStatus.ACTIVE;
+    }
+
+    public void updateConsultStart(LocalTime start) {
+        this.consultStart = start;
+    }
+
+    public void updateConsultEnd(LocalTime end) {
+        this.consultEnd = end;
+    }
+
+    public void updateConsultNotice(String notice) {
+        this.consultNotice = notice;
     }
 }

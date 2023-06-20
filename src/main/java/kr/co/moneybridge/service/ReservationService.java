@@ -648,4 +648,26 @@ public class ReservationService {
             throw new Exception500("예약 정보 조회 실패 : " + e.getMessage());
         }
     }
+
+    @MyLog
+    @Transactional
+    public void updateConsultTime(ReservationRequest.UpdateTimeDTO updateTimeDTO, Long pbId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            if (updateTimeDTO.getConsultStart() != null) {
+                pbPS.updateConsultStart(updateTimeDTO.getConsultStart());
+            }
+            if (updateTimeDTO.getConsultEnd() != null) {
+                pbPS.updateConsultEnd(updateTimeDTO.getConsultEnd());
+            }
+            if (updateTimeDTO.getConsultNotice() != null && !updateTimeDTO.getConsultNotice().isBlank()) {
+                pbPS.updateConsultNotice(updateTimeDTO.getConsultNotice());
+            }
+        } catch (Exception e) {
+            throw new Exception500("상담 시간 및 메시지 변경 실패 : " + e.getMessage());
+        }
+    }
 }

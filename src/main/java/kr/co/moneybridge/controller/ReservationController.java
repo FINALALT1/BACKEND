@@ -335,7 +335,7 @@ public class ReservationController {
         if (year == 0) {
             year = LocalDateTime.now().getYear();
         } else if (year < LocalDateTime.now().getYear() - 5 || year > LocalDateTime.now().getYear() + 5) { // 현재 연도를 기준으로 +-5 이내의 값만 허용
-            throw new Exception400(String.valueOf(year), "현재 연도를 기준으로 +-5 이내의 값만 입력해주세요.");
+            throw new Exception400(String.valueOf(year), "현재 연도를 기준으로 +-5 사이의 값만 입력해주세요.");
         }
         if (month == 0) {
             month = LocalDateTime.now().getMonth().getValue();
@@ -345,5 +345,29 @@ public class ReservationController {
         List<ReservationResponse.ReservationInfoDTO> reservations = reservationService.getReservationsByDate(year, month, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>(reservations);
+    }
+
+    @MyLog
+    @ApiOperation(value = "PB 상담시간 및 메시지 변경하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/pb/consultTime")
+    public ResponseDTO updateConsultTime(@RequestBody ReservationRequest.UpdateTimeDTO updateTimeDTO,
+                                         @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        if (updateTimeDTO.getConsultStart() != null && updateTimeDTO.getConsultEnd() != null) {
+            if (updateTimeDTO.getConsultStart().isAfter(updateTimeDTO.getConsultEnd())) {
+                throw new Exception400(updateTimeDTO.getConsultStart().toString(), "상담 시작 시간이 종료 시간보다 이전이어야 합니다.");
+            }
+        }
+
+        if (updateTimeDTO.getConsultNotice() != null && !updateTimeDTO.getConsultNotice().isBlank()) {
+            if (updateTimeDTO.getConsultNotice().length() > 100) {
+                throw new Exception400(updateTimeDTO.getConsultNotice(), "최대 100자까지 입력 가능합니다.");
+            }
+        }
+
+        reservationService.updateConsultTime(updateTimeDTO, myUserDetails.getMember().getId());
+
+        return new ResponseDTO<>();
     }
 }
