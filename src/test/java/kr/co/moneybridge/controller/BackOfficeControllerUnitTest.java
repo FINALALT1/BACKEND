@@ -70,6 +70,26 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
 
     @WithMockAdmin
     @Test
+    public void authorizeAdmin_test() throws Exception {
+        // given
+        Long id = 1L;
+        User user = newMockUser(1L, "user");
+
+        // stub
+        Mockito.doNothing().when(backOfficeService).authorizeAdmin(any(), any());
+
+        // When
+        ResultActions resultActions = mvc.perform((post("/admin/user/{id}?admin=true", id)));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @WithMockAdmin
+    @Test
     public void getMembers_test() throws Exception {
         // given
         Long id = 1L;

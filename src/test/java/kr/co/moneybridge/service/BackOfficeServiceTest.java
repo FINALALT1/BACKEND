@@ -5,11 +5,14 @@ import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,6 +51,93 @@ class BackOfficeServiceTest extends MockDummyEntity {
     JavaMailSender javaMailSender;
     @Mock
     MyMemberUtil myMemberUtil;
+    @Mock
+    UserRepository userRepository;
+
+    @Test
+    @DisplayName("해당 투자자를 관리자로 등록 취소")
+    void deAuthorizeAdmin() {
+        // given
+        Long id = 1L;
+        User user = newMockUserADMIN(1L, "user");
+        Boolean admin = false;
+
+        // stub
+        when(userRepository.findById( any())).thenReturn(Optional.of(user));
+
+        // when
+        backOfficeService.authorizeAdmin(id, admin);
+
+        // then
+        verify(userRepository, times(1)).findById(id);
+        assertThat(user.getRole()).isEqualTo(Role.USER);
+    }
+
+    @Test
+    @DisplayName("해당 투자자를 관리자로 등록")
+    void authorizeAdmin() {
+        // given
+        Long id = 1L;
+        User user = newMockUser(1L, "user");
+        Boolean admin = true;
+
+        // stub
+        when(userRepository.findById( any())).thenReturn(Optional.of(user));
+
+        // when
+        backOfficeService.authorizeAdmin(id, admin);
+
+        // then
+        verify(userRepository, times(1)).findById(id);
+        assertThat(user.getRole()).isEqualTo(Role.ADMIN);
+    }
+
+    @Test
+    @DisplayName("회원 관리 페이지 전체 가져오기")
+    void getMembers() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        Page<PB> pbPG = new PageImpl<>(Arrays.asList(pb));
+        User user = newMockUser(1L, "user");
+        Page<User> userPG = new PageImpl<>(Arrays.asList(user));
+
+        // stub
+        when(userRepository.findAll(pageable)).thenReturn(userPG);
+        when(pbRepository.findAllByStatus(any(), any())).thenReturn(pbPG);
+
+        // when
+        BackOfficeResponse.MemberOutDTO memberOutDTO = backOfficeService.getMembers(pageable);
+
+        // then
+        assertThat(memberOutDTO.getMemberCount().getTotal()).isEqualTo(2);
+        assertThat(memberOutDTO.getMemberCount().getUser()).isEqualTo(1);
+        assertThat(memberOutDTO.getUserPage().getList().get(0).getId()).isEqualTo(1);
+        assertThat(memberOutDTO.getUserPage().getList().get(0).getEmail()).isEqualTo("user@nate.com");
+        assertThat(memberOutDTO.getUserPage().getList().get(0).getName()).isEqualTo("user");
+        assertThat(memberOutDTO.getUserPage().getList().get(0).getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(memberOutDTO.getUserPage().getList().get(0).getIsAdmin()).isEqualTo(false);
+        assertThat(memberOutDTO.getUserPage().getTotalElements()).isEqualTo(1);
+        assertThat(memberOutDTO.getUserPage().getTotalPages()).isEqualTo(1);
+        assertThat(memberOutDTO.getUserPage().getCurPage()).isEqualTo(0);
+        assertThat(memberOutDTO.getUserPage().getFirst()).isEqualTo(true);
+        assertThat(memberOutDTO.getUserPage().getLast()).isEqualTo(true);
+        assertThat(memberOutDTO.getUserPage().getEmpty()).isEqualTo(false);
+        assertThat(memberOutDTO.getPbPage().getList().get(0).getId()).isEqualTo(1);
+        assertThat(memberOutDTO.getPbPage().getList().get(0).getEmail()).isEqualTo("pblee@nate.com");
+        assertThat(memberOutDTO.getPbPage().getList().get(0).getName()).isEqualTo("pblee");
+        assertThat(memberOutDTO.getPbPage().getList().get(0).getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(memberOutDTO.getPbPage().getTotalElements()).isEqualTo(1);
+        assertThat(memberOutDTO.getPbPage().getTotalPages()).isEqualTo(1);
+        assertThat(memberOutDTO.getPbPage().getCurPage()).isEqualTo(0);
+        assertThat(memberOutDTO.getPbPage().getFirst()).isEqualTo(true);
+        assertThat(memberOutDTO.getPbPage().getLast()).isEqualTo(true);
+        assertThat(memberOutDTO.getPbPage().getEmpty()).isEqualTo(false);
+        Mockito.verify(userRepository, Mockito.times(1)).findAll(pageable);
+        Mockito.verify(pbRepository, Mockito.times(1)).findAllByStatus(any(), any());
+    }
 
     @Test
     @DisplayName("해당 PB 승인 거부")
@@ -75,7 +165,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
     }
 
     @Test
-    @DisplayName("해당 PB 승인/승인 거부")
+    @DisplayName("해당 PB 승인")
     void approvePB() {
         // given
         Long id = 1L;

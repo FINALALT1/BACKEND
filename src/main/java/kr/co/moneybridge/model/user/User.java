@@ -87,4 +87,9 @@ public class User implements Member {
     public void updateHasDoneReview(Boolean value) {
         this.hasDoneReview = value;
     }
+
+    public void authorize(Boolean isAdmin){
+        if(isAdmin) this.role = Role.ADMIN;
+        else this.role = Role.USER;
+    }
 }
