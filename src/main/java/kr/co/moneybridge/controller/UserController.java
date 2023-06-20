@@ -201,4 +201,12 @@ public class UserController {
         }
         return cookieOP.get().getValue();
     }
+
+    @PostMapping("/user/bookmark/{pbId}")
+    public ResponseDTO bookmarkPB(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable(value = "pbId") Long pbId) {
+
+        userService.bookmarkPB(myUserDetails, pbId);
+
+        return new ResponseDTO<>();
+    }
 }
