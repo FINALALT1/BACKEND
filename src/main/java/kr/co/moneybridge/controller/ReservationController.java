@@ -228,7 +228,7 @@ public class ReservationController {
     @ApiOperation(value = "예약 변경하기")
     @SwaggerResponses.DefaultApiResponses
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/auth/reservation/{id}")
+    @PatchMapping("/pb/reservation/{id}")
     public ResponseDTO updateReservation(@PathVariable Long id,
                                          @RequestBody ReservationRequest.UpdateDTO updateDTO,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -249,7 +249,7 @@ public class ReservationController {
             }
         }
 
-        reservationService.updateReservation(id, updateDTO, myUserDetails);
+        reservationService.updateReservation(id, updateDTO, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>();
     }
