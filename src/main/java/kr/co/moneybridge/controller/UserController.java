@@ -213,6 +213,8 @@ public class UserController {
         return new ResponseDTO<>();
     }
 
+    @ApiOperation("PB 북마크 취소하기")
+    @SwaggerResponses.DefaultApiResponses
     @DeleteMapping("/user/bookmark/{pbId}")
     public ResponseDTO deletePBBookmark(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable(value = "pbId") Long pbId) {
 
