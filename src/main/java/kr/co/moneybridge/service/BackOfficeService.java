@@ -49,12 +49,12 @@ public class BackOfficeService {
         if (!pbPS.getStatus().equals(PBStatus.PENDING)) {
             throw new Exception400("pbId", "이미 승인 완료된 PB입니다.");
         }
-        String subject = myMsgUtil.subjectApprove;
-        String msg = myMsgUtil.msgApprove;
+        String subject = myMsgUtil.getSubjectApprove();
+        String msg = myMsgUtil.getMsgApprove();
         if(approve == false){
             myMemberUtil.deleteById(pbId, Role.PB); // 탈퇴와 동일하게 삭제
-            subject = myMsgUtil.subjectReject;
-            msg = myMsgUtil.msgReject;
+            subject = myMsgUtil.getSubjectReject();
+            msg = myMsgUtil.getMsgReject();
         }
         pbPS.approved();
         // 이메일 알림

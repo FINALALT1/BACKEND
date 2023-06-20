@@ -1,6 +1,7 @@
 package kr.co.moneybridge.core.util;
 
 import kr.co.moneybridge.core.exception.Exception500;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,9 @@ import javax.mail.internet.MimeMessage;
 @Component
 public class MyMsgUtil {
     private final JavaMailSender javaMailSender;
+    @Getter
     public final String subjectReject = "[Money Bridge] 회원가입 승인 거절 안내드립니다.";
+    @Getter
     public final String msgReject = ""
             // += "<img src=../resources/static/image/emailheader.jpg />"; // header image
             + "<div style='margin:20px;'>"
@@ -30,7 +33,9 @@ public class MyMsgUtil {
             + "</div>";
     // msg += "<img src=../resources/static/image/emailfooter.jpg />"; // footer image;
 
+    @Getter
     public final String subjectApprove = "[Money Bridge] 회원가입 승인 안내드립니다.";
+    @Getter
     public final String msgApprove = ""
             // += "<img src=../resources/static/image/emailheader.jpg />"; // header image
             + "<div style='margin:20px;'>"
@@ -49,6 +54,27 @@ public class MyMsgUtil {
             + "<p>관리자 드림 </p>"
             + "</div>";
     // msg += "<img src=../resources/static/image/emailfooter.jpg />"; // footer image;
+    @Getter
+    public final String subjectAuthenticate = "[Money Bridge] 이메일 인증코드 입니다";
+    public String getMsgAuthenticate(String code) {
+        return ""
+                // + "<img src=../resources/static/image/emailheader.jpg />"; // header image
+                + "<div style='margin:20px;'>"
+                + "<h1> 안녕하세요. </h1>"
+                + "<br>"
+                + "<h1> Money Bridge 입니다</h1>"
+                + "<br>"
+                + "<p>아래 인증코드를 Money Bridge 페이지의 입력 칸에 입력해주세요</p>"
+                + "<br>"
+                + "<br>"
+                + "<div align='center' style='border:1px solid black; font-family:verdana';>"
+                + "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>"
+                + "<div style='font-size:130%'>"
+                + "CODE : <strong>"
+                + code + "</strong><div><br/> "
+                + "</div>";
+        // msg += "<img src=../resources/static/image/emailfooter.jpg />"; // footer image
+    }
 
     public MimeMessage createMessage(String email, String subject, String msg) {
         try {
