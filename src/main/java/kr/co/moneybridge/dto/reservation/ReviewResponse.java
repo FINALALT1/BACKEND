@@ -50,4 +50,16 @@ public class ReviewResponse {
             this.list = list;
         }
     }
+
+    @ApiModel(description = "PB 상담스타일 탑3 데이터")
+    @Getter
+    @Setter
+    public static class PBTopStyleDTO {
+        @ApiModelProperty(example = "KIND", value = "스타일 top1")
+        private StyleStyle style1;
+        @ApiModelProperty(example = "KIND", value = "스타일 top2")
+        private StyleStyle style2;
+        @ApiModelProperty(example = "KIND", value = "스타일 top3")
+        private StyleStyle style3;
+    }
 }
