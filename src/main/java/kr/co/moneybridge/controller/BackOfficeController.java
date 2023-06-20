@@ -17,6 +17,15 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
+    //회원 관리 페이지 전체 가져오기
+    @MyLog
+    @GetMapping("/admin/members")
+    public ResponseDTO<BackOfficeResponse.MemberOutDTO> getMembers() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        BackOfficeResponse.MemberOutDTO memberOutDTO = backOfficeService.getMembers(pageable);
+        return new ResponseDTO<>(memberOutDTO);
+    }
+
     // 해당 PB 승인/승인 거부
     @MyLog
     @SwaggerResponses.ApprovePB

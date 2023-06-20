@@ -3,16 +3,80 @@ package kr.co.moneybridge.dto.backOffice;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
+import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
 public class BackOfficeResponse {
+    @Getter
+    @Setter
+    public static class PBDTO {
+        private Long id;
+        private String email;
+        private String name;
+        private String phoneNumber;
+
+        public PBDTO(PB pb) {
+            this.id = pb.getId();
+            this.email = pb.getEmail();
+            this.name = pb.getName();
+            this.phoneNumber = pb.getPhoneNumber();
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class UserDTO {
+        private Long id;
+        private String email;
+        private String name;
+        private String phoneNumber;
+        private Boolean isAdmin;
+
+        public UserDTO(User user) {
+            this.id = user.getId();
+            this.email = user.getEmail();
+            this.name = user.getName();
+            this.phoneNumber = user.getPhoneNumber();
+            this.isAdmin = user.getRole() == Role.ADMIN ? true : false;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class CountDTO {
+        private Integer total;
+        private Integer user;
+        private Integer pb;
+
+        public CountDTO(Integer total, Integer user, Integer pb) {
+            this.total = total;
+            this.user = user;
+            this.pb = pb;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class MemberOutDTO {
+        private CountDTO memberCount;
+        private PageDTO<UserDTO> userPage;
+        private PageDTO<PBDTO> pbPage;
+
+        public MemberOutDTO(CountDTO memberCount, PageDTO<UserDTO> userPage, PageDTO<PBDTO> pbPage) {
+            this.memberCount = memberCount;
+            this.userPage = userPage;
+            this.pbPage = pbPage;
+        }
+    }
+
     @ApiModel
     @Getter
     @Setter

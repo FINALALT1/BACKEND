@@ -16,6 +16,8 @@ import kr.co.moneybridge.model.backoffice.NoticeRepository;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.pb.PBStatus;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,6 +41,22 @@ public class BackOfficeService {
     private final MyMemberUtil myMemberUtil;
     private final JavaMailSender javaMailSender;
     private final MyMsgUtil myMsgUtil;
+    private final UserRepository userRepository;
+
+    @MyLog
+    public BackOfficeResponse.MemberOutDTO getMembers(Pageable pageable) {
+        Page<User> userPG = userRepository.findAll(pageable);
+        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pageable);
+        List<BackOfficeResponse.UserDTO> userList = userPG.getContent().stream().map(user ->
+                new BackOfficeResponse.UserDTO(user)).collect(Collectors.toList());
+        List<BackOfficeResponse.PBDTO> pbList = pbPG.getContent().stream().map(pb ->
+                new BackOfficeResponse.PBDTO(pb)).collect(Collectors.toList());
+        return new BackOfficeResponse.MemberOutDTO(new BackOfficeResponse.CountDTO(
+                userPG.getContent().size() + pbPG.getContent().size(),
+                userPG.getContent().size(), pbPG.getContent().size()),
+                new PageDTO<>(userList, userPG, User.class),
+                new PageDTO<>(pbList, pbPG, PB.class));
+    }
 
     @MyLog
     @Transactional
