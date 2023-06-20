@@ -429,8 +429,10 @@ public class PBResponse {
         private Double profitFactor;
         @ApiModelProperty(example = "34.7", value = "평균수익률")
         private Double averageProfit;
+        @ApiModelProperty(example = "profile.png", value = "프로필사진")
+        private String profile;
         @ApiModelProperty(example = "portfolio.pdf", value = "포트폴리오")
-        private String file;
+        private String portfolio;
         @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "소개글")
         private String intro;
         @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "프로필제목")
@@ -446,7 +448,8 @@ public class PBResponse {
             this.maxDrawdown = portfolio.getMaxDrawdown();
             this.profitFactor = portfolio.getProfitFactor();
             this.averageProfit = portfolio.getAverageProfit();
-            this.file = portfolio.getFile();
+            this.profile = pb.getProfile();
+            this.portfolio = portfolio.getFile();
             this.intro = pb.getIntro();
             this.msg = pb.getMsg();
         }
