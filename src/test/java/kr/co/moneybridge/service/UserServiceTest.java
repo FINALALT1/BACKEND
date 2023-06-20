@@ -624,4 +624,30 @@ public class UserServiceTest extends MockDummyEntity {
         //then
         verify(userBookmarkRepository, times(1)).save(any(UserBookmark.class));
     }
+
+    @Test
+    @DisplayName("PB 북마크 취소하기")
+    void deletePBBookmark() {
+        //given
+        MyUserDetails mockUserDetails = mock(MyUserDetails.class);
+        Member mockMember = mock(Member.class);
+        User user = newMockUser(1L, "김투자");
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "김피비", branch);
+        UserBookmark userBookmark = newMockUserBookmark(1L, user, pb);
+
+        //stub
+        when(mockUserDetails.getMember()).thenReturn(mockMember);
+        when(mockMember.getId()).thenReturn(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(pbRepository.findById(1L)).thenReturn(Optional.of(pb));
+        when(userBookmarkRepository.findByUserIdWithPbId(1L, 1L)).thenReturn(Optional.of(userBookmark));
+
+        //when
+        userService.deletePBBookmark(mockUserDetails, 1L);
+
+        //then
+        verify(userBookmarkRepository, times(1)).delete(any(UserBookmark.class));
+    }
 }
