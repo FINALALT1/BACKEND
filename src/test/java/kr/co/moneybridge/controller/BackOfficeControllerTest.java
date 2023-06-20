@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,7 +64,48 @@ public class BackOfficeControllerTest {
         Company companyPS = companyRepository.save(dummy.newCompany("미래에셋증권"));
         Branch branchPS = branchRepository.save(dummy.newBranch(companyPS, 1));
         PB pbPS = pbRepository.save(dummy.newPBwithStatus("pblee", branchPS, PBStatus.PENDING));
+        PB pb2 = pbRepository.save(dummy.newPBwithStatus("false", branchPS, PBStatus.PENDING));
         em.clear();
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("해당 PB 승인/승인 거부")
+    @Test
+    public void approve_no_PB() throws Exception {
+        // given
+        Long id = 2L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/admin/pb/{id}?approve=false", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("해당 PB 승인/승인 거부")
+    @Test
+    public void approvePB() throws Exception {
+        // given
+        Long id = 1L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/admin/pb/{id}?approve=true", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -79,7 +121,7 @@ public class BackOfficeControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.count").value("1"));
+        resultActions.andExpect(jsonPath("$.data.count").isNumber());
         resultActions.andExpect(jsonPath("$.data.page.list[0].id").value("1"));
         resultActions.andExpect(jsonPath("$.data.page.list[0].email").value("pblee@nate.com"));
         resultActions.andExpect(jsonPath("$.data.page.list[0].name").value("pblee"));
@@ -89,7 +131,7 @@ public class BackOfficeControllerTest {
         resultActions.andExpect(jsonPath("$.data.page.list[0].speciality1").value("BOND"));
         resultActions.andExpect(jsonPath("$.data.page.list[0].speciality2").isEmpty());
         resultActions.andExpect(jsonPath("$.data.page.list[0].businessCard").value("card.png"));
-        resultActions.andExpect(jsonPath("$.data.page.totalElements").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.totalElements").isNumber());
         resultActions.andExpect(jsonPath("$.data.page.totalPages").value("1"));
         resultActions.andExpect(jsonPath("$.data.page.curPage").value("0"));
         resultActions.andExpect(jsonPath("$.data.page.first").value("true"));

@@ -23,4 +23,10 @@ public interface StyleRepository extends JpaRepository<Style, Long> {
             "FROM Style s " +
             "WHERE s.review.id = :reviewId")
     List<ReviewResponse.StyleOutDTO> findByReviewId(@Param("reviewId") Long reviewId);
+
+    @Query("SELECT s.style FROM Style s " +
+            "JOIN s.review r " +
+            "JOIN r.reservation res " +
+            "WHERE res.pb.id = :pbId GROUP BY s.style ORDER BY COUNT(s.style) DESC")
+    List<StyleStyle> findStylesByPbId(@Param("pbId") Long pbId);
 }

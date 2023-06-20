@@ -6,6 +6,7 @@ import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
+import kr.co.moneybridge.dto.reservation.ReviewResponse;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
@@ -13,6 +14,7 @@ import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +33,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ActiveProfiles("test")
@@ -60,7 +63,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         PB pb = newMockPB(1L, "이피비", branch);
 
         // stub
-        Mockito.when(pbRepository.findById(anyLong())).thenReturn(Optional.of(pb));
+        when(pbRepository.findById(anyLong())).thenReturn(Optional.of(pb));
 
         // when
         ReservationResponse.MyConsultTimeDTO myConsultTimeDTO = reservationService.getMyConsultTime(pb.getId());
@@ -84,9 +87,9 @@ public class ReservationServiceTest extends MockDummyEntity {
         List<Style> styleList = new ArrayList<>();
 
         // stub
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        Mockito.when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
-        Mockito.when(styleRepository.findAllByReviewId(anyLong())).thenReturn(styleList);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
+        when(styleRepository.findAllByReviewId(anyLong())).thenReturn(styleList);
 
         // when
         ReservationResponse.MyReviewDTO myReviewDTO = reservationService.getMyReview(id, user.getId());
@@ -107,9 +110,9 @@ public class ReservationServiceTest extends MockDummyEntity {
         User user = newMockUser(1L, "lee");
 
         // stub
-        Mockito.when(pbRepository.findById(anyLong()))
+        when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
-        Mockito.when(userRepository.findById(anyLong()))
+        when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
 
         // when
@@ -222,9 +225,9 @@ public class ReservationServiceTest extends MockDummyEntity {
         Style style3 = newMockStyle(3L, review, StyleStyle.DIRECTIONAL);
 
         // stub
-        Mockito.when(pbRepository.findById(anyLong()))
+        when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
-        Mockito.when(reviewRepository.findAllByPbIdAndProcess(anyLong(), any(), any()))
+        when(reviewRepository.findAllByPbIdAndProcess(anyLong(), any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(Arrays.asList(
                         review5,
                         review4,
@@ -232,12 +235,12 @@ public class ReservationServiceTest extends MockDummyEntity {
                         review2,
                         review)))
                 );
-        Mockito.when(userRepository.findUserByReviewId(anyLong()))
+        when(userRepository.findUserByReviewId(anyLong()))
                 .thenReturn(user);
         List<Style> styles = new ArrayList<>();
         styles.add(style);
         styles.add(style2);
-        Mockito.when(styleRepository.findAllByReviewId(anyLong()))
+        when(styleRepository.findAllByReviewId(anyLong()))
                 .thenReturn(styles);
 
         // when
@@ -285,11 +288,11 @@ public class ReservationServiceTest extends MockDummyEntity {
         Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
 
         // stub
-        Mockito.when(pbRepository.findById(anyLong()))
+        when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
-        Mockito.when(reservationRepository.countByPBIdAndProcess(anyLong(), any()))
+        when(reservationRepository.countByPBIdAndProcess(anyLong(), any()))
                 .thenReturn(10);
-        Mockito.when(reservationRepository.countRecentByPBIdAndProcess(anyLong(), any()))
+        when(reservationRepository.countRecentByPBIdAndProcess(anyLong(), any()))
                 .thenReturn(1);
 
 
@@ -320,11 +323,11 @@ public class ReservationServiceTest extends MockDummyEntity {
         Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
 
         // stub
-        Mockito.when(userRepository.findById(anyLong()))
+        when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        Mockito.when(reservationRepository.countByUserIdAndProcess(anyLong(), any()))
+        when(reservationRepository.countByUserIdAndProcess(anyLong(), any()))
                 .thenReturn(10);
-        Mockito.when(reservationRepository.countRecentByUserIdAndProcess(anyLong(), any()))
+        when(reservationRepository.countRecentByUserIdAndProcess(anyLong(), any()))
                 .thenReturn(1);
 
 
@@ -357,9 +360,9 @@ public class ReservationServiceTest extends MockDummyEntity {
         Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
 
         // stub
-        Mockito.when(pbRepository.findById(anyLong()))
+        when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
-        Mockito.when(reservationRepository.findAllByPbIdAndProcess(anyLong(), any(), any()))
+        when(reservationRepository.findAllByPbIdAndProcess(anyLong(), any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(Arrays.asList(
                         new ReservationResponse.RecentPagingDTO(reservation5, user),
                         new ReservationResponse.RecentPagingDTO(reservation4, user),
@@ -398,9 +401,9 @@ public class ReservationServiceTest extends MockDummyEntity {
         Reservation reservation5 = newMockVisitReservation(5L, user, pb, ReservationProcess.COMPLETE);
 
         // stub
-        Mockito.when(userRepository.findById(anyLong()))
+        when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        Mockito.when(reservationRepository.findAllByUserIdAndProcess(anyLong(), any(), any()))
+        when(reservationRepository.findAllByUserIdAndProcess(anyLong(), any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(Arrays.asList(
                         new ReservationResponse.RecentPagingByUserDTO(reservation5, pb),
                         new ReservationResponse.RecentPagingByUserDTO(reservation4, pb),
@@ -433,11 +436,11 @@ public class ReservationServiceTest extends MockDummyEntity {
         Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
 
         // stub
-        Mockito.when(reservationRepository.findById(anyLong()))
+        when(reservationRepository.findById(anyLong()))
                 .thenReturn(Optional.of(reservation));
-        Mockito.when(pbRepository.findById(anyLong()))
+        when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
-        Mockito.when(reviewRepository.countByReservationId(anyLong()))
+        when(reviewRepository.countByReservationId(anyLong()))
                 .thenReturn(0);
 
         // when
@@ -472,11 +475,11 @@ public class ReservationServiceTest extends MockDummyEntity {
         Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
 
         // stub
-        Mockito.when(reservationRepository.findById(anyLong()))
+        when(reservationRepository.findById(anyLong()))
                 .thenReturn(Optional.of(reservation));
-        Mockito.when(userRepository.findById(anyLong()))
+        when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        Mockito.when(reviewRepository.countByReservationId(anyLong()))
+        when(reviewRepository.countByReservationId(anyLong()))
                 .thenReturn(0);
 
         // when
@@ -621,15 +624,15 @@ public class ReservationServiceTest extends MockDummyEntity {
         );
 
         // stub
-        Mockito.when(userRepository.findById(anyLong()))
+        when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        Mockito.when(reservationRepository.findById(anyLong()))
+        when(reservationRepository.findById(anyLong()))
                 .thenReturn(Optional.of(reservation));
-        Mockito.when(reviewRepository.countByReservationId(anyLong()))
+        when(reviewRepository.countByReservationId(anyLong()))
                 .thenReturn(0);
-        Mockito.when(reviewRepository.save(any()))
+        when(reviewRepository.save(any()))
                 .thenReturn(review);
-        Mockito.when(styleRepository.save(any()))
+        when(styleRepository.save(any()))
                 .thenReturn(newMockStyle(1L, review, StyleStyle.HONEST));
 
         // when
@@ -637,5 +640,27 @@ public class ReservationServiceTest extends MockDummyEntity {
 
         // then
         assertThat(reviewIdDTO.getId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("PB의 상담후기 탑3 가져오기")
+    void getPBStyles() {
+        //given
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "이피비", branch);
+        List<StyleStyle> styleList = Arrays.asList(StyleStyle.FAST, StyleStyle.KIND, StyleStyle.HONEST);
+
+        //stub
+        when(pbRepository.findById(1L)).thenReturn(Optional.of(pb));
+        when(styleRepository.findStylesByPbId(1L)).thenReturn(styleList);
+
+        //when
+        ReviewResponse.PBTopStyleDTO result = reservationService.getPBStyles(1L);
+
+        //then
+        assertThat(result.getStyle1()).isEqualTo(styleList.get(0));
+        assertThat(result.getStyle2()).isEqualTo(styleList.get(1));
+        assertThat(result.getStyle3()).isEqualTo(styleList.get(2));
     }
 }

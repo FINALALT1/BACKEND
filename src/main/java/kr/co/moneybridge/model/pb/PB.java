@@ -111,4 +111,7 @@ public class PB implements Member {
     public void updateIntro(String intro) { this.intro = intro; }
 
     public void updateMsg(String msg) { this.msg = msg; }
+    public void approved(){
+        this.status = PBStatus.ACTIVE;
+    }
 }

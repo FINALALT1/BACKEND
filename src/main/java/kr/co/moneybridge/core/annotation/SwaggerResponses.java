@@ -57,6 +57,28 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
+    @ApiOperation(value = "해당 PB 승인/승인 거부")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="id", example = "1", value="pb의 id"),
+            @ApiImplicitParam(name="approve", example = "true", value = "승인하려면 true, 거절하려면 false")})
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface ApprovePB {
+    }
+
     @ApiOperation(value = "PB회원 가입 요청 승인 페이지 전체 가져오기")
     @ApiResponses({
             @ApiResponse(code = 400,

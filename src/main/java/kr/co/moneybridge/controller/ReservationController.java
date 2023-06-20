@@ -312,4 +312,14 @@ public class ReservationController {
         ReviewResponse.ReviewListOutDTO reviewListOutDTO = new ReviewResponse.ReviewListOutDTO(reviewDTO);
         return new ResponseDTO(reviewListOutDTO);
     }
+
+    @ApiOperation(value = "PB 상담스타일 탑3 가져오기")
+    @SwaggerResponses.DefaultApiResponses
+    @GetMapping("/review/style/{pbId}")
+    public ResponseDTO<ReviewResponse.PBTopStyleDTO> getPBStyles(@PathVariable(value = "pbId") Long pbId) {
+
+        ReviewResponse.PBTopStyleDTO styleDTO = reservationService.getPBStyles(pbId);
+
+        return new ResponseDTO(styleDTO);
+    }
 }
