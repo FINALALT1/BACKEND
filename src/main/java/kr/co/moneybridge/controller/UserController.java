@@ -1,6 +1,7 @@
 package kr.co.moneybridge.controller;
 
 import com.nimbusds.jose.util.Pair;
+import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
@@ -202,6 +203,8 @@ public class UserController {
         return cookieOP.get().getValue();
     }
 
+    @ApiOperation("PB 북마크하기")
+    @SwaggerResponses.DefaultApiResponses
     @PostMapping("/user/bookmark/{pbId}")
     public ResponseDTO bookmarkPB(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable(value = "pbId") Long pbId) {
 
