@@ -55,6 +55,36 @@ class BackOfficeServiceTest extends MockDummyEntity {
     UserRepository userRepository;
 
     @Test
+    @DisplayName("해당 투자자 강제 탈퇴")
+    void forceWithdraw_user() {
+        // given
+        Long id = 1L;
+        User user = newMockUser(1L, "user");
+
+        // when
+        backOfficeService.forceWithdraw(id, Role.USER);
+
+        // then
+        verify(myMemberUtil, times(1)).deleteById(id, Role.USER);
+    }
+
+    @Test
+    @DisplayName("해당 PB 강제 탈퇴")
+    void forceWithdraw_pb() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+
+        // when
+        backOfficeService.forceWithdraw(id, Role.PB);
+
+        // then
+        verify(myMemberUtil, times(1)).deleteById(id, Role.PB);
+    }
+
+    @Test
     @DisplayName("해당 투자자를 관리자로 등록 취소")
     void deAuthorizeAdmin() {
         // given
@@ -83,6 +113,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
 
         // stub
         when(userRepository.findById( any())).thenReturn(Optional.of(user));
+//        doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
         backOfficeService.authorizeAdmin(id, admin);
