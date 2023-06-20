@@ -75,4 +75,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Page<ReservationResponse.RecentPagingByUserDTO> findAllByUserIdAndStatus(@Param("userId") Long userId,
                                                                              @Param("status") ReservationStatus status,
                                                                              Pageable pageable);
+
+    // 예약 취소된 경우는 제외한다.
+    @Query("select new kr.co.moneybridge.dto.reservation.ReservationResponse$ReservationInfoDTO(r, u) " +
+            "from Reservation r " +
+            "join r.user u " +
+            "where r.pb.id = :pbId " +
+            "and r.status <> 'CANCEL'")
+    List<ReservationResponse.ReservationInfoDTO> findAllByPbIdWithoutCancel(@Param("pbId") Long pbId);
 }

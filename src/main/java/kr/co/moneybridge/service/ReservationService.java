@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -437,7 +439,7 @@ public class ReservationService {
     @Transactional
     public void updateReservation(Long reservationId,
                                   ReservationRequest.UpdateDTO updateDTO,
-                                  MyUserDetails myUserDetails) {
+                                  Long pbId) {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
         );
@@ -445,17 +447,9 @@ public class ReservationService {
                 || reservationPS.getProcess().equals(ReservationProcess.COMPLETE)) {
             throw new Exception400(String.valueOf(reservationId), "이미 완료되었거나 취소된 상담입니다.");
         }
-        User userPS = null;
-        PB pbPS = null;
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            userPS = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
-                    () -> new Exception404("존재하지 않는 투자자입니다.")
-            );
-        } else { // PB
-            pbPS = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
-                    () -> new Exception404("존재하지 않는 PB입니다.")
-            );
-        }
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
 
         try {
             if (updateDTO.getTime() != null) {
@@ -466,11 +460,6 @@ public class ReservationService {
             }
             if (updateDTO.getCategory() != null) {
                 if (updateDTO.getCategory().equals(LocationType.BRANCH)) {
-                    if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-                        pbPS = pbRepository.findById(reservationPS.getPb().getId()).orElseThrow(
-                                () -> new Exception500("현재는 존재하지 않는 PB입니다.")
-                        );
-                    }
                     reservationPS.updateLocationName(pbPS.getBranch().getName());
                     reservationPS.updateLocationAddress(pbPS.getBranch().getRoadAddress());
                 } else { // CALL
@@ -634,5 +623,64 @@ public class ReservationService {
         }
 
         return styleDTO;
+    }
+
+    @MyLog
+    public List<ReservationResponse.ReservationInfoDTO> getReservationsByDate(int year, int month, Long pbId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            List<ReservationResponse.ReservationInfoDTO> reservations = reservationRepository.findAllByPbIdWithoutCancel(pbPS.getId());
+
+            // 상담 날짜 기준 오름차순 정렬, 날짜가 같다면 시간을 기준으로 오름차순 정렬
+            // 자바에서의 정렬은 오름차순이 default이므로(선행 원소가 후행 원소보다 작다.) 음수를 반환할 경우 위치를 바꾸지 않는다.
+            Collections.sort(reservations, new Comparator<ReservationResponse.ReservationInfoDTO>() {
+                @Override
+                public int compare(ReservationResponse.ReservationInfoDTO r1, ReservationResponse.ReservationInfoDTO r2) {
+                    if (r1.getDay().isEqual(r2.getDay())) {
+                        return r1.getTime().compareTo(r2.getTime());
+                    } else {
+                        if (r1.getDay().isBefore(r2.getDay())) {
+                            return -1;
+                        } else if (r1.getDay().isEqual(r2.getDay())) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    }
+                }
+            });
+
+            // year, month가 요청과 일치하는 개체들만 반환
+            return reservations.stream()
+                    .filter(dto -> dto.getDay().getYear() == year && dto.getDay().getMonthValue() == month)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new Exception500("예약 정보 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void updateConsultTime(ReservationRequest.UpdateTimeDTO updateTimeDTO, Long pbId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            if (updateTimeDTO.getConsultStart() != null) {
+                pbPS.updateConsultStart(updateTimeDTO.getConsultStart());
+            }
+            if (updateTimeDTO.getConsultEnd() != null) {
+                pbPS.updateConsultEnd(updateTimeDTO.getConsultEnd());
+            }
+            if (updateTimeDTO.getConsultNotice() != null && !updateTimeDTO.getConsultNotice().isBlank()) {
+                pbPS.updateConsultNotice(updateTimeDTO.getConsultNotice());
+            }
+        } catch (Exception e) {
+            throw new Exception500("상담 시간 및 메시지 변경 실패 : " + e.getMessage());
+        }
     }
 }

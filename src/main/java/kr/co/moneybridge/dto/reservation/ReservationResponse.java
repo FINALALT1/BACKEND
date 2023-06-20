@@ -7,7 +7,9 @@ import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
+import org.checkerframework.checker.units.qual.A;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -502,6 +504,44 @@ public class ReservationResponse {
 
         public ReviewIdDTO(Long id) {
             this.id = id;
+        }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class ReservationInfoDTO {
+        @ApiModelProperty(example = "1")
+        private Long id;
+
+        @ApiModelProperty(example = "이승민")
+        private String userName;
+
+        @ApiModelProperty(example = "2023-05-15")
+        private LocalDate day;
+
+        @ApiModelProperty(example = "09:00")
+        private LocalTime time;
+
+        @ApiModelProperty(example = "CALL")
+        private ReservationType type;
+
+        @ApiModelProperty(example = "APPLY")
+        private ReservationProcess process;
+
+        // time 컬럼의 값이 null이라면 candidateTime1의 값을 가져온다.
+        public ReservationInfoDTO(Reservation reservation, User user) {
+            this.id = reservation.getId();
+            this.userName = user.getName();
+            if (reservation.getTime() != null) {
+                this.day = reservation.getTime().toLocalDate();
+                this.time = reservation.getTime().toLocalTime();
+            } else {
+                this.day = reservation.getCandidateTime1().toLocalDate();
+                this.time = reservation.getCandidateTime1().toLocalTime();
+            }
+            this.type = reservation.getType();
+            this.process = reservation.getProcess();
         }
     }
 }
