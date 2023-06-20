@@ -19,11 +19,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class BackOfficeResponse {
+    @ApiModel(description = "후기 리스트 데이터")
     @Getter
     @Setter
     public static class ReviewTotalDTO {
+        @ApiModelProperty(example = "content 입니다", value = "후기 나용")
         private String content;
+        @ApiModelProperty(example = "EXCELLENT", value = "상담 일정 준수 등급")
         private ReviewAdherence adherence;
+        @ApiModelProperty
         private List<ReservationResponse.StyleDTO> styles;
 
         public ReviewTotalDTO(Review review, List<ReservationResponse.StyleDTO> styles) {
@@ -33,19 +37,31 @@ public class BackOfficeResponse {
         }
     }
 
+    @ApiModel(description = "예약 리스트 데이터")
     @Getter
     @Setter
     public static class ReservationTotalDTO {
+        @ApiModelProperty(example = "1", value = "예약 id")
         private Long id;
+        @ApiModelProperty(example = "APPLY", value = "예약 상태")
         private ReservationProcess process;
+        @ApiModelProperty(example = "ACTIVE", value = "취소 여부")
         private ReservationStatus status;
+        @ApiModelProperty(example = "2023년 6월 20일 오전 1시 39분", value = "확정 날짜")
         private String time;
+        @ApiModelProperty(example = "VISIT", value = "유선/방문")
         private ReservationType type;
+        @ApiModelProperty(example = "kb증권 강남중앙점", value = "상담 장소")
         private String locationName;
+        @ApiModelProperty(example = "PROFIT", value = "상담 목적")
         private ReservationGoal goal;
+        @ApiModelProperty(example = "질문입니다...", value = "문의 사항")
         private String question;
+        @ApiModelProperty
         private UserDTO user;
+        @ApiModelProperty
         private PBDTO pb;
+        @ApiModelProperty
         private ReviewTotalDTO review;
 
         public ReservationTotalDTO(Reservation reservation, UserDTO user, PBDTO pb, ReviewTotalDTO review) {
@@ -63,12 +79,17 @@ public class BackOfficeResponse {
         }
     }
 
+    @ApiModel(description = "예약 횟수 데이터")
     @Getter
     @Setter
     public static class ReservationTotalCountDTO {
+        @ApiModelProperty(example = "2", value = "총 상담 신청 건수")
         private Integer apply;
+        @ApiModelProperty(example = "3", value = "총 상담 확정 건수")
         private Integer confirm;
+        @ApiModelProperty(example = "2", value = "총 상담 완료 건수")
         private Integer complete;
+        @ApiModelProperty(example = "2", value = "총 후기 작성 건수")
         private Long review;
 
         public ReservationTotalCountDTO(Integer apply, Integer confirm, Integer complete, Long review) {
@@ -79,10 +100,13 @@ public class BackOfficeResponse {
         }
     }
 
+    @ApiModel(description = "상담 현황 페이지 전체 가져오기 응답 데이터")
     @Getter
     @Setter
     public static class ReservationOutDTO {
+        @ApiModelProperty
         private ReservationTotalCountDTO count;
+        @ApiModelProperty
         private PageDTO<ReservationTotalDTO> page;
 
         public ReservationOutDTO(ReservationTotalCountDTO count, PageDTO<ReservationTotalDTO> page) {

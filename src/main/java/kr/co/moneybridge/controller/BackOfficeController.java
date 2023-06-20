@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
-    //상담 현황 페이지 전체 가져오기
+    // 상담 현황 페이지 전체 가져오기
     @MyLog
+    @SwaggerResponses.GetReservations
     @GetMapping("/admin/reservations")
     public ResponseDTO<BackOfficeResponse.ReservationOutDTO> getReservations() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
