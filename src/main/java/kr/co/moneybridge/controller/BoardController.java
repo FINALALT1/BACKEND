@@ -217,7 +217,7 @@ public class BoardController {
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PutMapping("/pb/board/{id}")
     public ResponseDTO putBoard(@RequestPart(value = "thumbnail",required = false) MultipartFile thumbnailFile,
-                                @RequestPart(value = "boardInDTO") @Valid BoardRequest.BoardUpdateDTO boardUpdateDTO,
+                                @RequestPart(value = "boardUpdateDTO") @Valid BoardRequest.BoardUpdateDTO boardUpdateDTO,
                                 @PathVariable Long id,
                                 @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
