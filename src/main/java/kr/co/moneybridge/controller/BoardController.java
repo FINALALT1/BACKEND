@@ -27,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -164,14 +165,15 @@ public class BoardController {
     @ApiOperation("컨텐츠 등록하기")
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/board")
-    public ResponseDTO saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
+    public ResponseDTO saveBoard(@RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
+                                 @RequestPart(value = "boardInDTO") @Valid BoardRequest.BoardInDTO boardInDTO,
                                  @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        if (boardInDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
-        if (boardInDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
-        if (boardInDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
+        if (boardInDTO.getContent() == null || boardInDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
+        if (boardInDTO.getTag1() == null || boardInDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
+        if (boardInDTO.getTag2() == null || boardInDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
 
-        Long id = boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE);
+        Long id = boardService.saveBoard(thumbnailFile, boardInDTO, myUserDetails, BoardStatus.ACTIVE);
 
         return new ResponseDTO<>(id);
     }
@@ -179,12 +181,13 @@ public class BoardController {
     @ApiOperation("컨텐츠 임시저장하기")
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/board/temp")
-    public ResponseDTO saveTempBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
+    public ResponseDTO saveTempBoard(@RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
+                                     @RequestPart(value = "boardInDTO") @Valid BoardRequest.BoardInDTO boardInDTO,
                                      @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.TEMP);
+        Long id = boardService.saveBoard(thumbnailFile, boardInDTO, myUserDetails, BoardStatus.TEMP);
 
-        return new ResponseDTO<>();
+        return new ResponseDTO<>(id);
     }
 
     @ApiOperation("임시저장 컨텐츠 목록 가져오기")
@@ -213,11 +216,16 @@ public class BoardController {
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PutMapping("/pb/board/{id}")
-    public ResponseDTO putBoard(@AuthenticationPrincipal MyUserDetails myUserDetails,
-                                @RequestBody BoardRequest.BoardInDTO boardInDTO,
-                                @PathVariable Long id) {
+    public ResponseDTO putBoard(@RequestPart(value = "thumbnail",required = false) MultipartFile thumbnailFile,
+                                @RequestPart(value = "boardInDTO") @Valid BoardRequest.BoardUpdateDTO boardUpdateDTO,
+                                @PathVariable Long id,
+                                @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        boardService.putBoard(myUserDetails, boardInDTO, id);
+        if (boardUpdateDTO.getContent() == null || boardUpdateDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
+        if (boardUpdateDTO.getTag1() == null || boardUpdateDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
+        if (boardUpdateDTO.getTag2() == null || boardUpdateDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
+
+        boardService.putBoard(thumbnailFile, myUserDetails, boardUpdateDTO, id);
 
         return new ResponseDTO<>();
     }
