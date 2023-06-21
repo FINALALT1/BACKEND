@@ -32,25 +32,15 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
-//    // 투자 성향 변경
-//    @MyLog
-//    @SwaggerResponses.UpdatePropensity
-//    @PatchMapping("/user/propensity")
-//    public ResponseDTO updatePropensity(@RequestBody @Valid UserRequest.UpdatePropensityInDTO updatePropensityInDTO,
-//                                              Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
-//        userService.updatePropensity(updatePropensityInDTO, myUserDetails.getMember().getId());
-//        return  new ResponseDTO<>();
-//    }
-//
-//    // 투자 성향 테스트
-//    @MyLog
-//    @SwaggerResponses.TestPropensity
-//    @PostMapping("/user/propensity")
-//    public ResponseDTO testPropensity(@RequestBody @Valid UserRequest.TestPropensityInDTO testPropensityInDTO,
-//                                            Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
-//        userService.testPropensity(testPropensityInDTO, myUserDetails.getMember().getId());
-//        return new ResponseDTO<>();
-//    }
+    // 투자 성향 테스트
+    @MyLog
+    @SwaggerResponses.TestPropensity
+    @PostMapping("/user/propensity")
+    public ResponseDTO testPropensity(@RequestBody @Valid UserRequest.TestPropensityInDTO testPropensityInDTO,
+                                            Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        userService.testPropensity(testPropensityInDTO, myUserDetails.getMember().getId());
+        return new ResponseDTO<>();
+    }
 
     // 로그인 계정 정보 받아오기
     @MyLog

@@ -31,7 +31,6 @@ public class MyMemberUtil {
     private String defaultProfile;
     private final UserRepository userRepository;
     private final UserAgreementRepository userAgreementRepository;
-    private final UserInvestInfoRepository userInvestInfoRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final PBRepository pbRepository;
     private final PortfolioRepository portfolioRepository;
@@ -73,7 +72,6 @@ public class MyMemberUtil {
 
                 boardBookmarkRepository.deleteByBookmarker(id, BookmarkerRole.USER);
                 userBookmarkRepository.deleteByUserId(id);
-                userInvestInfoRepository.deleteByUserId(id);
                 userAgreementRepository.deleteByUserId(id);
                 userRepository.deleteById(id);
             }catch (Exception e){
