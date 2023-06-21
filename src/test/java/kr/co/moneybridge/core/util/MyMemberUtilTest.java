@@ -307,7 +307,8 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(reservationRepository.findAllByPBId(id)).thenReturn(reservations);
         when(reviewRepository.findByReservationId(reservation1.getId())).thenReturn(reviewOP);
         when(portfolioRepository.findFileByPBId(id)).thenReturn(Optional.empty());
-        when(pbRepository.findById(id)).thenReturn(Optional.of(pb));
+        when(pbRepository.findBusinessCardById(id)).thenReturn(Optional.of("card.png"));
+        when(pbRepository.findProfileById(id)).thenReturn(Optional.of("profile.png"));
 //        when(s3Util.delete(path)).then(doNothing());
 
         // when
@@ -315,7 +316,8 @@ public class MyMemberUtilTest extends MockDummyEntity {
 
         // then
         verify(portfolioRepository, times(1)).findFileByPBId(id);
-        verify(pbRepository, times(1)).findById(id);
+        verify(pbRepository, times(1)).findBusinessCardById(id);
+        verify(pbRepository, times(1)).findProfileById(id);
         verify(pbRepository, times(1)).deleteById(id);
         verify(portfolioRepository, times(1)).deleteByPBId(id);
         verify(pbAgreementRepository, times(1)).deleteByPBId(id);
