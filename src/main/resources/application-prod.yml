@@ -31,7 +31,7 @@ cloud:
       accessKey: ${S3_ACCESS_KEY}
       secretKey: ${S3_SECRET_KEY}
     s3:
-      bucket: pb-business-card
+      bucket: money-bridge
     region:
       static: ap-northeast-2
     stack:
@@ -45,5 +45,5 @@ SECRET_REFRESH: ${SECRET_REFRESH}
 
 EMAIL_PASSWORD: ${EMAIL_PASSWORD}
 
-DEFAULT_THUMBNAIL: "https://pb-business-card.s3.ap-northeast-2.amazonaws.com/sample.svg"
-DEFAULT_PROFILE: "https://pb-business-card.s3.ap-northeast-2.amazonaws.com/profile.svg"
+DEFAULT_THUMBNAIL: "https://d2ky5wm6akosox.cloudfront.net/default/sample.svg"
+DEFAULT_PROFILE: "https://d2ky5wm6akosox.cloudfront.net/default/profile.svg"

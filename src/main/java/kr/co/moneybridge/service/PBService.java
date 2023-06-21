@@ -1,7 +1,5 @@
 package kr.co.moneybridge.service;
 
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
@@ -21,18 +19,26 @@ import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import marvin.image.MarvinImage;
+import org.marvinproject.image.transform.scale.Scale;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -159,7 +165,7 @@ public class PBService {
         }
         // S3에 사진 저장
         try {
-            String path = s3Util.upload(businessCard);
+            String path = s3Util.upload(s3Util.resize(businessCard, 450, 250), "business-card"); // 명함 픽셀 450 * 250
             System.out.println(path);
             PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
@@ -168,20 +174,10 @@ public class PBService {
                         pbAgreementRepository.save(agreement.toEntity(pbPS)));
             }
             return new PBResponse.JoinOutDTO(pbPS);
-        } catch (AmazonS3Exception es) {
-            //  S3에 대한 액세스 권한이 없거나, 파일이 너무 크거나, S3 버킷이 존재하지 않는 경우
-            log.error("s3에 사진 저장 실패" + es.getMessage());
-            throw new Exception500("명함 사진 저장 실패: " + es.getMessage());
-        } catch (SdkClientException ec) {
-            //  네트워크 연결 문제나 클라이언트의 설정 문제
-            log.error("Amazon SDK에서 클라이언트 관련 오류" + ec.getMessage());
-            throw new Exception500("명함 사진 저장 실패: " + ec.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage());
             throw new Exception500("회원가입 실패: " + e.getMessage());
         }
     }
-
     //북마크한 pb 목록 가져오기
     public PageDTO<PBResponse.PBPageDTO> getBookmarkPBs(MyUserDetails myUserDetails, Pageable pageable) {
 
@@ -419,45 +415,29 @@ public class PBService {
         //프로필 삭제요청시
         if (updateDTO.getDeleteProfile().equals(true)) {
             if (!pb.getProfile().equals(defaultProfile)) {
-                try {
-                    s3Util.delete(pb.getProfile());
-                    pb.updateProfile(defaultProfile);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                s3Util.delete(pb.getProfile());
+                pb.updateProfile(defaultProfile);
             }
         }
 
         //포트폴리오파일 삭제요청시
         if (updateDTO.getDeletePortfolio().equals(true)) {
             if (portfolio.getFile() != null && !portfolio.getFile().isEmpty()) {
-                try {
-                    s3Util.delete(portfolio.getFile());
-                    portfolio.deleteFile();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                s3Util.delete(portfolio.getFile());
+                portfolio.deleteFile();
             }
         }
 
         //프로필 사진 들어온경우
         if (profileFile != null && !profileFile.isEmpty()) {
-            try {
-                String profilePath = s3Util.upload(profileFile);
-                pb.updateProfile(profilePath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            String profilePath = s3Util.upload(s3Util.resize(profileFile,500,500), "profile");
+            pb.updateProfile(profilePath);
         }
 
         //포트폴리오파일 들어온경우
         if (portfolioFile != null && !portfolioFile.isEmpty()) {
-            try {
-                String portfolioPath = s3Util.upload(portfolioFile);
-                portfolio.updateFile(portfolioPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            String portfolioPath = s3Util.upload(portfolioFile, "portfolio");
+            portfolio.updateFile(portfolioPath);
         }
 
         //career, award 새로 저장

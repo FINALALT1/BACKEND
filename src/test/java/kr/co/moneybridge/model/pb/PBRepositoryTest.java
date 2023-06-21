@@ -62,6 +62,18 @@ public class PBRepositoryTest extends DummyEntity {
         em.clear();
     }
 
+//    @Test
+//    public void findBusinessCardById() {
+//        // given
+//        Long id = 1L;
+//
+//        // when
+//        String img = pbRepository.findBusinessCardById(id);
+//
+//        // then
+//        Assertions.assertThat(img).isEqualTo("card.png");
+//    }
+
     @Test
     public void findAllByStatus() {
         // given
