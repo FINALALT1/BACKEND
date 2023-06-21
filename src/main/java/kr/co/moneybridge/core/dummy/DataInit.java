@@ -24,7 +24,6 @@ public class DataInit extends DummyEntity{
                            AwardRepository awardRepository,
                            CareerRepository careerRepository,
                            UserAgreementRepository userAgreementRepository,
-                           UserInvestInfoRepository userInvestInfoRepository,
                            BoardRepository boardRepository,
                            ReplyRepository replyRepository,
                            ReReplyRepository reReplyRepository,
@@ -45,9 +44,6 @@ public class DataInit extends DummyEntity{
             userAgreementRepository.save(newUserAgreement(user1, UserAgreementType.OPTIONAL));
             userAgreementRepository.save(newUserAgreement(user2, UserAgreementType.REQUIRED));
             userAgreementRepository.save(newUserAgreement(user2, UserAgreementType.OPTIONAL));
-
-            userInvestInfoRepository.save(newUserInvestInfo(user1));
-            userInvestInfoRepository.save(newUserInvestInfo(user2));
 
             Company c1 = companyRepository.save(newCompany("미래에셋증권"));
             Company c2 = companyRepository.save(newCompany("키움증권"));

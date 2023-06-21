@@ -8,6 +8,7 @@ import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
+import kr.co.moneybridge.core.exception.Exception401;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.MyMemberUtil;
@@ -64,39 +65,19 @@ public class UserService {
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final UserBookmarkRepository userBookmarkRepository;
     private final PBRepository pbRepository;
-    private final UserInvestInfoRepository userInvestInfoRepository;
     private final MyMsgUtil myMsgUtil;
-
-    @MyLog
-    @Transactional
-    public void updatePropensity(UserRequest.UpdatePropensityInDTO updatePropensityInDTO, Long id) {
-        User userPS = userRepository.findById(id).orElseThrow(
-                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
-        UserInvestInfo userInvestInfoPS = userInvestInfoRepository.findByUserId(id)
-                .orElseThrow(() -> new Exception404("해당 유저의 투자 성향 정보를 찾을 수 없습니다"));
-        try{
-            userInvestInfoPS.update(updatePropensityInDTO);
-            userPS.updatePropensity(userInvestInfoPS.getPropensity());
-        }catch (Exception e){
-            throw new Exception500("투자 성향 테스트 결과 저장 실패 : " + e.getMessage());
-        }
-    }
 
     @MyLog
     @Transactional
     public void testPropensity(UserRequest.TestPropensityInDTO testPropensityInDTO, Long id) {
         User userPS = userRepository.findById(id).orElseThrow(
                 () -> new Exception404("해당 유저를 찾을 수 없습니다"));
-        Optional<UserInvestInfo> userInvestInfoPS = userInvestInfoRepository.findByUserId(id);
-        if(userInvestInfoPS.isPresent()){
-            throw new Exception500("이미 투자 성향 테스트 정보가 있습니다");
-        }
-        try{
-            UserInvestInfo userInvestInfo = userInvestInfoRepository.save(testPropensityInDTO.toEntity(userPS));
-            userPS.updatePropensity(userInvestInfo.getPropensity());
-        }catch (Exception e){
-            throw new Exception500("투자 성향 테스트 결과 저장 실패 : " + e.getMessage());
-        }
+        userPS.testPropensity(testPropensityInDTO.getScore());
+    }
+
+    @MyLog
+    public UserResponse.AccountOutDTO getAccount(MyUserDetails myUserDetails) {
+        return new UserResponse.AccountOutDTO(myUserDetails.getMember());
     }
 
     @MyLog
@@ -140,7 +121,7 @@ public class UserService {
     @MyLog
     public void checkPassword(UserRequest.CheckPasswordInDTO checkPasswordInDTO, MyUserDetails myUserDetails) {
         if(!passwordEncoder.matches(checkPasswordInDTO.getPassword(), myUserDetails.getPassword())){
-            throw new Exception400("password", "비밀번호가 틀렸습니다");
+            throw new Exception401("비밀번호가 틀렸습니다");
         }
     }
 
@@ -207,7 +188,7 @@ public class UserService {
     @Transactional
     public void withdraw(UserRequest.WithdrawInDTO withdrawInDTO, MyUserDetails myUserDetails) {
         if(!passwordEncoder.matches(withdrawInDTO.getPassword(), myUserDetails.getPassword())){
-            throw new Exception400("password", "비밀번호가 틀렸습니다");
+            throw new Exception401("비밀번호가 틀렸습니다");
         }
         myMemberUtil.deleteById(myUserDetails.getMember().getId(), myUserDetails.getMember().getRole());
     }

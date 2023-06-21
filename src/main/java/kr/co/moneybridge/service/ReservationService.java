@@ -2,10 +2,7 @@ package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
-import kr.co.moneybridge.core.exception.Exception400;
-import kr.co.moneybridge.core.exception.Exception403;
-import kr.co.moneybridge.core.exception.Exception404;
-import kr.co.moneybridge.core.exception.Exception500;
+import kr.co.moneybridge.core.exception.*;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
@@ -62,7 +59,7 @@ public class ReservationService {
                 () -> new Exception404("존재하지 않는 투자자입니다.")
         );
         Review reviewPS = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new Exception404("후기가 없습니다.")
+                () -> new Exception200("후기가 없습니다.")
         );
         if(!reviewPS.getReservation().getUser().getId().equals(userId)){
             throw new Exception400("reviewId", "로그인한 투자자가 작성한 리뷰가 아닙니다.");

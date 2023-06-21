@@ -424,20 +424,6 @@ public class MockDummyEntity {
                 .build();
     }
 
-    public UserInvestInfo newMockUserInvestInfo(Long id, User user) {
-        return UserInvestInfo.builder()
-                .id(id)
-                .user(user)
-                .q1(5)
-                .q2(4)
-                .q3(5)
-                .q4(5)
-                .q5(5)
-                .q6(5)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
     public FrequentQuestion newMockFrequentQuestion(Long id) {
         return FrequentQuestion.builder()
                 .id(id)

@@ -345,18 +345,6 @@ public class DummyEntity {
                 .build();
     }
 
-    public UserInvestInfo newUserInvestInfo(User user) {
-        return UserInvestInfo.builder()
-                .user(user)
-                .q1(5)
-                .q2(4)
-                .q3(5)
-                .q4(5)
-                .q5(5)
-                .q6(5)
-                .build();
-    }
-
     public FrequentQuestion newFrequentQuestion() {
         return FrequentQuestion.builder()
                 .label("회원")
