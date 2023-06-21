@@ -10,7 +10,6 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
-import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
@@ -19,26 +18,16 @@ import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import marvin.image.MarvinImage;
-import org.marvinproject.image.transform.scale.Scale;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -167,7 +156,7 @@ public class PBService {
         try {
             String path = s3Util.upload(s3Util.resize(businessCard, 450, 250), "business-card"); // 명함 픽셀 450 * 250
             System.out.println(path);
-            PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path));
+            PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path, defaultProfile));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if (agreements != null) {
                 agreements.stream().forEach(agreement ->

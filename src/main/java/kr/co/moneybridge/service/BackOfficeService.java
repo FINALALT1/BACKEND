@@ -117,12 +117,13 @@ public class BackOfficeService {
         }
         String subject = myMsgUtil.getSubjectApprove();
         String msg = myMsgUtil.getMsgApprove();
-        if(approve == false){
+        if(approve == false) {
             myMemberUtil.deleteById(pbId, Role.PB); // 탈퇴와 동일하게 삭제
             subject = myMsgUtil.getSubjectReject();
             msg = myMsgUtil.getMsgReject();
+        } else {
+            pbPS.approved();
         }
-        pbPS.approved();
         // 이메일 알림
         try{
             MimeMessage message = myMsgUtil.createMessage(pbPS.getEmail(), subject, msg);

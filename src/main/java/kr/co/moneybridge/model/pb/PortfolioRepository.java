@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
-    @Query("select p.file from Portfolio p WHERE p.pb.id = :pbId")
+    @Query("select p.file from Portfolio p where p.pb.id = :pbId")
     Optional<String> findFileByPBId(@Param("pbId") Long pbId);
 
     @Modifying

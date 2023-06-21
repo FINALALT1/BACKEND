@@ -80,7 +80,7 @@ public class PBRequest {
         @ApiModelProperty
         private List<AgreementDTO> agreements;
 
-        public PB toEntity(Branch branch, String businessCard) {
+        public PB toEntity(Branch branch, String businessCard, String defaultProfile) {
             return PB.builder()
                     .email(email)
                     .password(password)
@@ -91,7 +91,7 @@ public class PBRequest {
                     .speciality1(speciality1)
                     .speciality2(speciality2)
                     .businessCard(businessCard)
-                    .profile("person.png") // 기본 이미지
+                    .profile(defaultProfile) // 기본 이미지
                     .role(Role.PB)
                     .status(PBStatus.PENDING)
                     .build();
