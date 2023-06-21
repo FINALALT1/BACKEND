@@ -101,6 +101,11 @@ public class UserService {
 //    }
 
     @MyLog
+    public UserResponse.AccountOutDTO getAccount(MyUserDetails myUserDetails) {
+        return new UserResponse.AccountOutDTO(myUserDetails.getMember());
+    }
+
+    @MyLog
     public UserResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {
         User user = (User) myUserDetails.getMember();
         UserResponse.StepDTO step = new UserResponse.StepDTO(user);

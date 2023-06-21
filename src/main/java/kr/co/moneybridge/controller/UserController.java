@@ -52,6 +52,15 @@ public class UserController {
 //        return new ResponseDTO<>();
 //    }
 
+    // 로그인 계정 정보 받아오기
+    @MyLog
+    @SwaggerResponses.GetAccount
+    @GetMapping("/auth/account")
+    public ResponseDTO<UserResponse.AccountOutDTO> getAccount(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        UserResponse.AccountOutDTO accountOutDTO = userService.getAccount(myUserDetails);
+        return new ResponseDTO<>(accountOutDTO);
+    }
+
     // 투자자 마이페이지 가져오기
     @MyLog
     @SwaggerResponses.GetMyPageUser
