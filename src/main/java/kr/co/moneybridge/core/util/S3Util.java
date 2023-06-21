@@ -10,13 +10,18 @@ import com.amazonaws.services.s3.model.*;
 import kr.co.moneybridge.core.exception.Exception500;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import marvin.image.MarvinImage;
+import org.marvinproject.image.transform.scale.Scale;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -46,6 +51,7 @@ public class S3Util {
                 .build();
     }
 
+    // s3에 파일 업로드
     public String upload(MultipartFile file) {
         try{
             UUID uuid = UUID.randomUUID();
@@ -66,10 +72,92 @@ public class S3Util {
         }
     }
 
-    public void delete(String profile) throws IOException {
+    // s3에서 파일 삭제
+    public void delete(String profile) {
         int index = profile.lastIndexOf("/");
         String fileName = profile.substring(index + 1);
 
         s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    }
+
+    // 이미지 리사이징
+    public MultipartFile resize(MultipartFile multipartFile, int targetWidth, int targetHeight) {
+        try (InputStream is = multipartFile.getInputStream()){
+            // MultipartFile -> BufferedImage Convert
+            BufferedImage image = ImageIO.read(is);
+            // 원하는 px로 Width와 Height 수정
+            int originWidth = image.getWidth();
+            int originHeight = image.getHeight();
+            // origin 이미지가 resizing될 사이즈보다 작을 경우 resizing 작업 안 함
+            if (originWidth < targetWidth && originHeight < targetHeight)
+                return multipartFile;
+            MarvinImage imageMarvin = new MarvinImage(image);
+            Scale scale = new Scale();
+            scale.load();
+            scale.setAttribute("newWidth", targetWidth);
+            scale.setAttribute("newHeight", targetHeight);
+            scale.process(imageMarvin.clone(), imageMarvin, null, null, false);
+            return toMultipartFile(imageMarvin.getBufferedImageNoAlpha(), multipartFile);
+        } catch (IOException e) {
+            // 파일 리사이징 실패시 예외 처리
+            throw new Exception500("파일 리사이징에 실패" + e.getMessage());
+        }
+    }
+
+    // MultipartFile로 바꾸기
+    public MultipartFile toMultipartFile(BufferedImage image, MultipartFile origin) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        String fileExtension = origin.getContentType().split("/")[1];
+        ImageIO.write(image, fileExtension, baos); // use JPEG or PNG depending on your image
+
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+
+        return new MultipartFile() {
+            @Override
+            public String getName() {
+                return origin.getName();
+            }
+
+            @Override
+            public String getOriginalFilename() {
+                return origin.getOriginalFilename();
+            }
+
+            @Override
+            public String getContentType() {
+                return origin.getContentType();
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return imageInByte.length == 0;
+            }
+
+            @Override
+            public long getSize() {
+                return imageInByte.length;
+            }
+
+            @Override
+            public byte[] getBytes() throws IOException {
+                return imageInByte;
+            }
+
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return new ByteArrayInputStream(imageInByte);
+            }
+
+            @Override
+            public void transferTo(File dest) throws IOException, IllegalStateException {
+                Files.write(dest.toPath(), imageInByte);
+            }
+
+            @Override
+            public void transferTo(Path dest) throws IOException, IllegalStateException {
+                Files.write(dest, imageInByte);
+            }
+        };
     }
 }

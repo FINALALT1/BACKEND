@@ -165,7 +165,7 @@ public class PBService {
         }
         // S3에 사진 저장
         try {
-            String path = s3Util.upload(resize(businessCard));
+            String path = s3Util.upload(s3Util.resize(businessCard, 450, 250)); // 명함 픽셀 450 * 250
             System.out.println(path);
             PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
@@ -178,88 +178,6 @@ public class PBService {
             throw new Exception500("회원가입 실패: " + e.getMessage());
         }
     }
-
-    // 이미지 리사이징
-    private MultipartFile resize(MultipartFile multipartFile) {
-        try (InputStream is = multipartFile.getInputStream()){
-            // MultipartFile -> BufferedImage Convert
-            BufferedImage image = ImageIO.read(is);
-            // 원하는 px로 Width와 Height 수정
-            int originWidth = image.getWidth();
-            int originHeight = image.getHeight();
-            // origin 이미지가 resizing될 사이즈보다 작을 경우 resizing 작업 안 함
-            if (originWidth < 450 && originHeight < 250)
-                return multipartFile;
-            MarvinImage imageMarvin = new MarvinImage(image);
-            Scale scale = new Scale();
-            scale.load();
-            scale.setAttribute("newWidth", 450);
-            scale.setAttribute("newHeight", 250);
-            scale.process(imageMarvin.clone(), imageMarvin, null, null, false);
-            return toMultipartFile(imageMarvin.getBufferedImageNoAlpha(), multipartFile);
-        } catch (IOException e) {
-            // 파일 리사이징 실패시 예외 처리
-            throw new Exception500("파일 리사이징에 실패" + e.getMessage());
-        }
-    }
-
-    public MultipartFile toMultipartFile(BufferedImage image, MultipartFile origin) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        String fileExtension = origin.getContentType().split("/")[1];
-        ImageIO.write(image, fileExtension, baos); // use JPEG or PNG depending on your image
-
-        byte[] imageInByte = baos.toByteArray();
-        baos.close();
-
-        return new MultipartFile() {
-            @Override
-            public String getName() {
-                return origin.getName();
-            }
-
-            @Override
-            public String getOriginalFilename() {
-                return origin.getOriginalFilename();
-            }
-
-            @Override
-            public String getContentType() {
-                return origin.getContentType();
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return imageInByte.length == 0;
-            }
-
-            @Override
-            public long getSize() {
-                return imageInByte.length;
-            }
-
-            @Override
-            public byte[] getBytes() throws IOException {
-                return imageInByte;
-            }
-
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return new ByteArrayInputStream(imageInByte);
-            }
-
-            @Override
-            public void transferTo(File dest) throws IOException, IllegalStateException {
-                Files.write(dest.toPath(), imageInByte);
-            }
-
-            @Override
-            public void transferTo(Path dest) throws IOException, IllegalStateException {
-                Files.write(dest, imageInByte);
-            }
-        };
-    }
-
-
     //북마크한 pb 목록 가져오기
     public PageDTO<PBResponse.PBPageDTO> getBookmarkPBs(MyUserDetails myUserDetails, Pageable pageable) {
 
@@ -497,24 +415,16 @@ public class PBService {
         //프로필 삭제요청시
         if (updateDTO.getDeleteProfile().equals(true)) {
             if (!pb.getProfile().equals(defaultProfile)) {
-                try {
-                    s3Util.delete(pb.getProfile());
-                    pb.updateProfile(defaultProfile);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                s3Util.delete(pb.getProfile());
+                pb.updateProfile(defaultProfile);
             }
         }
 
         //포트폴리오파일 삭제요청시
         if (updateDTO.getDeletePortfolio().equals(true)) {
             if (portfolio.getFile() != null && !portfolio.getFile().isEmpty()) {
-                try {
-                    s3Util.delete(portfolio.getFile());
-                    portfolio.deleteFile();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                s3Util.delete(portfolio.getFile());
+                portfolio.deleteFile();
             }
         }
 
