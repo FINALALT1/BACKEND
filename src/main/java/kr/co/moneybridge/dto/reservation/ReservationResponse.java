@@ -23,18 +23,18 @@ public class ReservationResponse {
     @Getter
     @Setter
     public static class MyConsultTimeDTO {
-        @ApiModelProperty(example = "09:00:00", value = "상담 가능 시작 시간")
+        @ApiModelProperty(example = "09:00", value = "상담 가능 시작 시간")
         private String consultStart;
 
-        @ApiModelProperty(example = "18:00:00", value = "상담 가능 종료 시간")
+        @ApiModelProperty(example = "18:00", value = "상담 가능 종료 시간")
         private String consultEnd;
 
         @ApiModelProperty(example = "월요일 불가능합니다", value = "상담 불가 시간 메시지")
         private String consultNotice;
 
         public MyConsultTimeDTO(PB pb) {
-            this.consultStart = pb.getConsultStart().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-            this.consultEnd = pb.getConsultEnd().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            this.consultStart = pb.getConsultStart().format(DateTimeFormatter.ofPattern("HH:mm"));
+            this.consultEnd = pb.getConsultEnd().format(DateTimeFormatter.ofPattern("HH:mm"));
             this.consultNotice = pb.getConsultNotice();
         }
     }

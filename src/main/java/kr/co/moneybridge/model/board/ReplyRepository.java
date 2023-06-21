@@ -13,13 +13,13 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     @Query("SELECT NEW kr.co.moneybridge.dto.board.BoardResponse$ReplyOutDTO(r, u) " +
             "FROM Reply r " +
             "INNER JOIN User u ON r.authorId = u.id " +
-            "WHERE r.board.id = :boardId")
+            "WHERE r.board.id = :boardId AND r.authorRole = 'USER'")
     List<BoardResponse.ReplyOutDTO> findUserRepliesByBoardId(@Param("boardId") Long boardId);
 
     @Query("SELECT NEW kr.co.moneybridge.dto.board.BoardResponse$ReplyOutDTO(r, pb) " +
             "FROM Reply r " +
             "INNER JOIN PB pb ON r.authorId = pb.id " +
-            "WHERE r.board.id = :boardId")
+            "WHERE r.board.id = :boardId AND r.authorRole = 'PB'")
     List<BoardResponse.ReplyOutDTO> findPBRepliesByBoardId(@Param("boardId") Long boardId);
 
     @Modifying

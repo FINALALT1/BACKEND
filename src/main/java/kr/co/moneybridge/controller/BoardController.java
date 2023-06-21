@@ -41,15 +41,17 @@ public class BoardController {
 
     @ApiOperation("컨텐츠 검색하기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "title", value = "제목", required = false),
-            @ApiImplicitParam(name = "name", value = "김피비", required = false)
+            @ApiImplicitParam(name = "title", value = "제목"),
+            @ApiImplicitParam(name = "name", value = "김피비"),
+            @ApiImplicitParam(name = "page", value = "0")
     })
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/lounge/boards")
     public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsWithTitle(@RequestParam(value = "title", required = false) String title,
-                                                @RequestParam(value = "name", required = false) String name) {
+                                                                               @RequestParam(value = "name", required = false) String name,
+                                                                               @RequestParam(defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO;
 
         if (title != null) {
@@ -65,9 +67,10 @@ public class BoardController {
 
     @ApiOperation("최신 컨텐츠순 가져오기")
     @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "page", value = "0")
     @GetMapping("/boards")
-    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsByNew() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsByNew(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getBoardWithNew(pageable);
 
         return new ResponseDTO<>(pageDTO);
@@ -75,9 +78,10 @@ public class BoardController {
 
     @ApiOperation("조회수 높은 컨텐츠순 가져오기")
     @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "page", value = "0")
     @GetMapping("/boards/hot")
-    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsByHot() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "clickCount"));
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsByHot(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "clickCount"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getBoardWithHot(pageable);
 
         return new ResponseDTO<>(pageDTO);
@@ -132,8 +136,8 @@ public class BoardController {
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PostMapping("/auth/board/{id}/reply")
     public ResponseDTO postReply(@PathVariable Long id,
-                                       @AuthenticationPrincipal MyUserDetails myUserDetails,
-                                       @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
+                                 @AuthenticationPrincipal MyUserDetails myUserDetails,
+                                 @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
 
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
             User user = userService.getUser(myUserDetails.getMember().getId());
@@ -161,10 +165,9 @@ public class BoardController {
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/board")
     public ResponseDTO saveBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
-                                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                 @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         if (boardInDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
-//        if (boardInDTO.getThumbnail().isEmpty()) throw new Exception400("thumbnail", "썸네일 없음");
         if (boardInDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
         if (boardInDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
 
@@ -177,7 +180,7 @@ public class BoardController {
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/board/temp")
     public ResponseDTO saveTempBoard(@RequestBody @Valid BoardRequest.BoardInDTO boardInDTO,
-                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.TEMP);
 
@@ -193,6 +196,7 @@ public class BoardController {
 
         return new ResponseDTO<>(tempBoards);
     }
+
     @ApiOperation("임시저장 컨텐츠 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
@@ -210,8 +214,8 @@ public class BoardController {
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PutMapping("/pb/board/{id}")
     public ResponseDTO putBoard(@AuthenticationPrincipal MyUserDetails myUserDetails,
-                                      @RequestBody BoardRequest.BoardInDTO boardInDTO,
-                                      @PathVariable Long id) {
+                                @RequestBody BoardRequest.BoardInDTO boardInDTO,
+                                @PathVariable Long id) {
 
         boardService.putBoard(myUserDetails, boardInDTO, id);
 
@@ -231,10 +235,12 @@ public class BoardController {
 
     @ApiOperation("북마크한 컨텐츠 목록 가져오기")
     @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "page", value = "0")
     @GetMapping("/auth/bookmarks/boards")
-    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBookmarkBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBookmarkBoards(@AuthenticationPrincipal MyUserDetails myUserDetails,
+                                                                              @RequestParam(defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getBookmarkBoards(myUserDetails, pageable);
 
         return new ResponseDTO<>(pageDTO);
@@ -262,11 +268,13 @@ public class BoardController {
 
     @ApiOperation("특정 PB의 컨텐츠 리스트 가져오기")
     @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "page", value = "0")
     @GetMapping("/auth/boards/{pbId}")
     public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getPBBoards(@AuthenticationPrincipal MyUserDetails myUserDetails,
-                                                                        @PathVariable(value = "pbId") Long pbId) {
+                                                                        @PathVariable(value = "pbId") Long pbId,
+                                                                        @RequestParam(defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO = boardService.getPBBoards(myUserDetails, pbId, pageable);
 
         return new ResponseDTO<>(pageDTO);
