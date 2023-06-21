@@ -51,6 +51,6 @@ SECRET_REFRESH: "backend"
 
 EMAIL_PASSWORD: "finalback1234!!"
 
-DEFAULT_THUMBNAIL: "https://money-bridge.s3.ap-northeast-2.amazonaws.com/default/sample.svg"
-DEFAULT_PROFILE: "https://money-bridge.s3.ap-northeast-2.amazonaws.com/default/profile.svg"
+DEFAULT_THUMBNAIL: "https://d2ky5wm6akosox.cloudfront.net/default/sample.svg"
+DEFAULT_PROFILE: "https://d2ky5wm6akosox.cloudfront.net/default/profile.svg"
 
