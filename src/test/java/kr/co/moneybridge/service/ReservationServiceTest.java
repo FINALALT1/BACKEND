@@ -70,8 +70,8 @@ public class ReservationServiceTest extends MockDummyEntity {
         ReservationResponse.MyConsultTimeDTO myConsultTimeDTO = reservationService.getMyConsultTime(pb.getId());
 
         // then
-        assertThat(myConsultTimeDTO.getConsultStart()).isEqualTo("09:00:00");
-        assertThat(myConsultTimeDTO.getConsultEnd()).isEqualTo("18:00:00");
+        assertThat(myConsultTimeDTO.getConsultStart()).isEqualTo("09:00");
+        assertThat(myConsultTimeDTO.getConsultEnd()).isEqualTo("18:00");
         assertThat(myConsultTimeDTO.getConsultNotice()).isEqualTo("월요일 불가능합니다");
     }
 
