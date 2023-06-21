@@ -99,7 +99,7 @@ public class PBService {
         String email = myUserDetails.getMember().getEmail();
         Optional<PB> pbOP = pbRepository.findByEmail(email);
         if(!pbOP.isPresent()){
-            throw new Exception500("PB 계정이 없습니다");
+            throw new Exception404("PB 계정이 없습니다");
         }
         return new PBResponse.MyPageOutDTO(pbOP.get(),
                 reservationRepository.countByPBIdAndProcess(pbOP.get().getId(), ReservationProcess.COMPLETE),
@@ -147,7 +147,7 @@ public class PBService {
         joinInDTO.setPassword(encPassword);
 
         Branch branchPS = branchRepository.findById(joinInDTO.getBranchId()).orElseThrow(
-                () -> new Exception400("branchId", "해당하는 지점이 존재하지 않습니다")
+                () -> new Exception404("해당하는 지점이 존재하지 않습니다")
         );
         if (businessCard == null || businessCard.isEmpty()) {
             throw new Exception400("businessCard", "명함 사진이 없습니다");
@@ -167,6 +167,7 @@ public class PBService {
             throw new Exception500("회원가입 실패: " + e.getMessage());
         }
     }
+
     //북마크한 pb 목록 가져오기
     public PageDTO<PBResponse.PBPageDTO> getBookmarkPBs(MyUserDetails myUserDetails, Pageable pageable) {
 

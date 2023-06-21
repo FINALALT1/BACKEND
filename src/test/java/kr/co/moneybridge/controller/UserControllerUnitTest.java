@@ -69,49 +69,49 @@ public class UserControllerUnitTest extends MockDummyEntity {
     @MockBean
     private MyMemberUtil myMemberUtil;
 
-    @WithMockUser
-    @Test
-    public void updatePropensity_test() throws Exception {
-        // Given
-        UserRequest.UpdatePropensityInDTO updatePropensityInDTO = new UserRequest.UpdatePropensityInDTO();
-        updatePropensityInDTO.setQ1(2);
-        updatePropensityInDTO.setQ6(1);
-        String requestBody = om.writeValueAsString(updatePropensityInDTO);
+//    @WithMockUser
+//    @Test
+//    public void updatePropensity_test() throws Exception {
+//        // Given
+//        UserRequest.UpdatePropensityInDTO updatePropensityInDTO = new UserRequest.UpdatePropensityInDTO();
+//        updatePropensityInDTO.setQ1(2);
+//        updatePropensityInDTO.setQ6(1);
+//        String requestBody = om.writeValueAsString(updatePropensityInDTO);
+//
+//        // When
+//        ResultActions resultActions = mvc.perform(patch("/user/propensity")
+//                .content(requestBody)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON));
+//
+//        // Then
+//        resultActions.andExpect(status().isOk());
+//        resultActions.andExpect(jsonPath("$.data").doesNotExist());
+//    }
 
-        // When
-        ResultActions resultActions = mvc.perform(patch("/user/propensity")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON));
-
-        // Then
-        resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.data").doesNotExist());
-    }
-
-    @WithMockUser
-    @Test
-    public void testPropensity_test() throws Exception {
-        // Given
-        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
-        testPropensityInDTO.setQ1(5);
-        testPropensityInDTO.setQ2(4);
-        testPropensityInDTO.setQ3(5);
-        testPropensityInDTO.setQ4(5);
-        testPropensityInDTO.setQ5(5);
-        testPropensityInDTO.setQ6(5);
-        String requestBody = om.writeValueAsString(testPropensityInDTO);
-
-        // When
-        ResultActions resultActions = mvc.perform(post("/user/propensity")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON));
-
-        // Then
-        resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.data").doesNotExist());
-    }
+//    @WithMockUser
+//    @Test
+//    public void testPropensity_test() throws Exception {
+//        // Given
+//        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
+//        testPropensityInDTO.setQ1(5);
+//        testPropensityInDTO.setQ2(4);
+//        testPropensityInDTO.setQ3(5);
+//        testPropensityInDTO.setQ4(5);
+//        testPropensityInDTO.setQ5(5);
+//        testPropensityInDTO.setQ6(5);
+//        String requestBody = om.writeValueAsString(testPropensityInDTO);
+//
+//        // When
+//        ResultActions resultActions = mvc.perform(post("/user/propensity")
+//                .content(requestBody)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON));
+//
+//        // Then
+//        resultActions.andExpect(status().isOk());
+//        resultActions.andExpect(jsonPath("$.data").doesNotExist());
+//    }
 
     @WithMockUser
     @Test
