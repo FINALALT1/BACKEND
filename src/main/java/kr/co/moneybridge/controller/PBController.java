@@ -57,9 +57,9 @@ public class PBController {
     @SwaggerResponses.SearchBranch
     @GetMapping("/branch")
     public ResponseDTO<PageDTO<PBResponse.BranchDTO>> searchBranch(@RequestParam Long companyId,
-                                          @RequestParam(required = false) String keyword) {
+                                                                   @RequestParam(required = false) String keyword) {
         keyword = keyword == null ? "" : keyword.replaceAll("\\s", "");
-        if(keyword.isEmpty()){
+        if (keyword.isEmpty()) {
             List<PBResponse.BranchDTO> empty = new ArrayList<>();
             return new ResponseDTO<>(new PageDTO<>(empty, new PageImpl<>(empty))); // 빈칸 검색시
         }
@@ -74,11 +74,10 @@ public class PBController {
     @GetMapping("/companies")
     public ResponseEntity<?> getCompanies(@RequestParam(defaultValue = "true") Boolean includeLogo) {
         ResponseDTO<?> responseDTO = null;
-        if(includeLogo){
+        if (includeLogo) {
             PBResponse.CompanyOutDTO companyOutDTO = pbService.getCompanies();
             responseDTO = new ResponseDTO<>(companyOutDTO);
-        }
-        else {
+        } else {
             PBResponse.CompanyNameOutDTO companyNameOutDTO = pbService.getCompanyNames();
             responseDTO = new ResponseDTO<>(companyNameOutDTO);
         }
@@ -90,17 +89,19 @@ public class PBController {
     @SwaggerResponses.JoinPB
     @PostMapping("/join/pb")
     public ResponseDTO<PBResponse.JoinOutDTO> joinPB(@RequestPart(value = "businessCard") MultipartFile businessCard,
-                                    @RequestPart(value = "joinInDTO") @Valid PBRequest.JoinInDTO joinInDTO, Errors errors) {
+                                                     @RequestPart(value = "joinInDTO") @Valid PBRequest.JoinInDTO joinInDTO, Errors errors) {
         PBResponse.JoinOutDTO joinOutDTO = pbService.joinPB(businessCard, joinInDTO);
         return new ResponseDTO<>(joinOutDTO);
     }
 
     @ApiOperation("북마크한 PB 목록 가져오기")
     @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "page", value = "0")
     @GetMapping("/user/bookmarks/pb")
-    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getBookmarkPBs(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getBookmarkPBs(@AuthenticationPrincipal MyUserDetails myUserDetails,
+                                                                     @RequestParam(defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<PBResponse.PBPageDTO> pageDTO = pbService.getBookmarkPBs(myUserDetails, pageable);
 
         return new ResponseDTO<>(pageDTO);
@@ -108,11 +109,13 @@ public class PBController {
 
     @ApiOperation("PB 검색하기")
     @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "page", value = "0")
     @ApiImplicitParams({@ApiImplicitParam(name = "name", value = "김피비", dataType = "String", paramType = "query")})
     @GetMapping("/pbs")
-    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getPBWithName(@RequestParam(value = "name") String name) {
+    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getPBWithName(@RequestParam(value = "name") String name,
+                                                                    @RequestParam(defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<PBResponse.PBPageDTO> pageDTO = pbService.getPBWithName(name, pageable);
 
         return new ResponseDTO<>(pageDTO);
@@ -121,19 +124,21 @@ public class PBController {
     @ApiOperation("PB 리스트 가져오기(거리순)")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "latitude", value = "127.0000", dataType = "Double", paramType = "query", required = true),
-                        @ApiImplicitParam(name = "longitude", value = "81.1111", dataType = "Double", paramType = "query", required = true),
-                        @ApiImplicitParam(name = "speciality", value = "ETF", dataType = "String", paramType = "query"),
-                        @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query")})
+            @ApiImplicitParam(name = "longitude", value = "81.1111", dataType = "Double", paramType = "query", required = true),
+            @ApiImplicitParam(name = "speciality", value = "ETF", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "page", value = "0")})
     @GetMapping("/list/pb/distance")
     public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getDistancePBList(@RequestParam(value = "latitude") Double latitude,
                                                                         @RequestParam(value = "longitude") Double longitude,
                                                                         @RequestParam(value = "speciality", required = false) PBSpeciality speciality,
-                                                                        @RequestParam(value = "company", required = false) Long company) {
+                                                                        @RequestParam(value = "company", required = false) Long company,
+                                                                        @RequestParam(defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(page, 10);
         PageDTO<PBResponse.PBPageDTO> pageDTO;
 
-        if (speciality != null & company != null) {
+        if (speciality != null && company != null) {
             throw new Exception404("잘못된 요청입니다.");
         } else if (speciality != null) {
             pageDTO = pbService.getSpecialityPBWithDistance(latitude, longitude, speciality, pageable);
@@ -149,15 +154,17 @@ public class PBController {
     @ApiOperation("PB 리스트 가져오기(경력순)")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "speciality", value = "ETF", dataType = "String", paramType = "query"),
-                        @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query")})
+            @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "page", value = "0")})
     @GetMapping("/list/pb/career")
     public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getCareerPBList(@RequestParam(value = "speciality", required = false) PBSpeciality speciality,
-                                             @RequestParam(value = "company", required = false) Long company) {
+                                                                      @RequestParam(value = "company", required = false) Long company,
+                                                                      @RequestParam(defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(page, 10);
         PageDTO<PBResponse.PBPageDTO> pageDTO;
 
-        if (speciality != null & company != null) {
+        if (speciality != null && company != null) {
             throw new Exception404("잘못된 요청입니다.");
         } else if (speciality != null) {
             pageDTO = pbService.getSpecialityPBWithCareer(speciality, pageable);
@@ -172,10 +179,12 @@ public class PBController {
 
     @ApiOperation("맞춤성향 PB 리스트")
     @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "page", value = "0")
     @GetMapping("/user/list/pb")
-    public ResponseDTO<PageDTOV2<PBResponse.PBPageDTO>> getRecommendedPBList(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+    public ResponseDTO<PageDTOV2<PBResponse.PBPageDTO>> getRecommendedPBList(@AuthenticationPrincipal MyUserDetails myUserDetails,
+                                                                             @RequestParam(defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTOV2<PBResponse.PBPageDTO> pageDTO = pbService.getRecommendedPBList(myUserDetails, pageable);
 
         return new ResponseDTO<>(pageDTO);
@@ -184,10 +193,10 @@ public class PBController {
     @ApiOperation("PB 리스트 가져오기(거리순)")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "latitude", value = "127.0000", dataType = "Double", paramType = "query", required = true),
-                        @ApiImplicitParam(name = "longitude", value = "81.1111", dataType = "Double", paramType = "query", required = true)})
+            @ApiImplicitParam(name = "longitude", value = "81.1111", dataType = "Double", paramType = "query", required = true)})
     @GetMapping("/main/pb")
     public ResponseDTO<List<PBResponse.PBSimpleDTO>> getRecommendedPB(@RequestParam(value = "latitude") Double latitude,
-                                        @RequestParam(value = "longitude") Double longitude) {
+                                                                      @RequestParam(value = "longitude") Double longitude) {
 
         List<PBResponse.PBSimpleDTO> pbList = pbService.getTwoPBWithDistance(latitude, longitude);
 
@@ -240,7 +249,7 @@ public class PBController {
     public ResponseDTO updateProfile(@AuthenticationPrincipal MyUserDetails myUserDetails,
                                      @RequestPart(value = "profileFile", required = false) MultipartFile profileFile,
                                      @RequestPart(value = "portfolioFile", required = false) MultipartFile portfolioFile,
-                                     @RequestPart(value = "updateDTO") PBRequest.UpdateProfileInDTO updateDTO){
+                                     @RequestPart(value = "updateDTO") PBRequest.UpdateProfileInDTO updateDTO) {
 
         pbService.updateProfile(myUserDetails, updateDTO, profileFile, portfolioFile);
 
