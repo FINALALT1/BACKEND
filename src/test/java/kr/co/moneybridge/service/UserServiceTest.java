@@ -73,8 +73,6 @@ public class UserServiceTest extends MockDummyEntity {
     private BoardBookmarkRepository boardBookmarkRepository;
     @Mock
     private UserBookmarkRepository userBookmarkRepository;
-    @Mock
-    private UserInvestInfoRepository userInvestInfoRepository;
 
     // 가짜 객체를 만들어서 Mockito 환경에 Load
     @Mock
@@ -95,27 +93,6 @@ public class UserServiceTest extends MockDummyEntity {
     // 진짜 객체를 만들어서 Mockito 환경에 Load
     @Spy
     private BCryptPasswordEncoder passwordEncoder;
-
-//    @Test
-//    public void updatePropensity_test() {
-//        // given
-//        UserRequest.UpdatePropensityInDTO updatePropensityInDTO = new UserRequest.UpdatePropensityInDTO();
-//        updatePropensityInDTO.setQ1(2);
-//        updatePropensityInDTO.setQ6(1);
-//        Long id = 1L;
-//
-//        User user = newMockUser(id, "lee");
-//        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
-//        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-//        when(userInvestInfoRepository.findByUserId(any())).thenReturn(Optional.of(userInvestInfo));
-//
-//        // when
-//        userService.updatePropensity(updatePropensityInDTO, id);
-//
-//        // then
-//        verify(userRepository, times(1)).findById(any());
-//        verify(userInvestInfoRepository, times(1)).findByUserId(any());
-//    }
 
 //    @Test
 //    public void testPropensity_test() {
@@ -147,7 +124,6 @@ public class UserServiceTest extends MockDummyEntity {
     @Test
     public void getMyPage() {
         when(myUserDetails.getMember()).thenReturn(newMockUser(1L, "lee"));
-//        when(reservationRepository.countByUserIdAndProcess(any(), any())).thenReturn(0);
         when(boardRepository.findTwoByBookmarker(any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<>()));
         when(pbRepository.findTwoByBookmarker(any(), any())).thenReturn(new PageImpl<>(new ArrayList<>()));
         when(boardBookmarkRepository.countByBookmarker(any(), any())).thenReturn(0);

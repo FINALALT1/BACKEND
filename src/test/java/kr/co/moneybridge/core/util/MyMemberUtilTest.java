@@ -46,8 +46,8 @@ public class MyMemberUtilTest extends MockDummyEntity {
     @Mock
     private UserAgreementRepository userAgreementRepository;
 
-    @Mock
-    private UserInvestInfoRepository userInvestInfoRepository;
+//    @Mock
+//    private UserInvestInfoRepository userInvestInfoRepository;
 
     @Mock
     private UserBookmarkRepository userBookmarkRepository;
@@ -191,7 +191,6 @@ public class MyMemberUtilTest extends MockDummyEntity {
         User user2 = newMockUser(2L, "han");
         UserAgreement userAgreement1 = newMockUserAgreement(1L, user, UserAgreementType.REQUIRED);
         UserAgreement userAgreement2 = newMockUserAgreement(2L, user, UserAgreementType.OPTIONAL);
-        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
 
         Company company = newMockCompany(1L, "미래에셋증권");
         Branch branch1 = newMockBranch(1L, company, 0);
@@ -232,7 +231,6 @@ public class MyMemberUtilTest extends MockDummyEntity {
         // then
         verify(userRepository, times(1)).deleteById(id);
         verify(userAgreementRepository, times(1)).deleteByUserId(id);
-        verify(userInvestInfoRepository, times(1)).deleteByUserId(id);
         verify(userBookmarkRepository, times(1)).deleteByUserId(id);
         verify(boardBookmarkRepository, times(1)).deleteByBookmarker(id, BookmarkerRole.USER);
         verify(reReplyRepository, times(1)).deleteByReplyId(reply1.getId());

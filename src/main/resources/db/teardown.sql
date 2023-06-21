@@ -19,6 +19,5 @@ truncate table style_tb;
 truncate table user_tb;
 truncate table user_agreement_tb;
 truncate table user_bookmark_tb;
-truncate table user_invest_info_tb;
 -- 모든 제약 조건 활성화
 SET REFERENTIAL_INTEGRITY TRUE;

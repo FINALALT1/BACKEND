@@ -65,40 +65,20 @@ public class UserService {
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final UserBookmarkRepository userBookmarkRepository;
     private final PBRepository pbRepository;
-    private final UserInvestInfoRepository userInvestInfoRepository;
     private final MyMsgUtil myMsgUtil;
 
-//    @MyLog
-//    @Transactional
-//    public void updatePropensity(UserRequest.UpdatePropensityInDTO updatePropensityInDTO, Long id) {
-//        User userPS = userRepository.findById(id).orElseThrow(
-//                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
-//        UserInvestInfo userInvestInfoPS = userInvestInfoRepository.findByUserId(id)
-//                .orElseThrow(() -> new Exception404("해당 유저의 투자 성향 정보를 찾을 수 없습니다"));
-//        try{
-//            userInvestInfoPS.update(updatePropensityInDTO);
-//            userPS.updatePropensity(userInvestInfoPS.getPropensity());
-//        }catch (Exception e){
-//            throw new Exception500("투자 성향 테스트 결과 저장 실패 : " + e.getMessage());
-//        }
-//    }
-//
-//    @MyLog
-//    @Transactional
-//    public void testPropensity(UserRequest.TestPropensityInDTO testPropensityInDTO, Long id) {
-//        User userPS = userRepository.findById(id).orElseThrow(
-//                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
-//        Optional<UserInvestInfo> userInvestInfoPS = userInvestInfoRepository.findByUserId(id);
-//        if(userInvestInfoPS.isPresent()){
-//            throw new Exception500("이미 투자 성향 테스트 정보가 있습니다");
-//        }
-//        try{
-//            UserInvestInfo userInvestInfo = userInvestInfoRepository.save(testPropensityInDTO.toEntity(userPS));
-//            userPS.updatePropensity(userInvestInfo.getPropensity());
-//        }catch (Exception e){
-//            throw new Exception500("투자 성향 테스트 결과 저장 실패 : " + e.getMessage());
-//        }
-//    }
+    @MyLog
+    @Transactional
+    public void testPropensity(UserRequest.TestPropensityInDTO testPropensityInDTO, Long id) {
+        User userPS = userRepository.findById(id).orElseThrow(
+                () -> new Exception404("해당 유저를 찾을 수 없습니다"));
+        userPS.testPropensity(testPropensityInDTO.getScore());
+    }
+
+    @MyLog
+    public UserResponse.AccountOutDTO getAccount(MyUserDetails myUserDetails) {
+        return new UserResponse.AccountOutDTO(myUserDetails.getMember());
+    }
 
     @MyLog
     public UserResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {

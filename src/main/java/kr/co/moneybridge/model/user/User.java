@@ -92,4 +92,12 @@ public class User implements Member {
         if(isAdmin) this.role = Role.ADMIN;
         else this.role = Role.USER;
     }
+
+    public void testPropensity(int score) {
+        this.propensity = score >= 27 ? UserPropensity.SPECULATIVE :
+                score >= 24 ? UserPropensity.AGGRESSIVE :
+                        score >= 18 ? UserPropensity.BALANCED :
+                                score >= 14 ? UserPropensity.CAUTIOUS :
+                                        UserPropensity.CONSERVATIVE;
+    }
 }

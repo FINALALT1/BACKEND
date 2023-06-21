@@ -14,6 +14,24 @@ import lombok.Setter;
 import java.util.List;
 
 public class UserResponse {
+    @ApiModel(description = "로그인 계정 정보 응답 데이터")
+    @Setter
+    @Getter
+    public static class AccountOutDTO {
+        @ApiModelProperty(example = "id")
+        private Long id;
+        @ApiModelProperty(example = "USER", value = "관리자도 USER로 줌")
+        private Role role;
+        @ApiModelProperty(example = "김투자")
+        private String name;
+
+        public AccountOutDTO(Member member) {
+            this.id = member.getId();
+            this.role = member.getRole() == Role.PB ? Role.PB : Role.USER;
+            this.name = member.getName();
+        }
+    }
+
     @ApiModel
     @Setter
     @Getter
