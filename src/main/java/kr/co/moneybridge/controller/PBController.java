@@ -199,8 +199,9 @@ public class PBController {
                                                                       @RequestParam(value = "longitude") Double longitude) {
 
         List<PBResponse.PBSimpleDTO> pbList = pbService.getTwoPBWithDistance(latitude, longitude);
+        PBResponse.PBListOutDTO listOutDTO = new PBResponse.PBListOutDTO(pbList);
 
-        return new ResponseDTO(pbList);
+        return new ResponseDTO(listOutDTO);
     }
 
     @ApiOperation("PB 프로필가져오기(비회원)")
@@ -259,11 +260,12 @@ public class PBController {
     @ApiOperation("유사한 PB 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/auth/{pbId}/same")
-    public ResponseDTO getSamePBs(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable(value = "pbId") Long pbId) {
+    public ResponseDTO<List<PBResponse.PBPageDTO>> getSamePBs(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable(value = "pbId") Long pbId) {
 
         List<PBResponse.PBPageDTO> list = pbService.getSamePBs(myUserDetails, pbId);
+        PBResponse.PBListOutDTO pbListOutDTO = new PBResponse.PBListOutDTO(list);
 
-        return new ResponseDTO<>(list);
+        return new ResponseDTO(pbListOutDTO);
     }
 
 }
