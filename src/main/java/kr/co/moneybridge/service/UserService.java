@@ -104,9 +104,9 @@ public class UserService {
         User user = (User) myUserDetails.getMember();
         UserResponse.StepDTO step = new UserResponse.StepDTO(user);
         UserResponse.ReservationCountDTO reservationCount = new UserResponse.ReservationCountDTO(
-                reservationRepository.countByProcess(ReservationProcess.APPLY),
-                reservationRepository.countByProcess(ReservationProcess.CONFIRM),
-                reservationRepository.countByProcess(ReservationProcess.COMPLETE));
+                reservationRepository.countByPBIdAndProcess(user.getId(), ReservationProcess.APPLY),
+                reservationRepository.countByPBIdAndProcess(user.getId(), ReservationProcess.CONFIRM),
+                reservationRepository.countByPBIdAndProcess(user.getId(), ReservationProcess.COMPLETE));
 
         Pageable topTwo = PageRequest.of(0, 2);
         Page<UserResponse.BookmarkDTO> boardBookmarkTwo = boardRepository.findTwoByBookmarker(BookmarkerRole.USER, user.getId(), topTwo);
