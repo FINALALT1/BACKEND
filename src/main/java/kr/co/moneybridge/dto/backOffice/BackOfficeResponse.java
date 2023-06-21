@@ -84,15 +84,15 @@ public class BackOfficeResponse {
     @Setter
     public static class ReservationTotalCountDTO {
         @ApiModelProperty(example = "2", value = "총 상담 신청 건수")
-        private Integer apply;
+        private Long apply;
         @ApiModelProperty(example = "3", value = "총 상담 확정 건수")
-        private Integer confirm;
+        private Long confirm;
         @ApiModelProperty(example = "2", value = "총 상담 완료 건수")
-        private Integer complete;
+        private Long complete;
         @ApiModelProperty(example = "2", value = "총 후기 작성 건수")
         private Long review;
 
-        public ReservationTotalCountDTO(Integer apply, Integer confirm, Integer complete, Long review) {
+        public ReservationTotalCountDTO(Long apply, Long confirm, Long complete, Long review) {
             this.apply = apply;
             this.confirm = confirm;
             this.complete = complete;

@@ -22,6 +22,9 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -160,5 +163,21 @@ public class S3Util {
                 Files.write(dest, imageInByte);
             }
         };
+    }
+
+    public void deleteLatestFileWithSuffixFromS3Bucket(String suffix) {
+        ObjectListing objectListing = s3Client.listObjects(bucket);
+        List<S3ObjectSummary> objectSummaries = objectListing.getObjectSummaries();
+
+        Comparator<S3ObjectSummary> lastModifiedComparator = Comparator.comparing(S3ObjectSummary::getLastModified).reversed();
+        Optional<S3ObjectSummary> latestFileOptional = objectSummaries.stream()
+                .filter(objectSummary -> objectSummary.getKey().endsWith(suffix))
+                .max(lastModifiedComparator);
+
+        if (latestFileOptional.isPresent()) {
+            S3ObjectSummary latestFile = latestFileOptional.get();
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, latestFile.getKey());
+            s3Client.deleteObject(deleteObjectRequest);
+        }
     }
 }

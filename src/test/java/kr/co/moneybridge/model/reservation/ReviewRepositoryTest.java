@@ -66,6 +66,31 @@ public class ReviewRepositoryTest extends DummyEntity {
     }
 
     @Test
+    public void find_by_reservation_id_test() throws Exception {
+        // given
+        Long id = 1L;
+
+        // when
+        Optional<Review> review = reviewRepository.findByReservationId(id);
+
+        // then
+        assertThat(review.get().getId()).isEqualTo(id);
+        assertThat(review.get().getAdherence()).isEqualTo(ReviewAdherence.EXCELLENT);
+        assertThat(review.get().getContent()).isEqualTo("content 입니다");
+        assertThat(review.get().getReservation().getId()).isInstanceOf(Long.class);
+    }
+
+    @Test
+    public void count_test() {
+
+        // when
+        Long count = reviewRepository.count();
+
+        // then
+        assertThat(count).isEqualTo(5);
+    }
+
+    @Test
     public void find_by_id_test() throws Exception {
         // given
         Long id = 1L;
