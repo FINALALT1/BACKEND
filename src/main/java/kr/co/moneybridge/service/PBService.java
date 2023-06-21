@@ -165,7 +165,7 @@ public class PBService {
         }
         // S3에 사진 저장
         try {
-            String path = s3Util.upload(s3Util.resize(businessCard, 450, 250)); // 명함 픽셀 450 * 250
+            String path = s3Util.upload(s3Util.resize(businessCard, 450, 250), "business-card"); // 명함 픽셀 450 * 250
             System.out.println(path);
             PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
@@ -430,13 +430,13 @@ public class PBService {
 
         //프로필 사진 들어온경우
         if (profileFile != null && !profileFile.isEmpty()) {
-            String profilePath = s3Util.upload(profileFile);
+            String profilePath = s3Util.upload(s3Util.resize(profileFile,500,500), "profile");
             pb.updateProfile(profilePath);
         }
 
         //포트폴리오파일 들어온경우
         if (portfolioFile != null && !portfolioFile.isEmpty()) {
-            String portfolioPath = s3Util.upload(portfolioFile);
+            String portfolioPath = s3Util.upload(portfolioFile, "portfolio");
             portfolio.updateFile(portfolioPath);
         }
 

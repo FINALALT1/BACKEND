@@ -71,7 +71,7 @@ public class MyMemberUtil {
                 userAgreementRepository.deleteByUserId(id);
                 userRepository.deleteById(id);
             }catch (Exception e){
-                new Exception500("투자자 계정 삭제 실패했습니다");
+                new Exception500("투자자 계정 삭제 실패했습니다" + e.getMessage());
             }
         } else if(role.equals(Role.PB)){
             try{
@@ -108,18 +108,25 @@ public class MyMemberUtil {
 
                 boardBookmarkRepository.deleteByBookmarker(id, BookmarkerRole.PB);
                 userBookmarkRepository.deleteByPBId(id);
-                //s3에서 액셀데이터도 삭제(추가 필요)
+
                 careerRepository.deleteByPBId(id);
                 awardRepository.deleteByPBId(id);
                 pbAgreementRepository.deleteByPBId(id);
-                // s3에서 프로필 사진도 삭제(추가 필요)
+                //s3에서 액셀데이터도 삭제
+                Optional<String> file = portfolioRepository.findFileByPBId(id);
+                if(file.isPresent()){
+                    s3Util.delete(file.get());
+                }
                 portfolioRepository.deleteByPBId(id);
+                PB pb = pbRepository.findById(id).get();
                 // s3에서 명함사진도 삭제
-                s3Util.delete(pbRepository.findBusinessCardById(id));
+                s3Util.delete(pb.getBusinessCard());
+                // s3에서 프로필 사진도 삭제(추가 필요)
+                s3Util.delete(pb.getProfile());
                 pbRepository.deleteById(id);
 
             }catch (Exception e){
-                new Exception500("PB 계정 삭제 실패했습니다");
+                new Exception500("PB 계정 삭제 실패했습니다" + e.getMessage());
             }
         }
     }

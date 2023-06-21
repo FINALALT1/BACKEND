@@ -17,9 +17,6 @@ public interface PBRepository extends JpaRepository<PB, Long> {
     @Query("select p from PB p where p.status = :status")
     Page<PB> findAllByStatus(@Param("status") PBStatus status, Pageable pageable);
 
-    @Query("select p.businessCard from PB p where p.id = :id")
-    String findBusinessCardById(@Param("id") Long id);
-
     @Query("select p from PB p where p.id in :list")
     List<PB> findByIdIn(@Param("list") List<Long> list);
 

@@ -28,7 +28,7 @@ import java.util.UUID;
 @Component
 public class S3Util {
     private AmazonS3 s3Client;
-    private String cloudFrontDomain = "https://d23znr2pczcvf6.cloudfront.net";
+    private String cloudFrontDomain = "https://d2ky5wm6akosox.cloudfront.net";
 
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
@@ -52,11 +52,11 @@ public class S3Util {
     }
 
     // s3에 파일 업로드
-    public String upload(MultipartFile file) {
+    public String upload(MultipartFile file, String folderName) {
         try{
             UUID uuid = UUID.randomUUID();
             String originalFilename = file.getOriginalFilename();
-            String uuidFilename = uuid + "_" + originalFilename;
+            String uuidFilename = folderName + "/" + uuid + "_" + originalFilename;
 
             InputStream inputStream = file.getInputStream();
             ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -74,7 +74,7 @@ public class S3Util {
 
     // s3에서 파일 삭제
     public void delete(String profile) {
-        int index = profile.lastIndexOf("/");
+        int index = cloudFrontDomain.length();
         String fileName = profile.substring(index + 1);
 
         s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
@@ -105,7 +105,7 @@ public class S3Util {
     }
 
     // MultipartFile로 바꾸기
-    public MultipartFile toMultipartFile(BufferedImage image, MultipartFile origin) throws IOException {
+    private MultipartFile toMultipartFile(BufferedImage image, MultipartFile origin) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String fileExtension = origin.getContentType().split("/")[1];
         ImageIO.write(image, fileExtension, baos); // use JPEG or PNG depending on your image
