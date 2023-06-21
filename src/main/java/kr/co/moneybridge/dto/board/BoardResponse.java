@@ -169,10 +169,10 @@ public class BoardResponse {
 
     @Getter
     @Setter
-    public static class BoardListOutDTO {
-        private List<BoardResponse.BoardPageDTO> list;
+    public static class BoardListOutDTO<T> {
+        private List<T> list;
 
-        public BoardListOutDTO(List<BoardPageDTO> list) {
+        public BoardListOutDTO(List<T> list) {
             this.list = list;
         }
     }

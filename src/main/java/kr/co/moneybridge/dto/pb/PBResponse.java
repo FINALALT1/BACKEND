@@ -455,4 +455,15 @@ public class PBResponse {
         }
     }
 
+    @Getter
+    @Setter
+    public static class PBListOutDTO<T> {
+
+        private List<T> list;
+
+        public PBListOutDTO(List<T> list) {
+            this.list = list;
+        }
+    }
+
 }
