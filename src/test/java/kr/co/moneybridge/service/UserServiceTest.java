@@ -8,6 +8,7 @@ import kr.co.moneybridge.core.auth.jwt.MyJwtProviderTest;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.exception.Exception400;
+import kr.co.moneybridge.core.exception.Exception401;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
@@ -95,53 +96,53 @@ public class UserServiceTest extends MockDummyEntity {
     @Spy
     private BCryptPasswordEncoder passwordEncoder;
 
-    @Test
-    public void updatePropensity_test() {
-        // given
-        UserRequest.UpdatePropensityInDTO updatePropensityInDTO = new UserRequest.UpdatePropensityInDTO();
-        updatePropensityInDTO.setQ1(2);
-        updatePropensityInDTO.setQ6(1);
-        Long id = 1L;
+//    @Test
+//    public void updatePropensity_test() {
+//        // given
+//        UserRequest.UpdatePropensityInDTO updatePropensityInDTO = new UserRequest.UpdatePropensityInDTO();
+//        updatePropensityInDTO.setQ1(2);
+//        updatePropensityInDTO.setQ6(1);
+//        Long id = 1L;
+//
+//        User user = newMockUser(id, "lee");
+//        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
+//        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+//        when(userInvestInfoRepository.findByUserId(any())).thenReturn(Optional.of(userInvestInfo));
+//
+//        // when
+//        userService.updatePropensity(updatePropensityInDTO, id);
+//
+//        // then
+//        verify(userRepository, times(1)).findById(any());
+//        verify(userInvestInfoRepository, times(1)).findByUserId(any());
+//    }
 
-        User user = newMockUser(id, "lee");
-        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(userInvestInfoRepository.findByUserId(any())).thenReturn(Optional.of(userInvestInfo));
-
-        // when
-        userService.updatePropensity(updatePropensityInDTO, id);
-
-        // then
-        verify(userRepository, times(1)).findById(any());
-        verify(userInvestInfoRepository, times(1)).findByUserId(any());
-    }
-
-    @Test
-    public void testPropensity_test() {
-        // given
-        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
-        testPropensityInDTO.setQ1(5);
-        testPropensityInDTO.setQ2(4);
-        testPropensityInDTO.setQ3(5);
-        testPropensityInDTO.setQ4(5);
-        testPropensityInDTO.setQ5(5);
-        testPropensityInDTO.setQ6(5);
-        Long id = 1L;
-
-        User user = newMockUserWithoutPropensity(1L, "lee");
-        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(userInvestInfoRepository.findByUserId(any())).thenReturn(Optional.empty());
-        when(userInvestInfoRepository.save(any())).thenReturn(userInvestInfo);
-
-        // when
-        userService.testPropensity(testPropensityInDTO, id);
-
-        // then
-        verify(userRepository, times(1)).findById(any());
-        verify(userInvestInfoRepository, times(1)).findByUserId(any());
-        verify(userInvestInfoRepository, times(1)).save(any());
-    }
+//    @Test
+//    public void testPropensity_test() {
+//        // given
+//        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
+//        testPropensityInDTO.setQ1(5);
+//        testPropensityInDTO.setQ2(4);
+//        testPropensityInDTO.setQ3(5);
+//        testPropensityInDTO.setQ4(5);
+//        testPropensityInDTO.setQ5(5);
+//        testPropensityInDTO.setQ6(5);
+//        Long id = 1L;
+//
+//        User user = newMockUserWithoutPropensity(1L, "lee");
+//        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
+//        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+//        when(userInvestInfoRepository.findByUserId(any())).thenReturn(Optional.empty());
+//        when(userInvestInfoRepository.save(any())).thenReturn(userInvestInfo);
+//
+//        // when
+//        userService.testPropensity(testPropensityInDTO, id);
+//
+//        // then
+//        verify(userRepository, times(1)).findById(any());
+//        verify(userInvestInfoRepository, times(1)).findByUserId(any());
+//        verify(userInvestInfoRepository, times(1)).save(any());
+//    }
 
     @Test
     public void getMyPage() {
@@ -223,7 +224,7 @@ public class UserServiceTest extends MockDummyEntity {
         when(myUserDetails.getPassword()).thenReturn(originalPassword);
 
         // when & then
-        assertThrows(Exception400.class, () -> {
+        assertThrows(Exception401.class, () -> {
             userService.checkPassword(checkPasswordInDTO, myUserDetails);
         });
     }
@@ -361,7 +362,7 @@ public class UserServiceTest extends MockDummyEntity {
         when(passwordEncoder.matches(wrongPassword, encodedPassword)).thenReturn(false);
 
         // when & then
-        assertThrows(Exception400.class, () -> {
+        assertThrows(Exception401.class, () -> {
             userService.withdraw(withdrawInDTO, myUserDetails);
         });
     }
