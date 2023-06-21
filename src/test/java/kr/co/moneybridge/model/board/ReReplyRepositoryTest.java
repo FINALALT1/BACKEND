@@ -2,7 +2,6 @@ package kr.co.moneybridge.model.board;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.board.BoardResponse;
-import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -12,22 +11,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
 @DataJpaTest
-public class BoardRepositoryTest extends DummyEntity {
+class ReReplyRepositoryTest extends DummyEntity {
+
     @Autowired
     BoardRepository boardRepository;
     @Autowired
@@ -39,79 +37,67 @@ public class BoardRepositoryTest extends DummyEntity {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private BoardBookmarkRepository boardBookmarkRepository;
+    private ReplyRepository replyRepository;
+    @Autowired
+    private ReReplyRepository reReplyRepository;
     @Autowired
     private EntityManager em;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         em.createNativeQuery("ALTER TABLE board_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         em.createNativeQuery("ALTER TABLE company_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         em.createNativeQuery("ALTER TABLE branch_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         em.createNativeQuery("ALTER TABLE pb_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
-        em.createNativeQuery("ALTER TABLE board_bookmark_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE reply_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE rereply_tb ALTER COLUMN  `id` RESTART WITH 1").executeUpdate();
         Company c = companyRepository.save(newCompany("미래에셋증권"));
         Branch b = branchRepository.save(newBranch(c, 0));
         PB pb = pbRepository.save(newPB("김피비", b));
         Board board = boardRepository.save(newBoard("게시글", pb));
-        User user = userRepository.save(newUser("lee"));
-        boardBookmarkRepository.save(newBoardBookmark(user, board));
-
+        User user = userRepository.save(newUser("김회원"));
+        Reply reply = replyRepository.save(newUserReply(board, user));
+        ReReply reReply1 = reReplyRepository.save(newPBReReply(reply, pb));
+        ReReply reReply2 = reReplyRepository.save(newUserReReply(reply, user));
         em.clear();
     }
 
     @Test
-    public void findTwoByBookMarker() {
-        // given
-        String name = "김피비";
-        String phoneNumber = "01012345678";
+    void deleteByReplyId() {
+        //when
+        reReplyRepository.deleteByReplyId(1L);
 
-        // when
-        Pageable topTwo = PageRequest.of(0, 2);
-        Page<UserResponse.BookmarkDTO> boardBookmarkTwo = boardRepository.findTwoByBookmarker(BookmarkerRole.USER, 1L, topTwo);
-
-        // then
-        assertThat(boardBookmarkTwo.getContent().get(0).getId()).isEqualTo(1L);
-        assertThat(boardBookmarkTwo.getContent().get(0).getThumbnail()).isEqualTo("thumbnail.png");
+        //then
+        List<ReReply> list = reReplyRepository.findAll();
+        assertThat(list.size()).isEqualTo(0);
     }
 
     @Test
-    void findByTitle() {
+    void deleteByAuthor() {
         //when
-        Page<BoardResponse.BoardPageDTO> page = boardRepository.findByTitle("게시글", BoardStatus.ACTIVE, PageRequest.of(0, 2));
+        reReplyRepository.deleteByAuthor(1L, ReplyAuthorRole.USER);
 
         //then
-        assertThat(page).isNotEmpty();
-        assertThat(page.getContent().get(0).getTitle()).contains("게시글");
+        List<ReReply> list = reReplyRepository.findAll();
+        assertThat(list.size()).isEqualTo(1);
     }
 
     @Test
-    void findByPbName() {
+    void findUserReReplyByReplyId() {
         //when
-        Page<BoardResponse.BoardPageDTO> page = boardRepository.findByPbName("김피비", BoardStatus.ACTIVE, PageRequest.of(0, 2));
+        List<BoardResponse.ReReplyOutDTO> list = reReplyRepository.findUserReReplyByReplyId(1L);
 
         //then
-        assertThat(page).isNotEmpty();
-        assertThat(page.getContent().get(0).getTitle()).contains("게시글");
+        assertThat(list.size()).isEqualTo(1);
     }
 
     @Test
-    void findAll() {
+    void findPBReReplyByReplyId() {
         //when
-        Page<BoardResponse.BoardPageDTO> page = boardRepository.findAll(BoardStatus.ACTIVE, PageRequest.of(0, 2));
+        List<BoardResponse.ReReplyOutDTO> list = reReplyRepository.findPBReReplyByReplyId(1L);
 
         //then
-        assertThat(page).isNotEmpty();
-        assertThat(page.getContent().size()).isEqualTo(1);
-    }
-
-    @Test
-    void findByIdAndPbId() {
-        //when
-        Optional<Board> board = boardRepository.findByIdAndPbId(1L, 1L);
-
-        //then
-        assertThat(board).isPresent();
+        assertThat(list.size()).isEqualTo(1);
     }
 }
