@@ -182,6 +182,43 @@ public class PBService {
         }
     }
 
+    // 이미지 리사이징
+    private MultipartFile resizeAttachment(String fileName, String fileFormatName, MultipartFile multipartFile,
+                                           int targetWidth, int targetHeight) {
+
+        try {
+            // MultipartFile -> BufferedImage Convert
+            BufferedImage image = ImageIO.read(multipartFile.getInputStream());
+
+            // 원하는 px로 Width와 Height 수정
+            int originWidth = image.getWidth();
+            int originHeight = image.getHeight();
+
+            // origin 이미지가 resizing될 사이즈보다 작을 경우 resizing 작업 안 함
+            if (originWidth < targetWidth && originHeight < targetHeight)
+                return multipartFile;
+
+            MarvinImage imageMarvin = new MarvinImage(image);
+
+            Scale scale = new Scale();
+            scale.load();
+            scale.setAttribute("newWidth", targetWidth);
+            scale.setAttribute("newHeight", targetHeight);
+            scale.process(imageMarvin.clone(), imageMarvin, null, null, false);
+
+            BufferedImage imageNoAlpha = imageMarvin.getBufferedImageNoAlpha();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(imageNoAlpha, fileFormatName, baos);
+            baos.flush();
+
+            return new MockMultipartFile(fileName, baos.toByteArray());
+
+        } catch (IOException e) {
+            // 파일 리사이징 실패시 예외 처리
+            throw new FailResizeAttachment();
+        }
+    }
+
     //북마크한 pb 목록 가져오기
     public PageDTO<PBResponse.PBPageDTO> getBookmarkPBs(MyUserDetails myUserDetails, Pageable pageable) {
 
