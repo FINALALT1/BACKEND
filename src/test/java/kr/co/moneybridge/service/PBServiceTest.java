@@ -505,4 +505,32 @@ class PBServiceTest extends MockDummyEntity {
         assertThat(result).isEqualTo(dto);
         assertThat(result.getBranchName()).isEqualTo(dto.getBranchName());
     }
+
+    @Test
+    @DisplayName("유사 PB 가져오기")
+    void getSamePBs() {
+        //given
+        Long id = 1L;
+        Member member = PB.builder()
+                .role(Role.PB).id(1L).build();
+        MyUserDetails myUserDetails = new MyUserDetails(member);
+        Company company = newMockCompany(1L, "미래에셋");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(id, "김피비", branch);
+        PBSpeciality speciality1 = PBSpeciality.BOND;
+        PBSpeciality speciality2 = PBSpeciality.ETF;
+        List<PBResponse.PBPageDTO> list = new ArrayList<>();
+        PBResponse.PBPageDTO dto = new PBResponse.PBPageDTO(pb, branch, company);
+        list.add(dto);
+
+        //stub
+        when(pbRepository.findById(id)).thenReturn(Optional.of(pb));
+        when(pbRepository.findBySpeciality1(speciality1, PageRequest.of(0, 2))).thenReturn(list);
+        //when
+        List<PBResponse.PBPageDTO> result = pbService.getSamePBs(myUserDetails, id);
+
+        //then
+        assertThat(result.size()).isEqualTo(list.size());
+        assertThat(result.get(0).getId()).isEqualTo(list.get(0).getId());
+    }
 }
