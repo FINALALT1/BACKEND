@@ -146,7 +146,7 @@ public class UserServiceTest extends MockDummyEntity {
     @Test
     public void getMyPage() {
         when(myUserDetails.getMember()).thenReturn(newMockUser(1L, "lee"));
-        when(reservationRepository.countByProcess(any())).thenReturn(0);
+//        when(reservationRepository.countByUserIdAndProcess(any(), any())).thenReturn(0);
         when(boardRepository.findTwoByBookmarker(any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<>()));
         when(pbRepository.findTwoByBookmarker(any(), any())).thenReturn(new PageImpl<>(new ArrayList<>()));
         when(boardBookmarkRepository.countByBookmarker(any(), any())).thenReturn(0);
