@@ -61,11 +61,12 @@ public class Board {
         this.clickCount++;
     }
 
-    public void modifyBoard(BoardRequest.BoardInDTO boardInDTO) {
-        this.title = boardInDTO.getTitle();
-        this.thumbnail = boardInDTO.getThumbnail();
-        this.content = boardInDTO.getContent();
-        this.tag1 = boardInDTO.getTag1();
-        this.tag2 = boardInDTO.getTag2();
+    public void modifyBoard(BoardRequest.BoardUpdateDTO boardUpdateDTO) {
+        this.title = boardUpdateDTO.getTitle();
+        this.content = boardUpdateDTO.getContent();
+        this.tag1 = boardUpdateDTO.getTag1();
+        this.tag2 = boardUpdateDTO.getTag2();
     }
+
+    public void updateThumbnail(String thumbnail) { this.thumbnail = thumbnail; }
 }

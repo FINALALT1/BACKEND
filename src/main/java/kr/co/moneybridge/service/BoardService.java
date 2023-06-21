@@ -2,6 +2,7 @@ package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.*;
+import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,7 @@ public class BoardService {
     private final PBRepository pbRepository;
     private final ReplyRepository replyRepository;
     private final ReReplyRepository reReplyRepository;
+    private final S3Util s3Util;
 
     //컨텐츠검색
     public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithTitle(String title, Pageable pageable) {
@@ -190,30 +193,43 @@ public class BoardService {
 
     //컨텐츠 저장하기
     @Transactional
-    public Long saveBoard(BoardRequest.BoardInDTO boardInDTO, MyUserDetails myUserDetails, BoardStatus boardStatus) {
+    public Long saveBoard(MultipartFile thumbnailFile, BoardRequest.BoardInDTO boardInDTO, MyUserDetails myUserDetails, BoardStatus boardStatus) {
 
         PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB 입니다"));
 
-        if (boardInDTO.getThumbnail() == null || boardInDTO.getThumbnail().isEmpty()) {
-            boardInDTO.setThumbnail(defaultThumbnail); //기본사진
-        }
-        try {
-            Long id = boardRepository.save(Board.builder()
-                    .pb(pb)
-                    .title(boardInDTO.getTitle())
-                    .thumbnail(boardInDTO.getThumbnail())
-                    .content(boardInDTO.getContent())
-                    .tag1(boardInDTO.getTag1())
-                    .tag2(boardInDTO.getTag2())
-                    .clickCount(0L)
-                    .status(boardStatus)
-                    .build()).getId();
+        Board board = Board.builder()
+                .pb(pb)
+                .title(boardInDTO.getTitle())
+                .thumbnail(defaultThumbnail)
+                .content(boardInDTO.getContent())
+                .tag1(boardInDTO.getTag1())
+                .tag2(boardInDTO.getTag2())
+                .clickCount(0L)
+                .status(boardStatus)
+                .build();
 
-            return id;
-        } catch (Exception e) {
-            throw new Exception500("컨텐츠 저장 실패 : " + e.getMessage());
+        if (thumbnailFile == null || thumbnailFile.isEmpty()) {
+            try {
+                Long id = boardRepository.save(board).getId();
+
+                return id;
+            } catch (Exception e) {
+                throw new Exception500("컨텐츠 저장 실패 : " + e.getMessage());
+            }
+        } else {
+            //s3 업로드 로직
+            try {
+                String thumbnail = s3Util.upload(s3Util.resize(thumbnailFile, 500, 500), "thumbnail");
+                board.updateThumbnail(thumbnail);
+                Long id = boardRepository.save(board).getId();
+
+                return id;
+            } catch (Exception e) {
+                throw new Exception500("컨텐츠 저장 실패 : " + e.getMessage());
+            }
         }
+
     }
 
     //임시저장 컨텐츠들 가져오기
@@ -255,19 +271,30 @@ public class BoardService {
 
     //컨텐츠 수정하기/임시저장컨텐츠 업로드하기
     @Transactional
-    public void putBoard(MyUserDetails myUserDetails, BoardRequest.BoardInDTO boardInDTO, Long boardId) {
+    public void putBoard(MultipartFile thumbnailFile, MyUserDetails myUserDetails, BoardRequest.BoardUpdateDTO boardUpdateDTO, Long boardId) {
 
         PB pb = pbRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 PB 입니다"));
         Board board = boardRepository.findByIdAndPbId(boardId, pb.getId()).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다"));
 
-        if (boardInDTO.getThumbnail() == null || boardInDTO.getThumbnail().isEmpty()) {
-            boardInDTO.setThumbnail(defaultThumbnail);
-        }
-
         try {
-            board.modifyBoard(boardInDTO);
+            //변경할 썸네일 사진 들어온 경우
+            if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+                String thumbnail = s3Util.upload(s3Util.resize(thumbnailFile, 500, 500), "thumbnail");
+                board.updateThumbnail(thumbnail);
+                board.modifyBoard(boardUpdateDTO);
+            } else {
+                //기존 썸네일 삭제 요청온 경우
+                if (boardUpdateDTO.getDeleteThumbnail()) {
+                    s3Util.delete(board.getThumbnail());
+                    board.updateThumbnail(defaultThumbnail);
+                    board.modifyBoard(boardUpdateDTO);
+                //기존 썸네일 삭제 요청 안온경우
+                } else {
+                    board.modifyBoard(boardUpdateDTO);
+                }
+            }
         } catch (Exception e) {
-            throw new Exception500("컨텐츠 업데이트 실패");
+            throw new Exception500("컨텐츠 업데이트 실패 : " + e.getMessage());
         }
     }
 
@@ -349,7 +376,7 @@ public class BoardService {
         }
 
         for (BoardResponse.BoardPageDTO dto : boardList) {
-            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(dto.getId(),BookmarkerRole.USER));
+            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(dto.getId(), BookmarkerRole.USER));
         }
 
         return boardList;
@@ -358,7 +385,7 @@ public class BoardService {
     //컨텐츠 가져오기(성향X)
     public List<BoardResponse.BoardPageDTO> getTwoBoards() {
 
-        Pageable pageable= PageRequest.of(0, 2, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(0, 2, Sort.by("id").descending());
         List<BoardResponse.BoardPageDTO> boardList = boardRepository.findTwoBoards(pageable);
 
         return boardList;

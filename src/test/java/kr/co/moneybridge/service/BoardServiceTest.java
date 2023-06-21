@@ -3,6 +3,7 @@ package kr.co.moneybridge.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
+import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
@@ -21,6 +22,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -61,6 +63,10 @@ class BoardServiceTest extends MockDummyEntity {
     private Company company;
     @Mock
     private User user;
+    @Mock
+    private MultipartFile multipartFile;
+    @Mock
+    private S3Util s3Util;
     @Spy
     private ObjectMapper om;
 
@@ -335,7 +341,6 @@ class BoardServiceTest extends MockDummyEntity {
         BoardRequest.BoardInDTO boardInDTO = new BoardRequest.BoardInDTO();
         boardInDTO.setTitle("제목입니다");
         boardInDTO.setContent("컨텐츠입니다");
-        boardInDTO.setThumbnail("thumbnail.png");
         boardInDTO.setTag1("tag1");
         boardInDTO.setTag2("tag2");
 
@@ -348,7 +353,7 @@ class BoardServiceTest extends MockDummyEntity {
         //when
 
         //then
-        Assertions.assertThatCode(() -> boardService.saveBoard(boardInDTO, myUserDetails, BoardStatus.ACTIVE)).doesNotThrowAnyException();
+        Assertions.assertThatCode(() -> boardService.saveBoard(multipartFile, boardInDTO, myUserDetails, BoardStatus.ACTIVE)).doesNotThrowAnyException();
     }
 
     @Test
@@ -426,9 +431,9 @@ class BoardServiceTest extends MockDummyEntity {
                 .status(BoardStatus.TEMP)
                 .build();
 
-        BoardRequest.BoardInDTO boardInDTO = new BoardRequest.BoardInDTO();
-        boardInDTO.setTitle("업데이트된 타이틀입니다.");
-        boardInDTO.setContent("업데이트된 제목입니다.");
+        BoardRequest.BoardUpdateDTO boardUpdateDTO = new BoardRequest.BoardUpdateDTO();
+        boardUpdateDTO.setTitle("업데이트된 타이틀입니다.");
+        boardUpdateDTO.setContent("업데이트된 제목입니다.");
 
         //stub
         Mockito.when(myUserDetails.getMember()).thenReturn(member);
@@ -438,11 +443,11 @@ class BoardServiceTest extends MockDummyEntity {
         Mockito.when(boardRepository.findByIdAndPbId(1L, 1L)).thenReturn(Optional.ofNullable(board));
 
         //when
-        Assertions.assertThatCode(() -> boardService.putBoard(myUserDetails, boardInDTO, 1L)).doesNotThrowAnyException();
+        Assertions.assertThatCode(() -> boardService.putBoard(multipartFile, myUserDetails, boardUpdateDTO, 1L)).doesNotThrowAnyException();
 
         //then
-        Assertions.assertThat(board).hasFieldOrPropertyWithValue("title", boardInDTO.getTitle());
-        Assertions.assertThat(board).hasFieldOrPropertyWithValue("content", boardInDTO.getContent());
+        Assertions.assertThat(board).hasFieldOrPropertyWithValue("title", boardUpdateDTO.getTitle());
+        Assertions.assertThat(board).hasFieldOrPropertyWithValue("content", boardUpdateDTO.getContent());
     }
 
     @Test
