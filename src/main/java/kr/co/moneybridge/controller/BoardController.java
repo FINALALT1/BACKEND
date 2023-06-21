@@ -252,8 +252,9 @@ public class BoardController {
     public ResponseDTO<List<BoardResponse.BoardPageDTO>> getRecommendedBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         List<BoardResponse.BoardPageDTO> list = boardService.getRecommendedBoards(myUserDetails);
+        BoardResponse.BoardListOutDTO listOutDTO = new BoardResponse.BoardListOutDTO(list);
 
-        return new ResponseDTO<>(list);
+        return new ResponseDTO(listOutDTO);
     }
 
     @ApiOperation("컨텐츠 2개 가져오기(성향X)")
@@ -262,8 +263,9 @@ public class BoardController {
     public ResponseDTO<List<BoardResponse.BoardPageDTO>> getBoards() {
 
         List<BoardResponse.BoardPageDTO> list = boardService.getTwoBoards();
+        BoardResponse.BoardListOutDTO listOutDTO = new BoardResponse.BoardListOutDTO(list);
 
-        return new ResponseDTO(list);
+        return new ResponseDTO(listOutDTO);
     }
 
     @ApiOperation("특정 PB의 컨텐츠 리스트 가져오기")
