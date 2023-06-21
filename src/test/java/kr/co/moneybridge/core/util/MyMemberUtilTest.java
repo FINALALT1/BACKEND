@@ -297,7 +297,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         MockMultipartFile init = new MockMultipartFile(
                 "init", "businessCard.png", "image/png"
                 , new FileInputStream("./src/main/resources/businessCard.png"));
-        String path = s3Util.upload(init);
+        String path = s3Util.upload(init, "test");
 
         // stub
         when(boardRepository.findAllByPBId(id)).thenReturn(boards);
@@ -306,14 +306,16 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(replyRepository.findAllByAuthor(id, ReplyAuthorRole.PB)).thenReturn(replies);
         when(reservationRepository.findAllByPBId(id)).thenReturn(reservations);
         when(reviewRepository.findByReservationId(reservation1.getId())).thenReturn(reviewOP);
-        when(pbRepository.findBusinessCardById(id)).thenReturn(path);
+        when(portfolioRepository.findFileByPBId(id)).thenReturn(Optional.empty());
+        when(pbRepository.findById(id)).thenReturn(Optional.of(pb));
 //        when(s3Util.delete(path)).then(doNothing());
 
         // when
         myMemberUtil.deleteById(id, Role.PB);
 
         // then
-        verify(pbRepository, times(1)).findBusinessCardById(id);
+        verify(portfolioRepository, times(1)).findFileByPBId(id);
+        verify(pbRepository, times(1)).findById(id);
         verify(pbRepository, times(1)).deleteById(id);
         verify(portfolioRepository, times(1)).deleteByPBId(id);
         verify(pbAgreementRepository, times(1)).deleteByPBId(id);
