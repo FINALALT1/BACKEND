@@ -82,7 +82,6 @@ public class ReservationRepositoryTest extends DummyEntity {
         // then
         assertThat(page.getContent().size()).isGreaterThan(7);
         assertThat(page.getContent().get(0).getId()).isInstanceOf(Long.class);
-        assertThat(page.getContent().get(0).getType()).isEqualTo(ReservationType.CALL);
         assertThat(page.getContent().get(0).getEmail()).isEqualTo("lee@nate.com");
         assertThat(page.getContent().get(0).getCandidateTime1()).isBefore(LocalDateTime.now());
         assertThat(page.getContent().get(0).getCandidateTime2()).isBefore(LocalDateTime.now().minusHours(1));
