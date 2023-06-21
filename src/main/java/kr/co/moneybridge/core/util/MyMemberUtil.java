@@ -15,15 +15,20 @@ import kr.co.moneybridge.model.pb.PBStatus;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class MyMemberUtil {
+    @Value("${DEFAULT_PROFILE}")
+    private String defaultProfile;
     private final UserRepository userRepository;
     private final UserAgreementRepository userAgreementRepository;
     private final UserInvestInfoRepository userInvestInfoRepository;
@@ -42,6 +47,7 @@ public class MyMemberUtil {
     private final UserBookmarkRepository userBookmarkRepository;
     private final S3Util s3Util;
 
+    @Transactional
     public void deleteById(Long id, Role role) {
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
             try{
@@ -74,6 +80,11 @@ public class MyMemberUtil {
                 new Exception500("투자자 계정 삭제 실패했습니다" + e.getMessage());
             }
         } else if(role.equals(Role.PB)){
+            // s3에서 액셀데이터도 삭제
+            // s3에서 명함사진도 삭제
+            // s3에서 프로필 사진도 삭제
+            deleteFiles(portfolioRepository.findFileByPBId(id), pbRepository.findBusinessCardById(id).get(),
+                    pbRepository.findProfileById(id).get());
             try{
                 List<Reservation> reservations = reservationRepository.findAllByPBId(id);
                 reservations.stream().forEach(reservation -> {
@@ -112,17 +123,7 @@ public class MyMemberUtil {
                 careerRepository.deleteByPBId(id);
                 awardRepository.deleteByPBId(id);
                 pbAgreementRepository.deleteByPBId(id);
-                //s3에서 액셀데이터도 삭제
-                Optional<String> file = portfolioRepository.findFileByPBId(id);
-                if(file.isPresent()){
-                    s3Util.delete(file.get());
-                }
                 portfolioRepository.deleteByPBId(id);
-                PB pb = pbRepository.findById(id).get();
-                // s3에서 명함사진도 삭제
-                s3Util.delete(pb.getBusinessCard());
-                // s3에서 프로필 사진도 삭제(추가 필요)
-                s3Util.delete(pb.getProfile());
                 pbRepository.deleteById(id);
 
             }catch (Exception e){
@@ -130,6 +131,17 @@ public class MyMemberUtil {
             }
         }
     }
+
+    private void deleteFiles(Optional<String> file, String businessCard, String profile){
+        if(file.isPresent()){
+            s3Util.delete(file.get());
+        }
+        if(profile != defaultProfile){
+            s3Util.delete(profile);
+        }
+        s3Util.delete(businessCard);
+    }
+
     public List<Member> findByNameAndPhoneNumberWithoutException(String name, String phoneNumber, Role role) {
         List<Member> members = null;
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){

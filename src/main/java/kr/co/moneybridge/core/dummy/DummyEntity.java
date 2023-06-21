@@ -313,7 +313,6 @@ public class DummyEntity {
                 .averageProfit(10.1)
                 .profitFactor(1.54)
                 .maxDrawdown(101.1)
-                .file("file1.pdf")
                 .build();
     }
 

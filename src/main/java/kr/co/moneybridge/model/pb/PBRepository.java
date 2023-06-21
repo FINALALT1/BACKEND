@@ -14,6 +14,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PBRepository extends JpaRepository<PB, Long> {
+    @Query("select p.businessCard from PB p where p.id = :id")
+    Optional<String> findBusinessCardById(@Param("id") Long id);
+
+    @Query("select p.businessCard from PB p where p.id = :id")
+    Optional<String> findProfileById(@Param("id") Long id);
+
     @Query("select p from PB p where p.status = :status")
     Page<PB> findAllByStatus(@Param("status") PBStatus status, Pageable pageable);
 

@@ -75,6 +75,7 @@ public class S3Util {
     // s3에서 파일 삭제
     public void delete(String profile) {
         int index = cloudFrontDomain.length();
+        if(profile.length() < index) return;
         String fileName = profile.substring(index + 1);
 
         s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
