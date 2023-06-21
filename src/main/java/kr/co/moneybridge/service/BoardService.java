@@ -261,7 +261,7 @@ public class BoardService {
         Board board = boardRepository.findByIdAndPbId(boardId, pb.getId()).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다"));
 
         if (boardInDTO.getThumbnail() == null || boardInDTO.getThumbnail().isEmpty()) {
-            boardInDTO.setThumbnail("https://pb-business-card.s3.ap-northeast-2.amazonaws.com/sample.svg");
+            boardInDTO.setThumbnail(defaultThumbnail);
         }
 
         try {
