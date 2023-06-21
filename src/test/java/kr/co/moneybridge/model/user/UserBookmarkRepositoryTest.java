@@ -12,6 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
@@ -51,7 +54,7 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
         Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(1L, 1L);
 
         // then
-        Assertions.assertThat(isBookmark).isEqualTo(true);
+        assertThat(isBookmark).isEqualTo(true);
     }
 
     @Test
@@ -60,6 +63,15 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
         Integer count = userBookmarkRepository.countByUserId(1L);
 
         // then
-        Assertions.assertThat(count).isEqualTo(1);
+        assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    void findByUserIdWithPbId() {
+        //when
+        Optional<UserBookmark> userBookmark = userBookmarkRepository.findByUserIdWithPbId(1L, 1L);
+
+        //then
+        assertThat(userBookmark).isPresent();
     }
 }

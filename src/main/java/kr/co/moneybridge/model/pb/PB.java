@@ -42,6 +42,7 @@ public class PB implements Member {
     @Column(nullable = false)
     private String businessCard;        //명함
 
+    @Column(nullable = false)
     private String profile;     //프로필사진
 
     @Column(nullable = false)
