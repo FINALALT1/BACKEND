@@ -27,6 +27,7 @@ import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @Service
 public class UserService {
+    @Value("${DEFAULT_PROFILE}")
+    private String defaultProfile;
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -212,17 +215,16 @@ public class UserService {
     @MyLog
     @Transactional
     public UserResponse.JoinOutDTO joinUser(UserRequest.JoinInDTO joinInDTO){
+
         Optional<User> userOP = userRepository.findByEmail(joinInDTO.getEmail());
         if(userOP.isPresent()){
             throw new Exception400("email", "이미 투자자로 회원가입된 이메일입니다");
         }
-        System.out.println(joinInDTO.getPassword());
         String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte
-        System.out.println(encPassword);
         joinInDTO.setPassword(encPassword);
 
         try {
-            User userPS = userRepository.save(joinInDTO.toEntity());
+            User userPS = userRepository.save(joinInDTO.toEntity(defaultProfile));
             List<UserRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if(agreements != null){
                 agreements.stream().forEach(agreement ->

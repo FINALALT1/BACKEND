@@ -246,14 +246,14 @@ public class UserRequest {
         @ApiModelProperty
         private List<AgreementDTO> agreements;
 
-        public User toEntity() {
+        public User toEntity(String defaultProfile) {
             return User.builder()
                     .email(email)
                     .password(password)
                     .name(name)
                     .phoneNumber(phoneNumber)
                     .role(Role.USER)
-                    .profile("profile.png")
+                    .profile(defaultProfile)
                     .hasDoneReview(false)
                     .hasDoneReservation(false)
                     .hasDoneBoardBookmark(false)

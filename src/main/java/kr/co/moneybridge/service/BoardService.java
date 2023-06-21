@@ -15,6 +15,7 @@ import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +31,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class BoardService {
-
+    @Value("${DEFAULT_THUMBNAIL}")
+    private String defaultThumbnail;
     private final BoardRepository boardRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final UserRepository userRepository;
@@ -195,7 +196,7 @@ public class BoardService {
                 () -> new Exception404("존재하지 않는 PB 입니다"));
 
         if (boardInDTO.getThumbnail() == null || boardInDTO.getThumbnail().isEmpty()) {
-            boardInDTO.setThumbnail("https://pb-business-card.s3.ap-northeast-2.amazonaws.com/sample.svg"); //기본사진
+            boardInDTO.setThumbnail(defaultThumbnail); //기본사진
         }
         try {
             Long id = boardRepository.save(Board.builder()
