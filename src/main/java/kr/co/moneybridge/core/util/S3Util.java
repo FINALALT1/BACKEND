@@ -1,15 +1,15 @@
 package kr.co.moneybridge.core.util;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
+import kr.co.moneybridge.core.exception.Exception500;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,22 +46,24 @@ public class S3Util {
                 .build();
     }
 
-    public String upload(MultipartFile file) throws IOException {
-        UUID uuid = UUID.randomUUID();
-        String originalFilename = file.getOriginalFilename();
-        String uuidFilename = uuid + "_" + originalFilename;
+    public String upload(MultipartFile file) {
+        try{
+            UUID uuid = UUID.randomUUID();
+            String originalFilename = file.getOriginalFilename();
+            String uuidFilename = uuid + "_" + originalFilename;
 
-        InputStream inputStream = file.getInputStream();
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(file.getContentType());
-        objectMetadata.setContentLength(file.getSize());
+            InputStream inputStream = file.getInputStream();
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(file.getContentType());
+            objectMetadata.setContentLength(file.getSize());
 
-        s3Client.putObject(new PutObjectRequest(bucket, uuidFilename, inputStream, objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead)
-                .withMetadata(objectMetadata));
-
-//        return s3Client.getUrl(bucket, uuidFilename).toString();
-        return cloudFrontDomain + "/"+ uuidFilename;
+            s3Client.putObject(new PutObjectRequest(bucket, uuidFilename, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead)
+                    .withMetadata(objectMetadata));
+            return cloudFrontDomain + "/"+ uuidFilename;
+        } catch (IOException e) {
+            throw new Exception500("s3에 저장 실패: " + e.getMessage());
+        }
     }
 
     public void delete(String profile) throws IOException {

@@ -1,7 +1,5 @@
 package kr.co.moneybridge.service;
 
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
@@ -21,18 +19,26 @@ import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import marvin.image.MarvinImage;
+import org.marvinproject.image.transform.scale.Scale;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -159,7 +165,7 @@ public class PBService {
         }
         // S3에 사진 저장
         try {
-            String path = s3Util.upload(businessCard);
+            String path = s3Util.upload(resize(businessCard));
             System.out.println(path);
             PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
@@ -168,56 +174,91 @@ public class PBService {
                         pbAgreementRepository.save(agreement.toEntity(pbPS)));
             }
             return new PBResponse.JoinOutDTO(pbPS);
-        } catch (AmazonS3Exception es) {
-            //  S3에 대한 액세스 권한이 없거나, 파일이 너무 크거나, S3 버킷이 존재하지 않는 경우
-            log.error("s3에 사진 저장 실패" + es.getMessage());
-            throw new Exception500("명함 사진 저장 실패: " + es.getMessage());
-        } catch (SdkClientException ec) {
-            //  네트워크 연결 문제나 클라이언트의 설정 문제
-            log.error("Amazon SDK에서 클라이언트 관련 오류" + ec.getMessage());
-            throw new Exception500("명함 사진 저장 실패: " + ec.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage());
             throw new Exception500("회원가입 실패: " + e.getMessage());
         }
     }
 
     // 이미지 리사이징
-    private MultipartFile resizeAttachment(String fileName, String fileFormatName, MultipartFile multipartFile,
-                                           int targetWidth, int targetHeight) {
-
-        try {
+    private MultipartFile resize(MultipartFile multipartFile) {
+        try (InputStream is = multipartFile.getInputStream()){
             // MultipartFile -> BufferedImage Convert
-            BufferedImage image = ImageIO.read(multipartFile.getInputStream());
-
+            BufferedImage image = ImageIO.read(is);
             // 원하는 px로 Width와 Height 수정
             int originWidth = image.getWidth();
             int originHeight = image.getHeight();
-
             // origin 이미지가 resizing될 사이즈보다 작을 경우 resizing 작업 안 함
-            if (originWidth < targetWidth && originHeight < targetHeight)
+            if (originWidth < 450 && originHeight < 250)
                 return multipartFile;
-
             MarvinImage imageMarvin = new MarvinImage(image);
-
             Scale scale = new Scale();
             scale.load();
-            scale.setAttribute("newWidth", targetWidth);
-            scale.setAttribute("newHeight", targetHeight);
+            scale.setAttribute("newWidth", 450);
+            scale.setAttribute("newHeight", 250);
             scale.process(imageMarvin.clone(), imageMarvin, null, null, false);
-
-            BufferedImage imageNoAlpha = imageMarvin.getBufferedImageNoAlpha();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(imageNoAlpha, fileFormatName, baos);
-            baos.flush();
-
-            return new MockMultipartFile(fileName, baos.toByteArray());
-
+            return toMultipartFile(imageMarvin.getBufferedImageNoAlpha(), multipartFile);
         } catch (IOException e) {
             // 파일 리사이징 실패시 예외 처리
-            throw new FailResizeAttachment();
+            throw new Exception500("파일 리사이징에 실패" + e.getMessage());
         }
     }
+
+    public MultipartFile toMultipartFile(BufferedImage image, MultipartFile origin) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        String fileExtension = origin.getContentType().split("/")[1];
+        ImageIO.write(image, fileExtension, baos); // use JPEG or PNG depending on your image
+
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+
+        return new MultipartFile() {
+            @Override
+            public String getName() {
+                return origin.getName();
+            }
+
+            @Override
+            public String getOriginalFilename() {
+                return origin.getOriginalFilename();
+            }
+
+            @Override
+            public String getContentType() {
+                return origin.getContentType();
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return imageInByte.length == 0;
+            }
+
+            @Override
+            public long getSize() {
+                return imageInByte.length;
+            }
+
+            @Override
+            public byte[] getBytes() throws IOException {
+                return imageInByte;
+            }
+
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return new ByteArrayInputStream(imageInByte);
+            }
+
+            @Override
+            public void transferTo(File dest) throws IOException, IllegalStateException {
+                Files.write(dest.toPath(), imageInByte);
+            }
+
+            @Override
+            public void transferTo(Path dest) throws IOException, IllegalStateException {
+                Files.write(dest, imageInByte);
+            }
+        };
+    }
+
 
     //북마크한 pb 목록 가져오기
     public PageDTO<PBResponse.PBPageDTO> getBookmarkPBs(MyUserDetails myUserDetails, Pageable pageable) {
@@ -479,22 +520,14 @@ public class PBService {
 
         //프로필 사진 들어온경우
         if (profileFile != null && !profileFile.isEmpty()) {
-            try {
-                String profilePath = s3Util.upload(profileFile);
-                pb.updateProfile(profilePath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            String profilePath = s3Util.upload(profileFile);
+            pb.updateProfile(profilePath);
         }
 
         //포트폴리오파일 들어온경우
         if (portfolioFile != null && !portfolioFile.isEmpty()) {
-            try {
-                String portfolioPath = s3Util.upload(portfolioFile);
-                portfolio.updateFile(portfolioPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            String portfolioPath = s3Util.upload(portfolioFile);
+            portfolio.updateFile(portfolioPath);
         }
 
         //career, award 새로 저장
