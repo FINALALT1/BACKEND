@@ -92,8 +92,8 @@ public class ReservationControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.consultStart").value("09:00:00"));
-        resultActions.andExpect(jsonPath("$.data.consultEnd").value("18:00:00"));
+        resultActions.andExpect(jsonPath("$.data.consultStart").value("09:00"));
+        resultActions.andExpect(jsonPath("$.data.consultEnd").value("18:00"));
         resultActions.andExpect(jsonPath("$.data.consultNotice").value("월요일 불가능합니다"));
         resultActions.andExpect(status().isOk());
     }
