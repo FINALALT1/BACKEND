@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
+import java.util.Optional;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
@@ -51,5 +52,15 @@ public class BranchRepositoryTest extends DummyEntity {
         Assertions.assertThat(branchPG.getContent().get(0).getCompany().getName()).isEqualTo("미래에셋증권");
         Assertions.assertThat(branchPG.getContent().get(0).getRoadAddress()).isEqualTo("미래에셋증권 도로명주소");
         Assertions.assertThat(branchPG.getContent().get(0).getStreetAddress()).isEqualTo("미래에셋증권 지번주소");
+    }
+
+    @Test
+    void findByName() {
+        //when
+        Optional<Branch> branch = branchRepository.findByName("미래에셋증권 여의도점");
+
+        //then
+        Assertions.assertThat(branch).isPresent();
+        Assertions.assertThat(branch.get().getName()).contains("여의도");
     }
 }
