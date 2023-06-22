@@ -148,6 +148,7 @@ public class UserController {
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; Path=/");
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header("refreshToken", tokens.getRight())
                 .body(responseDTO);
     }
 
@@ -164,6 +165,7 @@ public class UserController {
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; Path=/");
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header("refreshToken", tokens.getRight())
                 .body(responseDTO);
     }
 
@@ -177,6 +179,7 @@ public class UserController {
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header("refreshToken", tokens.getRight())
                 .body(responseDTO);
     }
 
