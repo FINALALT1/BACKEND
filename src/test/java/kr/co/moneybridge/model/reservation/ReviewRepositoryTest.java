@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,6 +64,19 @@ public class ReviewRepositoryTest extends DummyEntity {
         reviewRepository.save(newReview(reservation5));
 
         em.clear();
+    }
+
+    @Test
+    public void delete_by_reservationId_test() {
+        // given
+        Long reviewId = 3L;
+
+        // when
+        reviewRepository.deleteByReservationId(reviewId);
+
+        // then
+        Optional<Review> review = reviewRepository.findByReservationId(reviewId);
+        assertThat(review).isEmpty();
     }
 
     @Test

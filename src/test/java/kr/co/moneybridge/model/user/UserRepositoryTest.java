@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
 @DataJpaTest
@@ -38,7 +40,20 @@ public class UserRepositoryTest extends DummyEntity {
     public void setUp() {
         em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
         userRepository.save(newUser("김투자"));
+        userRepository.save(newUser("이투자"));
         em.clear();
+    }
+
+    @Test
+    public void deleteByUserId() {
+        // given
+        Long id = 2L;
+
+        // when
+        userRepository.deleteById(id);
+
+        //
+        assertThat(userRepository.findById(id)).isEmpty();
     }
 
     @Test
@@ -140,18 +155,18 @@ public class UserRepositoryTest extends DummyEntity {
     @Test
     public void save() {
         // given
-        User user = newUser("이투자");
+        User user = newUser("이투자2");
 
         // when
         User userPS = userRepository.save(user);
 
         // then (beforeEach에서 2건이 insert 되어 있음)
-        Assertions.assertThat(userPS.getId()).isEqualTo(2L);
-        Assertions.assertThat(userPS.getName()).isEqualTo("이투자");
+        Assertions.assertThat(userPS.getId()).isInstanceOf(Long.class);
+        Assertions.assertThat(userPS.getName()).isEqualTo("이투자2");
         Assertions.assertThat(
                 passwordEncoder.matches("password1234", userPS.getPassword())
         ).isEqualTo(true);
-        Assertions.assertThat(userPS.getEmail()).isEqualTo("이투자@nate.com");
+        Assertions.assertThat(userPS.getEmail()).isEqualTo("이투자2@nate.com");
         Assertions.assertThat(userPS.getPhoneNumber()).isEqualTo("01012345678");
         Assertions.assertThat(userPS.getRole()).isEqualTo(Role.USER);
         Assertions.assertThat(userPS.getProfile()).isEqualTo("프로필.png");

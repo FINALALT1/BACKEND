@@ -58,9 +58,27 @@ public class StyleRepositoryTest extends DummyEntity {
         Review review = reviewRepository.save(newReview(reservation));
         styleRepository.save(newStyle(review, StyleStyle.FAST));
         styleRepository.save(newStyle(review, StyleStyle.KIND));
+        Reservation reservation2 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
+        Review review2 = reviewRepository.save(newReview(reservation));
+        Style style3 = styleRepository.save(newStyle(review, StyleStyle.FAST));
+        Style style4 = styleRepository.save(newStyle(review, StyleStyle.KIND));
 
         em.clear();
     }
+
+    @Test
+    public void delete_by_reviewId_test() {
+        // given
+        Long reviewId = 2L;
+
+        // when
+        styleRepository.deleteByReviewId(reviewId);
+
+        // then
+        List<Style> styles = styleRepository.findAllByReviewId(reviewId);
+        assertThat(styles).isEmpty();
+    }
+
 
     @Test
     public void find_all_by_reviewId_test() {
