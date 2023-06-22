@@ -92,9 +92,9 @@ public class BackOfficeService {
     }
 
     @MyLog
-    public BackOfficeResponse.MemberOutDTO getMembers(Pageable pageable) {
-        Page<User> userPG = userRepository.findAll(pageable);
-        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pageable);
+    public BackOfficeResponse.MemberOutDTO getMembers(Pageable userPageable, Pageable pbPageable) {
+        Page<User> userPG = userRepository.findAll(userPageable);
+        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pbPageable);
         List<BackOfficeResponse.UserDTO> userList = userPG.getContent().stream().map(user ->
                 new BackOfficeResponse.UserDTO(user)).collect(Collectors.toList());
         List<BackOfficeResponse.PBDTO> pbList = pbPG.getContent().stream().map(pb ->

@@ -1,5 +1,7 @@
 package kr.co.moneybridge.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.dto.PageDTO;
@@ -22,8 +24,8 @@ public class BackOfficeController {
     @MyLog
     @SwaggerResponses.GetReservations
     @GetMapping("/admin/reservations")
-    public ResponseDTO<BackOfficeResponse.ReservationOutDTO> getReservations() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    public ResponseDTO<BackOfficeResponse.ReservationOutDTO> getReservations(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
         BackOfficeResponse.ReservationOutDTO reservationOutDTO = backOfficeService.getReservations(pageable);
         return new ResponseDTO<>(reservationOutDTO);
     }
@@ -59,9 +61,11 @@ public class BackOfficeController {
     @MyLog
     @SwaggerResponses.GetMembers
     @GetMapping("/admin/members")
-    public ResponseDTO<BackOfficeResponse.MemberOutDTO> getMembers() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-        BackOfficeResponse.MemberOutDTO memberOutDTO = backOfficeService.getMembers(pageable);
+    public ResponseDTO<BackOfficeResponse.MemberOutDTO> getMembers(@RequestParam(defaultValue = "0") int userPage,
+                                                                   @RequestParam(defaultValue = "0") int pbPage) {
+        Pageable userPageable = PageRequest.of(userPage, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Pageable pbPageable = PageRequest.of(pbPage, 10, Sort.by(Sort.Direction.ASC, "id"));
+        BackOfficeResponse.MemberOutDTO memberOutDTO = backOfficeService.getMembers(userPageable, pbPageable);
         return new ResponseDTO<>(memberOutDTO);
     }
 
@@ -78,8 +82,8 @@ public class BackOfficeController {
     @MyLog
     @SwaggerResponses.GetPBPending
     @GetMapping("/admin/pbs")
-    public ResponseDTO<BackOfficeResponse.PBPendingOutDTO> getPBPending() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    public ResponseDTO<BackOfficeResponse.PBPendingOutDTO> getPBPending(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
         BackOfficeResponse.PBPendingOutDTO pbPendingPageDTO = backOfficeService.getPBPending(pageable);
         return new ResponseDTO<>(pbPendingPageDTO);
     }
@@ -88,8 +92,8 @@ public class BackOfficeController {
     @MyLog
     @SwaggerResponses.GetNotice
     @GetMapping("/notices")
-    public ResponseDTO<PageDTO<BackOfficeResponse.NoticeDTO>> getNotice() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    public ResponseDTO<PageDTO<BackOfficeResponse.NoticeDTO>> getNotice(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
         PageDTO<BackOfficeResponse.NoticeDTO> faqDTO = backOfficeService.getNotice(pageable);
         return new ResponseDTO<>(faqDTO);
     }
@@ -98,8 +102,8 @@ public class BackOfficeController {
     @MyLog
     @SwaggerResponses.GetFAQ
     @GetMapping("/FAQ")
-    public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQ() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQ(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
         PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
         return new ResponseDTO<>(faqDTO);
     }
