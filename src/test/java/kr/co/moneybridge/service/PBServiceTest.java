@@ -2,6 +2,7 @@ package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
+import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
@@ -21,9 +22,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.FileInputStream;
@@ -65,7 +68,8 @@ class PBServiceTest extends MockDummyEntity {
     @Mock
     PortfolioRepository portfolioRepository;
     @Mock
-
+    PBAgreementRepository pbAgreementRepository;
+    @Mock
     MyUserDetails myUserDetails;
     @Mock
     PB pb;
@@ -75,17 +79,17 @@ class PBServiceTest extends MockDummyEntity {
     Company company;
     @Mock
     Pageable pageable;
+    @Mock
+    S3Util s3Util;
+
+    // 진짜 객체를 만들어서 Mockito 환경에 Load
+    @Spy
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Test
     @DisplayName("PB 회원가입")
     void joinPB() throws Exception {
         //given
-        String name = "김피비";
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
-        PBResponse.PBPageDTO pbPageDTO1 = new PBResponse.PBPageDTO(pb, branch, company);
-        PBResponse.PBPageDTO pbPageDTO2 = new PBResponse.PBPageDTO(pb, branch, company);
-        List<PBResponse.PBPageDTO> pbList = Arrays.asList(pbPageDTO1, pbPageDTO2);
-        Page<PBResponse.PBPageDTO> pbPage = new PageImpl<>(pbList, pageable, pbList.size());
         PBRequest.JoinInDTO joinInDTO = new PBRequest.JoinInDTO();
         joinInDTO.setEmail("김pb@nate.com");
         joinInDTO.setPassword("password1234");
@@ -111,22 +115,27 @@ class PBServiceTest extends MockDummyEntity {
                 "businessCard", "businessCard.png", "image/png",
                 new FileInputStream("./src/main/resources/businessCard.png"));
 
-        Branch branch = newMockBranch(1L, newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, newMockCompany(1L, "미래에셋증권"), 0);
         PB pb = newMockPB(1L, "김pb", branch);
+        PBAgreement pbAgreement = newMockPBAgreement(1L, pb, PBAgreementType.OPTIONAL);
 
         //stub
         when(pbRepository.findByEmail(any())).thenReturn(Optional.empty());
-
         when(branchRepository.findById(any())).thenReturn(Optional.of(branch));
-        when(pbRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(pbRepository.save(any())).thenReturn(pb);
+        when(pbAgreementRepository.save(any())).thenReturn(pbAgreement);
+        when(s3Util.upload(any(), any())).thenReturn("mock-path");
 
         //when
-        PageDTO<PBResponse.PBPageDTO> result = pbService.getPBWithName(name, pageable);
         PBResponse.JoinOutDTO joinOutDTO = pbService.joinPB(businessCard, joinInDTO);
 
         //then
         assertThat(joinOutDTO.getId()).isEqualTo(1L);
-        Mockito.verify(pbRepository, Mockito.times(1)).findByName(name, pageable);
+        Mockito.verify(pbRepository, Mockito.times(1)).findByEmail(any());
+        Mockito.verify(branchRepository, Mockito.times(1)).findById(any());
+        Mockito.verify(pbRepository, Mockito.times(1)).save(any());
+        Mockito.verify(pbAgreementRepository, Mockito.times(2)).save(any());
+        Mockito.verify(s3Util, Mockito.times(1)).upload(any(), any());
     }
 
     @Test
