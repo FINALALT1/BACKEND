@@ -250,32 +250,40 @@ public class UserService {
     }
 
     @MyLog
-    public Pair<String, String> reissue(HttpServletRequest request, String refreshToken) {
-        // access token에서 나온 사용자 정보로 redis에서 refresh token을 조회
+    public Pair<String, String> reissue(HttpServletRequest request, String refreshToken_temp) {
+        String refreshToken = request.getHeader("refreshToken");
+        // access token에서 나온 사용자 정보로 redis에서 refresh token을 조회해서
+        // 요청받은 refresh token과 같아야 재발급
+
+        // 1) access token 꺼내기
         String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
         String accessJwt = accessToken.replace(MyJwtProvider.TOKEN_PREFIX, "");
 
+        // 2) access token에서 나온 사용자 정보
         DecodedJWT decodedJWT = JWT.decode(accessJwt);
         Long id = decodedJWT.getClaim("id").asLong();
         String role = decodedJWT.getClaim("role").asString().toUpperCase();
+        // 3) redis에서 refresh token을 조회할 key
         String key = id + role;
 
+        // 4) 해당 key로 redis에서 refresh token을 조회
         String RefreshTokenValid = redisUtil.get(key);
+        // 5) redis에 key에 해당하는 리프레시 토큰이 없을 때
         if (RefreshTokenValid == null) {
             log.error("액세스 토큰 정보로 만든 키를 가진 리프레시 토큰이 레디스에 없음");
             throw new Exception500("토큰을 재발급할 수 없습니다. 다시 로그인 해주세요");
         }
-        // Redis에 저장된 refresh token이 사용자가 요청한 refresh token과 같아야 함.
+        // 6) Redis에 저장된 refresh token이 사용자가 요청한 refresh token과 같아야 함.
         if(!refreshToken.equals(RefreshTokenValid)){
             log.error("레디스에 저장된 리프레시 토큰이 사용자가 요청한 리프레시 토큰이 다름");
             throw new Exception500("사용할 수 없는 리프레시 토큰입니다. 다시 로그인 해주세요");
         }
 
-        // Redis에 저장된 기존 refresh token 삭제 후 새로 refresh token과 access token을 생성해서 응답
+        // 7) Redis에 저장된 기존 refresh token 삭제 후 새로 refresh token과 access token을 생성해서 응답
         redisUtil.delete(key);
         log.info("레디스에서 리프레시 토큰을 삭제했습니다. key: ", key);
 
-        // 액세스 토큰, 리프레시 토큰 발급.
+        // 8) 액세스 토큰, 리프레시 토큰 발급.
         try {
             Member memberPS = myMemberUtil.findById(id, Role.valueOf(role));
             String newAccessToken = myJwtProvider.createAccess(memberPS);
@@ -287,25 +295,29 @@ public class UserService {
     }
 
     @MyLog
-    public void logout(HttpServletRequest request, String refreshToken) {
-        // 요청받은 refresh token에서 나온 사용자 정보로 redis에서 refresh token을 조회
+    public void logout(HttpServletRequest request, String refreshToken_temp) {
+        String refreshToken = request.getHeader("refreshToken");
+        // 로그아웃하면 redis에 refresh token 정보는 지워서 새로 재발급 못받게 함
+        // access token은 redis에 블랙리스트로 저장해둬서 해당 aceess token을 탈취해서 로그인 하는 행위 막음
+
+        // 1) refresh token 디코딩
         DecodedJWT decodedJWT = null;
         try {
             decodedJWT = MyJwtProvider.verifyRefresh(refreshToken);
         } catch (SignatureVerificationException sve) {
             log.error("리프레시 토큰 검증 실패");
         }
+        // 2) 디코딩한 리프레시 토큰으로 사용자 정보 얻음
         Long id = decodedJWT.getClaim("id").asLong();
         String role = decodedJWT.getClaim("role").asString().toUpperCase();
+        // 3) 사용자 정보를 토대로  redis에서 refresh token을 조회할 key 값 생성
         String key = id + role;
-        if (redisUtil.get(key) == null) {
-            log.error("요청받은 리프레시 토큰 레디스에 없음");
-        }
-        // Redis에서 해당 유저의 refresh token 삭제
+
+        // 4) Redis에서 해당 유저의 refresh token 삭제
         redisUtil.delete(key);
         log.info("레디스에서 리프레시 토큰 삭제");
 
-        // 해당 access token을 Redis의 블랙리스트로 추가
+        // 5) 해당 access token을 Redis의 블랙리스트로 추가
         String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
         String accessJwt = accessToken.replace(MyJwtProvider.TOKEN_PREFIX, "");
         try {
@@ -313,6 +325,7 @@ public class UserService {
         } catch (SignatureVerificationException sve) {
             log.error("액세스 토큰 검증 실패");
         }
+        // 6) 추가할 때 남은 만료시간 계산해서 넣어주기 - 그래야 해당 시간 지나면 자동으로 사라짐
         Long remainingTimeMillis = decodedJWT.getExpiresAt().getTime() - System.currentTimeMillis();
         redisUtil.setBlackList(accessJwt, "access_token_blacklist", remainingTimeMillis);
         log.info("로그아웃한 액세스 토큰 블랙리스트로 등록");

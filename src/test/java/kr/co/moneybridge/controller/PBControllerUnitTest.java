@@ -11,8 +11,11 @@ import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.pb.Branch;
+import kr.co.moneybridge.model.pb.PBAgreementType;
+import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.service.PBService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -24,10 +27,16 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,6 +69,53 @@ public class PBControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @Test
+    public void join_pb_test() throws Exception {
+        //given
+        PBRequest.JoinInDTO joinInDTO = new PBRequest.JoinInDTO();
+        joinInDTO.setEmail("김pb@nate.com");
+        joinInDTO.setPassword("password1234");
+        joinInDTO.setName("김pb");
+        joinInDTO.setPhoneNumber("01012345678");
+        joinInDTO.setBranchId(1L);
+        joinInDTO.setCareer(10);
+        joinInDTO.setSpeciality1(PBSpeciality.BOND);
+        List<PBRequest.AgreementDTO> agreements = new ArrayList<>();
+        PBRequest.AgreementDTO agreement1 = new PBRequest.AgreementDTO();
+        agreement1.setTitle("돈줄 이용약관 동의");
+        agreement1.setType(PBAgreementType.REQUIRED);
+        agreement1.setIsAgreed(true);
+        agreements.add(agreement1);
+        PBRequest.AgreementDTO agreement2 = new PBRequest.AgreementDTO();
+        agreement2.setTitle("마케팅 정보 수신 동의");
+        agreement2.setType(PBAgreementType.OPTIONAL);
+        agreement2.setIsAgreed(true);
+        agreements.add(agreement2);
+        joinInDTO.setAgreements(agreements);
+        String requestBody = om.writeValueAsString(joinInDTO);
+
+        MockMultipartFile businessCard = new MockMultipartFile(
+                "businessCard", "businessCard.png", "image/png",
+                new FileInputStream("./src/main/resources/businessCard.png"));
+
+        MockMultipartFile jsonFile = new MockMultipartFile(
+                "joinInDTO", "", "application/json",
+                requestBody.getBytes(StandardCharsets.UTF_8));
+
+        // stub
+        PBResponse.JoinOutDTO joinOutDTO = new PBResponse.JoinOutDTO(newMockPB(1L, "김pb", newMockBranch(1L, newMockCompany(
+                1L, "미래에셋증권"), 0)));
+        Mockito.when(pbService.joinPB(any(), any())).thenReturn(joinOutDTO);
+
+        // when & then
+        ResultActions resultActions = mvc.perform(multipart("/join/pb")
+                        .file(businessCard)
+                        .file(jsonFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1L));
+    }
 
     @WithMockUser
     @Test
