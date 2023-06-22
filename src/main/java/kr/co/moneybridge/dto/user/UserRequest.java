@@ -2,7 +2,6 @@ package kr.co.moneybridge.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.moneybridge.core.annotation.ValidNumbers;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserAgreement;
