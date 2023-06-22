@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     @Query(value = "select count(r) from Reservation r where r.process = :process")
-    Integer countByProcess(@Param("process") ReservationProcess process);
+    Long countByProcess(@Param("process") ReservationProcess process);
 
     @Modifying
     @Query("delete from Reservation r where r.user.id = :userId")

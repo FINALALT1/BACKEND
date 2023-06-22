@@ -78,31 +78,88 @@ public class UserControllerTest {
         em.clear();
     }
 
-//    @DisplayName("투자자 성향 체크 성공")
-//    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-//    @Test
-//    public void testPropensity_test() throws Exception {
-//        // given
-//        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
-//        testPropensityInDTO.setQ1(5);
-//        testPropensityInDTO.setQ2(4);
-//        testPropensityInDTO.setQ3(5);
-//        testPropensityInDTO.setQ4(5);
-//        testPropensityInDTO.setQ5(5);
-//        testPropensityInDTO.setQ6(5);
-//        String requestBody = om.writeValueAsString(testPropensityInDTO);
-//
-//        // when
-//        ResultActions resultActions = mvc
-//                .perform(post("/user/propensity").content(requestBody).contentType(MediaType.APPLICATION_JSON));
-//        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-//        System.out.println("테스트 : " + responseBody);
-//
-//        // then
-//        resultActions.andExpect(jsonPath("$.status").value(200));
-//        resultActions.andExpect(jsonPath("$.msg").value("ok"));
-//        resultActions.andExpect(jsonPath("$.data").doesNotExist());
-//    }
+    @DisplayName("투자자 성향 체크 유효성 검사 최소")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void testPropensity_min_test() throws Exception {
+        // given
+        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
+        testPropensityInDTO.setScore(8);
+        String requestBody = om.writeValueAsString(testPropensityInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/user/propensity").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(400));
+        resultActions.andExpect(jsonPath("$.msg").value("badRequest"));
+        resultActions.andExpect(jsonPath("$.data.key").value("score"));
+        resultActions.andExpect(jsonPath("$.data.value").value("must be greater than or equal to 9"));
+    }
+
+    @DisplayName("투자자 성향 체크 유효성 검사 최대값")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void testPropensity_max_test() throws Exception {
+        // given
+        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
+        testPropensityInDTO.setScore(30);
+        String requestBody = om.writeValueAsString(testPropensityInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/user/propensity").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(400));
+        resultActions.andExpect(jsonPath("$.msg").value("badRequest"));
+        resultActions.andExpect(jsonPath("$.data.key").value("score"));
+        resultActions.andExpect(jsonPath("$.data.value").value("must be less than or equal to 29"));
+    }
+
+    @DisplayName("투자자 성향 체크 성공")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void testPropensity_test() throws Exception {
+        // given
+        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
+        testPropensityInDTO.setScore(25);
+        String requestBody = om.writeValueAsString(testPropensityInDTO);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/user/propensity").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @DisplayName("로그인 계정 정보 받아오기")
+    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void getAccount_test() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/auth/account"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.id").value("2"));
+        resultActions.andExpect(jsonPath("$.data.role").value("USER"));
+        resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
+    }
 
     @DisplayName("투자자 마이페이지 가져오기 성공")
     @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)

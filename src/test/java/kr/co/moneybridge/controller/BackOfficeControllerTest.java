@@ -5,6 +5,7 @@ import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import javax.persistence.EntityManager;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -54,6 +57,12 @@ public class BackOfficeControllerTest {
     private BranchRepository branchRepository;
     @Autowired
     private PBRepository pbRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private StyleRepository styleRepository;
 
     @BeforeEach
     public void setUp() {
@@ -69,7 +78,53 @@ public class BackOfficeControllerTest {
         PB pb2 = pbRepository.save(dummy.newPBwithStatus("false", branchPS, PBStatus.PENDING));
         PB pb3 = pbRepository.save(dummy.newPB("pb3", branchPS));
         PB pb4 = pbRepository.save(dummy.newPB("pb4", branchPS));
+        Reservation reservation1 = reservationRepository.save(dummy.newCallReservation(user, pb3, ReservationProcess.APPLY));
+        Reservation reservation2 = reservationRepository.save(dummy.newCallReservation(user, pb4, ReservationProcess.CONFIRM));
+        Reservation reservation3 = reservationRepository.save(dummy.newCallReservation(user4, pb4, ReservationProcess.COMPLETE));
+        Review review = reviewRepository.save(dummy.newReview(reservation1));
+        Style style = styleRepository.save(dummy.newStyle(review, StyleStyle.FAST));
         em.clear();
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("상담 현황 페이지 전체 가져오기 성공")
+    @Test
+    public void getReservations() throws Exception {
+        // when
+        ResultActions resultActions = mvc
+                .perform(get("/admin/reservations"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.count.apply").value(1));
+        resultActions.andExpect(jsonPath("$.data.count.confirm").value(1));
+        resultActions.andExpect(jsonPath("$.data.count.complete").value(1));
+        resultActions.andExpect(jsonPath("$.data.count.review").value(1));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].process").value("APPLY"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].status").value("ACTIVE"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].time").value(LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"))));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].type").value("CALL"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].locationName").value("kb증권 강남중앙점"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].goal").value("PROFIT"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].question").value("질문입니다..."));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.id").value("2"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.email").value("user@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.name").value("user"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.isAdmin").value("true"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.id").value("3"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.email").value("pb3@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.name").value("pb3"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].review.content").value("content 입니다"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].review.adherence").value("EXCELLENT"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].review.styles[0].style").value("FAST"));
+        resultActions.andExpect(status().isOk());
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
