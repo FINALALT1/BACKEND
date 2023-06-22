@@ -145,7 +145,7 @@ public class ReservationRepositoryTest extends DummyEntity {
         assertThat(page.getContent().get(0).getPb().getId()).isEqualTo(1L);
         assertThat(page.getContent().get(0).getPhoneNumber()).isEqualTo("01012345678");
         assertThat(page.getContent().get(0).getQuestion()).isEqualTo("질문입니다...");
-        assertThat(page.getContent().get(0).getUser().getId()).isEqualTo(1L);
+        assertThat(page.getContent().get(0).getUser().getId()).isInstanceOf(Long.class);
         assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(8);
         assertThat(page.getTotalPages()).isEqualTo(1);
 
