@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -96,7 +95,6 @@ public class ReservationRepositoryTest extends DummyEntity {
         assertThat(page.getContent().get(0).getUser().getId()).isEqualTo(1L);
         assertThat(page.getTotalElements()).isEqualTo(8);
         assertThat(page.getTotalPages()).isEqualTo(1);
-
 
 
     }
@@ -256,5 +254,19 @@ public class ReservationRepositoryTest extends DummyEntity {
         Assertions.assertThat(applyCount).isGreaterThan(0);
         Assertions.assertThat(confirmCount).isGreaterThan(0);
         Assertions.assertThat(completeCount).isGreaterThan(0);
+    }
+
+    @Test
+    public void find_all_by_time_before_and_process_test() {
+        // given
+        LocalDateTime time = LocalDateTime.now();
+
+        // when
+        List<Reservation> response = reservationRepository.findAllByTimeBeforeAndProcess(time, ReservationProcess.CONFIRM);
+
+        // then
+        for (int i = 0; i < response.size(); i++) {
+            assertThat(response.get(i).getProcess()).isEqualTo(ReservationProcess.CONFIRM);
+        }
     }
 }

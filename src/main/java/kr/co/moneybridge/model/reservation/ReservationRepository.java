@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
@@ -83,4 +85,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "where r.pb.id = :pbId " +
             "and r.status <> 'CANCEL'")
     List<ReservationResponse.ReservationInfoDTO> findAllByPbIdWithoutCancel(@Param("pbId") Long pbId);
+
+    @Query("select r " +
+            "from Reservation r " +
+            "where r.process = :process and r.time <= :time")
+    List<Reservation> findAllByTimeBeforeAndProcess(@Param("time") LocalDateTime time,
+                                                    @Param("process") ReservationProcess process);
 }
