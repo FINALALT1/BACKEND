@@ -2,8 +2,10 @@ package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
+import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
+import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
@@ -20,10 +22,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,7 +68,8 @@ class PBServiceTest extends MockDummyEntity {
     @Mock
     PortfolioRepository portfolioRepository;
     @Mock
-
+    PBAgreementRepository pbAgreementRepository;
+    @Mock
     MyUserDetails myUserDetails;
     @Mock
     PB pb;
@@ -71,6 +79,64 @@ class PBServiceTest extends MockDummyEntity {
     Company company;
     @Mock
     Pageable pageable;
+    @Mock
+    S3Util s3Util;
+
+    // 진짜 객체를 만들어서 Mockito 환경에 Load
+    @Spy
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Test
+    @DisplayName("PB 회원가입")
+    void joinPB() throws Exception {
+        //given
+        PBRequest.JoinInDTO joinInDTO = new PBRequest.JoinInDTO();
+        joinInDTO.setEmail("김pb@nate.com");
+        joinInDTO.setPassword("password1234");
+        joinInDTO.setName("김pb");
+        joinInDTO.setPhoneNumber("01012345678");
+        joinInDTO.setBranchId(1L);
+        joinInDTO.setCareer(10);
+        joinInDTO.setSpeciality1(PBSpeciality.BOND);
+        List<PBRequest.AgreementDTO> agreements = new ArrayList<>();
+        PBRequest.AgreementDTO agreement1 = new PBRequest.AgreementDTO();
+        agreement1.setTitle("돈줄 이용약관 동의");
+        agreement1.setType(PBAgreementType.REQUIRED);
+        agreement1.setIsAgreed(true);
+        agreements.add(agreement1);
+        PBRequest.AgreementDTO agreement2 = new PBRequest.AgreementDTO();
+        agreement2.setTitle("마케팅 정보 수신 동의");
+        agreement2.setType(PBAgreementType.OPTIONAL);
+        agreement2.setIsAgreed(true);
+        agreements.add(agreement2);
+        joinInDTO.setAgreements(agreements);
+
+        MockMultipartFile businessCard = new MockMultipartFile(
+                "businessCard", "businessCard.png", "image/png",
+                new FileInputStream("./src/main/resources/businessCard.png"));
+
+        Branch branch = newMockBranch(1L, newMockCompany(1L, "미래에셋증권"), 0);
+        PB pb = newMockPB(1L, "김pb", branch);
+        PBAgreement pbAgreement = newMockPBAgreement(1L, pb, PBAgreementType.OPTIONAL);
+
+        //stub
+        when(pbRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(branchRepository.findById(any())).thenReturn(Optional.of(branch));
+        when(pbRepository.save(any())).thenReturn(pb);
+        when(pbAgreementRepository.save(any())).thenReturn(pbAgreement);
+        when(s3Util.upload(any(), any())).thenReturn("mock-path");
+
+        //when
+        PBResponse.JoinOutDTO joinOutDTO = pbService.joinPB(businessCard, joinInDTO);
+
+        //then
+        assertThat(joinOutDTO.getId()).isEqualTo(1L);
+        Mockito.verify(pbRepository, Mockito.times(1)).findByEmail(any());
+        Mockito.verify(branchRepository, Mockito.times(1)).findById(any());
+        Mockito.verify(pbRepository, Mockito.times(1)).save(any());
+        Mockito.verify(pbAgreementRepository, Mockito.times(2)).save(any());
+        Mockito.verify(s3Util, Mockito.times(1)).upload(any(), any());
+    }
 
     @Test
     @DisplayName("나의 투자 성향 분석페이지 하단의 맞춤 PB리스트 3개 성공")

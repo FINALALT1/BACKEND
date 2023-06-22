@@ -66,17 +66,41 @@ public class PBRepositoryTest extends DummyEntity {
         em.clear();
     }
 
-//    @Test
-//    public void findBusinessCardById() {
-//        // given
-//        Long id = 1L;
-//
-//        // when
-//        String img = pbRepository.findBusinessCardById(id);
-//
-//        // then
-//        Assertions.assertThat(img).isEqualTo("card.png");
-//    }
+    @Test
+    public void save() {
+        // given
+        Company company = newCompany("미래에셋증권");
+        Branch branch = newBranch(company, 1);
+        PB pb = newPB("윤피비", branch);
+
+        // when
+        PB pbPS = pbRepository.save(pb);
+
+        //
+        assertThat(pbPS.getId()).isInstanceOf(Long.class);
+        assertThat(pbPS.getName()).isEqualTo("윤피비");
+        assertThat(
+                passwordEncoder.matches("password1234", pbPS.getPassword())
+        ).isEqualTo(true);
+        assertThat(pbPS.getEmail()).isEqualTo("윤피비@nate.com");
+        assertThat(pbPS.getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(pbPS.getBranch().getCompany().getName()).isEqualTo("미래에셋증권");
+        assertThat(pbPS.getRole()).isEqualTo(Role.PB);
+        assertThat(pbPS.getProfile()).isEqualTo("profile.png");
+        assertThat(pbPS.getBusinessCard()).isEqualTo("card.png");
+        assertThat(pbPS.getCareer()).isEqualTo(10);
+        assertThat(pbPS.getSpeciality1()).isEqualTo(PBSpeciality.BOND);
+        assertThat(pbPS.getSpeciality2()).isNull();
+        assertThat(pbPS.getIntro()).isEqualTo("윤피비 입니다");
+        assertThat(pbPS.getMsg()).isEqualTo("한줄메시지..");
+        assertThat(pbPS.getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
+        assertThat(pbPS.getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
+        assertThat(pbPS.getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        assertThat(pbPS.getConsultNotice()).isEqualTo("월요일 불가능합니다");
+        assertThat(pbPS.getStatus()).isEqualTo(PBStatus.ACTIVE);
+        assertThat(pbPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
+        assertThat(pbPS.getUpdatedAt()).isNull();
+    }
 
     @Test
     public void findAllByStatus() {

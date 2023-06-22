@@ -39,6 +39,16 @@ public class BranchRepositoryTest extends DummyEntity {
     }
 
     @Test
+    void findById() {
+        //when
+        Optional<Branch> branch = branchRepository.findById(1L);
+
+        //then
+        Assertions.assertThat(branch).isPresent();
+        Assertions.assertThat(branch.get().getName()).contains("여의도");
+    }
+
+    @Test
     public void findByCompanyIdAndKeyword() {
         // when
         Long companyId = 1L;
