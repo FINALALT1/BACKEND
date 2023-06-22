@@ -350,7 +350,7 @@ public class BoardService {
         List<BoardResponse.BoardPageDTO> boardList;
 
         if (propensity == null) {
-            throw new Exception404("투자성향 분석이 되지않았습니다.");
+            boardList = boardRepository.findTwoBoards(PageRequest.of(0, 2, Sort.by("id").descending()));
         } else if (propensity.equals(UserPropensity.CONSERVATIVE)) {
             boardList = boardRepository.findRecommendedBoards(PageRequest.of(0, 2, Sort.by("id").descending()),
                     PBSpeciality.BOND,

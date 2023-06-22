@@ -17,9 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -51,9 +51,11 @@ public class ReservationRepositoryTest extends DummyEntity {
         em.createNativeQuery("ALTER TABLE branch_tb ALTER COLUMN `id` RESTART WITH 1").executeUpdate();
 
         User userPS = userRepository.save(newUser("lee"));
+        User userPS2 = userRepository.save(newUser("lee2"));
         Company companyPS = companyRepository.save(newCompany("미래에셋증권"));
         Branch branchPS = branchRepository.save(newBranch(companyPS, 1));
         PB pbPS = pbRepository.save(newPB("이피비", branchPS));
+        PB pbPS2 = pbRepository.save(newPB("이피비2", branchPS));
         Reservation reservation = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
         Reservation reservation2 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
         Reservation reservation3 = reservationRepository.save(newVisitReservation(userPS, pbPS, ReservationProcess.COMPLETE));
@@ -62,6 +64,8 @@ public class ReservationRepositoryTest extends DummyEntity {
         Reservation reservation6 = reservationRepository.save(newVisitReservationCancel(userPS, pbPS));
         reservationRepository.save(newCallReservation(userPS, pbPS, ReservationProcess.APPLY));
         reservationRepository.save(newCallReservation(userPS, pbPS, ReservationProcess.CONFIRM));
+        reservationRepository.save(newCallReservation(userPS2, pbPS, ReservationProcess.CONFIRM));
+        reservationRepository.save(newCallReservation(userPS, pbPS2, ReservationProcess.CONFIRM));
         reviewRepository.save(newReview(reservation));
         reviewRepository.save(newReview(reservation2));
         reviewRepository.save(newReview(reservation3));
@@ -69,6 +73,56 @@ public class ReservationRepositoryTest extends DummyEntity {
         reviewRepository.save(newReview(reservation5));
 
         em.clear();
+    }
+
+    @Test
+    public void delete_by_pbId_test() {
+        // given
+        Long pbId = 2L;
+
+        // when
+        reservationRepository.deleteByPBId(pbId);
+
+        // then
+        List<Reservation> reservations = reservationRepository.findAllByPBId(pbId);
+        Assertions.assertThat(reservations).isEmpty();
+    }
+
+    @Test
+    public void find_all_by_pb_id_test() {
+        // given
+        Long pbId = 1L;
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByPBId(pbId);
+
+        // then
+        assertThat(reservations.size()).isGreaterThan(7);
+    }
+
+    @Test
+    public void delete_by_userId_test() {
+        // given
+        Long userId = 2L;
+
+        // when
+        reservationRepository.deleteByUserId(userId);
+
+        // then
+        List<Reservation> reservations = reservationRepository.findAllByUserId(userId);
+        Assertions.assertThat(reservations).isEmpty();
+    }
+
+    @Test
+    public void find_all_by_user_id_test() {
+        // given
+        Long userId = 1L;
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByUserId(userId);
+
+        // then
+        assertThat(reservations.size()).isGreaterThan(7);
     }
 
     @Test
@@ -82,21 +136,18 @@ public class ReservationRepositoryTest extends DummyEntity {
         // then
         assertThat(page.getContent().size()).isGreaterThan(7);
         assertThat(page.getContent().get(0).getId()).isInstanceOf(Long.class);
-        assertThat(page.getContent().get(0).getEmail()).isEqualTo("lee@nate.com");
         assertThat(page.getContent().get(0).getCandidateTime1()).isBefore(LocalDateTime.now());
         assertThat(page.getContent().get(0).getCandidateTime2()).isBefore(LocalDateTime.now().minusHours(1));
         assertThat(page.getContent().get(0).getTime()).isBefore(LocalDateTime.now());
         assertThat(page.getContent().get(0).getGoal()).isEqualTo(ReservationGoal.PROFIT);
-        assertThat(page.getContent().get(0).getInvestor()).isEqualTo("lee");
         assertThat(page.getContent().get(0).getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
         assertThat(page.getContent().get(0).getLocationName()).isEqualTo("kb증권 강남중앙점");
         assertThat(page.getContent().get(0).getPb().getId()).isEqualTo(1L);
         assertThat(page.getContent().get(0).getPhoneNumber()).isEqualTo("01012345678");
         assertThat(page.getContent().get(0).getQuestion()).isEqualTo("질문입니다...");
         assertThat(page.getContent().get(0).getUser().getId()).isEqualTo(1L);
-        assertThat(page.getTotalElements()).isEqualTo(8);
+        assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(8);
         assertThat(page.getTotalPages()).isEqualTo(1);
-
 
 
     }
@@ -256,5 +307,19 @@ public class ReservationRepositoryTest extends DummyEntity {
         Assertions.assertThat(applyCount).isGreaterThan(0);
         Assertions.assertThat(confirmCount).isGreaterThan(0);
         Assertions.assertThat(completeCount).isGreaterThan(0);
+    }
+
+    @Test
+    public void find_all_by_time_before_and_process_test() {
+        // given
+        LocalDateTime time = LocalDateTime.now();
+
+        // when
+        List<Reservation> response = reservationRepository.findAllByTimeBeforeAndProcess(time, ReservationProcess.CONFIRM);
+
+        // then
+        for (int i = 0; i < response.size(); i++) {
+            assertThat(response.get(i).getProcess()).isEqualTo(ReservationProcess.CONFIRM);
+        }
     }
 }

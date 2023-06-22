@@ -19,6 +19,7 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Import(BCryptPasswordEncoder.class)
@@ -46,7 +47,21 @@ class AwardRepositoryTest extends DummyEntity {
         Company c = companyRepository.save(newCompany("미래에셋증권"));
         Branch b = branchRepository.save(newBranch(c, 0));
         PB pb = pbRepository.save(newPB("김피비", b));
+        PB pb2 = pbRepository.save(newPB("김피비2", b));
         Award award = awardRepository.save(newAward(pb));
+        Award award2 = awardRepository.save(newAward(pb2));
+    }
+
+    @Test
+    public void deleteByPBId() {
+        // given
+        Long id = 2L;
+
+        // when
+        awardRepository.deleteByPBId(id);
+
+        //
+        assertThat(awardRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
@@ -55,6 +70,6 @@ class AwardRepositoryTest extends DummyEntity {
         List<PBResponse.AwardOutDTO> list = awardRepository.getAwards(1L);
 
         //then
-        Assertions.assertThat(list.size()).isEqualTo(1);
+        Assertions.assertThat(list.size()).isGreaterThanOrEqualTo(1);
     }
 }

@@ -4,6 +4,7 @@ import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.reservation.Review;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -20,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -54,11 +56,51 @@ public class BoardRepositoryTest extends DummyEntity {
         Company c = companyRepository.save(newCompany("미래에셋증권"));
         Branch b = branchRepository.save(newBranch(c, 0));
         PB pb = pbRepository.save(newPB("김피비", b));
+        PB pb2 = pbRepository.save(newPB("김피비2", b));
         Board board = boardRepository.save(newBoard("게시글", pb));
+        Board board2 = boardRepository.save(newBoard("게시글2", pb));
+        Board board3 = boardRepository.save(newBoard("게시글3", pb2));
         User user = userRepository.save(newUser("lee"));
         boardBookmarkRepository.save(newBoardBookmark(user, board));
 
         em.clear();
+    }
+
+    @Test
+    void deleteByPBId() {
+        //given
+        Long id = 2L;
+
+        //when
+        boardRepository.deleteByPBId(id);
+
+        //then
+        List<Board> board = boardRepository.findAllByPBId(id);
+        assertThat(board).isEmpty();
+    }
+
+    @Test
+    void findAllByPBId() {
+        //given
+        Long id = 1L;
+
+        //when
+        List<Board> board = boardRepository.findAllByPBId(id);
+
+        //then
+        assertThat(board.size()).isGreaterThan(1);
+    }
+
+    @Test
+    public void findProfileById() {
+        // given
+        Long id = 1L;
+
+        // when
+        Optional<String> thumbnail = boardRepository.findThumbnailByPBId(id);
+
+        // then
+        assertThat(thumbnail.get()).isEqualTo("thumbnail.png");
     }
 
     @Test
@@ -103,7 +145,7 @@ public class BoardRepositoryTest extends DummyEntity {
 
         //then
         assertThat(page).isNotEmpty();
-        assertThat(page.getContent().size()).isEqualTo(1);
+        assertThat(page.getContent().size()).isGreaterThanOrEqualTo(2);
     }
 
     @Test

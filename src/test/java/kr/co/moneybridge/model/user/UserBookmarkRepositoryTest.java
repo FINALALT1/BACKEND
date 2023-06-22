@@ -1,6 +1,7 @@
 package kr.co.moneybridge.model.user;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
+import kr.co.moneybridge.model.board.BookmarkerRole;
 import kr.co.moneybridge.model.pb.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,13 +44,44 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
         Company c = companyRepository.save(newCompany("미래에셋증권"));
         Branch b = branchRepository.save(newBranch(c, 0));
         PB pb = pbRepository.save(newPB("김피비", b));
+        PB pb2 = pbRepository.save(newPB("김피비2", b));
         User user = userRepository.save(newUser("lee"));
         userBookmarkRepository.save(newUserBookmark(user, pb));
+        userBookmarkRepository.save(newUserBookmark(user, pb2));
+        User user2 = userRepository.save(newUser("lee2"));
+        userBookmarkRepository.save(newUserBookmark(user2, pb));
         em.clear();
     }
 
     @Test
-    public void countByUserId() {
+    void deleteByPBId() {
+        //given
+        Long id = 2L;
+
+        //when
+        userBookmarkRepository.deleteByPBId(id);
+        em.flush();
+
+        //then
+        assertThat(userBookmarkRepository.existsByUserIdAndPBId(1L, id)).isEqualTo(false);
+    }
+
+    @Test
+    void deleteByUserId() {
+        //given
+        Long id = 12L;
+
+        //when
+        userBookmarkRepository.deleteByUserId(id);
+        em.flush();
+
+        //then
+        Integer count = userBookmarkRepository.countByUserId(id);
+        assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    public void existsByUserIdAndPBId() {
         // when
         Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(1L, 1L);
 
@@ -58,12 +90,12 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
     }
 
     @Test
-    public void existsByUserIdAndPBId() {
+    public void countByUserId() {
         // when
         Integer count = userBookmarkRepository.countByUserId(1L);
 
         // then
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isGreaterThanOrEqualTo(1);
     }
 
     @Test

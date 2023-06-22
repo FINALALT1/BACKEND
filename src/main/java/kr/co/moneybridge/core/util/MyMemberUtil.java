@@ -81,8 +81,9 @@ public class MyMemberUtil {
             // s3에서 액셀데이터도 삭제
             // s3에서 명함사진도 삭제
             // s3에서 프로필 사진도 삭제
+            // s3에서 컨텐츠 썸네일도 삭제
             deleteFiles(portfolioRepository.findFileByPBId(id), pbRepository.findBusinessCardById(id).get(),
-                    pbRepository.findProfileById(id).get());
+                    pbRepository.findProfileById(id).get(), boardRepository.findThumbnailByPBId(id));
             try{
                 List<Reservation> reservations = reservationRepository.findAllByPBId(id);
                 reservations.stream().forEach(reservation -> {
@@ -130,7 +131,7 @@ public class MyMemberUtil {
         }
     }
 
-    private void deleteFiles(Optional<String> file, String businessCard, String profile){
+    private void deleteFiles(Optional<String> file, String businessCard, String profile, Optional<String> thumbnail){
         if(file.isPresent()){
             s3Util.delete(file.get());
         }
@@ -138,6 +139,9 @@ public class MyMemberUtil {
             s3Util.delete(profile);
         }
         s3Util.delete(businessCard);
+        if(thumbnail.isPresent()){
+            s3Util.delete(thumbnail.get());
+        }
     }
 
     public List<Member> findByNameAndPhoneNumberWithoutException(String name, String phoneNumber, Role role) {
