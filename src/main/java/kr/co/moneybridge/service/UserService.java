@@ -250,8 +250,7 @@ public class UserService {
     }
 
     @MyLog
-    public Pair<String, String> reissue(HttpServletRequest request, String refreshToken_temp) {
-        String refreshToken = request.getHeader("refreshToken");
+    public Pair<String, String> reissue(HttpServletRequest request, String refreshToken) {
         // access token에서 나온 사용자 정보로 redis에서 refresh token을 조회해서
         // 요청받은 refresh token과 같아야 재발급
 
@@ -295,8 +294,7 @@ public class UserService {
     }
 
     @MyLog
-    public void logout(HttpServletRequest request, String refreshToken_temp) {
-        String refreshToken = request.getHeader("refreshToken");
+    public void logout(HttpServletRequest request, String refreshToken) {
         // 로그아웃하면 redis에 refresh token 정보는 지워서 새로 재발급 못받게 함
         // access token은 redis에 블랙리스트로 저장해둬서 해당 aceess token을 탈취해서 로그인 하는 행위 막음
 
