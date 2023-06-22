@@ -51,7 +51,20 @@ public class BoardBookmarkRepositoryTest extends DummyEntity {
         Board board = boardRepository.save(newBoard("board", pb));
         User user = userRepository.save(newUser("lee"));
         boardBookmarkRepository.save(newBoardBookmark(user, board));
+        User user2 = userRepository.save(newUser("lee2"));
+        boardBookmarkRepository.save(newBoardBookmark(user2, board));
         em.clear();
+    }
+
+    @Test
+    void deleteByBookmarker() {
+        //when
+        boardBookmarkRepository.deleteByBookmarker(2L, BookmarkerRole.USER);
+        em.flush();
+
+        //then
+        Integer count = boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, 2L);
+        assertThat(count).isEqualTo(0);
     }
 
     @Test
