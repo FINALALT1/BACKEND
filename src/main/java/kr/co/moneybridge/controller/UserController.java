@@ -145,7 +145,7 @@ public class UserController {
         ResponseDTO<?> responseDTO = new ResponseDTO<>(joinOutDTO);
         // 회원가입 완료시 자동로그인
         Pair<String, String> tokens = userService.issue(Role.USER, joinInDTO.getEmail(), rawPassword);
-        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
+        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; Path=/");
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .body(responseDTO);
@@ -161,7 +161,7 @@ public class UserController {
 
         Pair<String, String> tokens = userService.issue(loginInDTO.getRole(), loginInDTO.getEmail(), loginInDTO.getPassword());
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
-        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
+        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; Path=/");
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .body(responseDTO);
@@ -173,7 +173,7 @@ public class UserController {
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         Pair<String, String> tokens = userService.reissue(request, getRefreshToken(request));
-        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; HttpOnly; Path=/");
+        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight() + "; Path=/");
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())

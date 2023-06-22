@@ -12,6 +12,7 @@ import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
+import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
@@ -19,6 +20,7 @@ import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBStatus;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.BackOfficeService;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,6 +71,63 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockAdmin
+    @Test
+    public void getMembers_test() throws Exception {
+        // given
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPBWithStatus(1L, "pblee", branch, PBStatus.PENDING);
+        User user = newMockUserADMIN(1L, "관리자");
+        Reservation reservation = newMockCallReservation(1L, user, pb, ReservationProcess.APPLY);
+        Review review = newMockReview(1L, reservation);
+        List reviewList = Arrays.asList(new BackOfficeResponse.ReservationTotalDTO(reservation,
+                new BackOfficeResponse.UserDTO(reservation.getUser()),
+                new BackOfficeResponse.PBDTO(reservation.getPb()),
+                new BackOfficeResponse.ReviewTotalDTO(review,
+                        Arrays.asList(new ReservationResponse.StyleDTO(StyleStyle.FAST)))));
+        Page<Reservation> reservationPG =  new PageImpl<>(Arrays.asList(reservation));
+        BackOfficeResponse.ReservationOutDTO reservationOutDTO = new BackOfficeResponse.ReservationOutDTO(
+                new BackOfficeResponse.ReservationTotalCountDTO(1L,0L,0L, 1L),
+                new PageDTO<>(reviewList, reservationPG, Reservation.class));
+
+        // stub
+        Mockito.when(backOfficeService.getReservations(any())).thenReturn(reservationOutDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/admin/reservations"));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.count.apply").value(1));
+        resultActions.andExpect(jsonPath("$.data.count.confirm").value(0));
+        resultActions.andExpect(jsonPath("$.data.count.complete").value(0));
+        resultActions.andExpect(jsonPath("$.data.count.review").value(1));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].process").value("APPLY"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].status").value("ACTIVE"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].time").value(LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"))));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].type").value("CALL"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].locationName").value("kb증권 강남중앙점"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].goal").value("PROFIT"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].question").value("질문입니다..."));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.email").value("jisu8496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.name").value("관리자"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].user.isAdmin").value("true"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.email").value("pblee@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.name").value("pblee"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].review.content").value("content 입니다"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].review.adherence").value("EXCELLENT"));
+        resultActions.andExpect(jsonPath("$.data.page.list[0].review.styles[0].style").value("FAST"));
+    }
 
     @WithMockAdmin
     @Test
@@ -132,7 +193,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
 
     @WithMockAdmin
     @Test
-    public void getMembers_test() throws Exception {
+    public void getReservations_test() throws Exception {
         // given
         Long id = 1L;
         Company company = newMockCompany(1L, "미래에셋증권");

@@ -103,7 +103,9 @@ public class UserService {
     @MyLog
     @Transactional
     public void updateMyInfo(UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO, MyUserDetails myUserDetails) {
-        Member memberPS = myUserDetails.getMember();
+        Long id = myUserDetails.getMember().getId();
+        Role role = myUserDetails.getMember().getRole();
+        Member memberPS = myMemberUtil.findById(id, role);
 
         if(updateMyInfoInDTO.getName() != null && !updateMyInfoInDTO.getName().isEmpty()) { // isEmpty()는 null이 아닐 때만 확인 가능
             memberPS.updateName(updateMyInfoInDTO.getName());

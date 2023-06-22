@@ -3,6 +3,7 @@ package kr.co.moneybridge.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.*;
@@ -54,6 +55,8 @@ public class PBControllerTest {
     private CompanyRepository companyRepository;
     @Autowired
     private PBRepository pbRepository;
+    @Autowired
+    private S3Util s3Util;
 
     @BeforeEach
     public void setUp() {
@@ -309,6 +312,9 @@ public class PBControllerTest {
                         .file(json));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
+
+        // S3에 저장안되게 다시 삭제시켜주기
+        s3Util.deleteLatestFileWithSuffixFromS3Bucket("_businessCard.png");
 
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));

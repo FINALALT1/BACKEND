@@ -94,32 +94,36 @@ public class UserServiceTest extends MockDummyEntity {
     @Spy
     private BCryptPasswordEncoder passwordEncoder;
 
-//    @Test
-//    public void testPropensity_test() {
-//        // given
-//        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
-//        testPropensityInDTO.setQ1(5);
-//        testPropensityInDTO.setQ2(4);
-//        testPropensityInDTO.setQ3(5);
-//        testPropensityInDTO.setQ4(5);
-//        testPropensityInDTO.setQ5(5);
-//        testPropensityInDTO.setQ6(5);
-//        Long id = 1L;
-//
-//        User user = newMockUserWithoutPropensity(1L, "lee");
-//        UserInvestInfo userInvestInfo = newMockUserInvestInfo(1L, user);
-//        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-//        when(userInvestInfoRepository.findByUserId(any())).thenReturn(Optional.empty());
-//        when(userInvestInfoRepository.save(any())).thenReturn(userInvestInfo);
-//
-//        // when
-//        userService.testPropensity(testPropensityInDTO, id);
-//
-//        // then
-//        verify(userRepository, times(1)).findById(any());
-//        verify(userInvestInfoRepository, times(1)).findByUserId(any());
-//        verify(userInvestInfoRepository, times(1)).save(any());
-//    }
+    @Test
+    public void testPropensity_test() {
+        // given
+        UserRequest.TestPropensityInDTO testPropensityInDTO = new UserRequest.TestPropensityInDTO();
+        testPropensityInDTO.setScore(24);
+        Long id = 1L;
+
+        User user = newMockUserWithoutPropensity(1L, "lee");
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+
+        // when
+        userService.testPropensity(testPropensityInDTO, id);
+
+        // then
+        verify(userRepository, times(1)).findById(any());
+        Assertions.assertThat(user.getPropensity()).isEqualTo(UserPropensity.AGGRESSIVE);
+    }
+
+    @Test
+    public void getAccount_test() {
+        // stub
+        User user = newMockUser(1L, "lee");
+        when(myUserDetails.getMember()).thenReturn(user);
+
+        // when
+        userService.getAccount(myUserDetails);
+
+        // then
+        verify(myUserDetails, times(1)).getMember();
+    }
 
     @Test
     public void getMyPage() {
@@ -168,6 +172,7 @@ public class UserServiceTest extends MockDummyEntity {
                 .createdAt(LocalDateTime.now())
                 .build();
         when(myUserDetails.getMember()).thenReturn(mockUser);
+        when(myMemberUtil.findById(any(), any())).thenReturn(mockUser);
 
         // when
         userService.updateMyInfo(updateMyInfoInDTO, myUserDetails);

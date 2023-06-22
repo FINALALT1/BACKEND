@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -69,6 +71,35 @@ public class ReservationRepositoryTest extends DummyEntity {
         em.clear();
     }
 
+    @Test
+    public void find_all_pegeable_test() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+
+        // when
+        Page<Reservation> page = reservationRepository.findAll(pageable);
+
+        // then
+        assertThat(page.getContent().size()).isGreaterThan(7);
+        assertThat(page.getContent().get(0).getId()).isInstanceOf(Long.class);
+        assertThat(page.getContent().get(0).getEmail()).isEqualTo("lee@nate.com");
+        assertThat(page.getContent().get(0).getCandidateTime1()).isBefore(LocalDateTime.now());
+        assertThat(page.getContent().get(0).getCandidateTime2()).isBefore(LocalDateTime.now().minusHours(1));
+        assertThat(page.getContent().get(0).getTime()).isBefore(LocalDateTime.now());
+        assertThat(page.getContent().get(0).getGoal()).isEqualTo(ReservationGoal.PROFIT);
+        assertThat(page.getContent().get(0).getInvestor()).isEqualTo("lee");
+        assertThat(page.getContent().get(0).getLocationAddress()).isEqualTo("강남구 강남중앙로 10");
+        assertThat(page.getContent().get(0).getLocationName()).isEqualTo("kb증권 강남중앙점");
+        assertThat(page.getContent().get(0).getPb().getId()).isEqualTo(1L);
+        assertThat(page.getContent().get(0).getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(page.getContent().get(0).getQuestion()).isEqualTo("질문입니다...");
+        assertThat(page.getContent().get(0).getUser().getId()).isEqualTo(1L);
+        assertThat(page.getTotalElements()).isEqualTo(8);
+        assertThat(page.getTotalPages()).isEqualTo(1);
+
+
+
+    }
 
     @Test
     public void count_by_pb_id_and_process_test() {
@@ -217,9 +248,9 @@ public class ReservationRepositoryTest extends DummyEntity {
     @Test
     public void countByProcess() {
         // when
-        Integer applyCount = reservationRepository.countByProcess(ReservationProcess.APPLY);
-        Integer confirmCount = reservationRepository.countByProcess(ReservationProcess.CONFIRM);
-        Integer completeCount = reservationRepository.countByProcess(ReservationProcess.COMPLETE);
+        Long applyCount = reservationRepository.countByProcess(ReservationProcess.APPLY);
+        Long confirmCount = reservationRepository.countByProcess(ReservationProcess.CONFIRM);
+        Long completeCount = reservationRepository.countByProcess(ReservationProcess.COMPLETE);
 
         // then
         Assertions.assertThat(applyCount).isGreaterThan(0);
