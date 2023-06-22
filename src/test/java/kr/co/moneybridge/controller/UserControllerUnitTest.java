@@ -366,7 +366,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         // then
         MvcResult mvcResult = resultActions.andReturn();
         String actualResponse = mvcResult.getResponse().getHeader("Set-Cookie");
-        assertEquals("refreshToken=refreshToken; Path=/; HttpOnly", actualResponse);
+        assertEquals("refreshToken=refreshToken; Path=/", actualResponse);
     }
 
     @Test
@@ -394,7 +394,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         // Then
         MvcResult mvcResult = resultActions.andReturn();
         String actualResponse = mvcResult.getResponse().getHeader("Set-Cookie");
-        assertEquals("refreshToken=newRefreshToken; Path=/; HttpOnly", actualResponse);
+        assertEquals("refreshToken=newRefreshToken; Path=/", actualResponse);
 
         Mockito.verify(userService).reissue(any(HttpServletRequest.class), eq(oldRefreshToken));  // Verifying that userService.reissue was called
     }
@@ -449,7 +449,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         // then
         MvcResult mvcResult = resultActions.andReturn();
         String actualResponse = mvcResult.getResponse().getHeader("Set-Cookie");
-        assertEquals("refreshToken=refreshToken; Path=/; HttpOnly", actualResponse);
+        assertEquals("refreshToken=refreshToken; Path=/", actualResponse);
     }
 
     @WithMockUser
@@ -482,7 +482,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         // then
         MvcResult mvcResult = resultActions.andReturn();
         String actualResponse = mvcResult.getResponse().getHeader("Set-Cookie");
-        assertEquals("refreshToken=refreshToken; Path=/; HttpOnly", actualResponse);
+        assertEquals("refreshToken=refreshToken; Path=/", actualResponse);
     }
 
 
