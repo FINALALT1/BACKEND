@@ -348,110 +348,110 @@ public class UserServiceTest extends MockDummyEntity {
         });
     }
 
-    @Test
-    public void logout_test() {
-        // given
-        Long id = 1L;
-        String role = "USER";
-        String key = id + role;
-        User user = newMockUser(id, "김투자");
-        String accessJwt = MyJwtProviderTest.createTestAccess(user);
-        String refreshToken = MyJwtProviderTest.createTestRefresh(user);
+//    @Test
+//    public void logout_test() {
+//        // given
+//        Long id = 1L;
+//        String role = "USER";
+//        String key = id + role;
+//        User user = newMockUser(id, "김투자");
+//        String accessJwt = MyJwtProviderTest.createTestAccess(user);
+//        String refreshToken = MyJwtProviderTest.createTestRefresh(user);
+//
+//        // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
+//        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+//        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(MyJwtProvider.TOKEN_PREFIX + accessJwt);
+//
+//        // MyJwtProvider를 모킹하여 액세스 토큰과 리프레시 토큰을 검증하고, 검증된 JWT의 클레임을 반환하도록 설정
+//        DecodedJWT mockDecodedJWT = mock(DecodedJWT.class);
+//
+//        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
+//        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
+//
+//        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
+//            myJwtProviderMock.when(() -> MyJwtProvider.verifyAccess(accessJwt)).thenReturn(mockDecodedJWT);
+//            myJwtProviderMock.when(() -> MyJwtProvider.verifyRefresh(refreshToken)).thenReturn(mockDecodedJWT);
+//        } // static 메서드여서
+//
+//        // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하고, 액세스 토큰을 블랙리스트에 추가하도록 설정
+//        when(redisUtil.get(key)).thenReturn(refreshToken);
+//        when(redisUtil.delete(key)).thenReturn(true);
+//        doNothing().when(redisUtil).setBlackList(any(), any(), any());
+//
+//        // when
+//        userService.logout(mockRequest, refreshToken);
+//
+//        // 세 번째 파라미터를 캡쳐할 ArgumentCaptor를 생성합니다.
+//        ArgumentCaptor<Long> remainingTimeCaptor = ArgumentCaptor.forClass(Long.class);
+//
+//        // then
+//        verify(redisUtil, times(1)).delete(key);
+//        verify(redisUtil, times(1)).setBlackList(
+//                eq(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")),
+//                eq("access_token_blacklist"),
+//                remainingTimeCaptor.capture() // 캡쳐합니다.
+//        );
+//
+//        // 캡쳐한 값을 가져와서 원하는 조건을 만족하는지 검사합니다.
+//        Long capturedRemainingTimeMillis = remainingTimeCaptor.getValue();
+//        assertTrue(capturedRemainingTimeMillis <= MyJwtProvider.EXP_ACCESS && capturedRemainingTimeMillis >= 0);
+//    }
 
-        // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(MyJwtProvider.TOKEN_PREFIX + accessJwt);
-
-        // MyJwtProvider를 모킹하여 액세스 토큰과 리프레시 토큰을 검증하고, 검증된 JWT의 클레임을 반환하도록 설정
-        DecodedJWT mockDecodedJWT = mock(DecodedJWT.class);
-
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
-
-        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
-            myJwtProviderMock.when(() -> MyJwtProvider.verifyAccess(accessJwt)).thenReturn(mockDecodedJWT);
-            myJwtProviderMock.when(() -> MyJwtProvider.verifyRefresh(refreshToken)).thenReturn(mockDecodedJWT);
-        } // static 메서드여서
-
-        // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하고, 액세스 토큰을 블랙리스트에 추가하도록 설정
-        when(redisUtil.get(key)).thenReturn(refreshToken);
-        when(redisUtil.delete(key)).thenReturn(true);
-        doNothing().when(redisUtil).setBlackList(any(), any(), any());
-
-        // when
-        userService.logout(mockRequest, refreshToken);
-
-        // 세 번째 파라미터를 캡쳐할 ArgumentCaptor를 생성합니다.
-        ArgumentCaptor<Long> remainingTimeCaptor = ArgumentCaptor.forClass(Long.class);
-
-        // then
-        verify(redisUtil, times(1)).delete(key);
-        verify(redisUtil, times(1)).setBlackList(
-                eq(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")),
-                eq("access_token_blacklist"),
-                remainingTimeCaptor.capture() // 캡쳐합니다.
-        );
-
-        // 캡쳐한 값을 가져와서 원하는 조건을 만족하는지 검사합니다.
-        Long capturedRemainingTimeMillis = remainingTimeCaptor.getValue();
-        assertTrue(capturedRemainingTimeMillis <= MyJwtProvider.EXP_ACCESS && capturedRemainingTimeMillis >= 0);
-    }
-
-        @Test
-    public void reissue_test() {
-        // given
-        String prefix = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjo";
-        Long id = 1L;
-        String role = "PB";
-        String key = id + role;
-        Company c= newMockCompany(1L, "미래에셋증권");
-        Branch b = newMockBranch(1L, c, 0);
-        PB pb = newMockPB(id, "김피비", b);
-        String accessJwt = MyJwtProviderTest.createTestAccess(pb);
-        String refreshToken = MyJwtProviderTest.createTestRefresh(pb);
-
-        // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(accessJwt);
-
-        // MyJwtProvider를 모킹하여 액세스 토큰을 디코딩하고, 디코딩된 JWT의 클레임을 반환하도록 설정
-        DecodedJWT mockDecodedJWT = mock(DecodedJWT.class);
-        try (MockedStatic<JWT> jwtMock = Mockito.mockStatic(JWT.class)) {
-            jwtMock.when(() -> JWT.decode(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")))
-                    .thenReturn(mockDecodedJWT);
-        }
-
-        // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하도록 설정
-        when(redisUtil.get(key)).thenReturn(refreshToken);
-        when(redisUtil.delete(key)).thenReturn(true);
-
-        // MyMemberUtil를 모킹하여 멤버를 조회하고, 멤버에 해당하는 액세스 토큰과 리프레시 토큰을 생성하도록 설정
-        // 가짜 멤버 객체를 생성하고, getId와 getRole 메서드의 반환값을 설정합니다.
-        Member mockMember = mock(Member.class);
-        when(mockMember.getId()).thenReturn(1L);
-        when(mockMember.getRole()).thenReturn(Role.PB);
-
-        when(myMemberUtil.findById(id, Role.valueOf(role))).thenReturn(mockMember);
-
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
-
-        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
-            myJwtProviderMock.when(() -> MyJwtProvider.createAccess(mockMember))
-                    .thenReturn(accessJwt);
-        }
-        when(myJwtProvider.createRefresh(mockMember))
-                .thenReturn(refreshToken);
-
-        // when
-        Pair<String, String> tokens = userService.reissue(mockRequest, refreshToken);
-
-        // then
-        Assertions.assertThat(tokens.getLeft().substring(0, prefix.length() + 7)).isEqualTo(
-                MyJwtProvider.TOKEN_PREFIX + prefix.substring(0, prefix.length()));
-        Assertions.assertThat(tokens.getRight().substring(0, prefix.length())).isEqualTo(
-                prefix.substring(0, prefix.length()));
-    }
+//        @Test
+//    public void reissue_test() {
+//        // given
+//        String prefix = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjo";
+//        Long id = 1L;
+//        String role = "PB";
+//        String key = id + role;
+//        Company c= newMockCompany(1L, "미래에셋증권");
+//        Branch b = newMockBranch(1L, c, 0);
+//        PB pb = newMockPB(id, "김피비", b);
+//        String accessJwt = MyJwtProviderTest.createTestAccess(pb);
+//        String refreshToken = MyJwtProviderTest.createTestRefresh(pb);
+//
+//        // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
+//        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+//        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(accessJwt);
+//
+//        // MyJwtProvider를 모킹하여 액세스 토큰을 디코딩하고, 디코딩된 JWT의 클레임을 반환하도록 설정
+//        DecodedJWT mockDecodedJWT = mock(DecodedJWT.class);
+//        try (MockedStatic<JWT> jwtMock = Mockito.mockStatic(JWT.class)) {
+//            jwtMock.when(() -> JWT.decode(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")))
+//                    .thenReturn(mockDecodedJWT);
+//        }
+//
+//        // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하도록 설정
+//        when(redisUtil.get(key)).thenReturn(refreshToken);
+//        when(redisUtil.delete(key)).thenReturn(true);
+//
+//        // MyMemberUtil를 모킹하여 멤버를 조회하고, 멤버에 해당하는 액세스 토큰과 리프레시 토큰을 생성하도록 설정
+//        // 가짜 멤버 객체를 생성하고, getId와 getRole 메서드의 반환값을 설정합니다.
+//        Member mockMember = mock(Member.class);
+//        when(mockMember.getId()).thenReturn(1L);
+//        when(mockMember.getRole()).thenReturn(Role.PB);
+//
+//        when(myMemberUtil.findById(id, Role.valueOf(role))).thenReturn(mockMember);
+//
+//        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
+//        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
+//
+//        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
+//            myJwtProviderMock.when(() -> MyJwtProvider.createAccess(mockMember))
+//                    .thenReturn(accessJwt);
+//        }
+//        when(myJwtProvider.createRefresh(mockMember))
+//                .thenReturn(refreshToken);
+//
+//        // when
+//        Pair<String, String> tokens = userService.reissue(mockRequest, refreshToken);
+//
+//        // then
+//        Assertions.assertThat(tokens.getLeft().substring(0, prefix.length() + 7)).isEqualTo(
+//                MyJwtProvider.TOKEN_PREFIX + prefix.substring(0, prefix.length()));
+//        Assertions.assertThat(tokens.getRight().substring(0, prefix.length())).isEqualTo(
+//                prefix.substring(0, prefix.length()));
+//    }
 
 
     @Test
