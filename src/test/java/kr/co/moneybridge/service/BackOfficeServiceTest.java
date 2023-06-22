@@ -140,7 +140,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         when(pbRepository.findAllByStatus(any(), any())).thenReturn(pbPG);
 
         // when
-        BackOfficeResponse.MemberOutDTO memberOutDTO = backOfficeService.getMembers(pageable);
+        BackOfficeResponse.MemberOutDTO memberOutDTO = backOfficeService.getMembers(pageable, pageable);
 
         // then
         assertThat(memberOutDTO.getMemberCount().getTotal()).isEqualTo(2);

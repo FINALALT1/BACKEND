@@ -83,6 +83,8 @@ public class SwaggerResponses {
             @ApiResponse(code = 500,
                     message = INTERNAL_SERVER_ERROR)
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", example = "0", value = "curPage 번호")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -160,6 +162,9 @@ public class SwaggerResponses {
             @ApiResponse(code = 500,
                     message = INTERNAL_SERVER_ERROR)
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userPage", example = "0", value = "userPage의 curPage 번호"),
+            @ApiImplicitParam(name = "pbPage", example = "0", value = "pbPage의 curPage 번호")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -248,6 +253,8 @@ public class SwaggerResponses {
             @ApiResponse(code = 500,
                     message = INTERNAL_SERVER_ERROR)
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", example = "0", value = "curPage 번호")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -259,6 +266,8 @@ public class SwaggerResponses {
             @ApiResponse(code = 500,
                     message = INTERNAL_SERVER_ERROR)
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", example = "0", value = "curPage 번호")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
