@@ -321,4 +321,51 @@ public class PBRepositoryTest extends DummyEntity {
         assertThat(dto.getTotalElements()).isEqualTo(1);
         assertThat(dto.getContent().get(0).getName()).isEqualTo("김피비");
     }
+
+    @Test
+    void findByPBListSpeciality() {
+        //when
+        List<PBResponse.PBPageDTO> list = pbRepository.findByPBListSpeciality(PBSpeciality.BOND);
+
+        //then
+        assertThat(list.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findByPBListCompany() {
+        //when
+        List<PBResponse.PBPageDTO> list = pbRepository.findByPBListCompany(1L);
+
+        //then
+        assertThat(list.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findAllPB() {
+        //when
+        List<PBResponse.PBPageDTO> list = pbRepository.findAllPB();
+
+        //then
+        assertThat(list.size()).isEqualTo(2);
+    }
+
+    @Test
+    void findBySpecialityOrderedByCareer() {
+        //when
+        Page<PBResponse.PBPageDTO> dto = pbRepository.findBySpecialityOrderedByCareer(PBSpeciality.BOND, PageRequest.of(0, 10));
+
+        //then
+        assertThat(dto.getTotalElements()).isEqualTo(2);
+        assertThat(dto.getContent().get(0).getName()).isEqualTo("김피비");
+    }
+
+    @Test
+    void findByCompanyIdOrderedByCareer() {
+        //when
+        Page<PBResponse.PBPageDTO> dto = pbRepository.findByCompanyIdOrderedByCareer(1L, PageRequest.of(0, 10));
+
+        //then
+        assertThat(dto.getTotalElements()).isEqualTo(2);
+        assertThat(dto.getContent().get(0).getName()).isEqualTo("김피비");
+    }
 }
