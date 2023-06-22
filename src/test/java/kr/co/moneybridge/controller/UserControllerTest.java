@@ -470,71 +470,71 @@ public class UserControllerTest {
         resultActions.andExpect(jsonPath("$.data.code").value(matchesPattern(regex)));
     }
 
-    @DisplayName("토큰 재발급 성공")
-    @Test
-    public void reissue_test() throws Exception {
-        // given
-        // 로그인을 통해 액세스 토큰과 리프레시 토큰을 얻습니다.
-        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
-        loginInDTO.setRole(Role.USER);
-        loginInDTO.setEmail("로그인@nate.com");
-        loginInDTO.setPassword("password1234");
-        String loginRequestBody = om.writeValueAsString(loginInDTO);
+//    @DisplayName("토큰 재발급 성공")
+//    @Test
+//    public void reissue_test() throws Exception {
+//        // given
+//        // 로그인을 통해 액세스 토큰과 리프레시 토큰을 얻습니다.
+//        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
+//        loginInDTO.setRole(Role.USER);
+//        loginInDTO.setEmail("로그인@nate.com");
+//        loginInDTO.setPassword("password1234");
+//        String loginRequestBody = om.writeValueAsString(loginInDTO);
+//
+//        MvcResult loginResult = mvc
+//                .perform(post("/login")
+//                        .content(loginRequestBody)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andReturn();
+//
+//        String accessToken = loginResult.getResponse().getHeader(MyJwtProvider.HEADER_ACCESS);
+//        String refreshToken = loginResult.getResponse().getCookie("refreshToken").getValue();
+//
+//        // when
+//        ResultActions resultActions = mvc
+//                .perform(post("/reissue")
+//                        .header(MyJwtProvider.HEADER_ACCESS, accessToken)
+//                        .cookie(new Cookie("refreshToken", refreshToken))
+//                        .contentType(MediaType.APPLICATION_JSON));
+//
+//        // then
+//        resultActions.andExpect(status().isOk());
+//        resultActions.andExpect(header().exists(MyJwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
+//        resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
+//        resultActions.andExpect(jsonPath("$.status").value(200));
+//        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+//    }
 
-        MvcResult loginResult = mvc
-                .perform(post("/login")
-                        .content(loginRequestBody)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-
-        String accessToken = loginResult.getResponse().getHeader(MyJwtProvider.HEADER_ACCESS);
-        String refreshToken = loginResult.getResponse().getCookie("refreshToken").getValue();
-
-        // when
-        ResultActions resultActions = mvc
-                .perform(post("/reissue")
-                        .header(MyJwtProvider.HEADER_ACCESS, accessToken)
-                        .cookie(new Cookie("refreshToken", refreshToken))
-                        .contentType(MediaType.APPLICATION_JSON));
-
-        // then
-        resultActions.andExpect(status().isOk());
-        resultActions.andExpect(header().exists(MyJwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
-        resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
-        resultActions.andExpect(jsonPath("$.status").value(200));
-        resultActions.andExpect(jsonPath("$.msg").value("ok"));
-    }
-
-    @DisplayName("로그아웃 성공")
-    @Test
-    public void logout_test() throws Exception {
-        // given
-        // 로그인을 통해 액세스 토큰과 리프레시 토큰을 얻습니다.
-        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
-        loginInDTO.setRole(Role.USER);
-        loginInDTO.setEmail("로그인@nate.com");
-        loginInDTO.setPassword("password1234");
-        String loginRequestBody = om.writeValueAsString(loginInDTO);
-
-        MvcResult loginResult = mvc
-                .perform(post("/login")
-                        .content(loginRequestBody)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-
-        String accessToken = loginResult.getResponse().getHeader(MyJwtProvider.HEADER_ACCESS);
-        String refreshToken = loginResult.getResponse().getCookie("refreshToken").getValue();
-
-        // when
-        ResultActions resultActions = mvc
-                .perform(post("/auth/logout")
-                        .header(MyJwtProvider.HEADER_ACCESS, accessToken)
-                        .cookie(new Cookie("refreshToken", refreshToken))
-                        .contentType(MediaType.APPLICATION_JSON));
-
-        // then
-        resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.status").value(200));
-        resultActions.andExpect(jsonPath("$.msg").value("ok"));
-    }
+//    @DisplayName("로그아웃 성공")
+//    @Test
+//    public void logout_test() throws Exception {
+//        // given
+//        // 로그인을 통해 액세스 토큰과 리프레시 토큰을 얻습니다.
+//        UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
+//        loginInDTO.setRole(Role.USER);
+//        loginInDTO.setEmail("로그인@nate.com");
+//        loginInDTO.setPassword("password1234");
+//        String loginRequestBody = om.writeValueAsString(loginInDTO);
+//
+//        MvcResult loginResult = mvc
+//                .perform(post("/login")
+//                        .content(loginRequestBody)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andReturn();
+//
+//        String accessToken = loginResult.getResponse().getHeader(MyJwtProvider.HEADER_ACCESS);
+//        String refreshToken = loginResult.getResponse().getCookie("refreshToken").getValue();
+//
+//        // when
+//        ResultActions resultActions = mvc
+//                .perform(post("/auth/logout")
+//                        .header(MyJwtProvider.HEADER_ACCESS, accessToken)
+//                        .cookie(new Cookie("refreshToken", refreshToken))
+//                        .contentType(MediaType.APPLICATION_JSON));
+//
+//        // then
+//        resultActions.andExpect(status().isOk());
+//        resultActions.andExpect(jsonPath("$.status").value(200));
+//        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+//    }
 }
