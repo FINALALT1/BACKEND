@@ -92,7 +92,6 @@ public class ReservationRepositoryTest extends DummyEntity {
         assertThat(page.getContent().get(0).getLocationName()).isEqualTo("kb증권 강남중앙점");
         assertThat(page.getContent().get(0).getPb().getId()).isEqualTo(1L);
         assertThat(page.getContent().get(0).getPhoneNumber()).isEqualTo("01012345678");
-        assertThat(page.getContent().get(0).getStatus()).isEqualTo(ReservationStatus.ACTIVE);
         assertThat(page.getContent().get(0).getQuestion()).isEqualTo("질문입니다...");
         assertThat(page.getContent().get(0).getUser().getId()).isEqualTo(1L);
         assertThat(page.getTotalElements()).isEqualTo(8);

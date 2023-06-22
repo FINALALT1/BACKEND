@@ -76,10 +76,6 @@ public class User implements Member {
         this.phoneNumber = phoneNumber;
     }
 
-    public void updatePropensity(UserPropensity propensity) {
-        this.propensity = propensity;
-    }
-
     public void updateHasDoneReservation(Boolean value) {
         this.hasDoneReservation = value;
     }

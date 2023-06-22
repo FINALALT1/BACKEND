@@ -172,6 +172,7 @@ public class UserServiceTest extends MockDummyEntity {
                 .createdAt(LocalDateTime.now())
                 .build();
         when(myUserDetails.getMember()).thenReturn(mockUser);
+        when(myMemberUtil.findById(any(), any())).thenReturn(mockUser);
 
         // when
         userService.updateMyInfo(updateMyInfoInDTO, myUserDetails);
