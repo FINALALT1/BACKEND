@@ -58,7 +58,7 @@ public class BackOfficeService {
 
     @MyLog
     @Transactional
-    public void deleteRereply(Long id) {
+    public void deleteReReply(Long id) {
         // reReply 삭제
         reReplyRepository.deleteById(id);
     }
@@ -110,9 +110,9 @@ public class BackOfficeService {
                     if(!reviewOP.isEmpty()){
                         reviewTotalDTO =
                                 new BackOfficeResponse.ReviewTotalDTO(reviewOP.get(), styleRepository
-                                        .findAllByReviewId(reviewOP.get().getId()).stream().map(style ->
-                                                new ReservationResponse.StyleDTO(style.getStyle()))
-                                        .collect(Collectors.toList()));}
+                                .findAllByReviewId(reviewOP.get().getId()).stream().map(style ->
+                                        new ReservationResponse.StyleDTO(style.getStyle()))
+                                .collect(Collectors.toList()));}
                     return new BackOfficeResponse.ReservationTotalDTO(reservation,
                             new BackOfficeResponse.UserDTO(reservation.getUser()),
                             new BackOfficeResponse.PBDTO(reservation.getPb()),

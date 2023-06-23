@@ -57,7 +57,7 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
-    @ApiOperation(value = "콘텐츠 강제 삭제")
+    @ApiOperation(value = "대댓글 강제 삭제")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),

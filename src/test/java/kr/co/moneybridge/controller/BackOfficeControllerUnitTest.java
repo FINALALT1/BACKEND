@@ -14,6 +14,9 @@ import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
+import kr.co.moneybridge.model.board.Board;
+import kr.co.moneybridge.model.board.ReReply;
+import kr.co.moneybridge.model.board.Reply;
 import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
@@ -69,6 +72,78 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     private RedisTemplate redisTemplate;
     @MockBean
     private MyMemberUtil myMemberUtil;
+
+    @WithMockAdmin
+    @Test
+    public void deleteRereply_test() throws Exception {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        Board board = newMockBoard(1L, "title", pb);
+        Reply reply = newMockPBReply(1L, board, pb);
+        ReReply reReply = newMockPBReReply(1L, reply, pb);
+
+        // stub
+        Mockito.doNothing().when(backOfficeService).deleteReReply(any());
+
+        // When
+        ResultActions resultActions = mvc.perform((delete("/admin/reply/{id}", id)));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @WithMockAdmin
+    @Test
+    public void deleteReply_test() throws Exception {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        Board board = newMockBoard(1L, "title", pb);
+        Reply reply = newMockPBReply(1L, board, pb);
+
+        // stub
+        Mockito.doNothing().when(backOfficeService).deleteReply(any());
+
+        // When
+        ResultActions resultActions = mvc.perform((delete("/admin/reply/{id}", id)));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @WithMockAdmin
+    @Test
+    public void deleteBoard_test() throws Exception {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        Board board = newMockBoard(1L, "title", pb);
+
+        // stub
+        Mockito.doNothing().when(backOfficeService).deleteBoard(any());
+
+        // When
+        ResultActions resultActions = mvc.perform((delete("/admin/board/{id}", id)));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+    }
 
     @WithMockAdmin
     @Test

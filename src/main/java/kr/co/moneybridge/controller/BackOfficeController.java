@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
-    // 콘텐츠 강제 삭제
+    // 대댓글 강제 삭제
     @MyLog
     @SwaggerResponses.DeleteRereply
     @DeleteMapping("/admin/rereply/{id}")
-    public ResponseDTO deleteRereply(@PathVariable Long id) {
-        backOfficeService.deleteRereply(id);
+    public ResponseDTO deleteReReply(@PathVariable Long id) {
+        backOfficeService.deleteReReply(id);
         return new ResponseDTO<>();
     }
 
