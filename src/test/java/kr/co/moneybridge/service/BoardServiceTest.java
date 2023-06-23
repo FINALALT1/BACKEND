@@ -225,7 +225,7 @@ class BoardServiceTest extends MockDummyEntity {
         //stub
         Mockito.when(boardRepository.findBoardWithPBReply(1L, BoardStatus.ACTIVE)).thenReturn(Optional.of(boardDetailDTO));
         Mockito.when(boardRepository.findById(1L)).thenReturn(Optional.of(board));
-        Mockito.when(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(1L, BookmarkerRole.USER)).thenReturn(true);
+        Mockito.when(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(1L, BookmarkerRole.USER, 1L)).thenReturn(true);
 
         //when
         BoardResponse.BoardDetailDTO result = boardService.getBoardDetail(myUserDetails1,1L);
