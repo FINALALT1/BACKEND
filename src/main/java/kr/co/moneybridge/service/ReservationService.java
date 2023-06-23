@@ -61,7 +61,7 @@ public class ReservationService {
         Review reviewPS = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new Exception200("후기가 없습니다.")
         );
-        if(!reviewPS.getReservation().getUser().getId().equals(userId)){
+        if (!reviewPS.getReservation().getUser().getId().equals(userId)) {
             throw new Exception400("reviewId", "로그인한 투자자가 작성한 리뷰가 아닙니다.");
         }
         List<ReservationResponse.StyleDTO> styleList = styleRepository.findAllByReviewId(reviewId)
@@ -667,11 +667,11 @@ public class ReservationService {
         );
 
         try {
-            if (updateTimeDTO.getConsultStart() != null) {
-                pbPS.updateConsultStart(updateTimeDTO.getConsultStart());
+            if (updateTimeDTO.getConsultStart() != null && !updateTimeDTO.getConsultStart().isBlank()) {
+                pbPS.updateConsultStart(StringToLocalTime(updateTimeDTO.getConsultStart()));
             }
-            if (updateTimeDTO.getConsultEnd() != null) {
-                pbPS.updateConsultEnd(updateTimeDTO.getConsultEnd());
+            if (updateTimeDTO.getConsultEnd() != null && !updateTimeDTO.getConsultEnd().isBlank()) {
+                pbPS.updateConsultEnd(StringToLocalTime(updateTimeDTO.getConsultEnd()));
             }
             if (updateTimeDTO.getConsultNotice() != null && !updateTimeDTO.getConsultNotice().isBlank()) {
                 pbPS.updateConsultNotice(updateTimeDTO.getConsultNotice());

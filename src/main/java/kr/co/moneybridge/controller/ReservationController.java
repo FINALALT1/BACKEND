@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalTime;
 import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 
 @RequiredArgsConstructor
@@ -355,9 +356,12 @@ public class ReservationController {
     @PostMapping("/pb/consultTime")
     public ResponseDTO updateConsultTime(@RequestBody ReservationRequest.UpdateTimeDTO updateTimeDTO,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        if (updateTimeDTO.getConsultStart() != null && updateTimeDTO.getConsultEnd() != null) {
-            if (updateTimeDTO.getConsultStart().isAfter(updateTimeDTO.getConsultEnd())) {
-                throw new Exception400(updateTimeDTO.getConsultStart().toString(), "상담 시작 시간이 종료 시간보다 이전이어야 합니다.");
+        if (updateTimeDTO.getConsultStart() != null
+                && !updateTimeDTO.getConsultStart().isBlank()
+                && updateTimeDTO.getConsultEnd() != null
+                && !updateTimeDTO.getConsultEnd().isBlank()) {
+            if (StringToLocalTime(updateTimeDTO.getConsultStart()).isAfter((StringToLocalTime(updateTimeDTO.getConsultEnd())))) {
+                throw new Exception400(updateTimeDTO.getConsultStart(), "상담 시작 시간이 종료 시간보다 이전이어야 합니다.");
             }
         }
 

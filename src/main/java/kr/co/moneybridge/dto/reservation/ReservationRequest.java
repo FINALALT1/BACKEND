@@ -107,10 +107,10 @@ public class ReservationRequest {
     @Setter
     public static class UpdateTimeDTO {
         @ApiModelProperty(example = "09:00")
-        private LocalTime consultStart;
+        private String consultStart;
 
         @ApiModelProperty(example = "09:00")
-        private LocalTime consultEnd;
+        private String consultEnd;
 
         @ApiModelProperty(example = "월요일 13:00 제외")
         private String consultNotice;
