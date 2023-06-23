@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
+    @Query("select b.thumbnail from Board b where b.id = :boardId")
+    Optional<String> findThumbnailByBoardId(@Param("boardId") Long boardId);
+
     @Query("select b.thumbnail from Board b where b.pb.id = :pbId")
     Optional<String> findThumbnailByPBId(@Param("pbId") Long pbId);
 
