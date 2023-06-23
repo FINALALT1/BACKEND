@@ -35,5 +35,8 @@ public interface BoardBookmarkRepository extends JpaRepository<BoardBookmark, Lo
     @Query("SELECT bm FROM BoardBookmark bm WHERE bm.bookmarkerId = :bookmarkerId AND bm.board.id = :boardId")
     Optional<BoardBookmark> findByMemberAndBoardId(@Param("bookmarkerId") Long bookmarkerId, @Param("boardId") Long boardId);
 
-    Boolean existsByBookmarkerIdAndBookmarkerRole(Long bookmarkerId, BookmarkerRole bookmarkerRole);
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END " +
+            "FROM BoardBookmark b " +
+            "WHERE b.bookmarkerId = :bookmarkerId AND b.bookmarkerRole = :bookmarkerRole AND b.board.id = :id")
+    Boolean existsByBookmarkerIdAndBookmarkerRoleAndBoardId(@Param("bookmarkerId") Long bookmarkerId, @Param("bookmarkerRole") BookmarkerRole bookmarkerRole, @Param("id") Long id);
 }

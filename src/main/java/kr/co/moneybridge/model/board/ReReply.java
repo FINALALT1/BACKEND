@@ -47,4 +47,6 @@ public class ReReply {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateReReply(String content) { this.content = content; }
 }

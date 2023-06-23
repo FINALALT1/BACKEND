@@ -98,15 +98,26 @@ public class BoardController {
         return new ResponseDTO<>(boardListOutDTO);
     }
 
-    @ApiOperation("컨텐츠 상세 가져오기")
+    @ApiOperation("컨텐츠 상세 가져오기(로그인)")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
-    @GetMapping("/board/{id}")
-    public ResponseDTO<BoardResponse.BoardDetailDTO> getBoardDetail(@PathVariable Long id) {
+    @GetMapping("/auth/board/{id}")
+    public ResponseDTO<BoardResponse.BoardDetailDTO> getBoardDetail(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
 
-        BoardResponse.BoardDetailDTO boardDetailDTO = boardService.getBoardDetail(id);
+        BoardResponse.BoardDetailDTO boardDetailDTO = boardService.getBoardDetail(myUserDetails, id);
 
         return new ResponseDTO<>(boardDetailDTO);
+    }
+
+    @ApiOperation("컨텐츠 상세 가져오기(비로그인)")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "id", value = "1", dataType = "Long")
+    @GetMapping("/board/{id}")
+    public ResponseDTO<BoardResponse.BoardThumbnailDTO> getBoardThumbnail(@PathVariable Long id) {
+
+        BoardResponse.BoardThumbnailDTO boardThumbnailDTO = boardService.getBoardThumbnail(id);
+
+        return new ResponseDTO<>(boardThumbnailDTO);
     }
 
     @ApiOperation("컨텐츠 북마크하기")
@@ -147,6 +158,56 @@ public class BoardController {
             PB pb = pbService.getPB(myUserDetails.getMember().getId());
             replyService.postPbReply(replyInDTO, pb.getId(), id);
         }
+
+        return new ResponseDTO<>();
+    }
+
+    @ApiOperation("댓글 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "replyId", value = "1", dataType = "Long")
+    @PatchMapping("/auth/board/reply/{replyId}")
+    public ResponseDTO updateReply(@PathVariable(value = "replyId") Long replyId,
+                                   @AuthenticationPrincipal MyUserDetails myUserDetails,
+                                   @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
+
+        boardService.updateReply(myUserDetails, replyId, replyInDTO);
+
+        return new ResponseDTO<>();
+    }
+
+    @ApiOperation("댓글 삭제하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "replyId", value = "1", dataType = "Long")
+    @DeleteMapping("/auth/board/reply/{replyId}")
+    public ResponseDTO deleteReply(@PathVariable(value = "replyId") Long replyId,
+                                   @AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        boardService.deleteReply(myUserDetails, replyId);
+
+        return new ResponseDTO<>();
+    }
+
+    @ApiOperation("대댓글 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "rereplyId", value = "1", dataType = "Long")
+    @PatchMapping("/auth/board/rereply/{rereplyId}")
+    public ResponseDTO updateReReply(@PathVariable(value = "rereplyId") Long reReplyId,
+                                   @AuthenticationPrincipal MyUserDetails myUserDetails,
+                                   @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
+
+        boardService.updateReReply(myUserDetails, reReplyId, reReplyInDTO);
+
+        return new ResponseDTO<>();
+    }
+
+    @ApiOperation("대댓글 삭제하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "rereplyId", value = "1", dataType = "Long")
+    @DeleteMapping("/auth/board/rereply/{rereplyId}")
+    public ResponseDTO deleteReReply(@PathVariable(value = "rereplyId") Long reReplyId,
+                                   @AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        boardService.deleteReReply(myUserDetails, reReplyId);
 
         return new ResponseDTO<>();
     }

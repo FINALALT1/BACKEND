@@ -177,4 +177,10 @@ public class BoardResponse {
             this.list = list;
         }
     }
+
+    @Getter
+    @Setter
+    public static class BoardThumbnailDTO {
+        private String thumbnail;
+    }
 }
