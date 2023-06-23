@@ -162,6 +162,9 @@ public class BoardController {
         return new ResponseDTO<>();
     }
 
+    @ApiOperation("댓글 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "replyId", value = "1", dataType = "Long")
     @PatchMapping("/auth/board/reply/{replyId}")
     public ResponseDTO updateReply(@PathVariable(value = "replyId") Long replyId,
                                    @AuthenticationPrincipal MyUserDetails myUserDetails,
@@ -172,6 +175,9 @@ public class BoardController {
         return new ResponseDTO<>();
     }
 
+    @ApiOperation("댓글 삭제하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "replyId", value = "1", dataType = "Long")
     @DeleteMapping("/auth/board/reply/{replyId}")
     public ResponseDTO deleteReply(@PathVariable(value = "replyId") Long replyId,
                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -181,6 +187,9 @@ public class BoardController {
         return new ResponseDTO<>();
     }
 
+    @ApiOperation("대댓글 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "rereplyId", value = "1", dataType = "Long")
     @PatchMapping("/auth/board/rereply/{rereplyId}")
     public ResponseDTO updateReReply(@PathVariable(value = "rereplyId") Long reReplyId,
                                    @AuthenticationPrincipal MyUserDetails myUserDetails,
@@ -191,6 +200,9 @@ public class BoardController {
         return new ResponseDTO<>();
     }
 
+    @ApiOperation("대댓글 삭제하기")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "rereplyId", value = "1", dataType = "Long")
     @DeleteMapping("/auth/board/rereply/{rereplyId}")
     public ResponseDTO deleteReReply(@PathVariable(value = "rereplyId") Long reReplyId,
                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
