@@ -76,7 +76,7 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
         em.flush();
 
         //then
-        Integer count = userBookmarkRepository.countByUserId(id);
+        Long count = userBookmarkRepository.countByUserId(id);
         assertThat(count).isEqualTo(0);
     }
 
@@ -92,7 +92,7 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
     @Test
     public void countByUserId() {
         // when
-        Integer count = userBookmarkRepository.countByUserId(1L);
+        Long count = userBookmarkRepository.countByUserId(1L);
 
         // then
         assertThat(count).isGreaterThanOrEqualTo(1);

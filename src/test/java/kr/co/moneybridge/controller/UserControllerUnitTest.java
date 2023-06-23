@@ -116,8 +116,8 @@ public class UserControllerUnitTest extends MockDummyEntity {
         User mockUser = newMockUser(1L, "lee");
         UserResponse.StepDTO mockStep = new UserResponse.StepDTO(mockUser);
         UserResponse.ReservationCountDTO mockReservationCount = new UserResponse.ReservationCountDTO(0, 0, 0);
-        UserResponse.BookmarkListDTO mockBoardBookmark = new UserResponse.BookmarkListDTO(new ArrayList<>(), 0);
-        UserResponse.BookmarkListDTO mockPbBookmark = new UserResponse.BookmarkListDTO(new ArrayList<>(), 0);
+        UserResponse.BookmarkListDTO mockBoardBookmark = new UserResponse.BookmarkListDTO(new ArrayList<>(), 0L);
+        UserResponse.BookmarkListDTO mockPbBookmark = new UserResponse.BookmarkListDTO(new ArrayList<>(), 0L);
 
         UserResponse.MyPageOutDTO myPageOutDTO = new UserResponse.MyPageOutDTO(mockUser, mockStep, mockReservationCount, mockBoardBookmark, mockPbBookmark);
 

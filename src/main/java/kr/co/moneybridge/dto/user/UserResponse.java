@@ -61,9 +61,9 @@ public class UserResponse {
         @ApiModelProperty
         private List<BookmarkDTO> list;
         @ApiModelProperty(example = "0", value = "북마크한 개수")
-        private Integer count;
+        private Long count;
 
-        public BookmarkListDTO(List<BookmarkDTO> list, Integer count) {
+        public BookmarkListDTO(List<BookmarkDTO> list, Long count) {
             this.list = list;
             this.count = count;
         }

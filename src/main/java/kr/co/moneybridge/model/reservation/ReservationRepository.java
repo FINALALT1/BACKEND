@@ -31,10 +31,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findAllByPBId(@Param("pbId") Long pbId);
 
     @Query("select count(r) from Reservation r where r.pb.id = :pbId and r.process = :process")
-    Integer countByPBIdAndProcess(@Param("pbId") Long pbId, @Param("process") ReservationProcess process);
+    Long countByPBIdAndProcess(@Param("pbId") Long pbId, @Param("process") ReservationProcess process);
 
     @Query("select count(r) from Reservation r where r.user.id = :userId and r.process = :process")
-    Integer countByUserIdAndProcess(@Param("userId") Long userId, @Param("process") ReservationProcess process);
+    Long countByUserIdAndProcess(@Param("userId") Long userId, @Param("process") ReservationProcess process);
 
     @Query("select count(r) " +
             "from Reservation r " +

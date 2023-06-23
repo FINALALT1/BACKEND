@@ -63,14 +63,14 @@ public class BoardBookmarkRepositoryTest extends DummyEntity {
         em.flush();
 
         //then
-        Integer count = boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, 2L);
+        Long count = boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, 2L);
         assertThat(count).isEqualTo(0);
     }
 
     @Test
     public void countByBookMarker() {
         // when
-        Integer count = boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, 1L);
+        Long count = boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, 1L);
 
         // then
         assertThat(count).isEqualTo(1);
@@ -92,7 +92,7 @@ public class BoardBookmarkRepositoryTest extends DummyEntity {
         em.flush();
 
         //then
-        Integer count = boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, 1L);
+        Long count = boardBookmarkRepository.countByBookmarker(BookmarkerRole.USER, 1L);
         assertThat(count).isEqualTo(0);
     }
 

@@ -367,7 +367,7 @@ public class PBRepositoryTest extends DummyEntity {
         //given
 
         //when
-        Integer count = pbRepository.countReservationsByPbId(1L);
+        Long count = pbRepository.countReservationsByPbId(1L);
 
         //then
         assertThat(count).isEqualTo(0);

@@ -84,8 +84,8 @@ public class PBService {
 
         List<PBResponse.MyPropensityPBDTO> list = new ArrayList<>();
         pbs.stream().forEach(pb->{
-            Integer reserveCount = reservationRepository.countByPBIdAndProcess(pb.getId(), ReservationProcess.COMPLETE);
-            Integer reviewCount = reviewRepository.countByPBId(pb.getId());
+            Long reserveCount = reservationRepository.countByPBIdAndProcess(pb.getId(), ReservationProcess.COMPLETE);
+            Long reviewCount = reviewRepository.countByPBId(pb.getId());
             Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(id, pb.getId());
             list.add(new PBResponse.MyPropensityPBDTO(pb, reserveCount, reviewCount, isBookmark));
         });
