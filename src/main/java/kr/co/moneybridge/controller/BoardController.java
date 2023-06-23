@@ -101,10 +101,10 @@ public class BoardController {
     @ApiOperation("컨텐츠 상세 가져오기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
-    @GetMapping("/board/{id}")
-    public ResponseDTO<BoardResponse.BoardDetailDTO> getBoardDetail(@PathVariable Long id) {
+    @GetMapping("/auth/board/{id}")
+    public ResponseDTO<BoardResponse.BoardDetailDTO> getBoardDetail(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
 
-        BoardResponse.BoardDetailDTO boardDetailDTO = boardService.getBoardDetail(id);
+        BoardResponse.BoardDetailDTO boardDetailDTO = boardService.getBoardDetail(myUserDetails, id);
 
         return new ResponseDTO<>(boardDetailDTO);
     }

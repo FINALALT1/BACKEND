@@ -4,15 +4,15 @@ server:
     encoding:
       charset: utf-8
       force: true
-  ssl:
-    key-store: classpath:keystore.p12
-    key-store-type: PKCS12
-    key-store-password: finalproject
-    key-alias: finalkey
+#  ssl:
+#    key-store: classpath:keystore.p12
+#    key-store-type: PKCS12
+#    key-store-password: finalproject
+#    key-alias: finalkey
 
 spring:
   redis:
-    host: ec2-3-37-11-7.ap-northeast-2.compute.amazonaws.com # 서버주소 넣어야 함.
+    host: localhost #ec2-3-37-11-7.ap-northeast-2.compute.amazonaws.com # 서버주소 넣어야 함.
     port: 6379
   datasource:
     url: jdbc:mysql://finalproject.cdd2oclmksvc.ap-northeast-2.rds.amazonaws.com:3306/finalproject?useSSL=false

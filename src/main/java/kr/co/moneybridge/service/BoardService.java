@@ -89,7 +89,7 @@ public class BoardService {
 
     //컨텐츠 상세 가져오기
     @Transactional
-    public BoardResponse.BoardDetailDTO getBoardDetail(Long id) {
+    public BoardResponse.BoardDetailDTO getBoardDetail(MyUserDetails myUserDetails, Long id) {
 
         BoardResponse.BoardDetailDTO boardDetailDTO = boardRepository.findBoardWithPBReply(id, BoardStatus.ACTIVE).orElseThrow(
                 () -> new Exception404("존재하지 않는 컨텐츠입니다.")
@@ -102,6 +102,12 @@ public class BoardService {
             throw new Exception500("클릭수 증가 에러");
         }
 
+        Member member = myUserDetails.getMember();
+        if (member.getRole().equals(Role.USER)) {
+            boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.USER, id));
+        } else {
+            boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(),BookmarkerRole.PB, id));
+        }
         boardDetailDTO.setReply(getReplies(id));
 
         return boardDetailDTO;
@@ -376,7 +382,7 @@ public class BoardService {
         }
 
         for (BoardResponse.BoardPageDTO dto : boardList) {
-            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(dto.getId(), BookmarkerRole.USER));
+            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(user.getId(), BookmarkerRole.USER, dto.getId()));
         }
 
         return boardList;
@@ -404,7 +410,7 @@ public class BoardService {
         }
 
         for (BoardResponse.BoardPageDTO dto : boardPG) {
-            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(myUserDetails.getMember().getId(), bookmarkerRole));
+            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(myUserDetails.getMember().getId(), bookmarkerRole, dto.getId()));
         }
 
         List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());

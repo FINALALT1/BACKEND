@@ -214,6 +214,8 @@ class BoardServiceTest extends MockDummyEntity {
     @DisplayName("컨텐츠 상세 가져오기")
     void getBoardDetail() {
         //given
+        Member member = newMockUser(1L, "김투자");
+        MyUserDetails myUserDetails1 = new MyUserDetails(member);
         Company company = newMockCompany(1L, "미래에셋");
         Branch branch = newMockBranch(1L, company, 1);
         PB pb = newMockPB(1L, "이피비", branch);
@@ -223,9 +225,10 @@ class BoardServiceTest extends MockDummyEntity {
         //stub
         Mockito.when(boardRepository.findBoardWithPBReply(1L, BoardStatus.ACTIVE)).thenReturn(Optional.of(boardDetailDTO));
         Mockito.when(boardRepository.findById(1L)).thenReturn(Optional.of(board));
+        Mockito.when(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(1L, BookmarkerRole.USER)).thenReturn(true);
 
         //when
-        BoardResponse.BoardDetailDTO result = boardService.getBoardDetail(1L);
+        BoardResponse.BoardDetailDTO result = boardService.getBoardDetail(myUserDetails1,1L);
 
         //then
         Assertions.assertThat(result).isEqualTo(boardDetailDTO);
