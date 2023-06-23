@@ -6,6 +6,7 @@ import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
+import kr.co.moneybridge.dto.board.ReplyRequest;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.*;
@@ -429,4 +430,26 @@ public class BoardService {
         return new PageDTO<>(list, boardPG);
     }
 
+    //댓글 수정하기
+    public void updateReply(MyUserDetails myUserDetails, Long replyId, ReplyRequest.ReplyInDTO replyInDTO) {
+
+        Member member = myUserDetails.getMember();
+        Reply reply = replyRepository.findById(replyId).orElseThrow(() -> new Exception404("해당 댓글 찾을 수 없습니다."));
+
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(user.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.USER)) {
+                reply.updateContent(replyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(pb.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                reply.updateContent(replyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
+        }
+    }
 }
