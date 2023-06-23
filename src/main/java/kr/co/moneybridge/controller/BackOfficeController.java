@@ -18,6 +18,33 @@ import org.springframework.web.bind.annotation.*;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
+    // 대댓글 강제 삭제
+    @MyLog
+    @SwaggerResponses.DeleteRereply
+    @DeleteMapping("/admin/rereply/{id}")
+    public ResponseDTO deleteReReply(@PathVariable Long id) {
+        backOfficeService.deleteReReply(id);
+        return new ResponseDTO<>();
+    }
+
+    // 댓글 강제 삭제
+    @MyLog
+    @SwaggerResponses.DeleteReply
+    @DeleteMapping("/admin/reply/{id}")
+    public ResponseDTO deleteReply(@PathVariable Long id) {
+        backOfficeService.deleteReply(id);
+        return new ResponseDTO<>();
+    }
+
+    // 콘텐츠 강제 삭제
+    @MyLog
+    @SwaggerResponses.DeleteBoard
+    @DeleteMapping("/admin/board/{id}")
+    public ResponseDTO deleteBoard(@PathVariable Long id) {
+        backOfficeService.deleteBoard(id);
+        return new ResponseDTO<>();
+    }
+
     // 상담 현황 페이지 전체 가져오기
     @MyLog
     @SwaggerResponses.GetReservations
