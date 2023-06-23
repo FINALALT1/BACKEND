@@ -98,7 +98,7 @@ public class BoardController {
         return new ResponseDTO<>(boardListOutDTO);
     }
 
-    @ApiOperation("컨텐츠 상세 가져오기")
+    @ApiOperation("컨텐츠 상세 가져오기(로그인)")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @GetMapping("/auth/board/{id}")
@@ -107,6 +107,17 @@ public class BoardController {
         BoardResponse.BoardDetailDTO boardDetailDTO = boardService.getBoardDetail(myUserDetails, id);
 
         return new ResponseDTO<>(boardDetailDTO);
+    }
+
+    @ApiOperation("컨텐츠 상세 가져오기(비로그인)")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParam(name = "id", value = "1", dataType = "Long")
+    @GetMapping("/board/{id}")
+    public ResponseDTO<BoardResponse.BoardThumbnailDTO> getBoardThumbnail(@PathVariable Long id) {
+
+        BoardResponse.BoardThumbnailDTO boardThumbnailDTO = boardService.getBoardThumbnail(id);
+
+        return new ResponseDTO<>(boardThumbnailDTO);
     }
 
     @ApiOperation("컨텐츠 북마크하기")

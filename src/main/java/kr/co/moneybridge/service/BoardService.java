@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -111,6 +112,16 @@ public class BoardService {
         boardDetailDTO.setReply(getReplies(id));
 
         return boardDetailDTO;
+    }
+
+    //비회원 컨텐츠 상세보기
+    public BoardResponse.BoardThumbnailDTO getBoardThumbnail(Long id) {
+
+        Board board = boardRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다."));
+        BoardResponse.BoardThumbnailDTO boardThumbnailDTO = new BoardResponse.BoardThumbnailDTO();
+        boardThumbnailDTO.setThumbnail(board.getThumbnail());
+
+        return boardThumbnailDTO;
     }
 
     //댓글 가져오기
@@ -417,4 +428,5 @@ public class BoardService {
 
         return new PageDTO<>(list, boardPG);
     }
+
 }
