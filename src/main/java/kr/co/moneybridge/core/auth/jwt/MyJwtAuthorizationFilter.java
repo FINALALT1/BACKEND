@@ -24,6 +24,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -41,7 +43,14 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
 
-        if (accessToken == null) {
+        String requestURL = request.getRequestURI();
+
+        // 인증 또는 권한이 필요한 URI가 아니면 JWT 토큰 검사를 아예 하지 않음
+        if (!(requestURL.startsWith("/auth") || requestURL.equals("/auth") ||
+                requestURL.startsWith("/user") || requestURL.equals("/user") ||
+                requestURL.startsWith("/pb") || requestURL.equals("/pb") ||
+                requestURL.startsWith("/admin") || requestURL.equals("/admin"))) {
+            log.debug("토큰 검사 안함");
             chain.doFilter(request, response);
             return;
         }
@@ -63,7 +72,7 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
             try{
                 member = myMemberUtil.findById(id, role);
             }catch (Exception e){
-                log.error("토큰 정보에서 에러");
+                log.error("토큰 정보에서 에러 : " + e.getMessage());
                 MyFilterResponseUtil.unAuthorized(response, new Exception401("인증 실패: " + e.getMessage()));
             }
             MyUserDetails myUserDetails = new MyUserDetails(member);
@@ -81,8 +90,11 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
         } catch (SignatureVerificationException sve) {
             log.error("토큰 검증 실패");
         } catch (TokenExpiredException tee) {
-            log.error("토큰 만료됨");
-            if(!request.getRequestURI().equals("/reissue")){
+            log.debug("토큰 만료됨");
+            if(requestURL.equals("/reissue")){
+                log.debug("하지만 재발급 API 이므로 넘어감");
+            } else {
+                log.error("토큰 만료되어 401 Access token expired 응답");
                 MyFilterResponseUtil.unAuthorized(response, new Exception401("Access token expired"));
             }
         } finally {
