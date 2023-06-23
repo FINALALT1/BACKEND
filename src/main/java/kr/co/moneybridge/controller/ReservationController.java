@@ -100,7 +100,7 @@ public class ReservationController {
             throw new Exception400(applyDTO.getCandidateTime2().toString(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
         }
 
-        if (!applyDTO.getQuestion().matches("^.{0,100}$")) {
+        if (applyDTO.getQuestion() != null && !applyDTO.getQuestion().matches("^.{0,100}$")) {
             throw new Exception400(applyDTO.getQuestion(), "최대 100자까지 입력 가능합니다.");
         }
 
@@ -108,11 +108,11 @@ public class ReservationController {
             throw new Exception400(applyDTO.getUserName(), "이름을 입력해주세요.");
         }
 
-        if (!applyDTO.getUserPhoneNumber().matches("^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$")) {
+        if (applyDTO.getUserPhoneNumber() != null && !applyDTO.getUserPhoneNumber().matches("^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$")) {
             throw new Exception400(applyDTO.getUserPhoneNumber(), "유효하지 않은 휴대폰 번호 형식입니다.");
         }
 
-        if (!applyDTO.getUserEmail().matches("^(?=.{1,30}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+        if (applyDTO.getUserEmail() != null && !applyDTO.getUserEmail().matches("^(?=.{1,30}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             throw new Exception400(applyDTO.getUserEmail(), "유효하지 않은 이메일 형식입니다.");
         }
 
