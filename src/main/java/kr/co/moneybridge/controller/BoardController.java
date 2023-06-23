@@ -181,6 +181,16 @@ public class BoardController {
         return new ResponseDTO<>();
     }
 
+    @PatchMapping("/auth/board/rereply/{rereplyId}")
+    public ResponseDTO updateReReply(@PathVariable(value = "rereplyId") Long reReplyId,
+                                   @AuthenticationPrincipal MyUserDetails myUserDetails,
+                                   @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
+
+        boardService.updateReReply(myUserDetails, reReplyId, reReplyInDTO);
+
+        return new ResponseDTO<>();
+    }
+
     @ApiOperation("대댓글달기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})

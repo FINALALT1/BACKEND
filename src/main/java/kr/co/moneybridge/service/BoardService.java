@@ -479,4 +479,28 @@ public class BoardService {
         }
 
     }
+
+    //대댓글 수정하기
+    @Transactional
+    public void updateReReply(MyUserDetails myUserDetails, Long reReplyId, ReplyRequest.ReReplyInDTO reReplyInDTO) {
+
+        Member member = myUserDetails.getMember();
+        ReReply reReply = reReplyRepository.findById(reReplyId).orElseThrow(() -> new Exception404("해당 대댓글 찾을 수 없습니다."));
+
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reReply.getAuthorId().equals(user.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.USER)) {
+                reReply.updateReReply(reReplyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+            if (reReply.getAuthorId().equals(pb.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                reReply.updateReReply(reReplyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
+        }
+    }
 }
