@@ -7,12 +7,12 @@ import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
-import org.checkerframework.checker.units.qual.A;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -535,10 +535,10 @@ public class ReservationResponse {
             this.userName = user.getName();
             if (reservation.getTime() != null) {
                 this.day = reservation.getTime().toLocalDate();
-                this.time = reservation.getTime().toLocalTime();
+                this.time = reservation.getTime().toLocalTime().truncatedTo(ChronoUnit.MINUTES);
             } else {
                 this.day = reservation.getCandidateTime1().toLocalDate();
-                this.time = reservation.getCandidateTime1().toLocalTime();
+                this.time = reservation.getCandidateTime1().toLocalTime().truncatedTo(ChronoUnit.MINUTES);
             }
             this.type = reservation.getType();
             this.process = reservation.getProcess();
