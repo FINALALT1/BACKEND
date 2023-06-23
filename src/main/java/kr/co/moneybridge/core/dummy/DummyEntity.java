@@ -9,7 +9,6 @@ import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class DummyEntity {

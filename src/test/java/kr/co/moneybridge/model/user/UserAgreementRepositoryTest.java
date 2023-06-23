@@ -1,7 +1,6 @@
 package kr.co.moneybridge.model.user;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.model.pb.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

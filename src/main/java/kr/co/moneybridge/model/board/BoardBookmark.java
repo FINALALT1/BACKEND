@@ -1,8 +1,6 @@
 package kr.co.moneybridge.model.board;
 
-import kr.co.moneybridge.model.user.User;
 import lombok.*;
-import org.checkerframework.checker.units.qual.C;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

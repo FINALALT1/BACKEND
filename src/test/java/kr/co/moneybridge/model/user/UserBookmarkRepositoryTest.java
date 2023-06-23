@@ -1,9 +1,7 @@
 package kr.co.moneybridge.model.user;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.model.board.BookmarkerRole;
 import kr.co.moneybridge.model.pb.*;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +74,7 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
         em.flush();
 
         //then
-        Integer count = userBookmarkRepository.countByUserId(id);
+        Long count = userBookmarkRepository.countByUserId(id);
         assertThat(count).isEqualTo(0);
     }
 
@@ -92,7 +90,7 @@ public class UserBookmarkRepositoryTest extends DummyEntity {
     @Test
     public void countByUserId() {
         // when
-        Integer count = userBookmarkRepository.countByUserId(1L);
+        Long count = userBookmarkRepository.countByUserId(1L);
 
         // then
         assertThat(count).isGreaterThanOrEqualTo(1);

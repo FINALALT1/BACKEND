@@ -2,10 +2,6 @@ package kr.co.moneybridge.model.pb;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.pb.PBResponse;
-import kr.co.moneybridge.model.board.BoardRepository;
-import kr.co.moneybridge.model.board.ReReplyRepository;
-import kr.co.moneybridge.model.board.ReplyRepository;
-import kr.co.moneybridge.model.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +16,6 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")
