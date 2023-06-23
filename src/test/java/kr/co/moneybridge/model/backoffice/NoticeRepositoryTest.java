@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
 
 @Import(BCryptPasswordEncoder.class)
 @ActiveProfiles("test")

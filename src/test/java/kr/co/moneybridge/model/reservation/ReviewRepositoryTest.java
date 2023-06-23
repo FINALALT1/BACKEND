@@ -156,7 +156,7 @@ public class ReviewRepositoryTest extends DummyEntity {
         Long reservationId = 1L;
 
         // when
-        Integer count = reviewRepository.countByReservationId(reservationId);
+        Long count = reviewRepository.countByReservationId(reservationId);
 
         // then
         assertThat(count).isEqualTo(1);

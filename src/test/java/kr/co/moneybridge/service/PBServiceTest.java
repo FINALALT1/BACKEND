@@ -30,7 +30,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.FileInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -152,7 +151,7 @@ class PBServiceTest extends MockDummyEntity {
         when(pbRepository.findIdsBySpecialityNotIn(any())).thenReturn(pbIds);
         when(pbRepository.findIdsBySpecialityIn(any())).thenReturn(pbIds);
         when(pbRepository.findByIdIn(any())).thenReturn(Arrays.asList(pb));
-        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0);
+        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0L);
         when(reviewRepository.countByPBId(any())).thenReturn(0L);
         when(userBookmarkRepository.existsByUserIdAndPBId(any(), any())).thenReturn(false);
 

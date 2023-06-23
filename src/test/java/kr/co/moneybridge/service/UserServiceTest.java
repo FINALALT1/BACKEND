@@ -7,7 +7,6 @@ import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProviderTest;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
-import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception401;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;

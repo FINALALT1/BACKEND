@@ -326,7 +326,7 @@ public class PBResponse {
         @ApiModelProperty(example = "111.1111", value = "지점경도")
         private Double branchLongitude;
         @ApiModelProperty(example = "12", value = "예약횟수")
-        private Integer reserveCount;   //set해줘야함
+        private Long reserveCount;   //set해줘야함
         @ApiModelProperty(example = "8", value = "리뷰횟수")
         private Long reviewCount;    //set해줘야함
         @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "소개글")
