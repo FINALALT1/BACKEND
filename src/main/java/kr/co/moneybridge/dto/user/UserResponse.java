@@ -61,9 +61,9 @@ public class UserResponse {
         @ApiModelProperty
         private List<BookmarkDTO> list;
         @ApiModelProperty(example = "0", value = "북마크한 개수")
-        private Integer count;
+        private Long count;
 
-        public BookmarkListDTO(List<BookmarkDTO> list, Integer count) {
+        public BookmarkListDTO(List<BookmarkDTO> list, Long count) {
             this.list = list;
             this.count = count;
         }
@@ -74,13 +74,13 @@ public class UserResponse {
     @Getter
     public static class ReservationCountDTO {
         @ApiModelProperty(example = "0", value = "예약 신청 개수")
-        private Integer apply;
+        private Long apply;
         @ApiModelProperty(example = "0", value = "예약 확정 개수")
-        private Integer confirm;
+        private Long confirm;
         @ApiModelProperty(example = "0", value = "상담 완료 개수")
-        private Integer complete;
+        private Long complete;
 
-        public ReservationCountDTO(Integer apply, Integer comfirm, Integer complete) {
+        public ReservationCountDTO(Long apply, Long comfirm, Long complete) {
             this.apply = apply;
             this.confirm = comfirm;
             this.complete = complete;

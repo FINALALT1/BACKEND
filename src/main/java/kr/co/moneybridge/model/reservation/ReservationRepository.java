@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,10 +30,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findAllByPBId(@Param("pbId") Long pbId);
 
     @Query("select count(r) from Reservation r where r.pb.id = :pbId and r.process = :process")
-    Integer countByPBIdAndProcess(@Param("pbId") Long pbId, @Param("process") ReservationProcess process);
+    Long countByPBIdAndProcess(@Param("pbId") Long pbId, @Param("process") ReservationProcess process);
 
     @Query("select count(r) from Reservation r where r.user.id = :userId and r.process = :process")
-    Integer countByUserIdAndProcess(@Param("userId") Long userId, @Param("process") ReservationProcess process);
+    Long countByUserIdAndProcess(@Param("userId") Long userId, @Param("process") ReservationProcess process);
 
     @Query("select count(r) " +
             "from Reservation r " +

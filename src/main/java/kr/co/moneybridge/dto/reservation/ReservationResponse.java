@@ -195,24 +195,24 @@ public class ReservationResponse {
     @Setter
     public static class RecentInfoDTO {
         @ApiModelProperty(example = "2")
-        private Integer applyCount;
+        private Long applyCount;
 
         @ApiModelProperty(example = "true")
         private Boolean isNewApply;
 
         @ApiModelProperty(example = "3")
-        private Integer confirmCount;
+        private Long confirmCount;
 
         @ApiModelProperty(example = "false")
         private Boolean isNewConfirm;
 
         @ApiModelProperty(example = "0")
-        private Integer completeCount;
+        private Long completeCount;
 
         @ApiModelProperty(example = "false")
         private Boolean isNewComplete;
 
-        public RecentInfoDTO(Integer applyCount, Boolean isNewApply, Integer confirmCount, Boolean isNewConfirm, Integer completeCount, Boolean isNewComplete) {
+        public RecentInfoDTO(Long applyCount, Boolean isNewApply, Long confirmCount, Boolean isNewConfirm, Long completeCount, Boolean isNewComplete) {
             this.applyCount = applyCount;
             this.isNewApply = isNewApply;
             this.confirmCount = confirmCount;
