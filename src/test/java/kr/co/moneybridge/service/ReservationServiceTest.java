@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,8 +33,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -703,7 +701,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         // then
         assertThat(response.get(0).getId()).isEqualTo(1L);
         assertThat(response.get(0).getDay().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
-        assertThat(response.get(0).getTime().truncatedTo(ChronoUnit.MINUTES).toString()).matches("^\\d{2}:\\d{2}$");
+        assertThat(response.get(0).getTime()).matches("^\\d{2}:\\d{2}$");
         assertThat(response.get(0).getType()).isEqualTo(ReservationType.VISIT);
         assertThat(response.get(0).getProcess()).isEqualTo(ReservationProcess.COMPLETE);
     }

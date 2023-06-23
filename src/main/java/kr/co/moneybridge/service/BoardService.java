@@ -6,6 +6,7 @@ import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
+import kr.co.moneybridge.dto.board.ReplyRequest;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.*;
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -89,7 +91,7 @@ public class BoardService {
 
     //컨텐츠 상세 가져오기
     @Transactional
-    public BoardResponse.BoardDetailDTO getBoardDetail(Long id) {
+    public BoardResponse.BoardDetailDTO getBoardDetail(MyUserDetails myUserDetails, Long id) {
 
         BoardResponse.BoardDetailDTO boardDetailDTO = boardRepository.findBoardWithPBReply(id, BoardStatus.ACTIVE).orElseThrow(
                 () -> new Exception404("존재하지 않는 컨텐츠입니다.")
@@ -102,9 +104,25 @@ public class BoardService {
             throw new Exception500("클릭수 증가 에러");
         }
 
+        Member member = myUserDetails.getMember();
+        if (member.getRole().equals(Role.USER)) {
+            boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.USER, id));
+        } else {
+            boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.PB, id));
+        }
         boardDetailDTO.setReply(getReplies(id));
 
         return boardDetailDTO;
+    }
+
+    //비회원 컨텐츠 상세보기
+    public BoardResponse.BoardThumbnailDTO getBoardThumbnail(Long id) {
+
+        Board board = boardRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다."));
+        BoardResponse.BoardThumbnailDTO boardThumbnailDTO = new BoardResponse.BoardThumbnailDTO();
+        boardThumbnailDTO.setThumbnail(board.getThumbnail());
+
+        return boardThumbnailDTO;
     }
 
     //댓글 가져오기
@@ -288,7 +306,7 @@ public class BoardService {
                     s3Util.delete(board.getThumbnail());
                     board.updateThumbnail(defaultThumbnail);
                     board.modifyBoard(boardUpdateDTO);
-                //기존 썸네일 삭제 요청 안온경우
+                    //기존 썸네일 삭제 요청 안온경우
                 } else {
                     board.modifyBoard(boardUpdateDTO);
                 }
@@ -376,7 +394,7 @@ public class BoardService {
         }
 
         for (BoardResponse.BoardPageDTO dto : boardList) {
-            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(dto.getId(), BookmarkerRole.USER));
+            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(user.getId(), BookmarkerRole.USER, dto.getId()));
         }
 
         return boardList;
@@ -404,11 +422,108 @@ public class BoardService {
         }
 
         for (BoardResponse.BoardPageDTO dto : boardPG) {
-            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRole(myUserDetails.getMember().getId(), bookmarkerRole));
+            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(myUserDetails.getMember().getId(), bookmarkerRole, dto.getId()));
         }
 
         List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
 
         return new PageDTO<>(list, boardPG);
+    }
+
+    //댓글 수정하기
+    @Transactional
+    public void updateReply(MyUserDetails myUserDetails, Long replyId, ReplyRequest.ReplyInDTO replyInDTO) {
+
+        Member member = myUserDetails.getMember();
+        Reply reply = replyRepository.findById(replyId).orElseThrow(() -> new Exception404("해당 댓글 찾을 수 없습니다."));
+
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(user.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.USER)) {
+                reply.updateContent(replyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(pb.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                reply.updateContent(replyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
+        }
+    }
+
+    //댓글 삭제하기
+    @Transactional
+    public void deleteReply(MyUserDetails myUserDetails, Long replyId) {
+
+        Member member = myUserDetails.getMember();
+        Reply reply = replyRepository.findById(replyId).orElseThrow(() -> new Exception404("해당 댓글 찾을 수 없습니다."));
+
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(user.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.USER)) {
+                replyRepository.delete(reply);
+            } else {
+                throw new Exception404("삭제 권한 없습니다.");
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(pb.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                replyRepository.delete(reply);
+            } else {
+                throw new Exception404("삭제 권한 없습니다.");
+            }
+        }
+
+    }
+
+    //대댓글 수정하기
+    @Transactional
+    public void updateReReply(MyUserDetails myUserDetails, Long reReplyId, ReplyRequest.ReReplyInDTO reReplyInDTO) {
+
+        Member member = myUserDetails.getMember();
+        ReReply reReply = reReplyRepository.findById(reReplyId).orElseThrow(() -> new Exception404("해당 대댓글 찾을 수 없습니다."));
+
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reReply.getAuthorId().equals(user.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.USER)) {
+                reReply.updateReReply(reReplyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+            if (reReply.getAuthorId().equals(pb.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                reReply.updateReReply(reReplyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
+        }
+    }
+
+    //대댓글 삭제하기
+    @Transactional
+    public void deleteReReply(MyUserDetails myUserDetails, Long reReplyId) {
+
+        Member member = myUserDetails.getMember();
+        ReReply reReply = reReplyRepository.findById(reReplyId).orElseThrow(() -> new Exception404("해당 댓글 찾을 수 없습니다."));
+
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reReply.getAuthorId().equals(user.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.USER)) {
+                reReplyRepository.delete(reReply);
+            } else {
+                throw new Exception404("삭제 권한 없습니다.");
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+            if (reReply.getAuthorId().equals(pb.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                reReplyRepository.delete(reReply);
+            } else {
+                throw new Exception404("삭제 권한 없습니다.");
+            }
+        }
     }
 }
