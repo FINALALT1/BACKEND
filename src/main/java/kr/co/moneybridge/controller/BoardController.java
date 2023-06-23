@@ -172,6 +172,15 @@ public class BoardController {
         return new ResponseDTO<>();
     }
 
+    @DeleteMapping("/auth/board/reply/{replyId}")
+    public ResponseDTO deleteReply(@PathVariable(value = "replyId") Long replyId,
+                                   @AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        boardService.deleteReply(myUserDetails, replyId);
+
+        return new ResponseDTO<>();
+    }
+
     @ApiOperation("대댓글달기")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})

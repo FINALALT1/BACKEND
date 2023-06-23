@@ -108,7 +108,7 @@ public class BoardService {
         if (member.getRole().equals(Role.USER)) {
             boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.USER, id));
         } else {
-            boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(),BookmarkerRole.PB, id));
+            boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.PB, id));
         }
         boardDetailDTO.setReply(getReplies(id));
 
@@ -306,7 +306,7 @@ public class BoardService {
                     s3Util.delete(board.getThumbnail());
                     board.updateThumbnail(defaultThumbnail);
                     board.modifyBoard(boardUpdateDTO);
-                //기존 썸네일 삭제 요청 안온경우
+                    //기존 썸네일 삭제 요청 안온경우
                 } else {
                     board.modifyBoard(boardUpdateDTO);
                 }
@@ -452,5 +452,31 @@ public class BoardService {
                 throw new Exception404("잘못된 요청입니다.");
             }
         }
+    }
+
+    //댓글 삭제하기
+    @Transactional
+    public void deleteReply(MyUserDetails myUserDetails, Long replyId) {
+
+        Member member = myUserDetails.getMember();
+        Reply reply = replyRepository.findById(replyId).orElseThrow(() -> new Exception404("해당 댓글 찾을 수 없습니다."));
+
+
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(user.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.USER)) {
+                replyRepository.delete(reply);
+            } else {
+                throw new Exception404("삭제 권한 없습니다.");
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(pb.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                replyRepository.delete(reply);
+            } else {
+                throw new Exception404("삭제 권한 없습니다.");
+            }
+        }
+
     }
 }
