@@ -24,11 +24,14 @@ public class UserResponse {
         private Role role;
         @ApiModelProperty(example = "김투자")
         private String name;
+        @ApiModelProperty(example = "AGGRESSIVE", value = "투자자는 항상 null")
+        private UserPropensity propensity;
 
         public AccountOutDTO(Member member) {
             this.id = member.getId();
             this.role = member.getRole() == Role.PB ? Role.PB : Role.USER;
             this.name = member.getName();
+            this.propensity = member.getPropensity();
         }
     }
 

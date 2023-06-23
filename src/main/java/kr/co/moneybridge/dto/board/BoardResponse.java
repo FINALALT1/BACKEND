@@ -70,6 +70,7 @@ public class BoardResponse {
         private PBSpeciality speciality2;
         private int career;
         private String content;
+        private Boolean isBookmark;
         private List<ReplyOutDTO> reply;
 
         public BoardDetailDTO(Board board, PB pb) {

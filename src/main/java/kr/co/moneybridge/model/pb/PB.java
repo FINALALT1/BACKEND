@@ -2,6 +2,7 @@ package kr.co.moneybridge.model.pb;
 
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
+import kr.co.moneybridge.model.user.UserPropensity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -141,5 +142,8 @@ public class PB implements Member {
 
     public void updateConsultNotice(String notice) {
         this.consultNotice = notice;
+    }
+    public UserPropensity getPropensity() {
+        return null;
     }
 }
