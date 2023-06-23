@@ -10,7 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -521,7 +520,7 @@ public class ReservationResponse {
         private LocalDate day;
 
         @ApiModelProperty(example = "09:00")
-        private LocalTime time;
+        private String time;
 
         @ApiModelProperty(example = "CALL")
         private ReservationType type;
@@ -535,10 +534,10 @@ public class ReservationResponse {
             this.userName = user.getName();
             if (reservation.getTime() != null) {
                 this.day = reservation.getTime().toLocalDate();
-                this.time = reservation.getTime().toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+                this.time = reservation.getTime().toLocalTime().truncatedTo(ChronoUnit.MINUTES).toString();
             } else {
                 this.day = reservation.getCandidateTime1().toLocalDate();
-                this.time = reservation.getCandidateTime1().toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+                this.time = reservation.getCandidateTime1().toLocalTime().truncatedTo(ChronoUnit.MINUTES).toString();
             }
             this.type = reservation.getType();
             this.process = reservation.getProcess();
