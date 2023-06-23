@@ -57,6 +57,63 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
+    @ApiOperation(value = "대댓글 강제 삭제")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", example = "1", value = "rereply(대댓글) id")})
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface DeleteRereply {
+    }
+
+    @ApiOperation(value = "댓글 강제 삭제")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", example = "1", value = "reply(댓글) id")})
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface DeleteReply {
+    }
+
+    @ApiOperation(value = "콘텐츠 강제 삭제")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", example = "1", value = "board(콘텐츠) id")})
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface DeleteBoard {
+    }
+
     @ApiOperation(value = "로그인 계정 정보 받아오기")
     @ApiResponses({
             @ApiResponse(code = 400,
