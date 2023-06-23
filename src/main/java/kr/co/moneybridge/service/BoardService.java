@@ -431,6 +431,7 @@ public class BoardService {
     }
 
     //댓글 수정하기
+    @Transactional
     public void updateReply(MyUserDetails myUserDetails, Long replyId, ReplyRequest.ReplyInDTO replyInDTO) {
 
         Member member = myUserDetails.getMember();
