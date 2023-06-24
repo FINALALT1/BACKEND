@@ -435,6 +435,8 @@ public class PBResponse {
         private String portfolio;
         @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "소개글")
         private String intro;
+        @ApiModelProperty(example = "1", value = "company ID")
+        private Long companyId;
         @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "프로필제목")
         private String msg;
 
@@ -452,6 +454,7 @@ public class PBResponse {
             this.portfolio = portfolio.getFile();
             this.intro = pb.getIntro();
             this.msg = pb.getMsg();
+            this.companyId = company.getId();
         }
         public PBUpdateOutDTO(PB pb, Branch branch, Company company) {
             this.company = company.getName();
