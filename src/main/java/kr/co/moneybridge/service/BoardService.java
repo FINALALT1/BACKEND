@@ -76,7 +76,7 @@ public class BoardService {
         return new PageDTO<>(list, boardPG);
     }
 
-    //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기
+    //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기(비로그인)
     public List<BoardResponse.BoardPageDTO> getNewHotContents() {
 
         List<BoardResponse.BoardPageDTO> boardList = new ArrayList<>();
@@ -85,6 +85,30 @@ public class BoardService {
 
         boardList.addAll(boardRepository.findTop2ByNew(BoardStatus.ACTIVE, pageRequestNew));
         boardList.addAll(boardRepository.findTop2ByHot(BoardStatus.ACTIVE, pageRequestHot));
+        return boardList;
+    }
+
+    //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기(비로그인)
+    public List<BoardResponse.BoardPageDTO> getLogInNewHotContents(MyUserDetails myUserDetails) {
+
+        Member member = myUserDetails.getMember();
+        List<BoardResponse.BoardPageDTO> boardList = new ArrayList<>();
+        PageRequest pageRequestNew = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "id"));
+        PageRequest pageRequestHot = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "clickCount"));
+
+        boardList.addAll(boardRepository.findTop2ByNew(BoardStatus.ACTIVE, pageRequestNew));
+        boardList.addAll(boardRepository.findTop2ByHot(BoardStatus.ACTIVE, pageRequestHot));
+
+        if (member.getRole().equals(Role.USER)) {
+            for (BoardResponse.BoardPageDTO dto : boardList) {
+                dto.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.USER, dto.getId()));
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            for (BoardResponse.BoardPageDTO dto : boardList) {
+                dto.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.PB, dto.getId()));
+            }
+        }
+
         return boardList;
     }
 
@@ -525,4 +549,5 @@ public class BoardService {
             }
         }
     }
+
 }

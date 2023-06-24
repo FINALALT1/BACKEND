@@ -88,11 +88,23 @@ public class BoardController {
         return new ResponseDTO<>(pageDTO);
     }
 
-    @ApiOperation("최신 컨텐츠 2개 + 조회수 높은 컨텐츠 2개")
+    @ApiOperation("최신 컨텐츠 2개 + 조회수 높은 컨텐츠 2개(비로그인)")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/lounge/board")
     public ResponseDTO<BoardResponse.BoardListOutDTO> getNewHotBoards() {
+
         List<BoardResponse.BoardPageDTO> boardList = boardService.getNewHotContents();
+        BoardResponse.BoardListOutDTO boardListOutDTO = new BoardResponse.BoardListOutDTO(boardList);
+
+        return new ResponseDTO<>(boardListOutDTO);
+    }
+
+    @ApiOperation("최신 컨텐츠 2개 + 조회수 높은 컨텐츠 2개(로그인)")
+    @SwaggerResponses.DefaultApiResponses
+    @GetMapping("/auth/lounge/board")
+    public ResponseDTO<BoardResponse.BoardListOutDTO> getLogInNewHotBoards(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        List<BoardResponse.BoardPageDTO> boardList = boardService.getLogInNewHotContents(myUserDetails);
         BoardResponse.BoardListOutDTO boardListOutDTO = new BoardResponse.BoardListOutDTO(boardList);
 
         return new ResponseDTO<>(boardListOutDTO);
