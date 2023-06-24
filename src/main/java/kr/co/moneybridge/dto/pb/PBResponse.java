@@ -33,9 +33,9 @@ public class PBResponse {
         @ApiModelProperty(example = "FUND", value = "전문 분야2")
         private PBSpeciality specialty2;
         @ApiModelProperty(example = "0", value = "총 상담 횟수")
-        private Integer reserveCount;
+        private Long reserveCount;
         @ApiModelProperty(example = "0", value = "상담 후기")
-        private Integer reviewCount;
+        private Long reviewCount;
         @ApiModelProperty(example = "true", value = "해당 PB 북마크 여부")
         private Boolean isBookmarked;
 
@@ -91,11 +91,11 @@ public class PBResponse {
         @ApiModelProperty(example = "null", value = "없으면 null")
         private PBSpeciality specialty2;
         @ApiModelProperty(example = "1", value = "총 상담 횟수")
-        private Integer reserveCount;
+        private Long reserveCount;
         @ApiModelProperty(example = "1", value = "상담 후기")
-        private Integer reviewCount;
+        private Long reviewCount;
 
-        public MyPageOutDTO(PB pb, Integer reserveCount, Integer reviewCount) {
+        public MyPageOutDTO(PB pb, Long reserveCount, Long reviewCount) {
             this.profile = pb.getProfile();
             this.name = pb.getName();
             this.branchName = pb.getBranch().getName();
@@ -235,9 +235,9 @@ public class PBResponse {
         @ApiModelProperty(example = "5", value = "PB의 경력")
         private int career;
         @ApiModelProperty(example = "11", value = "PB 예약건수")
-        private int reserveCount;
+        private Long reserveCount;
         @ApiModelProperty(example = "6", value = "PB 후기건수")
-        private int reviewCount;
+        private Long reviewCount;
         @ApiModelProperty(example = "127.0000", value = "지점 latitude")
         private Double branchLat;
         @ApiModelProperty(example = "84.1111", value = "지점 longitude")
@@ -326,9 +326,9 @@ public class PBResponse {
         @ApiModelProperty(example = "111.1111", value = "지점경도")
         private Double branchLongitude;
         @ApiModelProperty(example = "12", value = "예약횟수")
-        private Integer reserveCount;   //set해줘야함
+        private Long reserveCount;   //set해줘야함
         @ApiModelProperty(example = "8", value = "리뷰횟수")
-        private Integer reviewCount;    //set해줘야함
+        private Long reviewCount;    //set해줘야함
         @ApiModelProperty(example = "안녕하세요 김피비입니다.", value = "소개글")
         private String intro;
         @ApiModelProperty(example = "ETF", value = "전문분야1")

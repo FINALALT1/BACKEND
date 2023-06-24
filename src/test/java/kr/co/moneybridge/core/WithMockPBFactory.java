@@ -1,21 +1,16 @@
 package kr.co.moneybridge.core;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
-import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyDateUtil;
-import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.model.pb.PBStatus;
-import kr.co.moneybridge.model.user.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
-
-import java.time.LocalDateTime;
 
 public class WithMockPBFactory extends MockDummyEntity implements WithSecurityContextFactory<WithMockPB> {
     @Override

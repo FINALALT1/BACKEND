@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -159,7 +158,7 @@ public class ReservationRepositoryTest extends DummyEntity {
         ReservationProcess process = ReservationProcess.COMPLETE;
 
         // when
-        Integer count = reservationRepository.countByPBIdAndProcess(pbId, process);
+        Long count = reservationRepository.countByPBIdAndProcess(pbId, process);
 
         // then
         assertThat(count).isEqualTo(5);
@@ -172,7 +171,7 @@ public class ReservationRepositoryTest extends DummyEntity {
         ReservationProcess process = ReservationProcess.COMPLETE;
 
         // when
-        Integer count = reservationRepository.countByUserIdAndProcess(userId, process);
+        Long count = reservationRepository.countByUserIdAndProcess(userId, process);
 
         // then
         assertThat(count).isEqualTo(5);

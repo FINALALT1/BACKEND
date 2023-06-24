@@ -47,10 +47,10 @@ public interface PBRepository extends JpaRepository<PB, Long> {
     Page<PBResponse.PBPageDTO> findByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT COUNT(r) FROM Reservation r WHERE r.pb.id = :pbId")
-    Integer countReservationsByPbId(@Param("pbId") Long pbId);
+    Long countReservationsByPbId(@Param("pbId") Long pbId);
 
     @Query("SELECT COUNT(rv) FROM Review rv JOIN Reservation r ON rv.reservation = r WHERE r.pb.id = :pbId")
-    Integer countReviewsByPbId(@Param("pbId") Long pbId);
+    Long countReviewsByPbId(@Param("pbId") Long pbId);
 
     @Query("select p from PB p where p.name = :name and p.phoneNumber = :phoneNumber")
     List<PB> findByNameAndPhoneNumber(@Param("name") String name, @Param("phoneNumber") String phoneNumber);

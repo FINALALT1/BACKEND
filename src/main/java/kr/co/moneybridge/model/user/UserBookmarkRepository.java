@@ -12,7 +12,7 @@ public interface UserBookmarkRepository extends JpaRepository<UserBookmark, Long
     Boolean existsByUserIdAndPBId(@Param("userId") Long userId, @Param("pbId") Long pbId);
 
     @Query("select count(u) from UserBookmark u where u.user.id = :userId")
-    Integer countByUserId(@Param("userId") Long userId);
+    Long countByUserId(@Param("userId") Long userId);
 
     @Modifying
     @Query("delete from UserBookmark u where u.user.id = :userId")

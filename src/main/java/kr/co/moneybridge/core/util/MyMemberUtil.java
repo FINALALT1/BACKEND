@@ -16,7 +16,6 @@ import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +49,7 @@ public class MyMemberUtil {
     public void deleteById(Long id, Role role) {
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
             try{
-                List<Reservation> reservations = reservationRepository.findAllByUserId(id);
-                reservations.stream().forEach(reservation -> {
+                reservationRepository.findAllByUserId(id).stream().forEach(reservation -> {
                     Optional<Review> review = reviewRepository.findByReservationId(reservation.getId());
                     if(review.isPresent()){
                         // review를 지우니, review를 연관관계로 가지고 있는 style삭제
@@ -62,8 +60,7 @@ public class MyMemberUtil {
                 });
                 reservationRepository.deleteByUserId(id);
 
-                List<Reply> replies = replyRepository.findAllByAuthor(id, ReplyAuthorRole.USER);
-                replies.stream().forEach(reply -> {
+                replyRepository.findAllByAuthor(id, ReplyAuthorRole.USER).stream().forEach(reply -> {
                     // reply를 지우니, reply를 연관관계로 가지고 있는 reReply도 삭제
                     reReplyRepository.deleteByReplyId(reply.getId());
                 });
@@ -85,8 +82,7 @@ public class MyMemberUtil {
             deleteFiles(portfolioRepository.findFileByPBId(id), pbRepository.findBusinessCardById(id).get(),
                     pbRepository.findProfileById(id).get(), boardRepository.findThumbnailByPBId(id));
             try{
-                List<Reservation> reservations = reservationRepository.findAllByPBId(id);
-                reservations.stream().forEach(reservation -> {
+                reservationRepository.findAllByPBId(id).stream().forEach(reservation -> {
                     Optional<Review> review = reviewRepository.findByReservationId(reservation.getId());
                     if(review.isPresent()){
                         styleRepository.deleteByReviewId(review.get().getId());
@@ -95,21 +91,18 @@ public class MyMemberUtil {
                 });
                 reservationRepository.deleteByPBId(id);
 
-                List<Reply> replies = replyRepository.findAllByAuthor(id, ReplyAuthorRole.PB);
-                replies.stream().forEach(reply -> {
+                replyRepository.findAllByAuthor(id, ReplyAuthorRole.PB).stream().forEach(reply -> {
                     reReplyRepository.deleteByReplyId(reply.getId());
                 });
                 replyRepository.deleteByAuthor(id, ReplyAuthorRole.PB);
                 reReplyRepository.deleteByAuthor(id, ReplyAuthorRole.PB);
 
-                List<Board> boards = boardRepository.findAllByPBId(id);
-                boards.stream().forEach(board -> {
+                boardRepository.findAllByPBId(id).stream().forEach(board -> {
                     // board를 지우니, board를 연관관계로 가지고 있는 boardBookmark삭제
                     boardBookmarkRepository.deleteByBoardId(board.getId());
-                    List<Reply> repliesOnBoard = replyRepository.findAllByBoardId(board.getId());
-                    repliesOnBoard.stream().forEach(replyOnBoard -> {
+                    replyRepository.findAllByBoardId(board.getId()).stream().forEach(reply -> {
                         // reply를 지우니, reply를 연관관계로 가지고 있는 reReply도 삭제
-                        reReplyRepository.deleteByReplyId(replyOnBoard.getId());
+                        reReplyRepository.deleteByReplyId(reply.getId());
                     });
                     // board를 지우니, board를 연관관계로 가지고 있는 reply삭제
                     replyRepository.deleteByBoardId(board.getId());

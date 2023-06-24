@@ -32,7 +32,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
@@ -123,10 +122,10 @@ public class PBControllerUnitTest extends MockDummyEntity {
         //stub
         PBResponse.MyPageOutDTO myPageOutDTO = new PBResponse.MyPageOutDTO(
                 newMockPB(1L, "김pb", newMockBranch(1L, newMockCompany(
-                        1L, "미래에셋증권"), 0)), 0,0);
+                        1L, "미래에셋증권"), 0)), 0L,0L);
         List<PBResponse.MyPropensityPBDTO> list = Arrays.asList(new PBResponse.MyPropensityPBDTO(
                 newMockPB(1L, "김pb", newMockBranch(1L, newMockCompany(1L, "미래에셋증권"), 0)),
-                0, 0, false));
+                0L, 0L, false));
         PBResponse.MyPropensityPBOutDTO myPropensityPBOutDTO = new PBResponse.MyPropensityPBOutDTO(
                 newMockUser(1L, "lee"), list);
         Mockito.when(pbService.getMyPropensityPB(any())).thenReturn(myPropensityPBOutDTO);
@@ -159,7 +158,7 @@ public class PBControllerUnitTest extends MockDummyEntity {
         //stub
         PBResponse.MyPageOutDTO myPageOutDTO = new PBResponse.MyPageOutDTO(
                 newMockPB(1L, "김pb", newMockBranch(1L, newMockCompany(
-                        1L, "미래에셋증권"), 0)), 0,0);
+                        1L, "미래에셋증권"), 0)), 0L,0L);
                 Mockito.when(pbService.getMyPage(any())).thenReturn(myPageOutDTO);
         // When
         ResultActions resultActions = mvc.perform(get("/pb/mypage"));

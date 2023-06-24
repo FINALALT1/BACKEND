@@ -1,6 +1,5 @@
 package kr.co.moneybridge.model.reservation;
 
-import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.dto.reservation.ReviewResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +13,7 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(value = "select count(r) from Review r where r.reservation.pb.id = :pbId")
-    Integer countByPBId(@Param("pbId") Long pbId);
+    Long countByPBId(@Param("pbId") Long pbId);
 
     @Modifying
     @Query("delete from Review r where r.reservation.id = :reservationId")
@@ -33,7 +32,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("select count(r) " +
             "from Review r " +
             "where r.reservation.id = :reservationId")
-    Integer countByReservationId(@Param("reservationId") Long reservationId);
+    Long countByReservationId(@Param("reservationId") Long reservationId);
 
     @Query("SELECT new kr.co.moneybridge.dto.reservation.ReviewResponse$ReviewOutDTO(u, r) " +
             "FROM Review r " +

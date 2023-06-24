@@ -1,30 +1,16 @@
 package kr.co.moneybridge.model.pb;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.core.exception.Exception404;
-import kr.co.moneybridge.core.util.MyDateUtil;
-import kr.co.moneybridge.dto.pb.PBResponse;
-import kr.co.moneybridge.dto.user.UserResponse;
-import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.user.User;
-import kr.co.moneybridge.model.user.UserBookmarkRepository;
-import kr.co.moneybridge.model.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

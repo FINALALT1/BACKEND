@@ -4,10 +4,8 @@ import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.pb.*;
-import kr.co.moneybridge.model.reservation.Review;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +62,18 @@ public class BoardRepositoryTest extends DummyEntity {
         boardBookmarkRepository.save(newBoardBookmark(user, board));
 
         em.clear();
+    }
+
+    @Test
+    public void findThumbnailByBoardId() {
+        // given
+        Long id = 1L;
+
+        // when
+        Optional<String> thumbnail = boardRepository.findThumbnailByBoardId(id);
+
+        // then
+        assertThat(thumbnail.get()).isEqualTo("thumbnail.png");
     }
 
     @Test

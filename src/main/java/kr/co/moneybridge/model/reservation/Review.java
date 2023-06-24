@@ -1,7 +1,5 @@
 package kr.co.moneybridge.model.reservation;
 
-import kr.co.moneybridge.model.pb.PB;
-import kr.co.moneybridge.model.user.User;
 import lombok.*;
 
 import javax.persistence.*;

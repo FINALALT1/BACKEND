@@ -290,7 +290,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
         when(reservationRepository.countByPBIdAndProcess(anyLong(), any()))
-                .thenReturn(10);
+                .thenReturn(10L);
         when(reservationRepository.countRecentByPBIdAndProcess(anyLong(), any()))
                 .thenReturn(1);
 
@@ -325,7 +325,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
         when(reservationRepository.countByUserIdAndProcess(anyLong(), any()))
-                .thenReturn(10);
+                .thenReturn(10L);
         when(reservationRepository.countRecentByUserIdAndProcess(anyLong(), any()))
                 .thenReturn(1);
 
@@ -440,7 +440,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         when(pbRepository.findById(anyLong()))
                 .thenReturn(Optional.of(pb));
         when(reviewRepository.countByReservationId(anyLong()))
-                .thenReturn(0);
+                .thenReturn(0L);
 
         // when
         ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetailByPB(reservation.getId(), pbId);
@@ -479,7 +479,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
         when(reviewRepository.countByReservationId(anyLong()))
-                .thenReturn(0);
+                .thenReturn(0L);
 
         // when
         ReservationResponse.DetailByUserDTO detailByUserDTO = reservationService.getReservationDetailByUser(reservation.getId(), userId);
@@ -628,7 +628,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         when(reservationRepository.findById(anyLong()))
                 .thenReturn(Optional.of(reservation));
         when(reviewRepository.countByReservationId(anyLong()))
-                .thenReturn(0);
+                .thenReturn(0L);
         when(reviewRepository.save(any()))
                 .thenReturn(review);
         when(styleRepository.save(any()))

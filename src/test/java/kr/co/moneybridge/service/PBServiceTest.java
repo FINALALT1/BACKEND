@@ -151,8 +151,8 @@ class PBServiceTest extends MockDummyEntity {
         when(pbRepository.findIdsBySpecialityNotIn(any())).thenReturn(pbIds);
         when(pbRepository.findIdsBySpecialityIn(any())).thenReturn(pbIds);
         when(pbRepository.findByIdIn(any())).thenReturn(Arrays.asList(pb));
-        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0);
-        when(reviewRepository.countByPBId(any())).thenReturn(0);
+        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0L);
+        when(reviewRepository.countByPBId(any())).thenReturn(0L);
         when(userBookmarkRepository.existsByUserIdAndPBId(any(), any())).thenReturn(false);
 
         // when
@@ -190,8 +190,8 @@ class PBServiceTest extends MockDummyEntity {
         //stub
         when(myUserDetails.getMember()).thenReturn(pbOP.get());
         when(pbRepository.findByEmail(any())).thenReturn(pbOP);
-        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0);
-        when(reviewRepository.countByPBId(any())).thenReturn(0);
+        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0L);
+        when(reviewRepository.countByPBId(any())).thenReturn(0L);
 
         //when
         PBResponse.MyPageOutDTO myPageOutDTO = pbService.getMyPage(myUserDetails);
@@ -512,7 +512,7 @@ class PBServiceTest extends MockDummyEntity {
         when(pbRepository.findPBProfile(id)).thenReturn(Optional.of(dto));
         when(awardRepository.getAwards(id)).thenReturn(new ArrayList<>());
         when(careerRepository.getCareers(id)).thenReturn(new ArrayList<>());
-        when(reviewRepository.countByPBId(id)).thenReturn(1);
+        when(reviewRepository.countByPBId(id)).thenReturn(1L);
 
         //when
         PBResponse.PBProfileDTO result = pbService.getPBProfile(myUserDetails, id);

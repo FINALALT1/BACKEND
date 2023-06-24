@@ -21,7 +21,6 @@ import kr.co.moneybridge.service.PBService;
 import kr.co.moneybridge.service.ReplyService;
 import kr.co.moneybridge.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
