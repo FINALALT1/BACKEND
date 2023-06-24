@@ -37,9 +37,9 @@ public class PBResponse {
         @ApiModelProperty(example = "0", value = "상담 후기")
         private Long reviewCount;
         @ApiModelProperty(example = "true", value = "해당 PB 북마크 여부")
-        private Boolean isBookmark;
+        private Boolean isBookmarked;
 
-        public MyPropensityPBDTO(PB pb, Long reserveCount, Long reviewCount, Boolean isBookmark) {
+        public MyPropensityPBDTO(PB pb, Integer reserveCount, Integer reviewCount, Boolean isBookmarked) {
             this.id = pb.getId();
             this.profile = pb.getProfile();
             this.name = pb.getName();
@@ -50,7 +50,7 @@ public class PBResponse {
             this.specialty2 = pb.getSpeciality2();
             this.reserveCount = reserveCount;
             this.reviewCount = reviewCount;
-            this.isBookmark = isBookmark;
+            this.isBookmarked = isBookmarked;
         }
     }
 
@@ -243,7 +243,7 @@ public class PBResponse {
         @ApiModelProperty(example = "84.1111", value = "지점 longitude")
         private Double branchLon;
         @ApiModelProperty(example = "false", value = "pb북마크여부")
-        private Boolean isBookmark; //set해줘야함
+        private Boolean isBookmarked; //set해줘야함
 
         public PBPageDTO(PB pb, Branch branch, Company company) {
             this.id = pb.getId();
@@ -450,6 +450,16 @@ public class PBResponse {
             this.averageProfit = portfolio.getAverageProfit();
             this.profile = pb.getProfile();
             this.portfolio = portfolio.getFile();
+            this.intro = pb.getIntro();
+            this.msg = pb.getMsg();
+        }
+        public PBUpdateOutDTO(PB pb, Branch branch, Company company) {
+            this.company = company.getName();
+            this.branchName = branch.getName();
+            this.career = pb.getCareer();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
+            this.profile = pb.getProfile();
             this.intro = pb.getIntro();
             this.msg = pb.getMsg();
         }

@@ -8,6 +8,7 @@ import kr.co.moneybridge.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReviewResponse {
@@ -25,10 +26,14 @@ public class ReviewResponse {
         @ApiModelProperty
         private List<StyleOutDTO> list; //set해줘야함
 
+        @ApiModelProperty
+        private LocalDateTime createdAt;
+
         public ReviewOutDTO(User user, Review review) {
             this.reviewId = review.getId();
             this.userName = user.getName();
             this.content = review.getContent();
+            this.createdAt = review.getCreatedAt();
         }
     }
 

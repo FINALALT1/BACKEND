@@ -171,7 +171,7 @@ class PBServiceTest extends MockDummyEntity {
         assertThat(myPropensityPBOutDTO.getList().get(0).getSpecialty2()).isNull();
         assertThat(myPropensityPBOutDTO.getList().get(0).getReserveCount()).isEqualTo(0);
         assertThat(myPropensityPBOutDTO.getList().get(0).getReviewCount()).isEqualTo(0);
-        assertThat(myPropensityPBOutDTO.getList().get(0).getIsBookmark()).isEqualTo(false);
+        assertThat(myPropensityPBOutDTO.getList().get(0).getIsBookmarked()).isEqualTo(false);
         Mockito.verify(userRepository, Mockito.times(1)).findById(any());
         Mockito.verify(pbRepository, Mockito.times(1)).findIdsBySpecialityNotIn(any());
         Mockito.verify(pbRepository, Mockito.times(1)).findIdsBySpecialityIn(any());
@@ -559,7 +559,7 @@ class PBServiceTest extends MockDummyEntity {
         PBResponse.PBUpdateOutDTO dto = new PBResponse.PBUpdateOutDTO(pb, branch, company, portfolio);
 
         //stub
-        when(pbRepository.findPBProfileForUpdate(id)).thenReturn(Optional.of(dto));
+        when(pbRepository.findPBDetailByPbId(id)).thenReturn(Optional.of(dto));
         when(careerRepository.getCareers(id)).thenReturn(new ArrayList<>());
         when(awardRepository.getAwards(id)).thenReturn(new ArrayList<>());
 

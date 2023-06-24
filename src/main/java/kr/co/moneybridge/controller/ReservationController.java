@@ -13,6 +13,9 @@ import kr.co.moneybridge.dto.reservation.ReviewResponse;
 import kr.co.moneybridge.model.reservation.ReservationType;
 import kr.co.moneybridge.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
@@ -374,5 +377,19 @@ public class ReservationController {
         reservationService.updateConsultTime(updateTimeDTO, myUserDetails.getMember().getId());
 
         return new ResponseDTO<>();
+    }
+
+    @MyLog
+    @ApiOperation(value = "특정 PB 상담 후기 리스트 조회")
+    @SwaggerResponses.ApiResponsesWithout400
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/auth/reviews/{pbId}")
+    public ResponseDTO<PageDTO<ReservationResponse.ReviewDTO>> getPbReviews(@RequestParam(defaultValue = "0") int page,
+                                                                            @PathVariable(value = "pbId") Long pbId) {
+
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        PageDTO<ReservationResponse.ReviewDTO> reviewsDTO = reservationService.getPbReviewList(pbId, pageable);
+
+        return new ResponseDTO<>(reviewsDTO);
     }
 }
