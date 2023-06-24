@@ -482,7 +482,7 @@ public class PBService {
 
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
             for (PBResponse.PBPageDTO dto : list) {
-                dto.setIsBookmark(userBookmarkRepository.existsByUserIdAndPBId(myUserDetails.getMember().getId(), dto.getId()));
+                dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(myUserDetails.getMember().getId(), dto.getId()));
             }
         }
 
