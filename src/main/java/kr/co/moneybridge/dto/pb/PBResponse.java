@@ -39,7 +39,7 @@ public class PBResponse {
         @ApiModelProperty(example = "true", value = "해당 PB 북마크 여부")
         private Boolean isBookmarked;
 
-        public MyPropensityPBDTO(PB pb, Integer reserveCount, Integer reviewCount, Boolean isBookmarked) {
+        public MyPropensityPBDTO(PB pb, Long reserveCount, Long reviewCount, Boolean isBookmarked) {
             this.id = pb.getId();
             this.profile = pb.getProfile();
             this.name = pb.getName();
