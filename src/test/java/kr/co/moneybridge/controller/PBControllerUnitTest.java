@@ -150,7 +150,7 @@ public class PBControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(jsonPath("$.data.list[0].specialty2").doesNotExist());
         resultActions.andExpect(jsonPath("$.data.list[0].reserveCount").value("0"));
         resultActions.andExpect(jsonPath("$.data.list[0].reviewCount").value("0"));
-        resultActions.andExpect(jsonPath("$.data.list[0].isBookmark").value("false"));
+        resultActions.andExpect(jsonPath("$.data.list[0].isBookmarked").value("false"));
     }
 
     @WithMockPB
