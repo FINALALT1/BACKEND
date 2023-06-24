@@ -180,6 +180,7 @@ public class PBService {
                 Long pbId = pbPageDTO.getId();
                 pbPageDTO.setReserveCount(pbRepository.countReservationsByPbId(pbId));
                 pbPageDTO.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                pbPageDTO.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), pbId));
             }
 
             List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
