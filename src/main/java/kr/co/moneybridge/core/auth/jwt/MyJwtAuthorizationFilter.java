@@ -45,11 +45,12 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         String requestURL = request.getRequestURI();
 
-        // 인증 또는 권한이 필요한 URI가 아니면 JWT 토큰 검사를 아예 하지 않음
+        // 인증 또는 권한이 필요한 URI가 아니면 JWT 토큰 검사를 아예 하지 않음(프론트에서 토큰을 보내도 검사 안함 + 리프레시 토큰 재발급시에도 검사 안함)
+        // accessToken에 값이 없을 때도 필터처리를 하지 않음(테스트코드에서 토큰 안보냄) => 그래도 인증이 되지 않았기 때문에 Security에서 401, 403 실패 처리 해줌.
         if (!(requestURL.startsWith("/auth") || requestURL.equals("/auth") ||
                 requestURL.startsWith("/user") || requestURL.equals("/user") ||
                 requestURL.startsWith("/pb") || requestURL.equals("/pb") ||
-                requestURL.startsWith("/admin") || requestURL.equals("/admin"))) {
+                requestURL.startsWith("/admin") || requestURL.equals("/admin")) || (accessToken == null)) {
             log.debug("토큰 검사 안함");
             chain.doFilter(request, response);
             return;
@@ -91,12 +92,7 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
             log.error("토큰 검증 실패");
         } catch (TokenExpiredException tee) {
             log.debug("토큰 만료됨");
-            if(requestURL.equals("/reissue")){
-                log.debug("하지만 재발급 API 이므로 넘어감");
-            } else {
-                log.error("토큰 만료되어 401 Access token expired 응답");
-                MyFilterResponseUtil.unAuthorized(response, new Exception401("Access token expired"));
-            }
+            MyFilterResponseUtil.unAuthorized(response, new Exception401("Access token expired"));
         } finally {
             chain.doFilter(request, response);
         }
