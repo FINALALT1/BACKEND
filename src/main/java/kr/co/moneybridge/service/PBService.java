@@ -373,8 +373,19 @@ public class PBService {
     public PBResponse.PBUpdateOutDTO getPBProfileForUpdate(MyUserDetails myUserDetails) {
 
         PB pb = (PB) myUserDetails.getMember();
-        PBResponse.PBUpdateOutDTO updateDTO = pbRepository.findPBProfileForUpdate(pb.getId()).orElseThrow(
+        PBResponse.PBUpdateOutDTO updateDTO = pbRepository.findPBDetailByPbId(pb.getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다."));
+
+        Optional<Portfolio> portfolioOP = portfolioRepository.findByPbId(pb.getId());
+        if (portfolioOP.isPresent()) {
+            Portfolio portfolio = portfolioOP.get();
+            updateDTO.setCumulativeReturn(portfolio.getCumulativeReturn());
+            updateDTO.setMaxDrawdown(portfolio.getMaxDrawdown());
+            updateDTO.setProfitFactor(portfolio.getProfitFactor());
+            updateDTO.setAverageProfit(portfolio.getAverageProfit());
+            updateDTO.setPortfolio(portfolio.getFile());
+        }
+
         updateDTO.setCareers(careerRepository.getCareers(pb.getId()));
         updateDTO.setAwards(awardRepository.getAwards(pb.getId()));
 

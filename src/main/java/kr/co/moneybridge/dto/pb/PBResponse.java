@@ -453,6 +453,16 @@ public class PBResponse {
             this.intro = pb.getIntro();
             this.msg = pb.getMsg();
         }
+        public PBUpdateOutDTO(PB pb, Branch branch, Company company) {
+            this.company = company.getName();
+            this.branchName = branch.getName();
+            this.career = pb.getCareer();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
+            this.profile = pb.getProfile();
+            this.intro = pb.getIntro();
+            this.msg = pb.getMsg();
+        }
     }
 
     @Getter

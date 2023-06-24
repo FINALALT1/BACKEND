@@ -30,7 +30,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.FileInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -560,7 +559,7 @@ class PBServiceTest extends MockDummyEntity {
         PBResponse.PBUpdateOutDTO dto = new PBResponse.PBUpdateOutDTO(pb, branch, company, portfolio);
 
         //stub
-        when(pbRepository.findPBProfileForUpdate(id)).thenReturn(Optional.of(dto));
+        when(pbRepository.findPBDetailByPbId(id)).thenReturn(Optional.of(dto));
         when(careerRepository.getCareers(id)).thenReturn(new ArrayList<>());
         when(awardRepository.getAwards(id)).thenReturn(new ArrayList<>());
 
