@@ -1,7 +1,6 @@
 package kr.co.moneybridge.core;
 
 import kr.co.moneybridge.model.Role;
-import kr.co.moneybridge.model.user.UserPropensity;
 import org.springframework.security.test.context.support.WithSecurityContext;
 
 import java.lang.annotation.ElementType;

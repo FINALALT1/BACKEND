@@ -30,7 +30,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.FileInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -152,8 +151,8 @@ class PBServiceTest extends MockDummyEntity {
         when(pbRepository.findIdsBySpecialityNotIn(any())).thenReturn(pbIds);
         when(pbRepository.findIdsBySpecialityIn(any())).thenReturn(pbIds);
         when(pbRepository.findByIdIn(any())).thenReturn(Arrays.asList(pb));
-        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0);
-        when(reviewRepository.countByPBId(any())).thenReturn(0);
+        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0L);
+        when(reviewRepository.countByPBId(any())).thenReturn(0L);
         when(userBookmarkRepository.existsByUserIdAndPBId(any(), any())).thenReturn(false);
 
         // when
@@ -172,7 +171,7 @@ class PBServiceTest extends MockDummyEntity {
         assertThat(myPropensityPBOutDTO.getList().get(0).getSpecialty2()).isNull();
         assertThat(myPropensityPBOutDTO.getList().get(0).getReserveCount()).isEqualTo(0);
         assertThat(myPropensityPBOutDTO.getList().get(0).getReviewCount()).isEqualTo(0);
-        assertThat(myPropensityPBOutDTO.getList().get(0).getIsBookmark()).isEqualTo(false);
+        assertThat(myPropensityPBOutDTO.getList().get(0).getIsBookmarked()).isEqualTo(false);
         Mockito.verify(userRepository, Mockito.times(1)).findById(any());
         Mockito.verify(pbRepository, Mockito.times(1)).findIdsBySpecialityNotIn(any());
         Mockito.verify(pbRepository, Mockito.times(1)).findIdsBySpecialityIn(any());
@@ -191,8 +190,8 @@ class PBServiceTest extends MockDummyEntity {
         //stub
         when(myUserDetails.getMember()).thenReturn(pbOP.get());
         when(pbRepository.findByEmail(any())).thenReturn(pbOP);
-        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0);
-        when(reviewRepository.countByPBId(any())).thenReturn(0);
+        when(reservationRepository.countByPBIdAndProcess(any(), any())).thenReturn(0L);
+        when(reviewRepository.countByPBId(any())).thenReturn(0L);
 
         //when
         PBResponse.MyPageOutDTO myPageOutDTO = pbService.getMyPage(myUserDetails);
@@ -513,7 +512,7 @@ class PBServiceTest extends MockDummyEntity {
         when(pbRepository.findPBProfile(id)).thenReturn(Optional.of(dto));
         when(awardRepository.getAwards(id)).thenReturn(new ArrayList<>());
         when(careerRepository.getCareers(id)).thenReturn(new ArrayList<>());
-        when(reviewRepository.countByPBId(id)).thenReturn(1);
+        when(reviewRepository.countByPBId(id)).thenReturn(1L);
 
         //when
         PBResponse.PBProfileDTO result = pbService.getPBProfile(myUserDetails, id);
@@ -560,7 +559,7 @@ class PBServiceTest extends MockDummyEntity {
         PBResponse.PBUpdateOutDTO dto = new PBResponse.PBUpdateOutDTO(pb, branch, company, portfolio);
 
         //stub
-        when(pbRepository.findPBProfileForUpdate(id)).thenReturn(Optional.of(dto));
+        when(pbRepository.findPBDetailByPbId(id)).thenReturn(Optional.of(dto));
         when(careerRepository.getCareers(id)).thenReturn(new ArrayList<>());
         when(awardRepository.getAwards(id)).thenReturn(new ArrayList<>());
 

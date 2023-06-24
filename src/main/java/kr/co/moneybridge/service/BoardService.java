@@ -28,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -77,7 +76,7 @@ public class BoardService {
         return new PageDTO<>(list, boardPG);
     }
 
-    //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기
+    //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기(비로그인)
     public List<BoardResponse.BoardPageDTO> getNewHotContents() {
 
         List<BoardResponse.BoardPageDTO> boardList = new ArrayList<>();
@@ -86,6 +85,30 @@ public class BoardService {
 
         boardList.addAll(boardRepository.findTop2ByNew(BoardStatus.ACTIVE, pageRequestNew));
         boardList.addAll(boardRepository.findTop2ByHot(BoardStatus.ACTIVE, pageRequestHot));
+        return boardList;
+    }
+
+    //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기(비로그인)
+    public List<BoardResponse.BoardPageDTO> getLogInNewHotContents(MyUserDetails myUserDetails) {
+
+        Member member = myUserDetails.getMember();
+        List<BoardResponse.BoardPageDTO> boardList = new ArrayList<>();
+        PageRequest pageRequestNew = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "id"));
+        PageRequest pageRequestHot = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "clickCount"));
+
+        boardList.addAll(boardRepository.findTop2ByNew(BoardStatus.ACTIVE, pageRequestNew));
+        boardList.addAll(boardRepository.findTop2ByHot(BoardStatus.ACTIVE, pageRequestHot));
+
+        if (member.getRole().equals(Role.USER)) {
+            for (BoardResponse.BoardPageDTO dto : boardList) {
+                dto.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.USER, dto.getId()));
+            }
+        } else if (member.getRole().equals(Role.PB)) {
+            for (BoardResponse.BoardPageDTO dto : boardList) {
+                dto.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.PB, dto.getId()));
+            }
+        }
+
         return boardList;
     }
 
@@ -106,9 +129,9 @@ public class BoardService {
 
         Member member = myUserDetails.getMember();
         if (member.getRole().equals(Role.USER)) {
-            boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.USER, id));
+            boardDetailDTO.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.USER, id));
         } else {
-            boardDetailDTO.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.PB, id));
+            boardDetailDTO.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.PB, id));
         }
         boardDetailDTO.setReply(getReplies(id));
 
@@ -341,7 +364,7 @@ public class BoardService {
             Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithUserId(user.getId(), pageable);
             List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
             for (BoardResponse.BoardPageDTO dto : list) {
-                dto.setIsBookmark(true);
+                dto.setIsBookmarked(true);
             }
             return new PageDTO<>(list, boardPG);
 
@@ -350,7 +373,7 @@ public class BoardService {
             Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithPbId(pb.getId(), pageable);
             List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
             for (BoardResponse.BoardPageDTO dto : list) {
-                dto.setIsBookmark(true);
+                dto.setIsBookmarked(true);
             }
             return new PageDTO<>(list, boardPG);
 
@@ -394,7 +417,7 @@ public class BoardService {
         }
 
         for (BoardResponse.BoardPageDTO dto : boardList) {
-            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(user.getId(), BookmarkerRole.USER, dto.getId()));
+            dto.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(user.getId(), BookmarkerRole.USER, dto.getId()));
         }
 
         return boardList;
@@ -422,7 +445,7 @@ public class BoardService {
         }
 
         for (BoardResponse.BoardPageDTO dto : boardPG) {
-            dto.setIsBookmark(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(myUserDetails.getMember().getId(), bookmarkerRole, dto.getId()));
+            dto.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(myUserDetails.getMember().getId(), bookmarkerRole, dto.getId()));
         }
 
         List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
@@ -526,4 +549,5 @@ public class BoardService {
             }
         }
     }
+
 }

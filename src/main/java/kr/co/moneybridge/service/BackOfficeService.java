@@ -6,6 +6,7 @@ import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;
+import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
@@ -14,6 +15,7 @@ import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
+import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.pb.PBStatus;
@@ -48,6 +50,54 @@ public class BackOfficeService {
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
     private final StyleRepository styleRepository;
+    private final BoardRepository boardRepository;
+    private final BoardBookmarkRepository boardBookmarkRepository;
+    private final ReplyRepository replyRepository;
+    private final ReReplyRepository reReplyRepository;
+    private final S3Util s3Util;
+
+    @MyLog
+    @Transactional
+    public void deleteReReply(Long id) {
+        // reReply 삭제
+        reReplyRepository.deleteById(id);
+    }
+
+    @MyLog
+    @Transactional
+    public void deleteReply(Long id) {
+        // reply를 연관관계로 가지고 있는 reReply도 삭제
+        reReplyRepository.deleteByReplyId(id);
+
+        // reply 삭제
+        replyRepository.deleteById(id);
+    }
+
+    @MyLog
+    @Transactional
+    public void deleteBoard(Long id) {
+        // s3에서 컨텐츠 썸네일도 삭제
+        deleteThumbnail(boardRepository.findThumbnailByBoardId(id));
+
+        // board를 연관관계로 가지고 있는 boardBookmark삭제
+        boardBookmarkRepository.deleteByBoardId(id);
+
+        replyRepository.findAllByBoardId(id).stream().forEach(reply -> {
+            // reply를 지우니, reply를 연관관계로 가지고 있는 reReply도 삭제
+            reReplyRepository.deleteByReplyId(reply.getId());
+        });
+        // board를 연관관계로 가지고 있는 reply삭제
+        replyRepository.deleteByBoardId(id);
+
+        // board 삭제
+        boardRepository.deleteById(id);
+    }
+
+    private void deleteThumbnail(Optional<String> thumbnail){
+        if(thumbnail.isPresent()){
+            s3Util.delete(thumbnail.get());
+        }
+    }
 
     @MyLog
     @Transactional
@@ -60,9 +110,9 @@ public class BackOfficeService {
                     if(!reviewOP.isEmpty()){
                         reviewTotalDTO =
                                 new BackOfficeResponse.ReviewTotalDTO(reviewOP.get(), styleRepository
-                                        .findAllByReviewId(reviewOP.get().getId()).stream().map(style ->
-                                                new ReservationResponse.StyleDTO(style.getStyle()))
-                                        .collect(Collectors.toList()));}
+                                .findAllByReviewId(reviewOP.get().getId()).stream().map(style ->
+                                        new ReservationResponse.StyleDTO(style.getStyle()))
+                                .collect(Collectors.toList()));}
                     return new BackOfficeResponse.ReservationTotalDTO(reservation,
                             new BackOfficeResponse.UserDTO(reservation.getUser()),
                             new BackOfficeResponse.PBDTO(reservation.getPb()),

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface BoardBookmarkRepository extends JpaRepository<BoardBookmark, Long> {
     @Query("select count(bm) from BoardBookmark bm where bm.bookmarkerRole = :role and bm.bookmarkerId = :id")
-    Integer countByBookmarker(@Param("role") BookmarkerRole role, @Param("id") Long id);
+    Long countByBookmarker(@Param("role") BookmarkerRole role, @Param("id") Long id);
 
     @Modifying
     @Query("delete from BoardBookmark b where b.bookmarkerId = :bookmarkerId and b.bookmarkerRole = :bookmarkerRole")

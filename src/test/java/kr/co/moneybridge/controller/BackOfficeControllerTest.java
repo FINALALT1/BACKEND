@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
+import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
@@ -63,6 +64,12 @@ public class BackOfficeControllerTest {
     private ReviewRepository reviewRepository;
     @Autowired
     private StyleRepository styleRepository;
+    @Autowired
+    private BoardRepository boardRepository;
+    @Autowired
+    private ReplyRepository replyRepository;
+    @Autowired
+    private ReReplyRepository reReplyRepository;
 
     @BeforeEach
     public void setUp() {
@@ -83,7 +90,72 @@ public class BackOfficeControllerTest {
         Reservation reservation3 = reservationRepository.save(dummy.newCallReservation(user4, pb4, ReservationProcess.COMPLETE));
         Review review = reviewRepository.save(dummy.newReview(reservation1));
         Style style = styleRepository.save(dummy.newStyle(review, StyleStyle.FAST));
+        boardRepository.save(dummy.newBoard("title", pbPS));
+        Board board2 = boardRepository.save(dummy.newBoard("title2", pbPS));
+        replyRepository.save(dummy.newUserReply(board2, user));
+        Reply reply2 = replyRepository.save(dummy.newUserReply(board2, user));
+        reReplyRepository.save(dummy.newPBReReply(reply2, pb2));
         em.clear();
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("대댓글 강제 삭제")
+    @Test
+    public void deleteReReply() throws Exception {
+        // given
+        Long id = 1L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(delete("/admin/rereply/{id}", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("댓글 강제 삭제")
+    @Test
+    public void deleteReply() throws Exception {
+        // given
+        Long id = 1L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(delete("/admin/reply/{id}", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("콘텐츠 강제 삭제")
+    @Test
+    public void deleteBoard() throws Exception {
+        // given
+        Long id = 1L;
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(delete("/admin/board/{id}", id));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+        resultActions.andExpect(status().isOk());
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)

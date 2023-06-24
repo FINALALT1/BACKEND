@@ -10,7 +10,9 @@ import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
+import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +28,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -53,6 +58,148 @@ class BackOfficeServiceTest extends MockDummyEntity {
     MyMemberUtil myMemberUtil;
     @Mock
     UserRepository userRepository;
+    @Mock
+    ReservationRepository reservationRepository;
+    @Mock
+    ReviewRepository reviewRepository;
+    @Mock
+    StyleRepository styleRepository;
+    @Mock
+    BoardRepository boardRepository;
+    @Mock
+    ReplyRepository replyRepository;
+    @Mock
+    ReReplyRepository reReplyRepository;
+    @Mock
+    BoardBookmarkRepository boardBookmarkRepository;
+
+    @Test
+    @DisplayName("대댓글 강제 삭제")
+    void deleteReReply() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        Board board = newMockBoard(1L, "title", pb);
+        Reply reply = newMockPBReply(id, board, pb);
+        ReReply reReply = newMockPBReReply(1L, reply, pb);
+
+        // when
+        backOfficeService.deleteReReply(id);
+
+        // then
+        verify(reReplyRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    @DisplayName("댓글 강제 삭제")
+    void deleteReply() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        Board board = newMockBoard(1L, "title", pb);
+        Reply reply = newMockPBReply(id, board, pb);
+        ReReply reReply = newMockPBReReply(1L, reply, pb);
+
+        // when
+        backOfficeService.deleteReply(id);
+
+        // then
+        verify(reReplyRepository, times(1)).deleteByReplyId(id);
+        verify(replyRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    @DisplayName("콘텐츠 강제 삭제")
+    void deleteBoard() {
+        // given
+        Long id = 1L;
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        Board board = newMockBoard(id, "title", pb);
+        Reply reply = newMockPBReply(1L, board, pb);
+        ReReply reReply = newMockPBReReply(1L, reply, pb);
+        User user = newMockUser(1L, "user");
+        BoardBookmark boardBookmark = newMockBoardBookmark(1L, user, board);
+
+        //stub
+        when(replyRepository.findAllByBoardId(id)).thenReturn(Arrays.asList(reply));
+
+        // when
+        backOfficeService.deleteBoard(id);
+
+        // then
+        verify(boardRepository, times(1)).findThumbnailByBoardId(id);
+        verify(boardBookmarkRepository, times(1)).deleteByBoardId(id);
+        verify(replyRepository, times(1)).findAllByBoardId(id);
+        verify(replyRepository, times(1)).findAllByBoardId(id);
+        verify(reReplyRepository, times(1)).deleteByReplyId(any());
+        verify(replyRepository, times(1)).deleteByBoardId(id);
+        verify(boardRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    @DisplayName("회원 관리 페이지 전체 가져오기")
+    void getReservations() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Company company = newMockCompany(1L, "미래에셋증권");
+        Branch branch = newMockBranch(1L, company, 1);
+        PB pb = newMockPB(1L, "pblee", branch);
+        User user = newMockUser(1L, "user");
+        Reservation reservation = newMockCallReservation(1L, user, pb, ReservationProcess.COMPLETE);
+        Page<Reservation> reservationPG = new PageImpl<>(Arrays.asList(reservation));
+        Optional<Review> reviewOP = Optional.of(newMockReview(1L, reservation));
+
+        // stub
+        when(reservationRepository.findAll(pageable)).thenReturn(reservationPG);
+        when(reviewRepository.findByReservationId(any())).thenReturn(reviewOP);
+        when(styleRepository.findAllByReviewId(any())).thenReturn(new ArrayList<>());
+        when(reservationRepository.countByProcess(ReservationProcess.COMPLETE)).thenReturn(1L);
+        when(reservationRepository.countByProcess(ReservationProcess.APPLY)).thenReturn(0L);
+        when(reservationRepository.countByProcess(ReservationProcess.CONFIRM)).thenReturn(0L);
+        when(reviewRepository.count()).thenReturn(1L);
+
+        // when
+        BackOfficeResponse.ReservationOutDTO reservationOutDTO = backOfficeService.getReservations(pageable);
+
+        // then
+        assertThat(reservationOutDTO.getCount().getApply()).isEqualTo(0L);
+        assertThat(reservationOutDTO.getCount().getConfirm()).isEqualTo(0L);
+        assertThat(reservationOutDTO.getCount().getComplete()).isEqualTo(1L);
+        assertThat(reservationOutDTO.getCount().getReview()).isEqualTo(1L);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getId()).isEqualTo(1L);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getProcess()).isEqualTo(ReservationProcess.COMPLETE);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getStatus()).isEqualTo(ReservationStatus.ACTIVE);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getTime()).isEqualTo(LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분")));
+        assertThat(reservationOutDTO.getPage().getList().get(0).getType()).isEqualTo(ReservationType.CALL);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getLocationName()).isEqualTo("kb증권 강남중앙점");
+        assertThat(reservationOutDTO.getPage().getList().get(0).getGoal()).isEqualTo(ReservationGoal.PROFIT);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getQuestion()).isEqualTo("질문입니다...");
+        assertThat(reservationOutDTO.getPage().getList().get(0).getUser().getId()).isEqualTo(1L);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getPb().getId()).isEqualTo(1L);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getReview().getContent()).isEqualTo("content 입니다");
+        assertThat(reservationOutDTO.getPage().getList().get(0).getReview().getAdherence()).isEqualTo(ReviewAdherence.EXCELLENT);
+        assertThat(reservationOutDTO.getPage().getList().get(0).getReview().getStyles()).isEmpty(); // 확인
+        assertThat(reservationOutDTO.getPage().getTotalElements()).isEqualTo(1);
+        assertThat(reservationOutDTO.getPage().getTotalPages()).isEqualTo(1);
+        assertThat(reservationOutDTO.getPage().getCurPage()).isEqualTo(0);
+        assertThat(reservationOutDTO.getPage().getFirst()).isEqualTo(true);
+        assertThat(reservationOutDTO.getPage().getLast()).isEqualTo(true);
+        assertThat(reservationOutDTO.getPage().getEmpty()).isEqualTo(false);
+        Mockito.verify(reservationRepository, Mockito.times(1)).findAll(pageable);
+        Mockito.verify(reviewRepository, Mockito.times(1)).findByReservationId(any());
+        Mockito.verify(styleRepository, Mockito.times(1)).findAllByReviewId(any());
+        Mockito.verify(reservationRepository, Mockito.times(1)).countByProcess(ReservationProcess.COMPLETE);
+        Mockito.verify(reservationRepository, Mockito.times(1)).countByProcess(ReservationProcess.APPLY);
+        Mockito.verify(reservationRepository, Mockito.times(1)).countByProcess(ReservationProcess.CONFIRM);
+        Mockito.verify(reviewRepository, Mockito.times(1)).count();
+    }
 
     @Test
     @DisplayName("해당 투자자 강제 탈퇴")

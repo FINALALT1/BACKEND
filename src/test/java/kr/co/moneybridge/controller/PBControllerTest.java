@@ -112,7 +112,7 @@ public class PBControllerTest {
         resultActions.andExpect(jsonPath("$.data.list[0].specialty2").doesNotExist());
         resultActions.andExpect(jsonPath("$.data.list[0].reserveCount").value("0"));
         resultActions.andExpect(jsonPath("$.data.list[0].reviewCount").value("0"));
-        resultActions.andExpect(jsonPath("$.data.list[0].isBookmark").value("false"));
+        resultActions.andExpect(jsonPath("$.data.list[0].isBookmarked").value("false"));
         resultActions.andExpect(status().isOk());
     }
     @DisplayName("PB 마이페이지 가져오기 성공")
