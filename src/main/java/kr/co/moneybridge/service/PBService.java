@@ -180,6 +180,7 @@ public class PBService {
                 Long pbId = pbPageDTO.getId();
                 pbPageDTO.setReserveCount(pbRepository.countReservationsByPbId(pbId));
                 pbPageDTO.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                pbPageDTO.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), pbId));
             }
 
             List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
@@ -373,8 +374,19 @@ public class PBService {
     public PBResponse.PBUpdateOutDTO getPBProfileForUpdate(MyUserDetails myUserDetails) {
 
         PB pb = (PB) myUserDetails.getMember();
-        PBResponse.PBUpdateOutDTO updateDTO = pbRepository.findPBProfileForUpdate(pb.getId()).orElseThrow(
+        PBResponse.PBUpdateOutDTO updateDTO = pbRepository.findPBDetailByPbId(pb.getId()).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다."));
+
+        Optional<Portfolio> portfolioOP = portfolioRepository.findByPbId(pb.getId());
+        if (portfolioOP.isPresent()) {
+            Portfolio portfolio = portfolioOP.get();
+            updateDTO.setCumulativeReturn(portfolio.getCumulativeReturn());
+            updateDTO.setMaxDrawdown(portfolio.getMaxDrawdown());
+            updateDTO.setProfitFactor(portfolio.getProfitFactor());
+            updateDTO.setAverageProfit(portfolio.getAverageProfit());
+            updateDTO.setPortfolio(portfolio.getFile());
+        }
+
         updateDTO.setCareers(careerRepository.getCareers(pb.getId()));
         updateDTO.setAwards(awardRepository.getAwards(pb.getId()));
 
@@ -471,7 +483,7 @@ public class PBService {
 
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
             for (PBResponse.PBPageDTO dto : list) {
-                dto.setIsBookmark(userBookmarkRepository.existsByUserIdAndPBId(myUserDetails.getMember().getId(), dto.getId()));
+                dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(myUserDetails.getMember().getId(), dto.getId()));
             }
         }
 
