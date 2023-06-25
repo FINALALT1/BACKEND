@@ -465,6 +465,7 @@ public class PBResponse {
             this.profile = pb.getProfile();
             this.intro = pb.getIntro();
             this.msg = pb.getMsg();
+            this.companyId = company.getId();
         }
     }
 
