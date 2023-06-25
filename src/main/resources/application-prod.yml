@@ -4,6 +4,7 @@ server:
     encoding:
       charset: utf-8
       force: true
+
   ssl:
     key-store: classpath:keystore.p12
     key-store-type: PKCS12
@@ -30,6 +31,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 100MB
 cloud:
   aws:
     credentials:
