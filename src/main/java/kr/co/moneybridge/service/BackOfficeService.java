@@ -63,18 +63,42 @@ public class BackOfficeService {
 
     @MyLog
     @Transactional
+    public void addFAQ(BackOfficeRequest.FAQInDTO faqInDTO) {
+        try{
+            frequentQuestionRepository.save(faqInDTO.toEntity());
+        } catch (Exception e) {
+            throw new Exception500("FAQ 저장 실패 : " + e);
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void addNotice(BackOfficeRequest.NoticeInDTO noticeInDTO) {
+        try{
+            noticeRepository.save(noticeInDTO.toEntity());
+        } catch (Exception e) {
+            throw new Exception500("공지사항 저장 실패 : " + e);
+        }
+    }
+
+    @MyLog
+    @Transactional
     public void addBranch(BackOfficeRequest.BranchInDTO branchInDTO) {
         Company company = companyRepository.findById(branchInDTO.getCompanyId()).orElseThrow(
                 () -> new Exception400("companyId", "없는 증권회사의 id입니다")
         );
 
-        // 온라인으로만 운영되는 증권사의 경우
-        if(branchInDTO.getAddress() == null || branchInDTO.getAddress().isEmpty()){
-            branchRepository.save(branchInDTO.toDefaultEntity(company));
-            return;
+        try {
+            // 온라인으로만 운영되는 증권사의 경우
+            if(branchInDTO.getAddress() == null || branchInDTO.getAddress().isEmpty()){
+                branchRepository.save(branchInDTO.toDefaultEntity(company));
+                return;
+            }
+            FullAddress address = geoCodingUtil.getFullAddress(branchInDTO.getAddress());
+            branchRepository.save(branchInDTO.toEntity(company, address));
+        } catch (Exception e) {
+            throw new Exception500("지점 저장 실패 : " + e);
         }
-        FullAddress address = geoCodingUtil.getFullAddress(branchInDTO.getAddress());
-        branchRepository.save(branchInDTO.toEntity(company, address));
     }
 
     @MyLog
