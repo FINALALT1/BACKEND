@@ -21,10 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -32,12 +28,13 @@ public class GeoCodingUtil {
     private final String clientId;
     private final String clientSecret;
 
-    public GeoCodingUtil(@Value("${MB_CLIENT_ID}") String clientId, @Value("${MB_CLIENT_SECRET}") String clientSecret) {
+    public GeoCodingUtil(@Value("${MB_CLIENT_ID}") String clientId,
+                         @Value("${MB_CLIENT_SECRET}") String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
 
-    public FullAddress getFullAddress(String address){
+    public FullAddress getFullAddress(String address) {
         // 1) API에 주소값 넣어서 요청
         RestTemplate restTemplate = new RestTemplate();
 
@@ -47,14 +44,18 @@ public class GeoCodingUtil {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        String url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + URLEncoder.encode(address, StandardCharsets.UTF_8);
+        String url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query="+address;
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        System.out.println(response.getBody().toString());
 
         // 2) 응답에서 지번주소, 도로명주소, 위도 경도 찾아서 FullAddress 반환
         JSONTokener tokener = new JSONTokener(response.getBody());
         JSONObject object = new JSONObject(tokener);
         JSONArray arr = object.getJSONArray("addresses");
 
+        if(arr.length() == 0){
+            throw new Exception400("address", "해당 주소로의 검색결과가 없습니다");
+        }
         if(arr.length() != 1){
             throw new Exception400("address", "주소가 하나로 특정되지 않습니다. 정확한 주소를 입력해주세요");
         }
@@ -62,27 +63,22 @@ public class GeoCodingUtil {
         JSONObject temp = (JSONObject) arr.get(0);
         String roadAddress = temp.get("roadAddress").toString(); // 도로명 주소
         String streetAddress = temp.get("jibunAddress").toString(); // 지번 주소
-        try {
-            Double yDouble = Double.parseDouble(temp.get("y").toString()); // 위도
-            BigDecimal bd = new BigDecimal(yDouble);
-            bd = bd.setScale(5, RoundingMode.HALF_UP);
-            Double latitude = bd.doubleValue();
 
-            Double xDouble = Double.parseDouble(temp.get("x").toString()); // 경도
-            bd = new BigDecimal(yDouble);
-            bd = bd.setScale(5, RoundingMode.HALF_UP);
-            Double longitude = bd.doubleValue();
+        Double yDouble =temp.getDouble("y"); // 위도
+        BigDecimal bd = new BigDecimal(yDouble);
+        bd = bd.setScale(5, RoundingMode.HALF_UP);
+        Double latitude = bd.doubleValue();
 
-            return FullAddress.builder()
-                    .roadAddress(roadAddress)
-                    .streetAddress(streetAddress)
-                    .latitude(latitude)
-                    .longitude(longitude)
-                    .build();
-        } catch (NumberFormatException e) {
-            log.error("response에서 가져온 String을 Double로 변환 불가: " + e.getMessage());
-        }
+        Double xDouble = temp.getDouble("x"); // 경도
+        bd = new BigDecimal(xDouble);
+        bd = bd.setScale(5, RoundingMode.HALF_UP);
+        Double longitude = bd.doubleValue();
 
-        return null;
+        return FullAddress.builder()
+                .roadAddress(roadAddress)
+                .streetAddress(streetAddress)
+                .latitude(latitude)
+                .longitude(longitude)
+                .build();
     }
 }

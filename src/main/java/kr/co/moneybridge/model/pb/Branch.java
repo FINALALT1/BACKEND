@@ -19,7 +19,7 @@ public class Branch {
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
 
-    @Column(nullable = false, length = 60)
+    @Column(nullable = false, length = 60, unique = true)
     private String name; // 증권사명(company의 name) + ' ' + 지점명, varchar(60)
 
     @Column(nullable = false)

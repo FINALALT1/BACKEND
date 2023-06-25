@@ -73,11 +73,7 @@ public class BackOfficeService {
             branchRepository.save(branchInDTO.toDefaultEntity(company));
             return;
         }
-
         FullAddress address = geoCodingUtil.getFullAddress(branchInDTO.getAddress());
-        if(address == null) {
-            throw new Exception500("주소변환 실패");
-        }
         branchRepository.save(branchInDTO.toEntity(company, address));
     }
 
