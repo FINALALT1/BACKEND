@@ -291,7 +291,7 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(Optional.of(pb));
         when(reservationRepository.countByPBIdAndProcess(anyLong(), any()))
                 .thenReturn(10L);
-        when(reservationRepository.countRecentByPBIdAndProcess(anyLong(), any()))
+        when(reservationRepository.countRecentByPBIdAndProcess(any(), anyLong(), any()))
                 .thenReturn(1);
 
 
@@ -326,7 +326,7 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(Optional.of(user));
         when(reservationRepository.countByUserIdAndProcess(anyLong(), any()))
                 .thenReturn(10L);
-        when(reservationRepository.countRecentByUserIdAndProcess(anyLong(), any()))
+        when(reservationRepository.countRecentByUserIdAndProcess(any(), anyLong(), any()))
                 .thenReturn(1);
 
 
