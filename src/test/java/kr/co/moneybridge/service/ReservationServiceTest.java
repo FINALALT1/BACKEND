@@ -247,27 +247,27 @@ public class ReservationServiceTest extends MockDummyEntity {
 
         // then
         assertThat(reviewsOutDTO.getList().get(0).getReviewId()).isEqualTo(5L);
-        assertThat(reviewsOutDTO.getList().get(0).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(0).getUserName()).isEqualTo("lee");
         assertThat(reviewsOutDTO.getList().get(0).getContent()).isEqualTo("content 입니다");
         assertThat(reviewsOutDTO.getList().get(0).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
         assertThat(reviewsOutDTO.getList().get(0).getList().get(0).getStyle()).isEqualTo(StyleStyle.FAST);
         assertThat(reviewsOutDTO.getList().get(0).getList().get(1).getStyle()).isEqualTo(StyleStyle.KIND);
         assertThat(reviewsOutDTO.getList().get(1).getReviewId()).isEqualTo(4L);
-        assertThat(reviewsOutDTO.getList().get(1).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(1).getUserName()).isEqualTo("lee");
         assertThat(reviewsOutDTO.getList().get(1).getContent()).isEqualTo("content 입니다");
         assertThat(reviewsOutDTO.getList().get(1).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
         assertThat(reviewsOutDTO.getList().get(1).getList().get(0).getStyle()).isEqualTo(StyleStyle.FAST);
         assertThat(reviewsOutDTO.getList().get(1).getList().get(1).getStyle()).isEqualTo(StyleStyle.KIND);
         assertThat(reviewsOutDTO.getList().get(2).getReviewId()).isEqualTo(3L);
-        assertThat(reviewsOutDTO.getList().get(2).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(2).getUserName()).isEqualTo("lee");
         assertThat(reviewsOutDTO.getList().get(2).getContent()).isEqualTo("content 입니다");
         assertThat(reviewsOutDTO.getList().get(2).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
         assertThat(reviewsOutDTO.getList().get(3).getReviewId()).isEqualTo(2L);
-        assertThat(reviewsOutDTO.getList().get(3).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(3).getUserName()).isEqualTo("lee");
         assertThat(reviewsOutDTO.getList().get(3).getContent()).isEqualTo("content 입니다");
         assertThat(reviewsOutDTO.getList().get(3).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
         assertThat(reviewsOutDTO.getList().get(4).getReviewId()).isEqualTo(1L);
-        assertThat(reviewsOutDTO.getList().get(4).getUsername()).isEqualTo("lee");
+        assertThat(reviewsOutDTO.getList().get(4).getUserName()).isEqualTo("lee");
         assertThat(reviewsOutDTO.getList().get(4).getContent()).isEqualTo("content 입니다");
         assertThat(reviewsOutDTO.getList().get(4).getCreatedAt()).matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$");
     }
@@ -291,7 +291,7 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(Optional.of(pb));
         when(reservationRepository.countByPBIdAndProcess(anyLong(), any()))
                 .thenReturn(10L);
-        when(reservationRepository.countRecentByPBIdAndProcess(anyLong(), any()))
+        when(reservationRepository.countRecentByPBIdAndProcess(any(), anyLong(), any()))
                 .thenReturn(1);
 
 
@@ -326,7 +326,7 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(Optional.of(user));
         when(reservationRepository.countByUserIdAndProcess(anyLong(), any()))
                 .thenReturn(10L);
-        when(reservationRepository.countRecentByUserIdAndProcess(anyLong(), any()))
+        when(reservationRepository.countRecentByUserIdAndProcess(any(), anyLong(), any()))
                 .thenReturn(1);
 
 

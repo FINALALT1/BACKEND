@@ -37,13 +37,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("select count(r) " +
             "from Reservation r " +
-            "where r.createdAt >= current_timestamp - 1 and r.pb.id = :pbId and r.process = :process")
-    Integer countRecentByPBIdAndProcess(@Param("pbId") Long pbId, @Param("process") ReservationProcess process);
+            "where r.createdAt >= :yesterday and r.pb.id = :pbId and r.process = :process")
+    Integer countRecentByPBIdAndProcess(@Param("yesterday") LocalDateTime yesterday, @Param("pbId") Long pbId, @Param("process") ReservationProcess process);
 
     @Query("select count(r) " +
             "from Reservation r " +
-            "where r.createdAt >= current_timestamp - 1 and r.user.id = :userId and r.process = :process")
-    Integer countRecentByUserIdAndProcess(@Param("userId") Long userId, @Param("process") ReservationProcess process);
+            "where r.createdAt >= :yesterday and r.user.id = :userId and r.process = :process")
+    Integer countRecentByUserIdAndProcess(@Param("yesterday") LocalDateTime yesterday, @Param("userId") Long userId, @Param("process") ReservationProcess process);
 
     @Query("select new kr.co.moneybridge.dto.reservation.ReservationResponse$RecentPagingDTO(r, u) " +
             "from Reservation r " +
