@@ -199,15 +199,15 @@ public class ReservationService {
                     reservationRepository
                             .countByPBIdAndProcess(pbPS.getId(), ReservationProcess.APPLY),
                     reservationRepository
-                            .countRecentByPBIdAndProcess(pbPS.getId(), ReservationProcess.APPLY) >= 1,
+                            .countRecentByPBIdAndProcess(LocalDateTime.now().minusDays(1), pbPS.getId(), ReservationProcess.APPLY) >= 1,
                     reservationRepository
                             .countByPBIdAndProcess(pbPS.getId(), ReservationProcess.CONFIRM),
                     reservationRepository
-                            .countRecentByPBIdAndProcess(pbPS.getId(), ReservationProcess.CONFIRM) >= 1,
+                            .countRecentByPBIdAndProcess(LocalDateTime.now().minusDays(1), pbPS.getId(), ReservationProcess.CONFIRM) >= 1,
                     reservationRepository
                             .countByPBIdAndProcess(pbPS.getId(), ReservationProcess.COMPLETE),
                     reservationRepository
-                            .countRecentByPBIdAndProcess(pbPS.getId(), ReservationProcess.COMPLETE) >= 1
+                            .countRecentByPBIdAndProcess(LocalDateTime.now().minusDays(1), pbPS.getId(), ReservationProcess.COMPLETE) >= 1
             );
         } catch (Exception e) {
             throw new Exception500("상담 현황 조회 실패 : " + e.getMessage());
@@ -225,15 +225,15 @@ public class ReservationService {
                     reservationRepository
                             .countByUserIdAndProcess(userPS.getId(), ReservationProcess.APPLY),
                     reservationRepository
-                            .countRecentByUserIdAndProcess(userPS.getId(), ReservationProcess.APPLY) >= 1,
+                            .countRecentByUserIdAndProcess(LocalDateTime.now().minusDays(1), userPS.getId(), ReservationProcess.APPLY) >= 1,
                     reservationRepository
                             .countByUserIdAndProcess(userPS.getId(), ReservationProcess.CONFIRM),
                     reservationRepository
-                            .countRecentByUserIdAndProcess(userPS.getId(), ReservationProcess.CONFIRM) >= 1,
+                            .countRecentByUserIdAndProcess(LocalDateTime.now().minusDays(1), userPS.getId(), ReservationProcess.CONFIRM) >= 1,
                     reservationRepository
                             .countByUserIdAndProcess(userPS.getId(), ReservationProcess.COMPLETE),
                     reservationRepository
-                            .countRecentByUserIdAndProcess(userPS.getId(), ReservationProcess.COMPLETE) >= 1
+                            .countRecentByUserIdAndProcess(LocalDateTime.now().minusDays(1), userPS.getId(), ReservationProcess.COMPLETE) >= 1
             );
         } catch (Exception e) {
             throw new Exception500("상담 현황 조회 실패 : " + e.getMessage());

@@ -394,6 +394,7 @@ public class PBService {
     }
 
     //PB 프로필 수정하기
+    @MyLog
     @Transactional
     public void updateProfile(MyUserDetails myUserDetails, PBRequest.UpdateProfileInDTO updateDTO, MultipartFile profileFile, MultipartFile portfolioFile) {
 

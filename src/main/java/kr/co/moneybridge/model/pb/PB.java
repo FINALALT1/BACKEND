@@ -117,7 +117,7 @@ public class PB implements Member {
     }
 
     public void updateSpeciality2(PBSpeciality speciality2) {
-        this.speciality1 = speciality2;
+        this.speciality2 = speciality2;
     }
 
     public void updateIntro(String intro) {
