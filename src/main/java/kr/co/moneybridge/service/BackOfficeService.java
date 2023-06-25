@@ -1,14 +1,18 @@
 package kr.co.moneybridge.service;
 
+import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
+import kr.co.moneybridge.core.util.GeoCodingUtil;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
+import kr.co.moneybridge.dto.backOffice.FullAddress;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
@@ -16,9 +20,7 @@ import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
 import kr.co.moneybridge.model.board.*;
-import kr.co.moneybridge.model.pb.PB;
-import kr.co.moneybridge.model.pb.PBRepository;
-import kr.co.moneybridge.model.pb.PBStatus;
+import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
@@ -54,7 +56,30 @@ public class BackOfficeService {
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final ReplyRepository replyRepository;
     private final ReReplyRepository reReplyRepository;
+    private final BranchRepository branchRepository;
+    private final CompanyRepository companyRepository;
     private final S3Util s3Util;
+    private final GeoCodingUtil geoCodingUtil;
+
+    @MyLog
+    @Transactional
+    public void addBranch(BackOfficeRequest.BranchInDTO branchInDTO) {
+        Company company = companyRepository.findById(branchInDTO.getCompanyId()).orElseThrow(
+                () -> new Exception400("companyId", "없는 증권회사의 id입니다")
+        );
+
+        // 온라인으로만 운영되는 증권사의 경우
+        if(branchInDTO.getAddress() == null || branchInDTO.getAddress().isEmpty()){
+            branchRepository.save(branchInDTO.toDefaultEntity(company));
+            return;
+        }
+
+        FullAddress address = geoCodingUtil.getFullAddress(branchInDTO.getAddress());
+        if(address == null) {
+            throw new Exception500("주소변환 실패");
+        }
+        branchRepository.save(branchInDTO.toEntity(company, address));
+    }
 
     @MyLog
     @Transactional
