@@ -154,7 +154,7 @@ public class ReservationResponse {
         private Long reviewId;
 
         @ApiModelProperty(example = "홍길동")
-        private String username;
+        private String userName;
 
         @ApiModelProperty(example = "content입니다.")
         private String content;
@@ -167,7 +167,7 @@ public class ReservationResponse {
 
         public ReviewDTO(Review review, User user, List<Style> styles) {
             this.reviewId = review.getId();
-            this.username = user.getName();
+            this.userName = user.getName();
             this.content = review.getContent();
             this.createdAt = localDateTimeToString(review.getCreatedAt());
             this.list = styles.stream()
