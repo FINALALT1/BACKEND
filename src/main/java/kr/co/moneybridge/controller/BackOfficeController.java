@@ -24,6 +24,24 @@ import javax.validation.Valid;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
+    // FAQ 등록
+    @MyLog
+    @SwaggerResponses.AddFAQ
+    @PostMapping("/admin/faq")
+    public ResponseDTO addFAQ(@RequestBody @Valid BackOfficeRequest.FAQInDTO faqInDTO, Errors errors) {
+        backOfficeService.addFAQ(faqInDTO);
+        return new ResponseDTO<>();
+    }
+
+    // 공지사항 등록
+    @MyLog
+    @SwaggerResponses.AddNotice
+    @PostMapping("/admin/notice")
+    public ResponseDTO addNotice(@RequestBody @Valid BackOfficeRequest.NoticeInDTO noticeInDTO, Errors errors) {
+        backOfficeService.addNotice(noticeInDTO);
+        return new ResponseDTO<>();
+    }
+
     // 지점 등록
     @MyLog
     @SwaggerResponses.AddBranch
