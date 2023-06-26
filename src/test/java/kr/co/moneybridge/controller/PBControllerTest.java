@@ -133,8 +133,8 @@ public class PBControllerTest {
         resultActions.andExpect(jsonPath("$.data.branchName").value("미래에셋증권 여의도점"));
         resultActions.andExpect(jsonPath("$.data.msg").value("한줄메시지.."));
         resultActions.andExpect(jsonPath("$.data.career").value("10"));
-        resultActions.andExpect(jsonPath("$.data.specialty1").value("BOND"));
-        resultActions.andExpect(jsonPath("$.data.specialty2").doesNotExist());
+        resultActions.andExpect(jsonPath("$.data.speciality1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.speciality2").doesNotExist());
         resultActions.andExpect(jsonPath("$.data.reserveCount").value("0"));
         resultActions.andExpect(jsonPath("$.data.reviewCount").value("0"));
         resultActions.andExpect(status().isOk());

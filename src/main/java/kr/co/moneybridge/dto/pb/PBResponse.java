@@ -87,9 +87,9 @@ public class PBResponse {
         @ApiModelProperty(example = "10", value = "경력(연차)")
         private Integer career;
         @ApiModelProperty(example = "BOND", value = "전문 분야")
-        private PBSpeciality specialty1;
+        private PBSpeciality speciality1;
         @ApiModelProperty(example = "null", value = "없으면 null")
-        private PBSpeciality specialty2;
+        private PBSpeciality speciality2;
         @ApiModelProperty(example = "1", value = "총 상담 횟수")
         private Long reserveCount;
         @ApiModelProperty(example = "1", value = "상담 후기")
@@ -101,8 +101,8 @@ public class PBResponse {
             this.branchName = pb.getBranch().getName();
             this.msg = pb.getMsg();
             this.career = pb.getCareer();
-            this.specialty1 = pb.getSpeciality1();
-            this.specialty2 = pb.getSpeciality2();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
             this.reserveCount = reserveCount;
             this.reviewCount = reviewCount;
         }

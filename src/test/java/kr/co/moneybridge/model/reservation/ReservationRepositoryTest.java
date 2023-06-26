@@ -184,7 +184,7 @@ public class ReservationRepositoryTest extends DummyEntity {
         ReservationProcess process = ReservationProcess.COMPLETE;
 
         // when
-        Integer count = reservationRepository.countRecentByPBIdAndProcess(pbId, process);
+        Integer count = reservationRepository.countRecentByPBIdAndProcess(LocalDateTime.now().minusDays(1), pbId, process);
 
         // then
         assertThat(count).isEqualTo(5);
@@ -197,7 +197,7 @@ public class ReservationRepositoryTest extends DummyEntity {
         ReservationProcess process = ReservationProcess.COMPLETE;
 
         // when
-        Integer count = reservationRepository.countRecentByUserIdAndProcess(userId, process);
+        Integer count = reservationRepository.countRecentByUserIdAndProcess(LocalDateTime.now().minusDays(1), userId, process);
 
         // then
         assertThat(count).isEqualTo(5);

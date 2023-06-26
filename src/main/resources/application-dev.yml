@@ -30,6 +30,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 100MB
 cloud:
   aws:
     credentials:
@@ -53,4 +56,7 @@ EMAIL_PASSWORD: "finalback1234!!"
 
 DEFAULT_THUMBNAIL: "https://d2ky5wm6akosox.cloudfront.net/default/sample.svg"
 DEFAULT_PROFILE: "https://d2ky5wm6akosox.cloudfront.net/default/profile.svg"
+
+MB_CLIENT_ID: ${MB_CLIENT_ID}
+MB_CLIENT_SECRET: ${MB_CLIENT_SECRET}
 

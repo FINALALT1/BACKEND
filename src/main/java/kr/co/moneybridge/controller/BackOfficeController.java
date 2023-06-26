@@ -2,21 +2,54 @@ package kr.co.moneybridge.controller;
 
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
+import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
+import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
+import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.service.BackOfficeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
+
+    // FAQ 등록
+    @MyLog
+    @SwaggerResponses.AddFAQ
+    @PostMapping("/admin/faq")
+    public ResponseDTO addFAQ(@RequestBody @Valid BackOfficeRequest.FAQInDTO faqInDTO, Errors errors) {
+        backOfficeService.addFAQ(faqInDTO);
+        return new ResponseDTO<>();
+    }
+
+    // 공지사항 등록
+    @MyLog
+    @SwaggerResponses.AddNotice
+    @PostMapping("/admin/notice")
+    public ResponseDTO addNotice(@RequestBody @Valid BackOfficeRequest.NoticeInDTO noticeInDTO, Errors errors) {
+        backOfficeService.addNotice(noticeInDTO);
+        return new ResponseDTO<>();
+    }
+
+    // 지점 등록
+    @MyLog
+    @SwaggerResponses.AddBranch
+    @PostMapping("/admin/branch")
+    public ResponseDTO addBranch(@RequestBody @Valid BackOfficeRequest.BranchInDTO branchInDTO, Errors errors) {
+        backOfficeService.addBranch(branchInDTO);
+        return new ResponseDTO<>();
+    }
 
     // 대댓글 강제 삭제
     @MyLog

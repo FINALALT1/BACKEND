@@ -36,4 +36,5 @@ public class Company {
 //    protected void onUpdate() {
 //        this.updatedAt = LocalDateTime.now();
 //    }
+
 }
