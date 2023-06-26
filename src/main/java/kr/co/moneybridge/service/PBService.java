@@ -413,6 +413,10 @@ public class PBService {
             portfolioRepository.save(portfolio);
         } else {
             portfolio = portfolioOP.get();
+                portfolio.updateCumulativeReturn(updateDTO.getCumulativeReturn());
+                portfolio.updateMaxDrawdown(updateDTO.getMaxDrawdown());
+                portfolio.updateProfitFactor(updateDTO.getProfitFactor());
+                portfolio.updateAverageProfit(updateDTO.getAverageProfit());
         }
 
         //프로필 삭제요청시
