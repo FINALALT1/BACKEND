@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
 import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalTime;
 import static kr.co.moneybridge.core.util.MyEnumUtil.*;
 
@@ -236,13 +237,17 @@ public class ReservationController {
     public ResponseDTO updateReservation(@PathVariable Long id,
                                          @RequestBody ReservationRequest.UpdateDTO updateDTO,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        if (updateDTO.getTime() == null) {
+        if (updateDTO.getTime() == null || updateDTO.getTime().isBlank()) {
             throw new Exception400(null, "상담 시간을 확정한 뒤 요청해주세요.");
         }
 
         // 현재 시간보다 이전 날짜인지 확인
-        if (updateDTO.getTime().isBefore(LocalDateTime.now())) {
-            throw new Exception400(updateDTO.getTime().toString(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
+        if (updateDTO.getTime().matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$")) {
+            throw new Exception400(updateDTO.getTime(), "형식에 맞춰 입력해주세요.");
+        }
+
+        if (StringToLocalDateTime(updateDTO.getTime()).isBefore(LocalDateTime.now())) {
+            throw new Exception400(updateDTO.getTime(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
         }
 
         if (updateDTO.getType() != null && !isValidReservationType(updateDTO.getType())) {
