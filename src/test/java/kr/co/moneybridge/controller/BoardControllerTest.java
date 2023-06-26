@@ -63,9 +63,9 @@ public class BoardControllerTest {
     @Test
     void getBoardsWithTitle() throws Exception {
         //given
-        String title = "제목";
+        String search = "제목";
         //when
-        ResultActions resultActions = mvc.perform(get("/lounge/boards").param("title", title));
+        ResultActions resultActions = mvc.perform(get("/lounge/boards").param("search", search));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
 

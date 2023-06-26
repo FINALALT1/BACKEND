@@ -3,9 +3,7 @@ package kr.co.moneybridge.model.board;
 import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.pb.PBSpeciality;
-import kr.co.moneybridge.model.reservation.Reservation;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,8 +27,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) " +
             "FROM Board b " +
             "JOIN b.pb p JOIN p.branch bh JOIN bh.company c " +
-            "WHERE b.title LIKE CONCAT('%', :title, '%') AND b.status = :status")
-    Page<BoardResponse.BoardPageDTO> findByTitle(@Param("title") String title, @Param("status") BoardStatus status, Pageable pageable);
+            "WHERE (b.title LIKE CONCAT('%', :search, '%') OR p.name LIKE CONCAT('%', :search, '%')) AND b.status = :status")
+    Page<BoardResponse.BoardPageDTO> findBySearch(@Param("search") String search, @Param("status") BoardStatus status, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$BoardPageDTO(b, p, c) " +
             "FROM Board b " +
