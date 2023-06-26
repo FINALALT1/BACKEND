@@ -145,8 +145,17 @@ public class BackOfficeService {
     }
 
     @MyLog
+    public BackOfficeResponse.ReservationTotalCountDTO getReservationsCount() {
+        return new BackOfficeResponse.ReservationTotalCountDTO(
+                reservationRepository.countByProcess(ReservationProcess.APPLY),
+                reservationRepository.countByProcess(ReservationProcess.CONFIRM),
+                reservationRepository.countByProcess(ReservationProcess.COMPLETE),
+                reviewRepository.count());
+    }
+
+    @MyLog
     @Transactional
-    public BackOfficeResponse.ReservationOutDTO getReservations(Pageable pageable) {
+    public PageDTO<BackOfficeResponse.ReservationTotalDTO> getReservations(Pageable pageable) {
         Page<Reservation> reservationPG = reservationRepository.findAll(pageable);
         List<BackOfficeResponse.ReservationTotalDTO> list = reservationPG.getContent().stream().map(
                 reservation-> {
@@ -163,12 +172,7 @@ public class BackOfficeService {
                             new BackOfficeResponse.PBDTO(reservation.getPb()),
                             reviewTotalDTO);
                 }).collect(Collectors.toList());
-        return new BackOfficeResponse.ReservationOutDTO(new BackOfficeResponse.ReservationTotalCountDTO(
-                reservationRepository.countByProcess(ReservationProcess.APPLY),
-                reservationRepository.countByProcess(ReservationProcess.CONFIRM),
-                reservationRepository.countByProcess(ReservationProcess.COMPLETE),
-                reviewRepository.count()),
-                new PageDTO<>(list, reservationPG, Reservation.class));
+        return new PageDTO<>(list, reservationPG, Reservation.class);
     }
 
     @MyLog
