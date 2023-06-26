@@ -17,15 +17,19 @@ public class MyDateUtil {
         if (localDateTime == null) {
             return null;
         }
-        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 mm분")).replace("AM", "오전").replace("PM", "오후");
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 mm분"))
+                .replace("AM", "오전")
+                .replace("PM", "오후");
     }
 
     public static LocalDateTime StringToLocalDateTime(String string) {
         if (string == null) {
             return null;
         }
-        return LocalDateTime.parse(string,
-                DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 mm분").withLocale(Locale.KOREAN));
+        return LocalDateTime.parse(
+                string,
+                DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 mm분").withLocale(Locale.KOREAN)
+        );
     }
 
     public static String localTimeToString(LocalTime localTime) {

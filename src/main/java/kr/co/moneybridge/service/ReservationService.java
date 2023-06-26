@@ -449,7 +449,7 @@ public class ReservationService {
         );
 
         try {
-            reservationPS.updateTime(updateDTO.getTime());
+            reservationPS.updateTime(StringToLocalDateTime(updateDTO.getTime()));
             if (updateDTO.getType() != null) {
                 reservationPS.updateType(updateDTO.getType());
             }
