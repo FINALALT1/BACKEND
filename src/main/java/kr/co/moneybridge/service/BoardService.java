@@ -1,5 +1,6 @@
 package kr.co.moneybridge.service;
 
+import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.*;
 import kr.co.moneybridge.core.util.S3Util;
@@ -61,6 +62,7 @@ public class BoardService {
     }
 
     //최신컨텐츠순으로 가져오기
+    @MyLog
     public PageDTO<BoardResponse.BoardPageDTO> getBoardWithNew(Pageable pageable) {
 
         Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findAll(BoardStatus.ACTIVE, pageable);

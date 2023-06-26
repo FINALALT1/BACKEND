@@ -34,18 +34,18 @@ public class Branch {
     @Column(nullable = false)
     private Double longitude; // 경도
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+//    @Column(nullable = false)
+//    private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+//    private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = LocalDateTime.now();
+//    }
+//
+//    @PreUpdate
+//    protected void onUpdate() {
+//        this.updatedAt = LocalDateTime.now();
+//    }
 }
