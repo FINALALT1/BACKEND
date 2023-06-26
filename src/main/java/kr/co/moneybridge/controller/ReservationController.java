@@ -56,7 +56,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "상담 예약 사전 정보 조회")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/reservation/base/{pbId}")
     public ResponseDTO<ReservationResponse.BaseDTO> getReservationBase(@PathVariable Long pbId,
                                                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -68,7 +67,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "상담 예약 신청하기")
     @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/user/reservation/{pbId}")
     public ResponseDTO applyReservation(@PathVariable Long pbId,
                                         @RequestBody ReservationRequest.ApplyDTO applyDTO,
@@ -128,7 +126,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "상담 후기 리스트 조회")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reviews")
     public ResponseDTO<PageDTO<ReservationResponse.ReviewDTO>> getReviews(@RequestParam(defaultValue = "0") int page,
                                                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -140,7 +137,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "나의 예약 페이지 상담 현황 조회")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/reservations/recent")
     public ResponseDTO<ReservationResponse.RecentInfoDTO> getRecentReservationInfoByUser(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         ReservationResponse.RecentInfoDTO recentInfoDTO = reservationService.getRecentReservationInfoByUser(myUserDetails.getMember().getId());
@@ -151,7 +147,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "고객 관리 페이지 상담 현황 조회")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/management/recent")
     public ResponseDTO<ReservationResponse.RecentInfoDTO> getRecentReservationInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
         ReservationResponse.RecentInfoDTO recentInfoDTO = reservationService.getRecentReservationInfo(myUserDetails.getMember().getId());
@@ -162,7 +157,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "고객 관리 페이지 상담 목록 조회")
     @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/management/reservations")
     public ResponseDTO<PageDTO<ReservationResponse.RecentReservationDTO>> getRecentReservations(String type,
                                                                                                 @RequestParam(defaultValue = "0") int page,
@@ -185,7 +179,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "나의 예약 페이지 상담 목록 조회")
     @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/reservations")
     public ResponseDTO<PageDTO<ReservationResponse.RecentReservationByUserDTO>> getRecentReservationsByUser(String type,
                                                                                                             @RequestParam(defaultValue = "0") int page,
@@ -208,7 +201,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "예약 확인하기(PB)")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation/{id}")
     public ResponseDTO<ReservationResponse.DetailByPBDTO> getReservationDetail(@PathVariable Long id,
                                                                                @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -220,7 +212,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "예약 확인하기(투자자)")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user/reservation/{id}")
     public ResponseDTO<ReservationResponse.DetailByUserDTO> getReservationDetailByUser(@PathVariable Long id,
                                                                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -232,7 +223,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "예약 변경하기")
     @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/pb/reservation/{id}")
     public ResponseDTO updateReservation(@PathVariable Long id,
                                          @RequestBody ReservationRequest.UpdateDTO updateDTO,
@@ -268,7 +258,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "예약 취소하기")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/auth/reservation/{id}")
     public ResponseDTO cancelReservation(@PathVariable Long id,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -280,7 +269,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "예약 확정하기")
     @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/pb/reservation/{id}/confirmed")
     public ResponseDTO confirmReservation(@PathVariable Long id,
                                           @Valid @RequestBody ReservationRequest.ConfirmDTO confirmDTO, Errors errors,
@@ -293,7 +281,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "예약 완료하기")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/auth/reservation/{id}/completed")
     public ResponseDTO completeReservation(@PathVariable Long id,
                                            @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -305,7 +292,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "후기 작성하기")
     @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/user/review")
     public ResponseDTO<ReservationResponse.ReviewIdDTO> writeReview(@Valid @RequestBody ReservationRequest.ReviewDTO reviewDTO, Errors errors,
                                                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -338,7 +324,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "월별/일별 예약 정보 조회")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pb/reservation")
     public ResponseDTO<List<ReservationResponse.ReservationInfoDTO>> getReservationsByDate(@RequestParam(defaultValue = "0") int year,
                                                                                            @RequestParam(defaultValue = "0") int month,
@@ -362,7 +347,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "PB 상담시간 및 메시지 변경하기")
     @SwaggerResponses.DefaultApiResponses
-    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/pb/consultTime")
     public ResponseDTO updateConsultTime(@RequestBody ReservationRequest.UpdateTimeDTO updateTimeDTO,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -389,7 +373,6 @@ public class ReservationController {
     @MyLog
     @ApiOperation(value = "특정 PB 상담 후기 리스트 조회")
     @SwaggerResponses.ApiResponsesWithout400
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/auth/reviews/{pbId}")
     public ResponseDTO<PageDTO<ReservationResponse.ReviewDTO>> getPbReviews(@RequestParam(defaultValue = "0") int page,
                                                                             @PathVariable(value = "pbId") Long pbId) {

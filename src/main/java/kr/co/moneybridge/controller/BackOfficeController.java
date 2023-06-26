@@ -1,13 +1,12 @@
 package kr.co.moneybridge.controller;
 
+import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
-import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
-import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.service.BackOfficeService;
 import lombok.RequiredArgsConstructor;
@@ -173,5 +172,25 @@ public class BackOfficeController {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
         PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
         return new ResponseDTO<>(faqDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "공지사항 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @PatchMapping("/admin/notice/{id}")
+    public ResponseDTO updateNotice(@PathVariable Long id, @RequestBody @Valid BackOfficeRequest.UpdateNoticeDTO updateNoticeDTO, Errors errors) {
+        backOfficeService.updateNotice(id, updateNoticeDTO);
+
+        return new ResponseDTO();
+    }
+
+    @MyLog
+    @ApiOperation(value = "공지사항 삭제하기")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/notice/{id}")
+    public ResponseDTO deleteNotice(@PathVariable Long id) {
+        backOfficeService.deleteNotice(id);
+
+        return new ResponseDTO();
     }
 }
