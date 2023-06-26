@@ -161,12 +161,10 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
                 new BackOfficeResponse.ReviewTotalDTO(review,
                         Arrays.asList(new ReservationResponse.StyleDTO(StyleStyle.FAST)))));
         Page<Reservation> reservationPG =  new PageImpl<>(Arrays.asList(reservation));
-        BackOfficeResponse.ReservationOutDTO reservationOutDTO = new BackOfficeResponse.ReservationOutDTO(
-                new BackOfficeResponse.ReservationTotalCountDTO(1L,0L,0L, 1L),
-                new PageDTO<>(reviewList, reservationPG, Reservation.class));
+        PageDTO<BackOfficeResponse.ReservationTotalDTO> pageDTO = new PageDTO<>(reviewList, reservationPG, Reservation.class);
 
         // stub
-        Mockito.when(backOfficeService.getReservations(any())).thenReturn(reservationOutDTO);
+        Mockito.when(backOfficeService.getReservations(any())).thenReturn(pageDTO);
 
         // When
         ResultActions resultActions = mvc.perform(get("/admin/reservations"));
@@ -175,31 +173,27 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.count.apply").value(1));
-        resultActions.andExpect(jsonPath("$.data.count.confirm").value(0));
-        resultActions.andExpect(jsonPath("$.data.count.complete").value(0));
-        resultActions.andExpect(jsonPath("$.data.count.review").value(1));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].process").value("APPLY"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].status").value("ACTIVE"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].time").value(LocalDateTime.now().format(
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].process").value("APPLY"));
+        resultActions.andExpect(jsonPath("$.data.list[0].status").value("ACTIVE"));
+        resultActions.andExpect(jsonPath("$.data.list[0].time").value(LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"))));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].type").value("CALL"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].locationName").value("kb증권 강남중앙점"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].goal").value("PROFIT"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].question").value("질문입니다..."));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].user.id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].user.email").value("jisu8496@naver.com"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].user.name").value("관리자"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].user.phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].user.isAdmin").value("true"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.email").value("pblee@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.name").value("pblee"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].pb.phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].review.content").value("content 입니다"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].review.adherence").value("EXCELLENT"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].review.styles[0].style").value("FAST"));
+        resultActions.andExpect(jsonPath("$.data.list[0].type").value("CALL"));
+        resultActions.andExpect(jsonPath("$.data.list[0].locationName").value("kb증권 강남중앙점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].goal").value("PROFIT"));
+        resultActions.andExpect(jsonPath("$.data.list[0].question").value("질문입니다..."));
+        resultActions.andExpect(jsonPath("$.data.list[0].user.id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].user.email").value("jisu8496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].user.name").value("관리자"));
+        resultActions.andExpect(jsonPath("$.data.list[0].user.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.list[0].user.isAdmin").value("true"));
+        resultActions.andExpect(jsonPath("$.data.list[0].pb.id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].pb.email").value("pblee@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].pb.name").value("pblee"));
+        resultActions.andExpect(jsonPath("$.data.list[0].pb.phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.list[0].review.content").value("content 입니다"));
+        resultActions.andExpect(jsonPath("$.data.list[0].review.adherence").value("EXCELLENT"));
+        resultActions.andExpect(jsonPath("$.data.list[0].review.styles[0].style").value("FAST"));
     }
 
     @WithMockAdmin

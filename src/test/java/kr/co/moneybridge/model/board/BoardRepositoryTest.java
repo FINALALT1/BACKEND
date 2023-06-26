@@ -131,7 +131,7 @@ public class BoardRepositoryTest extends DummyEntity {
     @Test
     void findByTitle() {
         //when
-        Page<BoardResponse.BoardPageDTO> page = boardRepository.findByTitle("게시글", BoardStatus.ACTIVE, PageRequest.of(0, 2));
+        Page<BoardResponse.BoardPageDTO> page = boardRepository.findBySearch("게시글", BoardStatus.ACTIVE, PageRequest.of(0, 2));
 
         //then
         assertThat(page).isNotEmpty();

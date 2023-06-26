@@ -68,18 +68,18 @@ public class BackOfficeResponse {
             this.id = reservation.getId();
             this.process = reservation.getProcess();
             this.status = reservation.getStatus();
-            this.time = reservation.getTime().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"));
+            this.time = reservation.getTime() == null ? null :  reservation.getTime().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"));
             this.type = reservation.getType();
-            this.locationName = reservation.getLocationName();
+            this.locationName = reservation.getLocationName() == null ? null : reservation.getLocationName();
             this.goal = reservation.getGoal();
-            this.question = reservation.getQuestion();
+            this.question = reservation.getQuestion() == null ? null : reservation.getQuestion();
             this.user = user;
             this.pb = pb;
             this.review = review;
         }
     }
 
-    @ApiModel(description = "예약 횟수 데이터")
+    @ApiModel(description = "상담 내역의 각 건수 데이터")
     @Getter
     @Setter
     public static class ReservationTotalCountDTO {
@@ -97,21 +97,6 @@ public class BackOfficeResponse {
             this.confirm = confirm;
             this.complete = complete;
             this.review = review;
-        }
-    }
-
-    @ApiModel(description = "상담 현황 페이지 전체 가져오기 응답 데이터")
-    @Getter
-    @Setter
-    public static class ReservationOutDTO {
-        @ApiModelProperty
-        private ReservationTotalCountDTO count;
-        @ApiModelProperty
-        private PageDTO<ReservationTotalDTO> page;
-
-        public ReservationOutDTO(ReservationTotalCountDTO count, PageDTO<ReservationTotalDTO> page) {
-            this.count = count;
-            this.page = page;
         }
     }
 

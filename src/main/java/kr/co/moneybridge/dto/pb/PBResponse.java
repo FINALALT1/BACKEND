@@ -402,6 +402,8 @@ public class PBResponse {
         private Double averageProfit;
         @ApiModelProperty(example = "portfolio.pdf", value = "포트폴리오")
         private String file;
+        @ApiModelProperty(example = "김피비", value = "pb의 이름")
+        private String name;
     }
 
     @ApiModel(description = "PB 프로필 수정용 데이터")

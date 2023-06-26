@@ -78,14 +78,23 @@ public class BackOfficeController {
         return new ResponseDTO<>();
     }
 
-    // 상담 현황 페이지 전체 가져오기
+    // 상담 내역의 각 건수 가져오기
+    @MyLog
+    @SwaggerResponses.GetReservationsCount
+    @GetMapping("/admin/reservations/count")
+    public ResponseDTO<BackOfficeResponse.ReservationTotalCountDTO> getReservationsCount() {
+        BackOfficeResponse.ReservationTotalCountDTO reservationTotalCountDTO = backOfficeService.getReservationsCount();
+        return new ResponseDTO<>(reservationTotalCountDTO);
+    }
+
+    // 상담 내역 리스트 가져오기
     @MyLog
     @SwaggerResponses.GetReservations
     @GetMapping("/admin/reservations")
-    public ResponseDTO<BackOfficeResponse.ReservationOutDTO> getReservations(@RequestParam(defaultValue = "0") int page) {
+    public ResponseDTO<PageDTO<BackOfficeResponse.ReservationTotalDTO>> getReservations(@RequestParam(defaultValue = "0") int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
-        BackOfficeResponse.ReservationOutDTO reservationOutDTO = backOfficeService.getReservations(pageable);
-        return new ResponseDTO<>(reservationOutDTO);
+        PageDTO<BackOfficeResponse.ReservationTotalDTO> pageDTO = backOfficeService.getReservations(pageable);
+        return new ResponseDTO<>(pageDTO);
     }
 
     // 해당 투자자 강제 탈퇴
@@ -151,7 +160,7 @@ public class BackOfficeController {
     @SwaggerResponses.GetNotice
     @GetMapping("/notices")
     public ResponseDTO<PageDTO<BackOfficeResponse.NoticeDTO>> getNotice(@RequestParam(defaultValue = "0") int page) {
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BackOfficeResponse.NoticeDTO> faqDTO = backOfficeService.getNotice(pageable);
         return new ResponseDTO<>(faqDTO);
     }

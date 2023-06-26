@@ -449,9 +449,7 @@ public class ReservationService {
         );
 
         try {
-            if (updateDTO.getTime() != null) {
-                reservationPS.updateTime(updateDTO.getTime());
-            }
+            reservationPS.updateTime(updateDTO.getTime());
             if (updateDTO.getType() != null) {
                 reservationPS.updateType(updateDTO.getType());
             }
@@ -464,6 +462,7 @@ public class ReservationService {
                     reservationPS.updateLocationAddress(null);
                 }
             }
+            reservationPS.updateProcess(ReservationProcess.CONFIRM); // 예약 변경시 확정 처리
         } catch (Exception e) {
             throw new Exception500("예약 변경 실패 : " + e.getMessage());
         }

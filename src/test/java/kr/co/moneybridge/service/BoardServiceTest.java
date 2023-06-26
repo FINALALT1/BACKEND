@@ -98,7 +98,7 @@ class BoardServiceTest extends MockDummyEntity {
         Page<BoardResponse.BoardPageDTO> page = new PageImpl<>(list, pageable, list.size());
 
         //stub
-        Mockito.when(boardRepository.findByTitle(title, BoardStatus.ACTIVE, pageable)).thenReturn(page);
+        Mockito.when(boardRepository.findBySearch(title, BoardStatus.ACTIVE, pageable)).thenReturn(page);
 
         //when
         PageDTO<BoardResponse.BoardPageDTO> result = boardService.getBoardsWithTitle(title, pageable);

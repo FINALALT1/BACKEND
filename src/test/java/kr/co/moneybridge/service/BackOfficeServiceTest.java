@@ -159,46 +159,34 @@ class BackOfficeServiceTest extends MockDummyEntity {
         when(reservationRepository.findAll(pageable)).thenReturn(reservationPG);
         when(reviewRepository.findByReservationId(any())).thenReturn(reviewOP);
         when(styleRepository.findAllByReviewId(any())).thenReturn(new ArrayList<>());
-        when(reservationRepository.countByProcess(ReservationProcess.COMPLETE)).thenReturn(1L);
-        when(reservationRepository.countByProcess(ReservationProcess.APPLY)).thenReturn(0L);
-        when(reservationRepository.countByProcess(ReservationProcess.CONFIRM)).thenReturn(0L);
-        when(reviewRepository.count()).thenReturn(1L);
 
         // when
-        BackOfficeResponse.ReservationOutDTO reservationOutDTO = backOfficeService.getReservations(pageable);
+        PageDTO<BackOfficeResponse.ReservationTotalDTO> pageDTO = backOfficeService.getReservations(pageable);
 
         // then
-        assertThat(reservationOutDTO.getCount().getApply()).isEqualTo(0L);
-        assertThat(reservationOutDTO.getCount().getConfirm()).isEqualTo(0L);
-        assertThat(reservationOutDTO.getCount().getComplete()).isEqualTo(1L);
-        assertThat(reservationOutDTO.getCount().getReview()).isEqualTo(1L);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getId()).isEqualTo(1L);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getProcess()).isEqualTo(ReservationProcess.COMPLETE);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getStatus()).isEqualTo(ReservationStatus.ACTIVE);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getTime()).isEqualTo(LocalDateTime.now().format(
+        assertThat(pageDTO.getList().get(0).getId()).isEqualTo(1L);
+        assertThat(pageDTO.getList().get(0).getProcess()).isEqualTo(ReservationProcess.COMPLETE);
+        assertThat(pageDTO.getList().get(0).getStatus()).isEqualTo(ReservationStatus.ACTIVE);
+        assertThat(pageDTO.getList().get(0).getTime()).isEqualTo(LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분")));
-        assertThat(reservationOutDTO.getPage().getList().get(0).getType()).isEqualTo(ReservationType.CALL);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getLocationName()).isEqualTo("kb증권 강남중앙점");
-        assertThat(reservationOutDTO.getPage().getList().get(0).getGoal()).isEqualTo(ReservationGoal.PROFIT);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getQuestion()).isEqualTo("질문입니다...");
-        assertThat(reservationOutDTO.getPage().getList().get(0).getUser().getId()).isEqualTo(1L);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getPb().getId()).isEqualTo(1L);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getReview().getContent()).isEqualTo("content 입니다");
-        assertThat(reservationOutDTO.getPage().getList().get(0).getReview().getAdherence()).isEqualTo(ReviewAdherence.EXCELLENT);
-        assertThat(reservationOutDTO.getPage().getList().get(0).getReview().getStyles()).isEmpty(); // 확인
-        assertThat(reservationOutDTO.getPage().getTotalElements()).isEqualTo(1);
-        assertThat(reservationOutDTO.getPage().getTotalPages()).isEqualTo(1);
-        assertThat(reservationOutDTO.getPage().getCurPage()).isEqualTo(0);
-        assertThat(reservationOutDTO.getPage().getFirst()).isEqualTo(true);
-        assertThat(reservationOutDTO.getPage().getLast()).isEqualTo(true);
-        assertThat(reservationOutDTO.getPage().getEmpty()).isEqualTo(false);
+        assertThat(pageDTO.getList().get(0).getType()).isEqualTo(ReservationType.CALL);
+        assertThat(pageDTO.getList().get(0).getLocationName()).isEqualTo("kb증권 강남중앙점");
+        assertThat(pageDTO.getList().get(0).getGoal()).isEqualTo(ReservationGoal.PROFIT);
+        assertThat(pageDTO.getList().get(0).getQuestion()).isEqualTo("질문입니다...");
+        assertThat(pageDTO.getList().get(0).getUser().getId()).isEqualTo(1L);
+        assertThat(pageDTO.getList().get(0).getPb().getId()).isEqualTo(1L);
+        assertThat(pageDTO.getList().get(0).getReview().getContent()).isEqualTo("content 입니다");
+        assertThat(pageDTO.getList().get(0).getReview().getAdherence()).isEqualTo(ReviewAdherence.EXCELLENT);
+        assertThat(pageDTO.getList().get(0).getReview().getStyles()).isEmpty(); // 확인
+        assertThat(pageDTO.getTotalElements()).isEqualTo(1);
+        assertThat(pageDTO.getTotalPages()).isEqualTo(1);
+        assertThat(pageDTO.getCurPage()).isEqualTo(0);
+        assertThat(pageDTO.getFirst()).isEqualTo(true);
+        assertThat(pageDTO.getLast()).isEqualTo(true);
+        assertThat(pageDTO.getEmpty()).isEqualTo(false);
         Mockito.verify(reservationRepository, Mockito.times(1)).findAll(pageable);
         Mockito.verify(reviewRepository, Mockito.times(1)).findByReservationId(any());
         Mockito.verify(styleRepository, Mockito.times(1)).findAllByReviewId(any());
-        Mockito.verify(reservationRepository, Mockito.times(1)).countByProcess(ReservationProcess.COMPLETE);
-        Mockito.verify(reservationRepository, Mockito.times(1)).countByProcess(ReservationProcess.APPLY);
-        Mockito.verify(reservationRepository, Mockito.times(1)).countByProcess(ReservationProcess.CONFIRM);
-        Mockito.verify(reviewRepository, Mockito.times(1)).count();
     }
 
     @Test

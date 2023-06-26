@@ -180,7 +180,24 @@ public class SwaggerResponses {
     public @interface GetAccount {
     }
 
-    @ApiOperation(value = "상담 현황 페이지 전체 가져오기")
+    @ApiOperation(value = "상담 내역의 각 건수 가져오기")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetReservationsCount {
+    }
+
+    @ApiOperation(value = "상담 내역 리스트 가져오기")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
