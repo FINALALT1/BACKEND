@@ -269,22 +269,12 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     @Test
     public void getReservations_test() throws Exception {
         // given
-        Long id = 1L;
-        Company company = newMockCompany(1L, "미래에셋증권");
-        Branch branch = newMockBranch(1L, company, 1);
-        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
-        List pbList = Arrays.asList(new BackOfficeResponse.PBDTO(pb));
         User user = newMockUserADMIN(1L, "관리자");
-        List userList = Arrays.asList(new BackOfficeResponse.UserDTO(user));
-        Page<PB> pbPG = new PageImpl<>(Arrays.asList(pb));
-        Page<User> userPG = new PageImpl<>(Arrays.asList(user));
-        BackOfficeResponse.MemberOutDTO memberOutDTO = new BackOfficeResponse.MemberOutDTO(
-                new BackOfficeResponse.CountDTO(2, 1, 1),
-                new PageDTO<>(userList, userPG, User.class),
-                new PageDTO<>(pbList, pbPG, PB.class));
+        List userList = Arrays.asList( new BackOfficeResponse.UserDTO(user));
+        Page<User> userPG =  new PageImpl<>(Arrays.asList(user));
 
         // stub
-        Mockito.when(backOfficeService.getMembers(any(), any())).thenReturn(memberOutDTO);
+        Mockito.when(backOfficeService.getMembers(any(), any())).thenReturn(new PageDTO<>(userList, userPG, User.class));
 
         // When
         ResultActions resultActions = mvc.perform(get("/admin/members"));
@@ -293,30 +283,17 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.memberCount.total").value("2"));
-        resultActions.andExpect(jsonPath("$.data.memberCount.user").value("1"));
-        resultActions.andExpect(jsonPath("$.data.memberCount.pb").value("1"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].email").value("jisu8496@naver.com"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].name").value("관리자"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].isAdmin").value("true"));
-        resultActions.andExpect(jsonPath("$.data.userPage.totalElements").isNumber());
-        resultActions.andExpect(jsonPath("$.data.userPage.totalPages").value("1"));
-        resultActions.andExpect(jsonPath("$.data.userPage.curPage").value("0"));
-        resultActions.andExpect(jsonPath("$.data.userPage.first").value("true"));
-        resultActions.andExpect(jsonPath("$.data.userPage.last").value("true"));
-        resultActions.andExpect(jsonPath("$.data.userPage.empty").value("false"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].email").value("pblee@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].name").value("pblee"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.totalElements").isNumber());
-        resultActions.andExpect(jsonPath("$.data.pbPage.totalPages").value("1"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.curPage").value("0"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.first").value("true"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.last").value("true"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.empty").value("false"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].email").value("jisu8496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("관리자"));
+        resultActions.andExpect(jsonPath("$.data.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.list[0].isAdmin").value("true"));
+        resultActions.andExpect(jsonPath("$.data.totalElements").isNumber());
+        resultActions.andExpect(jsonPath("$.data.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.empty").value("false"));
     }
 
     @WithMockAdmin
@@ -349,11 +326,10 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         Branch branch = newMockBranch(1L, company, 1);
         PB pb = newMockPB(1L, "pblee", branch);
         List<BackOfficeResponse.PBPendingDTO> list = Arrays.asList(new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName()));
-        Page<PB> pbPG = new PageImpl<>(Arrays.asList(pb));
-        BackOfficeResponse.PBPendingOutDTO pbPendingPageDTO = new BackOfficeResponse.PBPendingOutDTO(
-                pbPG.getContent().size(), new PageDTO<>(list, pbPG, PB.class));
+        Page<PB> pbPG =  new PageImpl<>(Arrays.asList(pb));
+        PageDTO<BackOfficeResponse.PBPendingDTO> pageDTO = new PageDTO<>(list, pbPG, PB.class);
         // stub
-        Mockito.when(backOfficeService.getPBPending(any())).thenReturn(pbPendingPageDTO);
+        Mockito.when(backOfficeService.getPBPending(any())).thenReturn(pageDTO);
 
         // When
         ResultActions resultActions = mvc.perform(get("/admin/pbs"));
@@ -362,22 +338,21 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.count").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].email").value("pblee@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].name").value("pblee"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].branchName").value("미래에셋증권 여의도점"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].career").value("10"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].speciality1").value("BOND"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].speciality2").isEmpty());
-        resultActions.andExpect(jsonPath("$.data.page.list[0].businessCard").value("card.png"));
-        resultActions.andExpect(jsonPath("$.data.page.totalElements").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.totalPages").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.curPage").value("0"));
-        resultActions.andExpect(jsonPath("$.data.page.first").value("true"));
-        resultActions.andExpect(jsonPath("$.data.page.last").value("true"));
-        resultActions.andExpect(jsonPath("$.data.page.empty").value("false"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].email").value("pblee@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("pblee"));
+        resultActions.andExpect(jsonPath("$.data.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.list[0].branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].career").value("10"));
+        resultActions.andExpect(jsonPath("$.data.list[0].speciality1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.list[0].speciality2").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.list[0].businessCard").value("card.png"));
+        resultActions.andExpect(jsonPath("$.data.totalElements").value("1"));
+        resultActions.andExpect(jsonPath("$.data.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.empty").value("false"));
     }
 
     @Test

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
@@ -91,12 +92,15 @@ public class BackOfficeResponse {
         private Long complete;
         @ApiModelProperty(example = "2", value = "총 후기 작성 건수")
         private Long review;
+        @ApiModelProperty(example = "2", value = "PB 승인 대기 건수")
+        private Long pb;
 
-        public ReservationTotalCountDTO(Long apply, Long confirm, Long complete, Long review) {
+        public ReservationTotalCountDTO(Long apply, Long confirm, Long complete, Long review, Long pb) {
             this.apply = apply;
             this.confirm = confirm;
             this.complete = complete;
             this.review = review;
+            this.pb = pb;
         }
     }
 
@@ -150,14 +154,14 @@ public class BackOfficeResponse {
     @Setter
     public static class CountDTO {
         @ApiModelProperty(example = "7", value = "전체 회원수")
-        private Integer total;
+        private Long total;
         @ApiModelProperty(example = "4", value = "총 투자가 회원수")
-        private Integer user;
+        private Long user;
         @ApiModelProperty(example = "3", value = "총 PB 회원수")
-        private Integer pb;
+        private Long pb;
 
-        public CountDTO(Integer total, Integer user, Integer pb) {
-            this.total = total;
+        public CountDTO(Long user, Long pb) {
+            this.total = user + pb;
             this.user = user;
             this.pb = pb;
         }
@@ -167,17 +171,23 @@ public class BackOfficeResponse {
     @Getter
     @Setter
     public static class MemberOutDTO {
-        @ApiModelProperty
-        private CountDTO memberCount;
-        @ApiModelProperty
-        private PageDTO<UserDTO> userPage;
-        @ApiModelProperty
-        private PageDTO<PBDTO> pbPage;
+        @ApiModelProperty(example = "1", value = "투자자 id")
+        private Long id;
+        @ApiModelProperty(example = "김투자@nate.com", value = "이메일")
+        private String email;
+        @ApiModelProperty(example = "김투자", value = "이름")
+        private String name;
+        @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
+        private String phoneNumber;
+        @ApiModelProperty(example = "true", value = "관리자 여부(관리자면 true, 아니면 false(PB는 항상 false))")
+        private Boolean isAdmin;
 
-        public MemberOutDTO(CountDTO memberCount, PageDTO<UserDTO> userPage, PageDTO<PBDTO> pbPage) {
-            this.memberCount = memberCount;
-            this.userPage = userPage;
-            this.pbPage = pbPage;
+        public MemberOutDTO(Member member) {
+            this.id = member.getId();
+            this.email = member.getEmail();
+            this.name = member.getName();
+            this.phoneNumber = member.getPhoneNumber();
+            this.isAdmin = member.getRole() == Role.ADMIN ? true :false;
         }
     }
 
@@ -214,21 +224,6 @@ public class BackOfficeResponse {
             this.speciality1 = pb.getSpeciality1();
             this.speciality2 = pb.getSpeciality2();
             this.businessCard = pb.getBusinessCard();
-        }
-    }
-
-    @ApiModel(description = "PB회원 가입 요청 승인 페이지 전체 가져오기 응답 데이터")
-    @Getter
-    @Setter
-    public static class PBPendingOutDTO {
-        @ApiModelProperty(example = "2", value = "PB 승인 대기 건수")
-        private Integer count;
-        @ApiModelProperty
-        private PageDTO<PBPendingDTO> page;
-
-        public PBPendingOutDTO(Integer count, PageDTO<PBPendingDTO> page) {
-            this.count = count;
-            this.page = page;
         }
     }
 

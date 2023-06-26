@@ -276,7 +276,7 @@ public class BackOfficeControllerTest {
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @DisplayName("회원 관리 페이지 전체 가져오기 성공")
+    @DisplayName("회원 리스트 가져오기 성공")
     @Test
     public void getMembers() throws Exception {
         // when
@@ -288,30 +288,17 @@ public class BackOfficeControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.memberCount.total").isNumber());
-        resultActions.andExpect(jsonPath("$.data.memberCount.user").isNumber());
-        resultActions.andExpect(jsonPath("$.data.memberCount.pb").isNumber());
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].email").value("admin@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].name").value("admin"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.userPage.list[0].isAdmin").value("true"));
-        resultActions.andExpect(jsonPath("$.data.userPage.totalElements").isNumber());
-        resultActions.andExpect(jsonPath("$.data.userPage.totalPages").value("1"));
-        resultActions.andExpect(jsonPath("$.data.userPage.curPage").value("0"));
-        resultActions.andExpect(jsonPath("$.data.userPage.first").value("true"));
-        resultActions.andExpect(jsonPath("$.data.userPage.last").value("true"));
-        resultActions.andExpect(jsonPath("$.data.userPage.empty").value("false"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].id").value("3"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].email").value("pb3@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].name").value("pb3"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.list[0].phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.totalElements").isNumber());
-        resultActions.andExpect(jsonPath("$.data.pbPage.totalPages").value("1"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.curPage").value("0"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.first").value("true"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.last").value("true"));
-        resultActions.andExpect(jsonPath("$.data.pbPage.empty").value("false"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].email").value("admin@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("admin"));
+        resultActions.andExpect(jsonPath("$.data.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.list[0].isAdmin").value("true"));
+        resultActions.andExpect(jsonPath("$.data.totalElements").isNumber());
+        resultActions.andExpect(jsonPath("$.data.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.empty").value("false"));
         resultActions.andExpect(status().isOk());
     }
 
@@ -356,7 +343,7 @@ public class BackOfficeControllerTest {
     }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @DisplayName("PB 회원 가입 요청 승인 페이지 전체 가져오기 성공")
+    @DisplayName("PB 회원 가입 승인 대기 리스트 가져오기 성공")
     @Test
     public void getPBPending() throws Exception {
         // when
@@ -368,22 +355,21 @@ public class BackOfficeControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.count").isNumber());
-        resultActions.andExpect(jsonPath("$.data.page.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].email").value("pblee@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].name").value("pblee"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].branchName").value("미래에셋증권 여의도점"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].career").value("10"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].speciality1").value("BOND"));
-        resultActions.andExpect(jsonPath("$.data.page.list[0].speciality2").isEmpty());
-        resultActions.andExpect(jsonPath("$.data.page.list[0].businessCard").value("card.png"));
-        resultActions.andExpect(jsonPath("$.data.page.totalElements").isNumber());
-        resultActions.andExpect(jsonPath("$.data.page.totalPages").value("1"));
-        resultActions.andExpect(jsonPath("$.data.page.curPage").value("0"));
-        resultActions.andExpect(jsonPath("$.data.page.first").value("true"));
-        resultActions.andExpect(jsonPath("$.data.page.last").value("true"));
-        resultActions.andExpect(jsonPath("$.data.page.empty").value("false"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.list[0].email").value("pblee@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("pblee"));
+        resultActions.andExpect(jsonPath("$.data.list[0].phoneNumber").value("01012345678"));
+        resultActions.andExpect(jsonPath("$.data.list[0].branchName").value("미래에셋증권 여의도점"));
+        resultActions.andExpect(jsonPath("$.data.list[0].career").value("10"));
+        resultActions.andExpect(jsonPath("$.data.list[0].speciality1").value("BOND"));
+        resultActions.andExpect(jsonPath("$.data.list[0].speciality2").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.list[0].businessCard").value("card.png"));
+        resultActions.andExpect(jsonPath("$.data.totalElements").isNumber());
+        resultActions.andExpect(jsonPath("$.data.totalPages").value("1"));
+        resultActions.andExpect(jsonPath("$.data.curPage").value("0"));
+        resultActions.andExpect(jsonPath("$.data.first").value("true"));
+        resultActions.andExpect(jsonPath("$.data.last").value("true"));
+        resultActions.andExpect(jsonPath("$.data.empty").value("false"));
         resultActions.andExpect(status().isOk());
     }
 
