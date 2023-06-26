@@ -10,6 +10,7 @@ import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
@@ -21,7 +22,10 @@ import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBStatus;
-import kr.co.moneybridge.model.reservation.*;
+import kr.co.moneybridge.model.reservation.Reservation;
+import kr.co.moneybridge.model.reservation.ReservationProcess;
+import kr.co.moneybridge.model.reservation.Review;
+import kr.co.moneybridge.model.reservation.StyleStyle;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.BackOfficeService;
 import org.junit.jupiter.api.Test;
@@ -31,8 +35,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,6 +50,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -268,11 +275,11 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
         List pbList = Arrays.asList(new BackOfficeResponse.PBDTO(pb));
         User user = newMockUserADMIN(1L, "관리자");
-        List userList = Arrays.asList( new BackOfficeResponse.UserDTO(user));
-        Page<PB> pbPG =  new PageImpl<>(Arrays.asList(pb));
-        Page<User> userPG =  new PageImpl<>(Arrays.asList(user));
+        List userList = Arrays.asList(new BackOfficeResponse.UserDTO(user));
+        Page<PB> pbPG = new PageImpl<>(Arrays.asList(pb));
+        Page<User> userPG = new PageImpl<>(Arrays.asList(user));
         BackOfficeResponse.MemberOutDTO memberOutDTO = new BackOfficeResponse.MemberOutDTO(
-                new BackOfficeResponse.CountDTO(2,1,1),
+                new BackOfficeResponse.CountDTO(2, 1, 1),
                 new PageDTO<>(userList, userPG, User.class),
                 new PageDTO<>(pbList, pbPG, PB.class));
 
@@ -342,7 +349,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         Branch branch = newMockBranch(1L, company, 1);
         PB pb = newMockPB(1L, "pblee", branch);
         List<BackOfficeResponse.PBPendingDTO> list = Arrays.asList(new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName()));
-        Page<PB> pbPG =  new PageImpl<>(Arrays.asList(pb));
+        Page<PB> pbPG = new PageImpl<>(Arrays.asList(pb));
         BackOfficeResponse.PBPendingOutDTO pbPendingPageDTO = new BackOfficeResponse.PBPendingOutDTO(
                 pbPG.getContent().size(), new PageDTO<>(list, pbPG, PB.class));
         // stub
@@ -378,7 +385,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         // given
         Notice notice = newMockNotice(1L);
         List<BackOfficeResponse.NoticeDTO> list = Arrays.asList(new BackOfficeResponse.NoticeDTO(notice));
-        Page<Notice> noticePG =  new PageImpl<>(Arrays.asList(notice));
+        Page<Notice> noticePG = new PageImpl<>(Arrays.asList(notice));
         PageDTO<BackOfficeResponse.NoticeDTO> noticeDTO = new PageDTO<>(list, noticePG, Notice.class);
         // stub
         Mockito.when(backOfficeService.getNotice(any())).thenReturn(noticeDTO);
@@ -409,7 +416,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         // given
         FrequentQuestion faq = newMockFrequentQuestion(1L);
         List<BackOfficeResponse.FAQDTO> list = Arrays.asList(new BackOfficeResponse.FAQDTO(faq));
-        Page<FrequentQuestion> faqPG =  new PageImpl<>(Arrays.asList(faq));
+        Page<FrequentQuestion> faqPG = new PageImpl<>(Arrays.asList(faq));
         PageDTO<BackOfficeResponse.FAQDTO> faqDTO = new PageDTO<>(list, faqPG, FrequentQuestion.class);
         // stub
         Mockito.when(backOfficeService.getFAQ(any())).thenReturn(faqDTO);
@@ -432,5 +439,32 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(jsonPath("$.data.first").value("true"));
         resultActions.andExpect(jsonPath("$.data.last").value("true"));
         resultActions.andExpect(jsonPath("$.data.empty").value("false"));
+    }
+
+    @WithMockAdmin
+    @Test
+    public void update_notice_test() throws Exception {
+        // given
+        Long noticeId = 1L;
+        BackOfficeRequest.UpdateNoticeDTO updateNoticeDTO = new BackOfficeRequest.UpdateNoticeDTO();
+        updateNoticeDTO.setTitle("제목 수정");
+        updateNoticeDTO.setContent("내용 수정");
+        String requestBody = om.writeValueAsString(updateNoticeDTO);
+
+        // stub
+        Mockito.doNothing().when(backOfficeService).updateNotice(anyLong(), any());
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                patch("/admin/notice/{id}", noticeId)
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
     }
 }
