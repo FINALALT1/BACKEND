@@ -173,4 +173,24 @@ public class BackOfficeController {
         PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
         return new ResponseDTO<>(faqDTO);
     }
+
+    @MyLog
+    @ApiOperation(value = "공지사항 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @PatchMapping("/admin/notice/{id}")
+    public ResponseDTO updateNotice(@PathVariable Long id, @RequestBody @Valid BackOfficeRequest.UpdateNoticeDTO updateNoticeDTO, Errors errors) {
+        backOfficeService.updateNotice(id, updateNoticeDTO);
+
+        return new ResponseDTO();
+    }
+
+    @MyLog
+    @ApiOperation(value = "공지사항 삭제하기")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/notice/{id}")
+    public ResponseDTO updateNotice(@PathVariable Long id) {
+        backOfficeService.deleteNotice(id);
+
+        return new ResponseDTO();
+    }
 }

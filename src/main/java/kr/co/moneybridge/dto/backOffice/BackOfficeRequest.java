@@ -1,5 +1,6 @@
 package kr.co.moneybridge.dto.backOffice;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
@@ -8,6 +9,7 @@ import kr.co.moneybridge.model.pb.Company;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -50,6 +52,19 @@ public class BackOfficeRequest {
                     .content(content)
                     .build();
         }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class UpdateNoticeDTO {
+        @ApiModelProperty(example = "서버 점검 안내", value = "제목")
+        @NotBlank
+        private String title;
+
+        @ApiModelProperty(example = "0시부터 3시까지 서버 점검시간입니다.", value = "내용")
+        @NotBlank
+        private String content;
     }
 
     @Getter
