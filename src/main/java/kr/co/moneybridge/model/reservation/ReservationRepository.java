@@ -64,7 +64,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("select new kr.co.moneybridge.dto.reservation.ReservationResponse$RecentPagingDTO(r, u) " +
             "from Reservation r " +
             "join r.user u " +
-            "where r.pb.id = :pbId and r.status = :status and r.status <> 'CANCEL'")
+            "where r.pb.id = :pbId and r.status = :status")
     Page<ReservationResponse.RecentPagingDTO> findAllByPbIdAndStatus(@Param("pbId") Long pbId,
                                                                      @Param("status") ReservationStatus status,
                                                                      Pageable pageable);
