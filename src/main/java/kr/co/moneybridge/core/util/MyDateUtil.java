@@ -3,6 +3,7 @@ package kr.co.moneybridge.core.util;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class MyDateUtil {
     public static String localDateTimeToString(LocalDateTime localDateTime) {
@@ -24,7 +25,7 @@ public class MyDateUtil {
             return null;
         }
         return LocalDateTime.parse(string,
-                DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 mm분"));
+                DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 mm분").withLocale(Locale.KOREAN));
     }
 
     public static String localTimeToString(LocalTime localTime) {
