@@ -45,10 +45,10 @@ public class BoardService {
     private final ReReplyRepository reReplyRepository;
     private final S3Util s3Util;
 
-    //컨텐츠검색
-    public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithTitle(String title, Pageable pageable) {
+    //컨텐츠검색(PB명 + 컨텐츠제목)
+    public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithTitle(String search, Pageable pageable) {
 
-        Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findByTitle(title, BoardStatus.ACTIVE, pageable);
+        Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBySearch(search, BoardStatus.ACTIVE, pageable);
         List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
         return new PageDTO<>(list, boardPG);
     }

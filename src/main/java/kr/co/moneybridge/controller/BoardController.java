@@ -41,23 +41,19 @@ public class BoardController {
 
     @ApiOperation("컨텐츠 검색하기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "title", value = "제목"),
-            @ApiImplicitParam(name = "name", value = "김피비"),
+            @ApiImplicitParam(name = "search", value = "검색"),
             @ApiImplicitParam(name = "page", value = "0")
     })
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/lounge/boards")
-    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsWithTitle(@RequestParam(value = "title", required = false) String title,
-                                                                               @RequestParam(value = "name", required = false) String name,
+    public ResponseDTO<PageDTO<BoardResponse.BoardPageDTO>> getBoardsWithTitle(@RequestParam(value = "search") String search,
                                                                                @RequestParam(defaultValue = "0") int page) {
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BoardResponse.BoardPageDTO> pageDTO;
 
-        if (title != null) {
-            pageDTO = boardService.getBoardsWithTitle(title, pageable);
-        } else if (name != null) {
-            pageDTO = boardService.getBoardsWithPbName(name, pageable);
+        if (search != null) {
+            pageDTO = boardService.getBoardsWithTitle(search, pageable);
         } else {
             throw new Exception404("요청오류");
         }
