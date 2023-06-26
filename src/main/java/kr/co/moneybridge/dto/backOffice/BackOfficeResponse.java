@@ -179,7 +179,7 @@ public class BackOfficeResponse {
         private String name;
         @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
         private String phoneNumber;
-        @ApiModelProperty(example = "true", value = "관리자 여부(관리자면 true, 투자자면 false, PB면 null)")
+        @ApiModelProperty(example = "true", value = "관리자 여부(관리자면 true, 아니면 false(PB는 항상 false))")
         private Boolean isAdmin;
 
         public MemberOutDTO(Member member) {
@@ -187,8 +187,7 @@ public class BackOfficeResponse {
             this.email = member.getEmail();
             this.name = member.getName();
             this.phoneNumber = member.getPhoneNumber();
-            this.isAdmin = member.getRole() == Role.ADMIN ? true :
-                    member.getRole() == Role.USER ? false : null;
+            this.isAdmin = member.getRole() == Role.ADMIN ? true :false;
         }
     }
 
