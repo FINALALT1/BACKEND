@@ -352,7 +352,7 @@ public class PBService {
     //PB 포트폴리오 가져오기
     public PBResponse.PortfolioOutDTO getPortfolio(Long id) {
 
-        if(pbRepository.findById(id).isEmpty()) throw new Exception404("존재하지 않는 PB 입니다.");
+        PB pb = pbRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 PB입니다."));
 
         Optional<Portfolio> portfolioOP = portfolioRepository.findByPbId(id);
         PBResponse.PortfolioOutDTO dto = new PBResponse.PortfolioOutDTO();
@@ -365,6 +365,7 @@ public class PBService {
             dto.setProfitFactor(portfolio.getProfitFactor());
             dto.setAverageProfit(portfolio.getAverageProfit());
             dto.setFile(portfolio.getFile());
+            dto.setName(pb.getName());
         }
 
         return dto;
