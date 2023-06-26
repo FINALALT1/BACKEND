@@ -188,7 +188,7 @@ public class BackOfficeController {
     @ApiOperation(value = "공지사항 삭제하기")
     @SwaggerResponses.ApiResponsesWithout400
     @DeleteMapping("/admin/notice/{id}")
-    public ResponseDTO updateNotice(@PathVariable Long id) {
+    public ResponseDTO deleteNotice(@PathVariable Long id) {
         backOfficeService.deleteNotice(id);
 
         return new ResponseDTO();
