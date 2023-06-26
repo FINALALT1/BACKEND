@@ -467,4 +467,23 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
         resultActions.andExpect(jsonPath("$.data").isEmpty());
     }
+
+    @WithMockAdmin
+    @Test
+    public void delete_notice_test() throws Exception {
+        // given
+        Long noticeId = 1L;
+
+        // stub
+        Mockito.doNothing().when(backOfficeService).updateNotice(anyLong(), any());
+
+        // when
+        ResultActions resultActions = mvc.perform(delete("/admin/notice/{id}", noticeId));
+
+        // then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+    }
 }
