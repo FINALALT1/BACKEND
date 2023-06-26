@@ -2,10 +2,7 @@ package kr.co.moneybridge.dto.board;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.moneybridge.model.board.Board;
-import kr.co.moneybridge.model.board.BoardStatus;
-import kr.co.moneybridge.model.board.ReReply;
-import kr.co.moneybridge.model.board.Reply;
+import kr.co.moneybridge.model.board.*;
 import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
@@ -99,6 +96,8 @@ public class BoardResponse {
         private String profile;
         private String content;
         private LocalDateTime createdAt;
+        private Long authorId;
+        private ReplyAuthorRole role;
         private List<ReReplyOutDTO> reReply;
 
         public ReplyOutDTO(Reply reply, User user) {
@@ -107,6 +106,8 @@ public class BoardResponse {
             this.profile = null;
             this.content = reply.getContent();
             this.createdAt = reply.getCreatedAt();
+            this.authorId = user.getId();
+            this.role = reply.getAuthorRole();
         }
         public ReplyOutDTO(Reply reply, PB pb) {
             this.id = reply.getId();
@@ -114,6 +115,8 @@ public class BoardResponse {
             this.profile = pb.getProfile();
             this.content = reply.getContent();
             this.createdAt = reply.getCreatedAt();
+            this.authorId = pb.getId();
+            this.role = reply.getAuthorRole();
         }
     }
 
@@ -126,6 +129,8 @@ public class BoardResponse {
         private String profile;
         private String content;
         private LocalDateTime createdAt;
+        private Long authorId;
+        private ReplyAuthorRole role;
 
         public ReReplyOutDTO(ReReply reReply, User user) {
             this.id = reReply.getId();
@@ -133,6 +138,8 @@ public class BoardResponse {
             this.profile = null;
             this.content = reReply.getContent();
             this.createdAt = reReply.getCreatedAt();
+            this.authorId = user.getId();
+            this.role = reReply.getAuthorRole();
         }
         public ReReplyOutDTO(ReReply reReply, PB pb) {
             this.id = reReply.getId();
@@ -140,6 +147,8 @@ public class BoardResponse {
             this.profile = pb.getProfile();
             this.content = reReply.getContent();
             this.createdAt = reReply.getCreatedAt();
+            this.authorId = pb.getId();
+            this.role = reReply.getAuthorRole();
         }
     }
 
