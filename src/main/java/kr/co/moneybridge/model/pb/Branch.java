@@ -19,7 +19,7 @@ public class Branch {
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
 
-    @Column(nullable = false, length = 60)
+    @Column(nullable = false, length = 60, unique = true)
     private String name; // 증권사명(company의 name) + ' ' + 지점명, varchar(60)
 
     @Column(nullable = false)
@@ -33,19 +33,4 @@ public class Branch {
 
     @Column(nullable = false)
     private Double longitude; // 경도
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

@@ -57,6 +57,57 @@ public class SwaggerResponses {
     public @interface DefaultApiResponses {
     }
 
+    @ApiOperation(value = "FAQ 등록")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface AddFAQ {
+    }
+
+    @ApiOperation(value = "공지사항 등록")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface AddNotice {
+    }
+
+    @ApiOperation(value = "지점 등록")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface AddBranch {
+    }
+
     @ApiOperation(value = "대댓글 강제 삭제")
     @ApiResponses({
             @ApiResponse(code = 400,
