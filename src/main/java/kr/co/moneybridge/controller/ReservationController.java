@@ -236,11 +236,13 @@ public class ReservationController {
     public ResponseDTO updateReservation(@PathVariable Long id,
                                          @RequestBody ReservationRequest.UpdateDTO updateDTO,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        if (updateDTO.getTime() == null) {
+            throw new Exception400(null, "상담 시간을 확정한 뒤 요청해주세요.");
+        }
+
         // 현재 시간보다 이전 날짜인지 확인
-        if (updateDTO.getTime() != null) {
-            if (updateDTO.getTime().isBefore(LocalDateTime.now())) {
-                throw new Exception400(updateDTO.getTime().toString(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
-            }
+        if (updateDTO.getTime().isBefore(LocalDateTime.now())) {
+            throw new Exception400(updateDTO.getTime().toString(), "현재 시간보다 이전 날짜는 선택할 수 없습니다.");
         }
 
         if (updateDTO.getType() != null && !isValidReservationType(updateDTO.getType())) {
