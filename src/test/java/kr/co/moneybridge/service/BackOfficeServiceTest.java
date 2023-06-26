@@ -4,6 +4,7 @@ import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.dto.PageDTO;
+import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
@@ -34,8 +35,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -228,7 +229,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         Boolean admin = false;
 
         // stub
-        when(userRepository.findById( any())).thenReturn(Optional.of(user));
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         // when
         backOfficeService.authorizeAdmin(id, admin);
@@ -247,7 +248,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         Boolean admin = true;
 
         // stub
-        when(userRepository.findById( any())).thenReturn(Optional.of(user));
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 //        doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
@@ -446,5 +447,42 @@ class BackOfficeServiceTest extends MockDummyEntity {
         assertThat(faqDTO.getLast()).isEqualTo(true);
         assertThat(faqDTO.getEmpty()).isEqualTo(false);
         Mockito.verify(frequentQuestionRepository, Mockito.times(1)).findAll(pageable);
+    }
+
+//    @Test
+//    void update_notice_test() {
+//        // given
+//        Long noticeId = 1L;
+//        Notice notice = newMockNotice(noticeId);
+//        BackOfficeRequest.UpdateNoticeDTO updateNoticeDTO = new BackOfficeRequest.UpdateNoticeDTO();
+//        updateNoticeDTO.setTitle("제목 수정");
+//        updateNoticeDTO.setContent("내용 수정");
+//
+//        // stub
+//        Mockito.when(noticeRepository.findById(anyLong())).thenReturn(Optional.of(notice));
+//
+//        // when
+//        Notice response = backOfficeService.updateNotice(noticeId, updateNoticeDTO);
+//
+//        // then
+//        assertThat(response.getTitle()).isEqualTo("제목 수정");
+//        assertThat(response.getContent()).isEqualTo("내용 수정");
+//    }
+
+    @Test
+    void delete_notice_test() {
+        // given
+        Long noticeId = 1L;
+        Notice notice = newMockNotice(noticeId);
+
+        // stub
+        Mockito.when(noticeRepository.findById(anyLong())).thenReturn(Optional.of(notice));
+        Mockito.doNothing().when(noticeRepository).deleteById(anyLong());
+
+        // when
+        backOfficeService.deleteNotice(noticeId);
+
+        // then
+        Mockito.verify(noticeRepository, Mockito.times(1)).deleteById(noticeId);
     }
 }
