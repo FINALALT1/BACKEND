@@ -45,4 +45,9 @@ public class Portfolio {
 
     public void updateFile(String file) { this.file = file; }
     public void deleteFile() { this.file = null; }
+    public void updateCumulativeReturn(Double cumulativeReturn) { this.cumulativeReturn = cumulativeReturn; }
+    public void updateMaxDrawdown(Double maxDrawdown) { this.maxDrawdown = maxDrawdown; }
+    public void updateProfitFactor(Double profitFactor) { this.profitFactor = profitFactor; }
+    public void updateAverageProfit(Double averageProfit) { this.averageProfit = averageProfit; }
+
 }

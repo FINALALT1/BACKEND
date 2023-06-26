@@ -21,4 +21,20 @@ public class Company {
 
     @Column(nullable = false)
     private String logo; // 로고 이미지
+
+//    @Column(nullable = false)
+//    private LocalDateTime createdAt;
+//
+//    private LocalDateTime updatedAt;
+
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = LocalDateTime.now();
+//    }
+//
+//    @PreUpdate
+//    protected void onUpdate() {
+//        this.updatedAt = LocalDateTime.now();
+//    }
+
 }

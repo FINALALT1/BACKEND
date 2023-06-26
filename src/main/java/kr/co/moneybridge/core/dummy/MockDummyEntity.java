@@ -394,6 +394,8 @@ public class MockDummyEntity {
                 .id(id)
                 .name(name)
                 .logo("logo.png")
+//                .createdAt(LocalDateTime.now())
+
                 .build();
     }
 
@@ -408,6 +410,8 @@ public class MockDummyEntity {
                 .streetAddress(company.getName() + " 지번주소")
                 .latitude(latitude)
                 .longitude(longitude)
+
+//                .createdAt(LocalDateTime.now())
                 .build();
     }
 
