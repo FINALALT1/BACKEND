@@ -202,8 +202,8 @@ class PBServiceTest extends MockDummyEntity {
         assertThat(myPageOutDTO.getBranchName()).isEqualTo("미래에셋증권 여의도점");
         assertThat(myPageOutDTO.getMsg()).isEqualTo("한줄메시지..");
         assertThat(myPageOutDTO.getCareer()).isEqualTo(10);
-        assertThat(myPageOutDTO.getSpecialty1()).isEqualTo(PBSpeciality.BOND);
-        assertThat(myPageOutDTO.getSpecialty2()).isNull();
+        assertThat(myPageOutDTO.getSpeciality1()).isEqualTo(PBSpeciality.BOND);
+        assertThat(myPageOutDTO.getSpeciality2()).isNull();
         assertThat(myPageOutDTO.getReserveCount()).isEqualTo(0);
         assertThat(myPageOutDTO.getReviewCount()).isEqualTo(0);
         Mockito.verify(myUserDetails, Mockito.times(1)).getMember();
