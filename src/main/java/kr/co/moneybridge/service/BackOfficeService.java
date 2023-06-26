@@ -13,6 +13,7 @@ import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.backOffice.FullAddress;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
@@ -152,7 +153,8 @@ public class BackOfficeService {
                 reservationRepository.countByProcess(ReservationProcess.APPLY),
                 reservationRepository.countByProcess(ReservationProcess.CONFIRM),
                 reservationRepository.countByProcess(ReservationProcess.COMPLETE),
-                reviewRepository.count());
+                reviewRepository.count(),
+                pbRepository.countByStatus(PBStatus.PENDING));
     }
 
     @MyLog
@@ -194,18 +196,24 @@ public class BackOfficeService {
     }
 
     @MyLog
-    public BackOfficeResponse.MemberOutDTO getMembers(Pageable userPageable, Pageable pbPageable) {
-        Page<User> userPG = userRepository.findAll(userPageable);
-        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pbPageable);
-        List<BackOfficeResponse.UserDTO> userList = userPG.getContent().stream().map(user ->
-                new BackOfficeResponse.UserDTO(user)).collect(Collectors.toList());
-        List<BackOfficeResponse.PBDTO> pbList = pbPG.getContent().stream().map(pb ->
-                new BackOfficeResponse.PBDTO(pb)).collect(Collectors.toList());
-        return new BackOfficeResponse.MemberOutDTO(new BackOfficeResponse.CountDTO(
-                userPG.getContent().size() + pbPG.getContent().size(),
-                userPG.getContent().size(), pbPG.getContent().size()),
-                new PageDTO<>(userList, userPG, User.class),
-                new PageDTO<>(pbList, pbPG, PB.class));
+    public BackOfficeResponse.CountDTO getMembersCount() {
+        return new BackOfficeResponse.CountDTO(
+                userRepository.count(), pbRepository.countByStatus(PBStatus.ACTIVE));
+    }
+
+    @MyLog
+    public PageDTO<BackOfficeResponse.MemberOutDTO> getMembers(String type, Pageable pageable) {
+        if(type.equals("user")){
+            Page<User> userPG = userRepository.findAll(pageable);
+            List<BackOfficeResponse.MemberOutDTO> list = userPG.getContent().stream().map(user ->
+                new BackOfficeResponse.MemberOutDTO(user)).collect(Collectors.toList());
+            return new PageDTO<>(list, userPG, User.class);
+        }
+
+        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pageable);
+        List<BackOfficeResponse.MemberOutDTO> list = pbPG.getContent().stream().map(pb ->
+                new BackOfficeResponse.MemberOutDTO(pb)).collect(Collectors.toList());
+        return new PageDTO<>(list, pbPG, PB.class);
     }
 
     @MyLog
@@ -236,11 +244,12 @@ public class BackOfficeService {
     }
 
     @MyLog
-    public BackOfficeResponse.PBPendingOutDTO getPBPending(Pageable pageable) {
+    public PageDTO<BackOfficeResponse.PBPendingDTO> getPBPending(Pageable pageable) {
         Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.PENDING, pageable);
         List<BackOfficeResponse.PBPendingDTO> list = pbPG.getContent().stream().map(pb ->
-                new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName())).collect(Collectors.toList());
-        return new BackOfficeResponse.PBPendingOutDTO(pbPG.getContent().size(), new PageDTO<>(list, pbPG, PB.class));
+                new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName()))
+                .collect(Collectors.toList());
+        return new PageDTO<>(list, pbPG, PB.class);
     }
 
     @MyLog
