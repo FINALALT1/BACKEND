@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
     private final StyleRepository styleRepository;
+    private final EntityManager em;
 
     @MyLog
     public ReservationResponse.RecentInfoDTO getRecentReservationInfo(Long pbId) {
@@ -405,6 +407,7 @@ public class ReservationService {
                 }
             }
             reservationPS.updateProcess(ReservationProcess.CONFIRM); // 예약 변경시 확정 처리
+            reservationPS.updateCreatedAt(); // isNewApply 등의 변수가 제대로 표시되도록 하기 위해 예약의 상태가 변할 때 createdAt도 변경
         } catch (Exception e) {
             throw new Exception500("예약 변경 실패 : " + e.getMessage());
         }
@@ -456,6 +459,7 @@ public class ReservationService {
         try {
             reservationPS.updateTime(StringToLocalDateTime(confirmDTO.getTime()));
             reservationPS.updateProcess(ReservationProcess.CONFIRM);
+            reservationPS.updateCreatedAt(); // isNewApply 등의 변수가 제대로 표시되도록 하기 위해 예약의 상태가 변할 때 createdAt도 변경
         } catch (Exception e) {
             throw new Exception500("예약 확정 실패 : " + e.getMessage());
         }
@@ -484,6 +488,7 @@ public class ReservationService {
 
         try {
             reservationPS.updateProcess(ReservationProcess.COMPLETE);
+            reservationPS.updateCreatedAt(); // isNewApply 등의 변수가 제대로 표시되도록 하기 위해 예약의 상태가 변할 때 createdAt도 변경
         } catch (Exception e) {
             throw new Exception500("예약 완료 실패 : " + e.getMessage());
         }
