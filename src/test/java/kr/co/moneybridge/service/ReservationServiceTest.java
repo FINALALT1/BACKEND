@@ -443,7 +443,7 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(0L);
 
         // when
-        ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetailByPB(reservation.getId(), pbId);
+        ReservationResponse.DetailByPBDTO detailByPBDTO = reservationService.getReservationDetail(reservation.getId(), pbId);
 
         // then
         assertThat(detailByPBDTO.getUserId()).isEqualTo(1L);
@@ -635,7 +635,7 @@ public class ReservationServiceTest extends MockDummyEntity {
                 .thenReturn(newMockStyle(1L, review, StyleStyle.HONEST));
 
         // when
-        ReservationResponse.ReviewIdDTO reviewIdDTO = reservationService.writeReview(reviewDTO, userId);
+        ReservationResponse.ReviewIdDTO reviewIdDTO = reservationService.addReview(reviewDTO, userId);
 
         // then
         assertThat(reviewIdDTO.getId()).isEqualTo(1L);
