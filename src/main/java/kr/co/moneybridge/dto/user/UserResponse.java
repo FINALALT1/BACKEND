@@ -240,6 +240,26 @@ public class UserResponse {
         }
     }
 
+    @ApiModel(description = "백오피스 로그인시 응답 데이터")
+    @Setter
+    @Getter
+    public static class BackOfficeLoginOutDTO {
+        @ApiModelProperty(example = "1")
+        private Long id;
+
+        @ApiModelProperty(example = "김투자")
+        private String name;
+
+        @ApiModelProperty(example = "YFOEC1AC", value = "인증코드")
+        private String code;
+
+        public BackOfficeLoginOutDTO(Member member, String code) {
+            this.id = member.getId();
+            this.name = member.getName();
+            this.code = code;
+        }
+    }
+
     @ApiModel(description = "로그인시 응답 데이터")
     @Setter
     @Getter
@@ -250,17 +270,13 @@ public class UserResponse {
         @ApiModelProperty(example = "김투자")
         private String name;
 
-        @ApiModelProperty(example = "J46L4SBJ")
-        private String code;
+        @ApiModelProperty(example = "false", value = "관리자 여부")
+        private Boolean isAdmin;
 
-        public LoginOutDTO(Member member) {
+        public LoginOutDTO(Member member, Boolean isAdmin) {
             this.id = member.getId();
             this.name = member.getName();
-        }
-        public LoginOutDTO(Member member, String code) {
-            this.id = member.getId();
-            this.name = member.getName();
-            this.code = code;
+            this.isAdmin = isAdmin;
         }
     }
 }

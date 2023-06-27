@@ -193,11 +193,26 @@ public class UserRequest {
         }
     }
 
+    @ApiModel(description = "백오피스 로그인 요청 데이터")
+    @Setter
+    @Getter
+    public static class BackOfficeLoginInDTO {
+        @ApiModelProperty(example = "investor2@naver.com")
+        @NotEmpty
+        @Email(message = "이메일 형식으로 작성해주세요")
+        private String email;
+
+        @ApiModelProperty(example = "kang1234")
+        @NotEmpty
+        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
+        private String password;
+    }
+
     @ApiModel(description = "로그인시 요청 데이터")
     @Setter
     @Getter
     public static class LoginInDTO {
-        @ApiModelProperty(example = "USER")
+        @ApiModelProperty(example = "USER", value = "USER과 PB만 가능. 관리자도 USER로 해야함")
         @NotNull
         private Role role;
 
