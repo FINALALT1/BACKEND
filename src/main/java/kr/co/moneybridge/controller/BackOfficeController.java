@@ -160,8 +160,8 @@ public class BackOfficeController {
     @MyLog
     @SwaggerResponses.AddNotice
     @PostMapping("/admin/notice")
-    public ResponseDTO addNotice(@RequestBody @Valid BackOfficeRequest.NoticeInDTO noticeInDTO, Errors errors) {
-        backOfficeService.addNotice(noticeInDTO);
+    public ResponseDTO addNotice(@RequestBody @Valid BackOfficeRequest.AddNoticeDTO addNoticeDTO, Errors errors) {
+        backOfficeService.addNotice(addNoticeDTO);
         return new ResponseDTO<>();
     }
 
@@ -199,8 +199,8 @@ public class BackOfficeController {
     @MyLog
     @SwaggerResponses.AddFAQ
     @PostMapping("/admin/faq")
-    public ResponseDTO addFAQ(@RequestBody @Valid BackOfficeRequest.FAQInDTO faqInDTO, Errors errors) {
-        backOfficeService.addFAQ(faqInDTO);
+    public ResponseDTO addFAQ(@RequestBody @Valid BackOfficeRequest.AddFAQDTO addFAQDTO, Errors errors) {
+        backOfficeService.addFAQ(addFAQDTO);
         return new ResponseDTO<>();
     }
 

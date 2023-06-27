@@ -13,9 +13,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class BackOfficeRequest {
+    @ApiModel
     @Getter
     @Setter
-    public static class FAQInDTO {
+    public static class AddFAQDTO {
         @ApiModelProperty(example = "회원", value = "유형")
         @NotEmpty
         private String label;
@@ -37,6 +38,7 @@ public class BackOfficeRequest {
         }
     }
 
+    @ApiModel
     @Getter
     @Setter
     public static class UpdateFAQDTO {
@@ -53,9 +55,10 @@ public class BackOfficeRequest {
         private String content;
     }
 
+    @ApiModel
     @Getter
     @Setter
-    public static class NoticeInDTO {
+    public static class AddNoticeDTO {
         @ApiModelProperty(example = "서버 점검 안내", value = "제목")
         @NotEmpty
         private String title;
@@ -85,6 +88,7 @@ public class BackOfficeRequest {
         private String content;
     }
 
+    @ApiModel
     @Getter
     @Setter
     public static class BranchInDTO {

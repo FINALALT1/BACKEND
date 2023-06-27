@@ -242,9 +242,9 @@ public class BackOfficeService {
 
     @MyLog
     @Transactional
-    public void addNotice(BackOfficeRequest.NoticeInDTO noticeInDTO) {
+    public void addNotice(BackOfficeRequest.AddNoticeDTO addNoticeDTO) {
         try {
-            noticeRepository.save(noticeInDTO.toEntity());
+            noticeRepository.save(addNoticeDTO.toEntity());
         } catch (Exception e) {
             throw new Exception500("공지사항 저장 실패 : " + e.getMessage());
         }
@@ -289,9 +289,9 @@ public class BackOfficeService {
 
     @MyLog
     @Transactional
-    public void addFAQ(BackOfficeRequest.FAQInDTO faqInDTO) {
+    public void addFAQ(BackOfficeRequest.AddFAQDTO addFAQDTO) {
         try {
-            frequentQuestionRepository.save(faqInDTO.toEntity());
+            frequentQuestionRepository.save(addFAQDTO.toEntity());
         } catch (Exception e) {
             throw new Exception500("FAQ 저장 실패 : " + e.getMessage());
         }
