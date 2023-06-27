@@ -26,12 +26,15 @@ public class UserResponse {
         private String name;
         @ApiModelProperty(example = "AGGRESSIVE", value = "투자자는 항상 null")
         private UserPropensity propensity;
+        @ApiModelProperty(example = "false", value = "관리자 여부")
+        private Boolean isAdmin;
 
         public AccountOutDTO(Member member) {
             this.id = member.getId();
             this.role = member.getRole() == Role.PB ? Role.PB : Role.USER;
             this.name = member.getName();
             this.propensity = member.getPropensity();
+            this.isAdmin = member.getRole() == Role.ADMIN ? true : false;
         }
     }
 
