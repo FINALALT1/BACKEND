@@ -20,7 +20,7 @@ public class MyJwtProvider {
     private final RedisUtil redisUtil;
     private static final String SUBJECT = "moneybridge";
     public static final Long EXP_ACCESS = 1000 * 60 * 60 * 12L; // 12시간
-    protected static final Long EXP_REFRESH = 1000 * 60 * 60 * 24 * 14L; // 14일
+    public static final Long EXP_REFRESH = 1000 * 60 * 60 * 24 * 14L; // 14일
     public static final String TOKEN_PREFIX = "Bearer "; // 스페이스 필요함
     public static final String HEADER_ACCESS = "Authorization";
     public static String SECRET_ACCESS;
