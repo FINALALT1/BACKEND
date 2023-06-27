@@ -529,7 +529,7 @@ public class SwaggerResponses {
             "}\n<br><br>" +
             "<b>성공시, 응답 데이터</b>\n<br>" +
             "Authorization: Bearer <JWT 토큰>&nbsp;<font color=\"#C0C0C0\">// 액세스 토큰</font>\n" +
-            "Set-Cookie: refreshToken=<JWT 토큰>; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
+            "Set-Cookie: refreshToken=<JWT 토큰>; Max-Age=1209600000; SameSite=None; Secure; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
             "{\n" +
             "&nbsp;&nbsp;\"status\": 200,\n" +
             "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
@@ -545,15 +545,42 @@ public class SwaggerResponses {
     public @interface Reissue {
     }
 
-    @ApiOperation(value = "로그인", notes = "<b>성공시, 응답 데이터</b>\n<br>" +
+    @ApiOperation(value = "백오피스 로그인", notes = "<b>성공시, 응답 데이터</b>\n<br>" +
             "Authorization: Bearer <JWT 토큰>&nbsp;<font color=\"#C0C0C0\">// 액세스 토큰</font>\n" +
-            "Set-Cookie: refreshToken=<JWT 토큰>; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
+            "Set-Cookie: refreshToken=<JWT 토큰>; Max-Age=1209600000; SameSite=None; Secure; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
             "{\n" +
             "&nbsp;&nbsp;\"status\": 200,\n" +
             "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
             "&nbsp;&nbsp;\"data\": {\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,&nbsp;<font color=\"#C0C0C0\">// 해당 투자자의 id</font>\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;\"code\": \"YFOEC1AC\"&nbsp;<font color=\"#C0C0C0\">// 관리자가 아닐때는 null</font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,&nbsp;<font color=\"#C0C0C0\">// 해당 관리자의 id</font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"name\": \"관리자\",&nbsp;<font color=\"#C0C0C0\">// 이름 </font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"code\": \"YFOEC1AC\"&nbsp;<font color=\"#C0C0C0\">// 인증코드</font>\n" +
+            "&nbsp;&nbsp;}\n" +
+            "}")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface BackOfficeLogin {
+    }
+
+    @ApiOperation(value = "로그인", notes = "<b>성공시, 응답 데이터</b>\n<br>" +
+            "Authorization: Bearer <JWT 토큰>&nbsp;<font color=\"#C0C0C0\">// 액세스 토큰</font>\n" +
+            "Set-Cookie: refreshToken=<JWT 토큰>; Max-Age=1209600000; SameSite=None; Secure; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
+            "{\n" +
+            "&nbsp;&nbsp;\"status\": 200,\n" +
+            "&nbsp;&nbsp;\"msg\": \"ok\",\n" +
+            "&nbsp;&nbsp;\"data\": {\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 1,&nbsp;<font color=\"#C0C0C0\">// 해당 계정의 id</font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"name\": \"김투자\",&nbsp;<font color=\"#C0C0C0\">// 이름 </font>\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;\"isAdmin\": false &nbsp;<font color=\"#C0C0C0\">// 관리자 여부</font>\n" +
             "&nbsp;&nbsp;}\n" +
             "}")
     @ApiResponses({
@@ -570,7 +597,7 @@ public class SwaggerResponses {
 
     @ApiOperation(value = "투자자 회원가입", notes = "<b>성공시, 응답데이터</b>\n<br>" +
             "Authorization: Bearer <JWT 토큰>&nbsp;<font color=\"#C0C0C0\">// 액세스 토큰</font>\n" +
-            "Set-Cookie: refreshToken=<JWT 토큰>; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
+            "Set-Cookie: refreshToken=<JWT 토큰>; Max-Age=1209600000; SameSite=None; Secure; HttpOnly; Path=/&nbsp;<font color=\"#C0C0C0\">// 리프레시 토큰</font>\n<br>" +
             "{\n" +
             "&nbsp;&nbsp;\"status\": 200,\n" +
             "&nbsp;&nbsp;\"msg\": \"ok\",\n" +

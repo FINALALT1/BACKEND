@@ -155,7 +155,7 @@ public class UserController {
 
     // 백오피스 로그인
     @MyLog
-    @SwaggerResponses.Login
+    @SwaggerResponses.BackOfficeLogin
     @PostMapping("/backoffice/login")
     public ResponseEntity<?> backofficeLogin(@RequestBody @Valid UserRequest.BackOfficeLoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
         UserResponse.BackOfficeLoginOutDTO loginOutDTO = userService.backofficeLogin(loginInDTO);
