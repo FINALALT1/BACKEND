@@ -56,9 +56,8 @@ public class ReservationRequest {
     @Getter
     @Setter
     public static class UpdateDTO {
-        @ApiModelProperty(example = "2023-06-01T11:00:00")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-        private LocalDateTime time;
+        @ApiModelProperty(example = "2023년 6월 1일 오전 9시 20분")
+        private String time;
 
         @ApiModelProperty(example = "VISIT")
         private ReservationType type;

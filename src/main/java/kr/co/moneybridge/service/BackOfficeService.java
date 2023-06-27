@@ -1,6 +1,5 @@
 package kr.co.moneybridge.service;
 
-import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
@@ -14,12 +13,16 @@ import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.backOffice.FullAddress;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
+import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
 import kr.co.moneybridge.model.backoffice.Notice;
 import kr.co.moneybridge.model.backoffice.NoticeRepository;
-import kr.co.moneybridge.model.board.*;
+import kr.co.moneybridge.model.board.BoardBookmarkRepository;
+import kr.co.moneybridge.model.board.BoardRepository;
+import kr.co.moneybridge.model.board.ReReplyRepository;
+import kr.co.moneybridge.model.board.ReplyRepository;
 import kr.co.moneybridge.model.pb.*;
 import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
@@ -64,7 +67,7 @@ public class BackOfficeService {
     @MyLog
     @Transactional
     public void addFAQ(BackOfficeRequest.FAQInDTO faqInDTO) {
-        try{
+        try {
             frequentQuestionRepository.save(faqInDTO.toEntity());
         } catch (Exception e) {
             throw new Exception500("FAQ 저장 실패 : " + e);
@@ -74,7 +77,7 @@ public class BackOfficeService {
     @MyLog
     @Transactional
     public void addNotice(BackOfficeRequest.NoticeInDTO noticeInDTO) {
-        try{
+        try {
             noticeRepository.save(noticeInDTO.toEntity());
         } catch (Exception e) {
             throw new Exception500("공지사항 저장 실패 : " + e);
@@ -90,7 +93,7 @@ public class BackOfficeService {
 
         try {
             // 온라인으로만 운영되는 증권사의 경우
-            if(branchInDTO.getAddress() == null || branchInDTO.getAddress().isEmpty()){
+            if (branchInDTO.getAddress() == null || branchInDTO.getAddress().isEmpty()) {
                 branchRepository.save(branchInDTO.toDefaultEntity(company));
                 return;
             }
@@ -138,8 +141,8 @@ public class BackOfficeService {
         boardRepository.deleteById(id);
     }
 
-    private void deleteThumbnail(Optional<String> thumbnail){
-        if(thumbnail.isPresent()){
+    private void deleteThumbnail(Optional<String> thumbnail) {
+        if (thumbnail.isPresent()) {
             s3Util.delete(thumbnail.get());
         }
     }
@@ -150,7 +153,8 @@ public class BackOfficeService {
                 reservationRepository.countByProcess(ReservationProcess.APPLY),
                 reservationRepository.countByProcess(ReservationProcess.CONFIRM),
                 reservationRepository.countByProcess(ReservationProcess.COMPLETE),
-                reviewRepository.count());
+                reviewRepository.count(),
+                pbRepository.countByStatus(PBStatus.PENDING));
     }
 
     @MyLog
@@ -158,15 +162,16 @@ public class BackOfficeService {
     public PageDTO<BackOfficeResponse.ReservationTotalDTO> getReservations(Pageable pageable) {
         Page<Reservation> reservationPG = reservationRepository.findAll(pageable);
         List<BackOfficeResponse.ReservationTotalDTO> list = reservationPG.getContent().stream().map(
-                reservation-> {
+                reservation -> {
                     BackOfficeResponse.ReviewTotalDTO reviewTotalDTO = null;
                     Optional<Review> reviewOP = reviewRepository.findByReservationId(reservation.getId());
-                    if(!reviewOP.isEmpty()){
+                    if (!reviewOP.isEmpty()) {
                         reviewTotalDTO =
                                 new BackOfficeResponse.ReviewTotalDTO(reviewOP.get(), styleRepository
-                                .findAllByReviewId(reviewOP.get().getId()).stream().map(style ->
-                                        new ReservationResponse.StyleDTO(style.getStyle()))
-                                .collect(Collectors.toList()));}
+                                        .findAllByReviewId(reviewOP.get().getId()).stream().map(style ->
+                                                new ReservationResponse.StyleDTO(style.getStyle()))
+                                        .collect(Collectors.toList()));
+                    }
                     return new BackOfficeResponse.ReservationTotalDTO(reservation,
                             new BackOfficeResponse.UserDTO(reservation.getUser()),
                             new BackOfficeResponse.PBDTO(reservation.getPb()),
@@ -191,18 +196,24 @@ public class BackOfficeService {
     }
 
     @MyLog
-    public BackOfficeResponse.MemberOutDTO getMembers(Pageable userPageable, Pageable pbPageable) {
-        Page<User> userPG = userRepository.findAll(userPageable);
-        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pbPageable);
-        List<BackOfficeResponse.UserDTO> userList = userPG.getContent().stream().map(user ->
-                new BackOfficeResponse.UserDTO(user)).collect(Collectors.toList());
-        List<BackOfficeResponse.PBDTO> pbList = pbPG.getContent().stream().map(pb ->
-                new BackOfficeResponse.PBDTO(pb)).collect(Collectors.toList());
-        return new BackOfficeResponse.MemberOutDTO(new BackOfficeResponse.CountDTO(
-                userPG.getContent().size() + pbPG.getContent().size(),
-                userPG.getContent().size(), pbPG.getContent().size()),
-                new PageDTO<>(userList, userPG, User.class),
-                new PageDTO<>(pbList, pbPG, PB.class));
+    public BackOfficeResponse.CountDTO getMembersCount() {
+        return new BackOfficeResponse.CountDTO(
+                userRepository.count(), pbRepository.countByStatus(PBStatus.ACTIVE));
+    }
+
+    @MyLog
+    public PageDTO<BackOfficeResponse.MemberOutDTO> getMembers(String type, Pageable pageable) {
+        if(type.equals("user")){
+            Page<User> userPG = userRepository.findAll(pageable);
+            List<BackOfficeResponse.MemberOutDTO> list = userPG.getContent().stream().map(user ->
+                new BackOfficeResponse.MemberOutDTO(user)).collect(Collectors.toList());
+            return new PageDTO<>(list, userPG, User.class);
+        }
+
+        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pageable);
+        List<BackOfficeResponse.MemberOutDTO> list = pbPG.getContent().stream().map(pb ->
+                new BackOfficeResponse.MemberOutDTO(pb)).collect(Collectors.toList());
+        return new PageDTO<>(list, pbPG, PB.class);
     }
 
     @MyLog
@@ -216,7 +227,7 @@ public class BackOfficeService {
         }
         String subject = myMsgUtil.getSubjectApprove();
         String msg = myMsgUtil.getMsgApprove();
-        if(approve == false) {
+        if (approve == false) {
             myMemberUtil.deleteById(pbId, Role.PB); // 탈퇴와 동일하게 삭제
             subject = myMsgUtil.getSubjectReject();
             msg = myMsgUtil.getMsgReject();
@@ -224,20 +235,21 @@ public class BackOfficeService {
             pbPS.approved();
         }
         // 이메일 알림
-        try{
+        try {
             MimeMessage message = myMsgUtil.createMessage(pbPS.getEmail(), subject, msg);
             javaMailSender.send(message);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception500("이메일 알림 전송 실패 " + e.getMessage());
         }
     }
 
     @MyLog
-    public BackOfficeResponse.PBPendingOutDTO getPBPending(Pageable pageable) {
+    public PageDTO<BackOfficeResponse.PBPendingDTO> getPBPending(Pageable pageable) {
         Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.PENDING, pageable);
         List<BackOfficeResponse.PBPendingDTO> list = pbPG.getContent().stream().map(pb ->
-                new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName())).collect(Collectors.toList());
-        return new BackOfficeResponse.PBPendingOutDTO(pbPG.getContent().size(), new PageDTO<>(list, pbPG, PB.class));
+                new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName()))
+                .collect(Collectors.toList());
+        return new PageDTO<>(list, pbPG, PB.class);
     }
 
     @MyLog
@@ -254,5 +266,34 @@ public class BackOfficeService {
         List<BackOfficeResponse.FAQDTO> list = faqPG.getContent().stream().map(faq ->
                 new BackOfficeResponse.FAQDTO(faq)).collect(Collectors.toList());
         return new PageDTO<>(list, faqPG, FrequentQuestion.class);
+    }
+
+    @MyLog
+    @Transactional
+    public void updateNotice(Long noticeId, BackOfficeRequest.UpdateNoticeDTO updateNoticeDTO) {
+        Notice noticePS = noticeRepository.findById(noticeId).orElseThrow(
+                () -> new Exception404("존재하지 않는 공지사항입니다.")
+        );
+
+        try {
+            noticePS.updateTitle(updateNoticeDTO.getTitle());
+            noticePS.updateContent(updateNoticeDTO.getContent());
+        } catch (Exception e) {
+            throw new Exception500("공지사항 수정 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void deleteNotice(Long noticeId) {
+        noticeRepository.findById(noticeId).orElseThrow(
+                () -> new Exception404("존재하지 않는 공지사항입니다.")
+        );
+
+        try {
+            noticeRepository.deleteById(noticeId);
+        } catch (Exception e) {
+            throw new Exception500("공지사항 삭제 실패 : " + e.getMessage());
+        }
     }
 }

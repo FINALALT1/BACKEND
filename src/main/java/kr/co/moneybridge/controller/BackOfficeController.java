@@ -1,13 +1,13 @@
 package kr.co.moneybridge.controller;
 
+import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
-import kr.co.moneybridge.core.auth.session.MyUserDetails;
+import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
-import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.service.BackOfficeService;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +78,7 @@ public class BackOfficeController {
         return new ResponseDTO<>();
     }
 
-    // 상담 내역의 각 건수 가져오기
+    // 상담 내역의 각 건수 및 승인 대기 중인 PB 수 가져오기
     @MyLog
     @SwaggerResponses.GetReservationsCount
     @GetMapping("/admin/reservations/count")
@@ -124,16 +124,25 @@ public class BackOfficeController {
         return new ResponseDTO<>();
     }
 
-    // 회원 관리 페이지 전체 가져오기
+    // 회원수 가져오기
+    @MyLog
+    @SwaggerResponses.GetMembersCount
+    @GetMapping("/admin/members/count")
+    public ResponseDTO<BackOfficeResponse.CountDTO> getMembersCount() {
+        BackOfficeResponse.CountDTO countDTO = backOfficeService.getMembersCount();
+        return new ResponseDTO<>(countDTO);
+    }
+
+    // 회원 리스트 가져오기
     @MyLog
     @SwaggerResponses.GetMembers
     @GetMapping("/admin/members")
-    public ResponseDTO<BackOfficeResponse.MemberOutDTO> getMembers(@RequestParam(defaultValue = "0") int userPage,
-                                                                   @RequestParam(defaultValue = "0") int pbPage) {
-        Pageable userPageable = PageRequest.of(userPage, 10, Sort.by(Sort.Direction.ASC, "id"));
-        Pageable pbPageable = PageRequest.of(pbPage, 10, Sort.by(Sort.Direction.ASC, "id"));
-        BackOfficeResponse.MemberOutDTO memberOutDTO = backOfficeService.getMembers(userPageable, pbPageable);
-        return new ResponseDTO<>(memberOutDTO);
+    public ResponseDTO<PageDTO<BackOfficeResponse.MemberOutDTO>> getMembers(@RequestParam(defaultValue = "user") String type,
+                                                                   @RequestParam(defaultValue = "0") int page) {
+        if(!type.equals("user") && !type.equals("pb")) throw new Exception400("type", "user과 pb만 가능합니다");
+        Pageable pbPageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
+        PageDTO<BackOfficeResponse.MemberOutDTO> pageDTO = backOfficeService.getMembers(type, pbPageable);
+        return new ResponseDTO<>(pageDTO);
     }
 
     // 해당 PB 승인/승인 거부
@@ -145,14 +154,14 @@ public class BackOfficeController {
         return new ResponseDTO<>();
     }
 
-    // PB 회원 가입 요청 승인 페이지 전체 가져오기
+    // PB 회원 가입 승인 대기 리스트 가져오기
     @MyLog
     @SwaggerResponses.GetPBPending
     @GetMapping("/admin/pbs")
-    public ResponseDTO<BackOfficeResponse.PBPendingOutDTO> getPBPending(@RequestParam(defaultValue = "0") int page) {
+    public ResponseDTO<PageDTO<BackOfficeResponse.PBPendingDTO>> getPBPending(@RequestParam(defaultValue = "0") int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
-        BackOfficeResponse.PBPendingOutDTO pbPendingPageDTO = backOfficeService.getPBPending(pageable);
-        return new ResponseDTO<>(pbPendingPageDTO);
+        PageDTO<BackOfficeResponse.PBPendingDTO> pageDTO = backOfficeService.getPBPending(pageable);
+        return new ResponseDTO<>(pageDTO);
     }
 
     // 공지사항 목록 가져오기
@@ -173,5 +182,25 @@ public class BackOfficeController {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
         PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
         return new ResponseDTO<>(faqDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "공지사항 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @PatchMapping("/admin/notice/{id}")
+    public ResponseDTO updateNotice(@PathVariable Long id, @RequestBody @Valid BackOfficeRequest.UpdateNoticeDTO updateNoticeDTO, Errors errors) {
+        backOfficeService.updateNotice(id, updateNoticeDTO);
+
+        return new ResponseDTO();
+    }
+
+    @MyLog
+    @ApiOperation(value = "공지사항 삭제하기")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/notice/{id}")
+    public ResponseDTO deleteNotice(@PathVariable Long id) {
+        backOfficeService.deleteNotice(id);
+
+        return new ResponseDTO();
     }
 }

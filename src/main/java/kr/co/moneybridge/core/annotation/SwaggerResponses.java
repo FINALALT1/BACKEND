@@ -180,7 +180,7 @@ public class SwaggerResponses {
     public @interface GetAccount {
     }
 
-    @ApiOperation(value = "상담 내역의 각 건수 가져오기")
+    @ApiOperation(value = "상담 내역의 각 건수 및 승인 대기 중인 PB 수 가져오기")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
@@ -276,7 +276,24 @@ public class SwaggerResponses {
     public @interface AuthorizeAdmin {
     }
 
-    @ApiOperation(value = "회원 관리 페이지 전체 가져오기")
+    @ApiOperation(value = "회원수 가져오기")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetMembersCount {
+    }
+
+    @ApiOperation(value = "회원 리스트 가져오기")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
@@ -288,8 +305,8 @@ public class SwaggerResponses {
                     message = INTERNAL_SERVER_ERROR)
     })
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userPage", example = "0", value = "userPage의 curPage 번호"),
-            @ApiImplicitParam(name = "pbPage", example = "0", value = "pbPage의 curPage 번호")})
+            @ApiImplicitParam(name = "type", example = "user", value = "user(디폴트) 또는 pb"),
+            @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -318,7 +335,7 @@ public class SwaggerResponses {
     public @interface ApprovePB {
     }
 
-    @ApiOperation(value = "PB 회원 가입 요청 승인 페이지 전체 가져오기")
+    @ApiOperation(value = "PB 회원 가입 승인 대기 리스트 가져오기")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
