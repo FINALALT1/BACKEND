@@ -167,7 +167,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
                 new BackOfficeResponse.PBDTO(reservation.getPb()),
                 new BackOfficeResponse.ReviewTotalDTO(review,
                         Arrays.asList(new ReservationResponse.StyleDTO(StyleStyle.FAST)))));
-        Page<Reservation> reservationPG =  new PageImpl<>(Arrays.asList(reservation));
+        Page<Reservation> reservationPG = new PageImpl<>(Arrays.asList(reservation));
         PageDTO<BackOfficeResponse.ReservationTotalDTO> pageDTO = new PageDTO<>(reviewList, reservationPG, Reservation.class);
 
         // stub
@@ -270,8 +270,8 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     public void getReservations_test() throws Exception {
         // given
         User user = newMockUserADMIN(1L, "관리자");
-        List userList = Arrays.asList( new BackOfficeResponse.UserDTO(user));
-        Page<User> userPG =  new PageImpl<>(Arrays.asList(user));
+        List userList = Arrays.asList(new BackOfficeResponse.UserDTO(user));
+        Page<User> userPG = new PageImpl<>(Arrays.asList(user));
 
         // stub
         Mockito.when(backOfficeService.getMembers(any(), any())).thenReturn(new PageDTO<>(userList, userPG, User.class));
@@ -326,7 +326,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         Branch branch = newMockBranch(1L, company, 1);
         PB pb = newMockPB(1L, "pblee", branch);
         List<BackOfficeResponse.PBPendingDTO> list = Arrays.asList(new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName()));
-        Page<PB> pbPG =  new PageImpl<>(Arrays.asList(pb));
+        Page<PB> pbPG = new PageImpl<>(Arrays.asList(pb));
         PageDTO<BackOfficeResponse.PBPendingDTO> pageDTO = new PageDTO<>(list, pbPG, PB.class);
         // stub
         Mockito.when(backOfficeService.getPBPending(any())).thenReturn(pageDTO);
@@ -450,10 +450,57 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         Long noticeId = 1L;
 
         // stub
-        Mockito.doNothing().when(backOfficeService).updateNotice(anyLong(), any());
+        Mockito.doNothing().when(backOfficeService).deleteNotice(anyLong());
 
         // when
         ResultActions resultActions = mvc.perform(delete("/admin/notice/{id}", noticeId));
+
+        // then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @WithMockAdmin
+    @Test
+    public void update_faq_test() throws Exception {
+        // given
+        Long faqId = 1L;
+        BackOfficeRequest.UpdateFAQDTO updateFAQDTO = new BackOfficeRequest.UpdateFAQDTO();
+        updateFAQDTO.setLabel("라벨");
+        updateFAQDTO.setTitle("제목 수정");
+        updateFAQDTO.setContent("내용 수정");
+        String requestBody = om.writeValueAsString(updateFAQDTO);
+
+        // stub
+        Mockito.doNothing().when(backOfficeService).updateFAQ(anyLong(), any());
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                patch("/admin/faq/{id}", faqId)
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @WithMockAdmin
+    @Test
+    public void delete_faq_test() throws Exception {
+        // given
+        Long faqId = 1L;
+
+        // stub
+        Mockito.doNothing().when(backOfficeService).deleteFAQ(anyLong());
+
+        // when
+        ResultActions resultActions = mvc.perform(delete("/admin/faq/{id}", faqId));
 
         // then
         resultActions.andExpect(status().isOk());
