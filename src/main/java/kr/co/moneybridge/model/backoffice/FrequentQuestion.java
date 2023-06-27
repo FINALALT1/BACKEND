@@ -39,4 +39,16 @@ public class FrequentQuestion {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateLabel(String label) {
+        this.label = label;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

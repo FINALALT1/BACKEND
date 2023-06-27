@@ -4,7 +4,6 @@ import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.dto.PageDTO;
-import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
@@ -497,5 +496,44 @@ class BackOfficeServiceTest extends MockDummyEntity {
 
         // then
         Mockito.verify(noticeRepository, Mockito.times(1)).deleteById(noticeId);
+    }
+
+//    @Test
+//    void update_faq_test() {
+//        // given
+//        Long faqId = 1L;
+//        FrequentQuestion faq = newMockFrequentQuestion(faqId);
+//        BackOfficeRequest.UpdateFAQDTO updateFAQDTO = new BackOfficeRequest.UpdateFAQDTO();
+//        updateFAQDTO.setLabel("라벨 수정");
+//        updateFAQDTO.setTitle("제목 수정");
+//        updateFAQDTO.setContent("내용 수정");
+//
+//        // stub
+//        Mockito.when(frequentQuestionRepository.findById(anyLong())).thenReturn(Optional.of(faq));
+//
+//        // when
+//        FrequentQuestion response = backOfficeService.updateFAQ(faqId, updateFAQDTO);
+//
+//        // then
+//        assertThat(response.getLabel()).isEqualTo("라벨 수정");
+//        assertThat(response.getTitle()).isEqualTo("제목 수정");
+//        assertThat(response.getContent()).isEqualTo("내용 수정");
+//    }
+
+    @Test
+    void delete_faq_test() {
+        // given
+        Long faqId = 1L;
+        FrequentQuestion faq = newMockFrequentQuestion(faqId);
+
+        // stub
+        Mockito.when(frequentQuestionRepository.findById(anyLong())).thenReturn(Optional.of(faq));
+        Mockito.doNothing().when(frequentQuestionRepository).deleteById(anyLong());
+
+        // when
+        backOfficeService.deleteFAQ(faqId);
+
+        // then
+        Mockito.verify(frequentQuestionRepository, Mockito.times(1)).deleteById(faqId);
     }
 }
