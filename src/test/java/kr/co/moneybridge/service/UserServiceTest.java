@@ -555,7 +555,7 @@ public class UserServiceTest extends MockDummyEntity {
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
 
         // then
-        Assertions.assertThat(loginOutDTO.getCode()).isNull();
+        Assertions.assertThat(loginOutDTO.getIsAdmin()).isFalse();
     }
 
     @Test
@@ -569,14 +569,12 @@ public class UserServiceTest extends MockDummyEntity {
         // stub 1
         User user = newMockUserADMIN(1L,"강투자");
         when(myMemberUtil.findByEmail(any(), any())).thenReturn(user);
-        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
-        doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
 
         // then
-        Assertions.assertThat(loginOutDTO.getCode()).isNotNull();
+        Assertions.assertThat(loginOutDTO.getIsAdmin()).isTrue();
     }
 
     @Test

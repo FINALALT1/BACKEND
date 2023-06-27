@@ -433,7 +433,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
 
         // stub
         User mockUser = newMockUser(1L,"강투자");
-        UserResponse.LoginOutDTO loginOutDTO = new UserResponse.LoginOutDTO(mockUser);
+        UserResponse.LoginOutDTO loginOutDTO = new UserResponse.LoginOutDTO(mockUser, false);
         Mockito.when(userService.login(any())).thenReturn(loginOutDTO);
         Pair<String, String> tokens = Pair.of("accessToken", "refreshToken");
         Mockito.when(userService.issue(any(), any(), any())).thenReturn(tokens);
@@ -444,7 +444,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.code").isEmpty());
+                .andExpect(jsonPath("$.data.isAdmin").value("false"));
 
         // then
         MvcResult mvcResult = resultActions.andReturn();
@@ -466,7 +466,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
 
         // stub
         User mockUser = newMockUserADMIN(1L,"강투자");
-        UserResponse.LoginOutDTO loginOutDTO = new UserResponse.LoginOutDTO(mockUser, "J46L4SBJ");
+        UserResponse.LoginOutDTO loginOutDTO = new UserResponse.LoginOutDTO(mockUser, true);
         Mockito.when(userService.login(any())).thenReturn(loginOutDTO);
         Pair<String, String> tokens = Pair.of("accessToken", "refreshToken");
         Mockito.when(userService.issue(any(), any(), any())).thenReturn(tokens);
@@ -477,7 +477,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.code").value("J46L4SBJ"));
+                .andExpect(jsonPath("$.data.isAdmin").value("true"));
 
         // then
         MvcResult mvcResult = resultActions.andReturn();
