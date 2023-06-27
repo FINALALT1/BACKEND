@@ -1,25 +1,36 @@
 package kr.co.moneybridge.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;
+import kr.co.moneybridge.dto.board.ReplyRequest;
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.board.BoardRepository;
 import kr.co.moneybridge.model.pb.*;
+import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
 
+import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("컨텐츠 리스트 관련 API")
 @ActiveProfiles("test")
@@ -43,7 +54,8 @@ public class BoardControllerTest {
     private BranchRepository branchRepository;
     @Autowired
     private PBRepository pbRepository;
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private BoardRepository boardRepository;
 
@@ -52,6 +64,7 @@ public class BoardControllerTest {
         Company companyPS = companyRepository.save(dummy.newCompany("미래에셋증권"));
         Branch branchPS = branchRepository.save(dummy.newBranch(companyPS, 1));
         PB pbPS = pbRepository.save(dummy.newPB("이피비", branchPS));
+        User user = userRepository.save(dummy.newUser("김테스트"));
         Board boardPS1 = boardRepository.save(dummy.newBoard("제목1입니다", pbPS));
         Board boardPS2 = boardRepository.save(dummy.newTempBoard("임시 제목1입니다", pbPS));
         Board boardPS3 = boardRepository.save(dummy.newBoard("컨텐츠 타이들입니다", pbPS));
@@ -133,5 +146,63 @@ public class BoardControllerTest {
         resultActions.andExpect(jsonPath("$.data.list[1].title").value("컨텐츠 타이들입니다"));
         resultActions.andExpect(jsonPath("$.data.list[0].career").value(10));
         resultActions.andExpect(jsonPath("$.data.list[1].pbName").value("이피비"));
+    }
+
+    @DisplayName("컨텐츠 상세 가져오기(로그인)")
+    @WithUserDetails(value = "PB-이피비@nate.com",setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getBoardDetail() throws Exception {
+
+        //given
+
+        //when
+        ResultActions resultActions = mvc.perform(get("/auth/board/1"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        //then
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.data.id").value(1));
+        resultActions.andExpect(jsonPath("$.data.thumbnail").value("thumbnail.png"));
+        resultActions.andExpect(jsonPath("$.data.tag1").value("시장정보"));
+        resultActions.andExpect(jsonPath("$.data.tag2").value("쉽게읽혀요"));
+        resultActions.andExpect(jsonPath("$.data.title").value("제목1입니다"));
+    }
+
+    @DisplayName("컨텐츠 북마크하기")
+    @WithUserDetails(value = "PB-이피비@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void addBoardBookmark() throws Exception {
+        //given
+        Long boardId = 1L;
+
+        //when
+        ResultActions resultActions = mvc.perform(post("/auth/bookmark/board/{id}", boardId));
+
+        //then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+    }
+
+    @DisplayName("컨텐츠 댓글달기")
+    @WithUserDetails(value = "PB-이피비@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void postReply() throws Exception {
+        //given
+        Long boardId = 1L;
+        ReplyRequest.ReplyInDTO replyInDTO = new ReplyRequest.ReplyInDTO();
+        replyInDTO.setContent("This is a test reply.");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String replyJson = objectMapper.writeValueAsString(replyInDTO);
+
+        //when
+        ResultActions resultActions = mvc.perform(post("/auth/board/{id}/reply", boardId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(replyJson));
+
+        //then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
     }
 }
