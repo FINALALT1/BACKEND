@@ -13,7 +13,6 @@ import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.backOffice.FullAddress;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
-import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
@@ -63,26 +62,6 @@ public class BackOfficeService {
     private final CompanyRepository companyRepository;
     private final S3Util s3Util;
     private final GeoCodingUtil geoCodingUtil;
-
-    @MyLog
-    @Transactional
-    public void addFAQ(BackOfficeRequest.FAQInDTO faqInDTO) {
-        try {
-            frequentQuestionRepository.save(faqInDTO.toEntity());
-        } catch (Exception e) {
-            throw new Exception500("FAQ 저장 실패 : " + e);
-        }
-    }
-
-    @MyLog
-    @Transactional
-    public void addNotice(BackOfficeRequest.NoticeInDTO noticeInDTO) {
-        try {
-            noticeRepository.save(noticeInDTO.toEntity());
-        } catch (Exception e) {
-            throw new Exception500("공지사항 저장 실패 : " + e);
-        }
-    }
 
     @MyLog
     @Transactional
@@ -203,10 +182,10 @@ public class BackOfficeService {
 
     @MyLog
     public PageDTO<BackOfficeResponse.MemberOutDTO> getMembers(String type, Pageable pageable) {
-        if(type.equals("user")){
+        if (type.equals("user")) {
             Page<User> userPG = userRepository.findAll(pageable);
             List<BackOfficeResponse.MemberOutDTO> list = userPG.getContent().stream().map(user ->
-                new BackOfficeResponse.MemberOutDTO(user)).collect(Collectors.toList());
+                    new BackOfficeResponse.MemberOutDTO(user)).collect(Collectors.toList());
             return new PageDTO<>(list, userPG, User.class);
         }
 
@@ -247,10 +226,11 @@ public class BackOfficeService {
     public PageDTO<BackOfficeResponse.PBPendingDTO> getPBPending(Pageable pageable) {
         Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.PENDING, pageable);
         List<BackOfficeResponse.PBPendingDTO> list = pbPG.getContent().stream().map(pb ->
-                new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName()))
+                        new BackOfficeResponse.PBPendingDTO(pb, pb.getBranch().getName()))
                 .collect(Collectors.toList());
         return new PageDTO<>(list, pbPG, PB.class);
     }
+
 
     @MyLog
     public PageDTO<BackOfficeResponse.NoticeDTO> getNotice(Pageable pageable) {
@@ -261,11 +241,13 @@ public class BackOfficeService {
     }
 
     @MyLog
-    public PageDTO<BackOfficeResponse.FAQDTO> getFAQ(Pageable pageable) {
-        Page<FrequentQuestion> faqPG = frequentQuestionRepository.findAll(pageable);
-        List<BackOfficeResponse.FAQDTO> list = faqPG.getContent().stream().map(faq ->
-                new BackOfficeResponse.FAQDTO(faq)).collect(Collectors.toList());
-        return new PageDTO<>(list, faqPG, FrequentQuestion.class);
+    @Transactional
+    public void addNotice(BackOfficeRequest.NoticeInDTO noticeInDTO) {
+        try {
+            noticeRepository.save(noticeInDTO.toEntity());
+        } catch (Exception e) {
+            throw new Exception500("공지사항 저장 실패 : " + e.getMessage());
+        }
     }
 
     @MyLog
@@ -294,6 +276,40 @@ public class BackOfficeService {
             noticeRepository.deleteById(noticeId);
         } catch (Exception e) {
             throw new Exception500("공지사항 삭제 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    public PageDTO<BackOfficeResponse.FAQDTO> getFAQ(Pageable pageable) {
+        Page<FrequentQuestion> faqPG = frequentQuestionRepository.findAll(pageable);
+        List<BackOfficeResponse.FAQDTO> list = faqPG.getContent().stream().map(faq ->
+                new BackOfficeResponse.FAQDTO(faq)).collect(Collectors.toList());
+        return new PageDTO<>(list, faqPG, FrequentQuestion.class);
+    }
+
+    @MyLog
+    @Transactional
+    public void addFAQ(BackOfficeRequest.FAQInDTO faqInDTO) {
+        try {
+            frequentQuestionRepository.save(faqInDTO.toEntity());
+        } catch (Exception e) {
+            throw new Exception500("FAQ 저장 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void updateFAQ(Long faqId, BackOfficeRequest.UpdateFAQDTO updateFAQDTO) {
+        FrequentQuestion frequentQuestionPS = frequentQuestionRepository.findById(faqId).orElseThrow(
+                () -> new Exception404("존재하지 않는 FAQ입니다.")
+        );
+
+        try {
+            frequentQuestionPS.updateLabel(updateFAQDTO.getLabel());
+            frequentQuestionPS.updateTitle(updateFAQDTO.getTitle());
+            frequentQuestionPS.updateContent(updateFAQDTO.getContent());
+        } catch (Exception e) {
+            throw new Exception500("FAQ 수정 실패 : " + e.getMessage());
         }
     }
 }

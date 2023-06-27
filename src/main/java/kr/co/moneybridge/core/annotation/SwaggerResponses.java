@@ -403,7 +403,7 @@ public class SwaggerResponses {
     public @interface GetNotice {
     }
 
-    @ApiOperation(value = "자주 묻는 질문 목록 가져오기")
+    @ApiOperation(value = "FAQ 목록 가져오기")
     @ApiResponses({
             @ApiResponse(code = 500,
                     message = INTERNAL_SERVER_ERROR)

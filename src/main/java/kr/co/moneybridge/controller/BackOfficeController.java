@@ -24,24 +24,6 @@ import javax.validation.Valid;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
-    // FAQ 등록
-    @MyLog
-    @SwaggerResponses.AddFAQ
-    @PostMapping("/admin/faq")
-    public ResponseDTO addFAQ(@RequestBody @Valid BackOfficeRequest.FAQInDTO faqInDTO, Errors errors) {
-        backOfficeService.addFAQ(faqInDTO);
-        return new ResponseDTO<>();
-    }
-
-    // 공지사항 등록
-    @MyLog
-    @SwaggerResponses.AddNotice
-    @PostMapping("/admin/notice")
-    public ResponseDTO addNotice(@RequestBody @Valid BackOfficeRequest.NoticeInDTO noticeInDTO, Errors errors) {
-        backOfficeService.addNotice(noticeInDTO);
-        return new ResponseDTO<>();
-    }
-
     // 지점 등록
     @MyLog
     @SwaggerResponses.AddBranch
@@ -174,14 +156,13 @@ public class BackOfficeController {
         return new ResponseDTO<>(faqDTO);
     }
 
-    // 자주 묻는 질문 목록 가져오기
+    // 공지사항 등록
     @MyLog
-    @SwaggerResponses.GetFAQ
-    @GetMapping("/FAQ")
-    public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQ(@RequestParam(defaultValue = "0") int page) {
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
-        PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
-        return new ResponseDTO<>(faqDTO);
+    @SwaggerResponses.AddNotice
+    @PostMapping("/admin/notice")
+    public ResponseDTO addNotice(@RequestBody @Valid BackOfficeRequest.NoticeInDTO noticeInDTO, Errors errors) {
+        backOfficeService.addNotice(noticeInDTO);
+        return new ResponseDTO<>();
     }
 
     @MyLog
@@ -200,6 +181,35 @@ public class BackOfficeController {
     @DeleteMapping("/admin/notice/{id}")
     public ResponseDTO deleteNotice(@PathVariable Long id) {
         backOfficeService.deleteNotice(id);
+
+        return new ResponseDTO();
+    }
+
+    // FAQ 목록 가져오기
+    @MyLog
+    @SwaggerResponses.GetFAQ
+    @GetMapping("/FAQ")
+    public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQ(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
+        PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
+        return new ResponseDTO<>(faqDTO);
+    }
+
+    // FAQ 등록
+    @MyLog
+    @SwaggerResponses.AddFAQ
+    @PostMapping("/admin/faq")
+    public ResponseDTO addFAQ(@RequestBody @Valid BackOfficeRequest.FAQInDTO faqInDTO, Errors errors) {
+        backOfficeService.addFAQ(faqInDTO);
+        return new ResponseDTO<>();
+    }
+
+    @MyLog
+    @ApiOperation(value = "FAQ 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @PatchMapping("/admin/faq/{id}")
+    public ResponseDTO updateFAQ(@PathVariable Long id, @RequestBody @Valid BackOfficeRequest.UpdateFAQDTO updateFAQDTO, Errors errors) {
+        backOfficeService.updateFAQ(id, updateFAQDTO);
 
         return new ResponseDTO();
     }
