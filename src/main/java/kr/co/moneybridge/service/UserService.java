@@ -239,14 +239,22 @@ public class UserService {
     }
 
     @MyLog
+    public UserResponse.BackOfficeLoginOutDTO backofficeLogin(UserRequest.BackOfficeLoginInDTO loginInDTO) {
+        User userPS = userRepository.findByEmail(loginInDTO.getEmail()).orElseThrow(
+                () -> new Exception404("해당하는 계정이 없습니다")
+        );
+        if(!userPS.getRole().equals(Role.ADMIN)){
+            throw new Exception400("email", "관리자 계정이 아닙니다");
+        }
+        String code = sendEmail(loginInDTO.getEmail());
+        return new UserResponse.BackOfficeLoginOutDTO(userPS, code);
+    }
+
+    @MyLog
     public UserResponse.LoginOutDTO login(UserRequest.LoginInDTO loginInDTO) {
         Member memberPS = myMemberUtil.findByEmail(loginInDTO.getEmail(), loginInDTO.getRole());
-        if(memberPS.getRole().equals(Role.ADMIN)){
-            // 관리자 계정이면 이메일 인증코드 보내기
-            String code = sendEmail(loginInDTO.getEmail());
-            return new UserResponse.LoginOutDTO(memberPS, code);
-        }
-        return new UserResponse.LoginOutDTO(memberPS);
+        Boolean isAdmin = memberPS.getRole().equals(Role.ADMIN) ? true : false;
+        return new UserResponse.LoginOutDTO(memberPS, isAdmin);
     }
 
     @MyLog

@@ -419,7 +419,7 @@ public class UserControllerTest {
         resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.code").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.isAdmin").value("false"));
     }
 
     @DisplayName("PB 로그인 성공")
@@ -443,7 +443,7 @@ public class UserControllerTest {
         resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.code").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.isAdmin").value("false"));
     }
 
     @DisplayName("관리자 로그인 성공")
@@ -467,8 +467,7 @@ public class UserControllerTest {
         resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        String regex = "^[0-9A-Z]{8}$"; // 이는 8자리 숫자와 대문자를 예상하는 정규식입니다.
-        resultActions.andExpect(jsonPath("$.data.code").value(matchesPattern(regex)));
+        resultActions.andExpect(jsonPath("$.data.isAdmin").value("true"));
     }
 
     @DisplayName("토큰 재발급 성공")
