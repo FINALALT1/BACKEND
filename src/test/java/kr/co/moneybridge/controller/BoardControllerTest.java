@@ -249,6 +249,7 @@ public class BoardControllerTest {
         Long replyId = 1L;
 
         //when
+        mvc.perform(MockMvcRequestBuilders.delete("/auth/board/rereply/1"));
         ResultActions resultActions = mvc.perform(MockMvcRequestBuilders.delete("/auth/board/reply/{replyId}", replyId));
 
         //then
