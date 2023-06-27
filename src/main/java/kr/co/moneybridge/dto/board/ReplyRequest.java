@@ -8,6 +8,8 @@ import kr.co.moneybridge.model.board.ReplyAuthorRole;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Random;
+
 public class ReplyRequest {
 
     @Getter
@@ -40,7 +42,9 @@ public class ReplyRequest {
                     .reply(reply)
                     .authorRole(reply.getAuthorRole())
                     .content(content)
+                    .uniqueValue(new Random().nextInt((999999 - 100000) + 1) + 100000)
                     .build();
         }
+
     }
 }
