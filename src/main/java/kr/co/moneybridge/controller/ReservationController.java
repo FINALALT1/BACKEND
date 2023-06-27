@@ -353,10 +353,10 @@ public class ReservationController {
     // 나의 후기 하나 가져오기
     @MyLog
     @SwaggerResponses.GetMyReview
-    @GetMapping("/user/review/{id}")
-    public ResponseDTO<ReservationResponse.MyReviewDTO> getMyReview(@PathVariable Long id,
+    @GetMapping("/user/review/{reservationId}")
+    public ResponseDTO<ReservationResponse.MyReviewDTO> getMyReview(@PathVariable Long reservationId,
                                                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
-        ReservationResponse.MyReviewDTO myReviewDTO = reservationService.getMyReview(id, myUserDetails.getMember().getId());
+        ReservationResponse.MyReviewDTO myReviewDTO = reservationService.getMyReview(reservationId, myUserDetails.getMember().getId());
         return new ResponseDTO<>(myReviewDTO);
     }
 
