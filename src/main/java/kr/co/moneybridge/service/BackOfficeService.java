@@ -312,4 +312,18 @@ public class BackOfficeService {
             throw new Exception500("FAQ 수정 실패 : " + e.getMessage());
         }
     }
+
+    @MyLog
+    @Transactional
+    public void deleteFAQ(Long faqId) {
+        frequentQuestionRepository.findById(faqId).orElseThrow(
+                () -> new Exception404("존재하지 않는 FAQ입니다.")
+        );
+
+        try {
+            frequentQuestionRepository.deleteById(faqId);
+        } catch (Exception e) {
+            throw new Exception500("FAQ 수정 실패 : " + e.getMessage());
+        }
+    }
 }

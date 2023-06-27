@@ -213,4 +213,14 @@ public class BackOfficeController {
 
         return new ResponseDTO();
     }
+
+    @MyLog
+    @ApiOperation(value = "FAQ 삭제하기")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/faq/{id}")
+    public ResponseDTO deleteFAQ(@PathVariable Long id) {
+        backOfficeService.deleteFAQ(id);
+
+        return new ResponseDTO();
+    }
 }
