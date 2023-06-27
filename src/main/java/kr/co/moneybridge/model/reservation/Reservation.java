@@ -100,4 +100,8 @@ public class Reservation {
     public void updateProcess(ReservationProcess process) {
         this.process = process;
     }
+
+    public void updateCreatedAt() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
