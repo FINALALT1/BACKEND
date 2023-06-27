@@ -131,6 +131,7 @@ public class BoardResponse {
         private LocalDateTime createdAt;
         private Long authorId;
         private ReplyAuthorRole role;
+        private Integer uniqueValue;
 
         public ReReplyOutDTO(ReReply reReply, User user) {
             this.id = reReply.getId();
@@ -140,6 +141,7 @@ public class BoardResponse {
             this.createdAt = reReply.getCreatedAt();
             this.authorId = user.getId();
             this.role = reReply.getAuthorRole();
+            this.uniqueValue = reReply.getUniqueValue();
         }
         public ReReplyOutDTO(ReReply reReply, PB pb) {
             this.id = reReply.getId();
@@ -149,6 +151,7 @@ public class BoardResponse {
             this.createdAt = reReply.getCreatedAt();
             this.authorId = pb.getId();
             this.role = reReply.getAuthorRole();
+            this.uniqueValue = reReply.getUniqueValue();
         }
     }
 
