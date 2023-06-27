@@ -87,7 +87,7 @@ public class ReservationServiceTest extends MockDummyEntity {
 
         // stub
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
+        when(reviewRepository.findByReservationId(anyLong())).thenReturn(Optional.of(review));
         when(styleRepository.findAllByReviewId(anyLong())).thenReturn(styleList);
 
         // when

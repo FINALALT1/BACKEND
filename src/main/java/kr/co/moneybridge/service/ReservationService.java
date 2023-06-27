@@ -629,17 +629,17 @@ public class ReservationService {
     }
 
     @MyLog
-    public ReservationResponse.MyReviewDTO getMyReview(Long reviewId, Long userId) {
+    public ReservationResponse.MyReviewDTO getMyReview(Long reservationId, Long userId) {
         userRepository.findById(userId).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")
         );
-        Review reviewPS = reviewRepository.findById(reviewId).orElseThrow(
+        Review reviewPS = reviewRepository.findByReservationId(reservationId).orElseThrow(
                 () -> new Exception200("후기가 없습니다.")
         );
         if (!reviewPS.getReservation().getUser().getId().equals(userId)) {
             throw new Exception400("reviewId", "로그인한 투자자가 작성한 리뷰가 아닙니다.");
         }
-        List<ReservationResponse.StyleDTO> styleList = styleRepository.findAllByReviewId(reviewId)
+        List<ReservationResponse.StyleDTO> styleList = styleRepository.findAllByReviewId(reviewPS.getId())
                 .stream().map(style -> new ReservationResponse.StyleDTO(style.getStyle()))
                 .collect(Collectors.toList());
         return new ReservationResponse.MyReviewDTO(reviewPS, styleList);
