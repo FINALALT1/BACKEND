@@ -43,152 +43,6 @@ public class ReservationService {
     private final StyleRepository styleRepository;
 
     @MyLog
-    public ReservationResponse.MyConsultTimeDTO getMyConsultTime(Long pbId) {
-        PB pbPS = pbRepository.findById(pbId).orElseThrow(
-                () -> new Exception404("존재하지 않는 PB입니다.")
-        );
-        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
-            throw new Exception403("승인 대기 중인 PB입니다.");
-        }
-        return new ReservationResponse.MyConsultTimeDTO(pbPS);
-    }
-
-    @MyLog
-    public ReservationResponse.MyReviewDTO getMyReview(Long reviewId, Long userId) {
-        userRepository.findById(userId).orElseThrow(
-                () -> new Exception404("존재하지 않는 투자자입니다.")
-        );
-        Review reviewPS = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new Exception200("후기가 없습니다.")
-        );
-        if (!reviewPS.getReservation().getUser().getId().equals(userId)) {
-            throw new Exception400("reviewId", "로그인한 투자자가 작성한 리뷰가 아닙니다.");
-        }
-        List<ReservationResponse.StyleDTO> styleList = styleRepository.findAllByReviewId(reviewId)
-                .stream().map(style -> new ReservationResponse.StyleDTO(style.getStyle()))
-                .collect(Collectors.toList());
-        return new ReservationResponse.MyReviewDTO(reviewPS, styleList);
-    }
-
-    @MyLog
-    public ReservationResponse.BaseDTO getReservationBase(Long pbId, Long userId) {
-        PB pbPS = pbRepository.findById(pbId).orElseThrow(
-                () -> new Exception404("존재하지 않는 PB입니다.")
-        );
-        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
-            throw new Exception403("승인 대기 중인 PB입니다.");
-        }
-        User userPS = userRepository.findById(userId).orElseThrow(
-                () -> new Exception404("존재하지 않는 투자자입니다.")
-        );
-
-        try {
-            return new ReservationResponse.BaseDTO(
-                    new ReservationResponse.PBInfoDTO(
-                            pbPS.getName(),
-                            pbPS.getBranch().getName(),
-                            pbPS.getBranch().getRoadAddress(),
-                            pbPS.getBranch().getLatitude(),
-                            pbPS.getBranch().getLongitude()
-                    ),
-                    new ReservationResponse.ConsultInfoDTO(
-                            localTimeToString(pbPS.getConsultStart()),
-                            localTimeToString(pbPS.getConsultEnd()),
-                            pbPS.getConsultNotice()
-                    ),
-                    new ReservationResponse.UserInfoDTO(
-                            userPS.getName(),
-                            userPS.getPhoneNumber(),
-                            userPS.getEmail()
-                    )
-            );
-        } catch (Exception e) {
-            throw new Exception500("지점 조회 실패 : " + e.getMessage());
-        }
-    }
-
-    @MyLog
-    @Transactional
-    public void applyReservation(Long pbId,
-                                 ReservationRequest.ApplyDTO applyDTO,
-                                 Long userId) {
-        PB pbPS = pbRepository.findById(pbId).orElseThrow(
-                () -> new Exception404("존재하지 않는 PB입니다.")
-        );
-        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
-            throw new Exception403("승인 대기 중인 PB입니다.");
-        }
-        User userPS = userRepository.findById(userId).orElseThrow(
-                () -> new Exception404("존재하지 않는 투자자입니다.")
-        );
-
-        try {
-            String locationName = null;
-            String locationAddress = null;
-            // 방문상담
-            if (applyDTO.getReservationType().equals(ReservationType.VISIT)) {
-                if (applyDTO.getLocationType().equals(LocationType.BRANCH)) {
-                    locationName = pbPS.getBranch().getName();
-                    locationAddress = pbPS.getBranch().getRoadAddress();
-                }
-            }
-
-            reservationRepository.save(Reservation.builder()
-                    .user(userPS)
-                    .pb(pbPS)
-                    .type(applyDTO.getReservationType())
-                    .locationName(locationName)
-                    .locationAddress(locationAddress)
-                    .candidateTime1(applyDTO.getCandidateTime1())
-                    .candidateTime2(applyDTO.getCandidateTime2())
-                    .question(applyDTO.getQuestion())
-                    .goal(applyDTO.getGoal())
-                    .process(ReservationProcess.APPLY)
-                    .investor(applyDTO.getUserName())
-                    .phoneNumber(applyDTO.getUserPhoneNumber())
-                    .email(applyDTO.getUserEmail())
-                    .status(ReservationStatus.ACTIVE)
-                    .build());
-
-            if (!userPS.getHasDoneReservation()) {
-                userPS.updateHasDoneReservation(true);
-            }
-        } catch (Exception e) {
-            throw new Exception500("상담 예약 저장 실패 : " + e.getMessage());
-        }
-    }
-
-    @MyLog
-    public PageDTO<ReservationResponse.ReviewDTO> getReviews(Long pbId, int page) {
-        PB pbPS = pbRepository.findById(pbId).orElseThrow(
-                () -> new Exception404("존재하지 않는 PB입니다.")
-        );
-
-        try {
-            // 페이징
-            Page<Review> reviews = reviewRepository.findAllByPbIdAndProcess(
-                    pbPS.getId(),
-                    ReservationProcess.COMPLETE,
-                    PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt")
-            );
-
-            List<ReservationResponse.ReviewDTO> reviewDTOs = new ArrayList<>();
-            for (Review review : reviews) {
-                User user = userRepository.findUserByReviewId(review.getId());
-                List<Style> styles = styleRepository.findAllByReviewId(review.getId());
-                reviewDTOs.add(new ReservationResponse.ReviewDTO(review, user, styles));
-            }
-
-            // 응답
-            return new PageDTO<>(
-                    reviewDTOs, reviews, Review.class
-            );
-        } catch (Exception e) {
-            throw new Exception500("상담 후기 목록 조회 실패 : " + e.getMessage());
-        }
-    }
-
-    @MyLog
     public ReservationResponse.RecentInfoDTO getRecentReservationInfo(Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -361,7 +215,7 @@ public class ReservationService {
     }
 
     @MyLog
-    public ReservationResponse.DetailByPBDTO getReservationDetailByPB(Long reservationId, Long pbId) {
+    public ReservationResponse.DetailByPBDTO getReservationDetail(Long reservationId, Long pbId) {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
         );
@@ -429,6 +283,94 @@ public class ReservationService {
             );
         } catch (Exception e) {
             throw new Exception500("예약 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    public ReservationResponse.BaseDTO getReservationBase(Long pbId, Long userId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
+            throw new Exception403("승인 대기 중인 PB입니다.");
+        }
+        User userPS = userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+
+        try {
+            return new ReservationResponse.BaseDTO(
+                    new ReservationResponse.PBInfoDTO(
+                            pbPS.getName(),
+                            pbPS.getBranch().getName(),
+                            pbPS.getBranch().getRoadAddress(),
+                            pbPS.getBranch().getLatitude(),
+                            pbPS.getBranch().getLongitude()
+                    ),
+                    new ReservationResponse.ConsultInfoDTO(
+                            localTimeToString(pbPS.getConsultStart()),
+                            localTimeToString(pbPS.getConsultEnd()),
+                            pbPS.getConsultNotice()
+                    ),
+                    new ReservationResponse.UserInfoDTO(
+                            userPS.getName(),
+                            userPS.getPhoneNumber(),
+                            userPS.getEmail()
+                    )
+            );
+        } catch (Exception e) {
+            throw new Exception500("지점 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void addReservation(Long pbId,
+                               ReservationRequest.ApplyDTO applyDTO,
+                               Long userId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
+            throw new Exception403("승인 대기 중인 PB입니다.");
+        }
+        User userPS = userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+
+        try {
+            String locationName = null;
+            String locationAddress = null;
+            // 방문상담
+            if (applyDTO.getReservationType().equals(ReservationType.VISIT)) {
+                if (applyDTO.getLocationType().equals(LocationType.BRANCH)) {
+                    locationName = pbPS.getBranch().getName();
+                    locationAddress = pbPS.getBranch().getRoadAddress();
+                }
+            }
+
+            reservationRepository.save(Reservation.builder()
+                    .user(userPS)
+                    .pb(pbPS)
+                    .type(applyDTO.getReservationType())
+                    .locationName(locationName)
+                    .locationAddress(locationAddress)
+                    .candidateTime1(applyDTO.getCandidateTime1())
+                    .candidateTime2(applyDTO.getCandidateTime2())
+                    .question(applyDTO.getQuestion())
+                    .goal(applyDTO.getGoal())
+                    .process(ReservationProcess.APPLY)
+                    .investor(applyDTO.getUserName())
+                    .phoneNumber(applyDTO.getUserPhoneNumber())
+                    .email(applyDTO.getUserEmail())
+                    .status(ReservationStatus.ACTIVE)
+                    .build());
+
+            if (!userPS.getHasDoneReservation()) {
+                userPS.updateHasDoneReservation(true);
+            }
+        } catch (Exception e) {
+            throw new Exception500("상담 예약 저장 실패 : " + e.getMessage());
         }
     }
 
@@ -548,80 +490,6 @@ public class ReservationService {
     }
 
     @MyLog
-    @Transactional
-    public ReservationResponse.ReviewIdDTO writeReview(ReservationRequest.ReviewDTO reviewDTO, Long userId) {
-        User userPS = userRepository.findById(userId).orElseThrow(
-                () -> new Exception404("존재하지 않는 투자자입니다.")
-        );
-        Reservation reservationPS = reservationRepository.findById(reviewDTO.getReservationId()).orElseThrow(
-                () -> new Exception404("존재하지 않는 상담입니다.")
-        );
-        if (reviewRepository.countByReservationId(reviewDTO.getReservationId()) == 1) {
-            throw new Exception400(String.valueOf(reviewDTO.getReservationId()), "해당 상담에 이미 작성된 후기가 존재합니다.");
-        }
-
-        try {
-            Review reviewPS = reviewRepository.save(
-                    Review.builder()
-                            .reservation(reservationPS)
-                            .adherence(reviewDTO.getAdherence())
-                            .content(reviewDTO.getContent())
-                            .build()
-            );
-            for (StyleStyle style : reviewDTO.getStyleList()) {
-                styleRepository.save(
-                        Style.builder()
-                                .review(reviewPS)
-                                .style(style)
-                                .build()
-                );
-            }
-            userPS.updateHasDoneReview(true);
-
-            return new ReservationResponse.ReviewIdDTO(reviewPS.getId());
-        } catch (Exception e) {
-            throw new Exception500("상담 후기 저장 실패 : " + e.getMessage());
-        }
-    }
-
-    //PB의 최신리뷰 3개 가져오기
-    public List<ReviewResponse.ReviewOutDTO> getPBReviews(Long pbId) {
-
-        pbRepository.findById(pbId).orElseThrow(() -> new Exception404("존재하지 않는 PB입니다."));
-
-        List<ReviewResponse.ReviewOutDTO> list = reviewRepository.findReservationsByPBId(pbId, PageRequest.of(0, 3));
-        for (ReviewResponse.ReviewOutDTO dto : list) {
-            dto.setList(styleRepository.findByReviewId(dto.getReviewId()));
-        }
-
-        return list;
-    }
-
-    //PB의 상담후기 탑3 가져오기
-    public ReviewResponse.PBTopStyleDTO getPBStyles(Long pbId) {
-
-        pbRepository.findById(pbId).orElseThrow(() -> new Exception404("존재하지 않는 PB입니다."));
-        ReviewResponse.PBTopStyleDTO styleDTO = new ReviewResponse.PBTopStyleDTO();
-
-        List<StyleStyle> styleList = styleRepository.findStylesByPbId(pbId);
-
-        if (styleList.size() == 0) {
-            return styleDTO;
-        } else if (styleList.size() == 1) {
-            styleDTO.setStyle1(styleList.get(0));
-        } else if (styleList.size() == 2) {
-            styleDTO.setStyle1(styleList.get(0));
-            styleDTO.setStyle2(styleList.get(1));
-        } else {
-            styleDTO.setStyle1(styleList.get(0));
-            styleDTO.setStyle2(styleList.get(1));
-            styleDTO.setStyle3(styleList.get(2));
-        }
-
-        return styleDTO;
-    }
-
-    @MyLog
     public List<ReservationResponse.ReservationInfoDTO> getReservationsByDate(int year, int month, Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -680,8 +548,62 @@ public class ReservationService {
         }
     }
 
-    //특정 PB 리뷰전체 가져오기
-    public PageDTO<ReservationResponse.ReviewDTO> getPbReviewList(Long pbId, Pageable pageable) {
+    @MyLog
+    public ReservationResponse.MyConsultTimeDTO getMyConsultTime(Long pbId) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+        if (pbPS.getStatus().equals(PBStatus.PENDING)) {
+            throw new Exception403("승인 대기 중인 PB입니다.");
+        }
+        return new ReservationResponse.MyConsultTimeDTO(pbPS);
+    }
+
+    @MyLog
+    public PageDTO<ReservationResponse.ReviewDTO> getReviews(Long pbId, int page) {
+        PB pbPS = pbRepository.findById(pbId).orElseThrow(
+                () -> new Exception404("존재하지 않는 PB입니다.")
+        );
+
+        try {
+            // 페이징
+            Page<Review> reviews = reviewRepository.findAllByPbIdAndProcess(
+                    pbPS.getId(),
+                    ReservationProcess.COMPLETE,
+                    PageRequest.of(page, 10, Sort.Direction.DESC, "createdAt")
+            );
+
+            List<ReservationResponse.ReviewDTO> reviewDTOs = new ArrayList<>();
+            for (Review review : reviews) {
+                User user = userRepository.findUserByReviewId(review.getId());
+                List<Style> styles = styleRepository.findAllByReviewId(review.getId());
+                reviewDTOs.add(new ReservationResponse.ReviewDTO(review, user, styles));
+            }
+
+            // 응답
+            return new PageDTO<>(
+                    reviewDTOs, reviews, Review.class
+            );
+        } catch (Exception e) {
+            throw new Exception500("상담 후기 목록 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    // PB 상담 후기 최신 3개 가져오기
+    public List<ReviewResponse.ReviewOutDTO> getPBRecentReviews(Long pbId) {
+
+        pbRepository.findById(pbId).orElseThrow(() -> new Exception404("존재하지 않는 PB입니다."));
+
+        List<ReviewResponse.ReviewOutDTO> list = reviewRepository.findReservationsByPBId(pbId, PageRequest.of(0, 3));
+        for (ReviewResponse.ReviewOutDTO dto : list) {
+            dto.setList(styleRepository.findByReviewId(dto.getReviewId()));
+        }
+
+        return list;
+    }
+
+    // 특정 PB 상담 후기 리스트 조회
+    public PageDTO<ReservationResponse.ReviewDTO> getPBReviews(Long pbId, Pageable pageable) {
 
         PB pb = pbRepository.findById(pbId).orElseThrow(() -> new Exception404("존재하지 않는 PB입니다."));
 
@@ -698,6 +620,84 @@ public class ReservationService {
             return new PageDTO<>(reviewDTOs, reviews, Review.class);
         } catch (Exception e) {
             throw new Exception500("상담 후기 목록 조회 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    public ReservationResponse.MyReviewDTO getMyReview(Long reviewId, Long userId) {
+        userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+        Review reviewPS = reviewRepository.findById(reviewId).orElseThrow(
+                () -> new Exception200("후기가 없습니다.")
+        );
+        if (!reviewPS.getReservation().getUser().getId().equals(userId)) {
+            throw new Exception400("reviewId", "로그인한 투자자가 작성한 리뷰가 아닙니다.");
+        }
+        List<ReservationResponse.StyleDTO> styleList = styleRepository.findAllByReviewId(reviewId)
+                .stream().map(style -> new ReservationResponse.StyleDTO(style.getStyle()))
+                .collect(Collectors.toList());
+        return new ReservationResponse.MyReviewDTO(reviewPS, styleList);
+    }
+
+    // PB 상담 스타일 TOP 3 가져오기
+    public ReviewResponse.PBTopStyleDTO getPBStyles(Long pbId) {
+
+        pbRepository.findById(pbId).orElseThrow(() -> new Exception404("존재하지 않는 PB입니다."));
+        ReviewResponse.PBTopStyleDTO styleDTO = new ReviewResponse.PBTopStyleDTO();
+
+        List<StyleStyle> styleList = styleRepository.findStylesByPbId(pbId);
+
+        if (styleList.size() == 0) {
+            return styleDTO;
+        } else if (styleList.size() == 1) {
+            styleDTO.setStyle1(styleList.get(0));
+        } else if (styleList.size() == 2) {
+            styleDTO.setStyle1(styleList.get(0));
+            styleDTO.setStyle2(styleList.get(1));
+        } else {
+            styleDTO.setStyle1(styleList.get(0));
+            styleDTO.setStyle2(styleList.get(1));
+            styleDTO.setStyle3(styleList.get(2));
+        }
+
+        return styleDTO;
+    }
+
+    @MyLog
+    @Transactional
+    public ReservationResponse.ReviewIdDTO addReview(ReservationRequest.ReviewDTO reviewDTO, Long userId) {
+        User userPS = userRepository.findById(userId).orElseThrow(
+                () -> new Exception404("존재하지 않는 투자자입니다.")
+        );
+        Reservation reservationPS = reservationRepository.findById(reviewDTO.getReservationId()).orElseThrow(
+                () -> new Exception404("존재하지 않는 상담입니다.")
+        );
+        if (reviewRepository.countByReservationId(reviewDTO.getReservationId()) == 1) {
+            throw new Exception400(String.valueOf(reviewDTO.getReservationId()), "해당 상담에 이미 작성된 후기가 존재합니다.");
+        }
+
+        try {
+            Review reviewPS = reviewRepository.save(
+                    Review.builder()
+                            .reservation(reservationPS)
+                            .adherence(reviewDTO.getAdherence())
+                            .content(reviewDTO.getContent())
+                            .build()
+            );
+            for (StyleStyle style : reviewDTO.getStyleList()) {
+                styleRepository.save(
+                        Style.builder()
+                                .review(reviewPS)
+                                .style(style)
+                                .build()
+                );
+            }
+            userPS.updateHasDoneReview(true);
+
+            return new ReservationResponse.ReviewIdDTO(reviewPS.getId());
+        } catch (Exception e) {
+            throw new Exception500("상담 후기 저장 실패 : " + e.getMessage());
         }
     }
 }
