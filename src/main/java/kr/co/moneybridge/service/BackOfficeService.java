@@ -233,11 +233,20 @@ public class BackOfficeService {
 
 
     @MyLog
-    public PageDTO<BackOfficeResponse.NoticeDTO> getNotice(Pageable pageable) {
+    public PageDTO<BackOfficeResponse.NoticeDTO> getNotices(Pageable pageable) {
         Page<Notice> noticePG = noticeRepository.findAll(pageable);
         List<BackOfficeResponse.NoticeDTO> list = noticePG.getContent().stream().map(notice ->
                 new BackOfficeResponse.NoticeDTO(notice)).collect(Collectors.toList());
         return new PageDTO<>(list, noticePG, Notice.class);
+    }
+
+    @MyLog
+    public BackOfficeResponse.NoticeDTO getNotice(Long noticeId) {
+        Notice noticePS = noticeRepository.findById(noticeId).orElseThrow(
+                () -> new Exception404("존재하지 않는 공지사항입니다.")
+        );
+
+        return new BackOfficeResponse.NoticeDTO(noticePS);
     }
 
     @MyLog
@@ -280,11 +289,20 @@ public class BackOfficeService {
     }
 
     @MyLog
-    public PageDTO<BackOfficeResponse.FAQDTO> getFAQ(Pageable pageable) {
+    public PageDTO<BackOfficeResponse.FAQDTO> getFAQs(Pageable pageable) {
         Page<FrequentQuestion> faqPG = frequentQuestionRepository.findAll(pageable);
         List<BackOfficeResponse.FAQDTO> list = faqPG.getContent().stream().map(faq ->
                 new BackOfficeResponse.FAQDTO(faq)).collect(Collectors.toList());
         return new PageDTO<>(list, faqPG, FrequentQuestion.class);
+    }
+
+    @MyLog
+    public BackOfficeResponse.FAQDTO getFAQ(Long faqId) {
+        FrequentQuestion faqPS = frequentQuestionRepository.findById(faqId).orElseThrow(
+                () -> new Exception404("존재하지 않는 FAQ입니다.")
+        );
+
+        return new BackOfficeResponse.FAQDTO(faqPS);
     }
 
     @MyLog

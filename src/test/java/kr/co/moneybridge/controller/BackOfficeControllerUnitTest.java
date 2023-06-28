@@ -356,14 +356,14 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     }
 
     @Test
-    public void getNotice_test() throws Exception {
+    public void getNotices_test() throws Exception {
         // given
         Notice notice = newMockNotice(1L);
         List<BackOfficeResponse.NoticeDTO> list = Arrays.asList(new BackOfficeResponse.NoticeDTO(notice));
         Page<Notice> noticePG = new PageImpl<>(Arrays.asList(notice));
         PageDTO<BackOfficeResponse.NoticeDTO> noticeDTO = new PageDTO<>(list, noticePG, Notice.class);
         // stub
-        Mockito.when(backOfficeService.getNotice(any())).thenReturn(noticeDTO);
+        Mockito.when(backOfficeService.getNotices(any())).thenReturn(noticeDTO);
 
         // When
         ResultActions resultActions = mvc.perform(get("/notices"));
@@ -387,14 +387,37 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
     }
 
     @Test
-    public void getFAQ_test() throws Exception {
+    public void getNotice_test() throws Exception {
+        // given
+        Notice notice = newMockNotice(1L);
+        BackOfficeResponse.NoticeDTO noticeDTO = new BackOfficeResponse.NoticeDTO(notice);
+
+        // stub
+        Mockito.when(backOfficeService.getNotice(any())).thenReturn(noticeDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/notice/{id}", notice.getId()));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.title").value("서버 점검 안내"));
+        resultActions.andExpect(jsonPath("$.data.content").value("보다 나은 환경을 제공하기 위해 개발진에서 발견한 문제 복구 및 업데이트 점검을 진행할 예정입니다.\n" +
+                "업데이트 점검을 진행하는 동안에는 접속할 수 없으니 불필요한 손해가 발생치 않도록 주의해 주세요.\n" +
+                "이로 인해 불편을 끼쳐 드려 죄송합니다."));
+    }
+
+    @Test
+    public void getFAQs_test() throws Exception {
         // given
         FrequentQuestion faq = newMockFrequentQuestion(1L);
         List<BackOfficeResponse.FAQDTO> list = Arrays.asList(new BackOfficeResponse.FAQDTO(faq));
         Page<FrequentQuestion> faqPG = new PageImpl<>(Arrays.asList(faq));
         PageDTO<BackOfficeResponse.FAQDTO> faqDTO = new PageDTO<>(list, faqPG, FrequentQuestion.class);
         // stub
-        Mockito.when(backOfficeService.getFAQ(any())).thenReturn(faqDTO);
+        Mockito.when(backOfficeService.getFAQs(any())).thenReturn(faqDTO);
 
         // When
         ResultActions resultActions = mvc.perform(get("/FAQ"));
@@ -414,6 +437,29 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(jsonPath("$.data.first").value("true"));
         resultActions.andExpect(jsonPath("$.data.last").value("true"));
         resultActions.andExpect(jsonPath("$.data.empty").value("false"));
+    }
+
+    @Test
+    public void getFAQ_test() throws Exception {
+        // given
+        FrequentQuestion faq = newMockFrequentQuestion(1L);
+        BackOfficeResponse.FAQDTO faqDTO = new BackOfficeResponse.FAQDTO(faq);
+
+        // stub
+        Mockito.when(backOfficeService.getFAQ(anyLong())).thenReturn(faqDTO);
+
+        // When
+        ResultActions resultActions = mvc.perform(get("/faq/{id}", faq.getId()));
+
+        // Then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.status").value(200));
+        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+        resultActions.andExpect(jsonPath("$.data.id").value("1"));
+        resultActions.andExpect(jsonPath("$.data.label").value("회원"));
+        resultActions.andExpect(jsonPath("$.data.title").value("이메일이 주소가 변경되었어요."));
+        resultActions.andExpect(jsonPath("$.data.content").value("가입 이메일은 회원 식별 고유 키로 " +
+                "가입 후 변경이 불가능 하므로 개인 이메일로 가입하기를 권유드립니다."));
     }
 
     @WithMockAdmin
