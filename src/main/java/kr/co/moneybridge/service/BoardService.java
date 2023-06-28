@@ -186,8 +186,9 @@ public class BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new Exception404("해당 컨텐츠는 존재하지 않습니다."));
 
         if (member.getRole().equals(Role.USER)) {
-            if (boardBookmarkRepository.findWithUserAndBoard(member.getId(), boardId).isPresent()) {
-                throw new Exception404("이미 북마크한 컨텐츠입니다.");
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("존재하지 않는 유저입니다."));
+            if (user.getHasDoneBoardBookmark().equals(false)) {
+                user.updateHasDoneBoardBookmark(true);
             }
             try {
                 BoardBookmark boardBookmarkUser = BoardBookmark.builder()
@@ -199,11 +200,7 @@ public class BoardService {
             } catch (Exception e) {
                 throw new Exception500("북마크 실패: " + e.getMessage());
             }
-
         } else if (member.getRole().equals(Role.PB)) {
-            if (boardBookmarkRepository.findWithPBAndBoard(member.getId(), boardId).isPresent()) {
-                throw new Exception400("content", "이미 북마크한 컨텐츠입니다.");
-            }
             try {
                 BoardBookmark boardBookmarkPB = BoardBookmark.builder()
                         .bookmarkerId(member.getId())
