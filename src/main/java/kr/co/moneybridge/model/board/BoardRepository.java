@@ -95,7 +95,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "JOIN PB pb ON b.pb = pb " +
             "JOIN Branch br ON pb.branch = br " +
             "JOIN Company c ON br.company = c " +
-            "WHERE (pb.speciality1 IN :specialities OR pb.speciality2 IN :specialities) " +
+            "WHERE (pb.speciality1 IN :specialities OR pb.speciality2 IN :specialities) AND b.status = 'ACTIVE' " +
             "ORDER BY b.id DESC")
     List<BoardResponse.BoardPageDTO> findRecommendedBoards(Pageable pageable, @Param("specialities") PBSpeciality... specialities);
 
@@ -103,6 +103,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "JOIN PB pb ON b.pb = pb " +
             "JOIN Branch br ON pb.branch = br " +
             "JOIN Company c ON br.company = c " +
+            "WHERE b.status = 'ACTIVE' " +
             "ORDER BY b.id DESC")
     List<BoardResponse.BoardPageDTO> findTwoBoards(Pageable pageable);
 
@@ -110,6 +111,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "JOIN PB pb ON b.pb = pb " +
             "JOIN Branch br ON pb.branch = br " +
             "JOIN Company c ON br.company = c " +
-            "WHERE pb.id = :pbId")
+            "WHERE pb.id = :pbId AND b.status = 'ACTIVE' ")
     Page<BoardResponse.BoardPageDTO> findByPBId(@Param("pbId") Long pbId, Pageable pageable);
 }
