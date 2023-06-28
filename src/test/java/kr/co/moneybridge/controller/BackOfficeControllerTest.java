@@ -405,7 +405,7 @@ public class BackOfficeControllerTest {
     public void getFAQ() throws Exception {
         // when
         ResultActions resultActions = mvc
-                .perform(get("/FAQ"));
+                .perform(get("/faqs"));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
 
