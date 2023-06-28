@@ -429,6 +429,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("로그인@nate.com");
         loginInDTO.setPassword("password1234");
+        loginInDTO.setRemember(true);
         String requestBody = om.writeValueAsString(loginInDTO);
 
         // stub
@@ -462,6 +463,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("로그인@nate.com");
         loginInDTO.setPassword("password1234");
+        loginInDTO.setRemember(true);
         String requestBody = om.writeValueAsString(loginInDTO);
 
         // stub

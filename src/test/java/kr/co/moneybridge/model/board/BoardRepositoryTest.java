@@ -107,10 +107,10 @@ public class BoardRepositoryTest extends DummyEntity {
         Long id = 1L;
 
         // when
-        Optional<String> thumbnail = boardRepository.findThumbnailByPBId(id);
+        List<String> thumbnail = boardRepository.findThumbnailsByPBId(id);
 
         // then
-        assertThat(thumbnail.get()).isEqualTo("thumbnail.png");
+        assertThat(thumbnail.get(0)).isEqualTo("thumbnail.png");
     }
 
     @Test
