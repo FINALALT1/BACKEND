@@ -225,5 +225,9 @@ public class UserRequest {
         @NotEmpty
         @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{8,}$", message = "공백없이 영문(대소문자), 숫자 포함해서 8자 이상으로 작성해주세요")
         private String password;
+
+        @ApiModelProperty(example = "true", value = "true면 영속쿠키, false면 세션쿠키")
+        @NotNull
+        private Boolean remember;
     }
 }

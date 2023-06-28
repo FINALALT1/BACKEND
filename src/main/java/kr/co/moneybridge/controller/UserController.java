@@ -180,8 +180,13 @@ public class UserController {
 
         Pair<String, String> tokens = userService.issue(loginInDTO.getRole(), loginInDTO.getEmail(), loginInDTO.getPassword());
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
-        response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                + "; Max-Age="+MyJwtProvider.EXP_REFRESH+"; SameSite=None; Secure; HttpOnly; Path=/");
+        if(loginInDTO.getRemember()){ // 브라우저 종료 후에도 로그인 상태 유지하려면
+            response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
+                    + "; Max-Age="+MyJwtProvider.EXP_REFRESH+"; SameSite=None; Secure; HttpOnly; Path=/");
+        } else {
+            response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
+                    + "; SameSite=None; Secure; HttpOnly; Path=/");
+        }
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .body(responseDTO);

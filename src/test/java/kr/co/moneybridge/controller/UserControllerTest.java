@@ -407,6 +407,7 @@ public class UserControllerTest {
         loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("로그인@nate.com");
         loginInDTO.setPassword("password1234");
+        loginInDTO.setRemember(true);
         String requestBody = om.writeValueAsString(loginInDTO);
 
         // when
@@ -431,6 +432,7 @@ public class UserControllerTest {
         loginInDTO.setRole(Role.PB);
         loginInDTO.setEmail("김피비@nate.com");
         loginInDTO.setPassword("password1234");
+        loginInDTO.setRemember(true);
         String requestBody = om.writeValueAsString(loginInDTO);
 
         // when
@@ -455,6 +457,7 @@ public class UserControllerTest {
         loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("jisu3148496@naver.com");
         loginInDTO.setPassword("password1234");
+        loginInDTO.setRemember(true);
         String requestBody = om.writeValueAsString(loginInDTO);
 
         // when
@@ -480,6 +483,7 @@ public class UserControllerTest {
         loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("로그인@nate.com");
         loginInDTO.setPassword("password1234");
+        loginInDTO.setRemember(true);
         String loginRequestBody = om.writeValueAsString(loginInDTO);
 
         MvcResult loginResult = mvc
@@ -515,6 +519,7 @@ public class UserControllerTest {
         loginInDTO.setRole(Role.USER);
         loginInDTO.setEmail("로그인@nate.com");
         loginInDTO.setPassword("password1234");
+        loginInDTO.setRemember(true);
         String loginRequestBody = om.writeValueAsString(loginInDTO);
 
         MvcResult loginResult = mvc
