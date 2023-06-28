@@ -62,59 +62,61 @@ public interface PBRepository extends JpaRepository<PB, Long> {
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
             "JOIN Branch b ON pb.branch = b " +
             "JOIN Company c ON b.company = c " +
-            "WHERE pb.name LIKE CONCAT('%', :name, '%')")
+            "WHERE pb.name LIKE CONCAT('%', :name, '%') AND pb.status = 'ACTIVE' ")
     Page<PBResponse.PBPageDTO> findByName(@Param("name") String name, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) " +
             "FROM PB pb " +
             "JOIN Branch b ON pb.branch = b " +
             "JOIN Company c ON b.company = c " +
-            "WHERE pb.speciality1 = :speciality OR pb.speciality2 = :speciality")
+            "WHERE (pb.speciality1 = :speciality OR pb.speciality2 = :speciality) AND pb.status = 'ACTIVE' ")
     List<PBResponse.PBPageDTO> findByPBListSpeciality(@Param(("speciality")) PBSpeciality speciality);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) " +
             "FROM PB pb " +
             "JOIN Branch b ON pb.branch = b " +
             "JOIN Company c ON b.company = c " +
-            "WHERE c.id = :companyId")
+            "WHERE c.id = :companyId AND pb.status = 'ACTIVE' ")
     List<PBResponse.PBPageDTO> findByPBListCompany(@Param("companyId") Long companyId);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) " +
             "FROM PB pb " +
             "JOIN Branch b ON pb.branch = b " +
-            "JOIN Company c ON b.company = c ")
+            "JOIN Company c ON b.company = c " +
+            "WHERE pb.status = 'ACTIVE' ")
     List<PBResponse.PBPageDTO> findAllPB();
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
             "JOIN pb.branch b " +
             "JOIN b.company c " +
-            "WHERE pb.speciality1 = :speciality OR pb.speciality2 = :speciality " +
+            "WHERE (pb.speciality1 = :speciality OR pb.speciality2 = :speciality) AND pb.status = 'ACTIVE' " +
             "ORDER BY pb.career DESC")
     Page<PBResponse.PBPageDTO> findBySpecialityOrderedByCareer(@Param("speciality") PBSpeciality speciality, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
             "JOIN pb.branch b " +
             "JOIN b.company c " +
-            "WHERE c.id = :companyId " +
+            "WHERE c.id = :companyId AND pb.status = 'ACTIVE' " +
             "ORDER BY pb.career DESC")
     Page<PBResponse.PBPageDTO> findByCompanyIdOrderedByCareer(@Param("companyId") Long companyId, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
             "JOIN pb.branch b " +
             "JOIN b.company c " +
+            "WHERE pb.status = 'ACTIVE' " +
             "ORDER BY pb.career DESC")
     Page<PBResponse.PBPageDTO> findAllPBWithCareer(Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
             "JOIN pb.branch b " +
             "JOIN b.company c " +
-            "WHERE pb.speciality1 IN (:specialities) OR pb.speciality2 IN (:specialities)")
+            "WHERE (pb.speciality1 IN (:specialities) OR pb.speciality2 IN (:specialities)) AND pb.status = 'ACTIVE' ")
     Page<PBResponse.PBPageDTO> findRecommendedPBList(Pageable pageable, @Param("specialities") PBSpeciality... specialities);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBSimpleProfileDTO(pb, c) FROM PB pb " +
             "JOIN pb.branch b " +
             "JOIN b.company c " +
-            "WHERE pb.id = :id")
+            "WHERE pb.id = :id AND pb.status = 'ACTIVE' ")
     Optional<PBResponse.PBSimpleProfileDTO> findSimpleProfile(@Param("id") Long id);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBProfileDTO(pb, b, c) FROM PB pb " +
@@ -133,14 +135,14 @@ public interface PBRepository extends JpaRepository<PB, Long> {
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
             "JOIN pb.branch b " +
             "JOIN b.company c " +
-            "WHERE (pb.speciality1 = :speciality1 OR pb.speciality2 = :speciality1 OR pb.speciality1 = :speciality2 OR pb.speciality2 = :speciality2) " +
+            "WHERE (pb.speciality1 = :speciality1 OR pb.speciality2 = :speciality1 OR pb.speciality1 = :speciality2 OR pb.speciality2 = :speciality2) AND pb.status = 'ACTIVE' " +
             "ORDER BY pb.id DESC")
     List<PBResponse.PBPageDTO> findBySpeciality1And2(@Param("speciality1") PBSpeciality speciality1, @Param("speciality2") PBSpeciality speciality2, Pageable pageable);
 
     @Query("SELECT new kr.co.moneybridge.dto.pb.PBResponse$PBPageDTO(pb, b, c) FROM PB pb " +
             "JOIN pb.branch b " +
             "JOIN b.company c " +
-            "WHERE pb.speciality1 = :speciality1 OR pb.speciality2 = :speciality1 " +
+            "WHERE (pb.speciality1 = :speciality1 OR pb.speciality2 = :speciality1) AND pb.status = 'ACTIVE' " +
             "ORDER BY pb.id DESC")
     List<PBResponse.PBPageDTO> findBySpeciality1(@Param("speciality1")PBSpeciality speciality1, Pageable pageable);
 
