@@ -420,7 +420,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         Mockito.when(backOfficeService.getFAQs(any())).thenReturn(faqDTO);
 
         // When
-        ResultActions resultActions = mvc.perform(get("/FAQ"));
+        ResultActions resultActions = mvc.perform(get("/faqs"));
 
         // Then
         resultActions.andExpect(status().isOk());
