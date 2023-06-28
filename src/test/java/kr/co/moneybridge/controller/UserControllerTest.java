@@ -160,6 +160,7 @@ public class UserControllerTest {
         resultActions.andExpect(jsonPath("$.data.role").value("USER"));
         resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
         resultActions.andExpect(jsonPath("$.data.propensity").isEmpty());
+        resultActions.andExpect(jsonPath("$.data.isAdmin").value("true"));
     }
 
     @DisplayName("투자자 마이페이지 가져오기 성공")
