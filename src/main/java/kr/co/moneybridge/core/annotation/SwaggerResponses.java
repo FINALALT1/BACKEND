@@ -413,7 +413,7 @@ public class SwaggerResponses {
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface GetFAQ {
+    public @interface GetFAQs {
     }
 
     @ApiOperation(value = "나의 투자 성향 분석페이지 하단의 맞춤 PB리스트", notes = "<b>투자 성향에 따라 맞춤 분야별 PB리스트 필터링 3개</b>\n<br>" +
