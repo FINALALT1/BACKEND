@@ -406,7 +406,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
 
     @Test
     @DisplayName("공지사항 목록 가져오기")
-    void getNotice() {
+    void getNotices() {
         // given
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
         Page<Notice> noticePG = new PageImpl<>(Arrays.asList(newMockNotice(1L)));
@@ -415,7 +415,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         when(noticeRepository.findAll(pageable)).thenReturn(noticePG);
 
         // when
-        PageDTO<BackOfficeResponse.NoticeDTO> noticeDTO = backOfficeService.getNotice(pageable);
+        PageDTO<BackOfficeResponse.NoticeDTO> noticeDTO = backOfficeService.getNotices(pageable);
 
         // then
         assertThat(noticeDTO.getList().get(0).getId()).isEqualTo(1L);
@@ -434,8 +434,29 @@ class BackOfficeServiceTest extends MockDummyEntity {
     }
 
     @Test
+    void get_notice_test() {
+        // given
+        Long noticeId = 1L;
+        Notice notice = newMockNotice(noticeId);
+
+        // stub
+        when(noticeRepository.findById(anyLong())).thenReturn(Optional.of(notice));
+
+        // when
+        BackOfficeResponse.NoticeDTO response = backOfficeService.getNotice(noticeId);
+
+        // then
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getTitle()).isEqualTo("서버 점검 안내");
+        assertThat(response.getContent()).isEqualTo("보다 나은 환경을 제공하기 위해 개발진에서 발견한 문제 복구 및 업데이트 점검을 진행할 예정입니다.\n" +
+                "업데이트 점검을 진행하는 동안에는 접속할 수 없으니 불필요한 손해가 발생치 않도록 주의해 주세요.\n" +
+                "이로 인해 불편을 끼쳐 드려 죄송합니다.");
+        Mockito.verify(noticeRepository, Mockito.times(1)).findById(noticeId);
+    }
+
+    @Test
     @DisplayName("자주 묻는 질문 목록 가져오기")
-    void getFAQ() {
+    void getFAQs() {
         // given
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
         Page<FrequentQuestion> faqPG = new PageImpl<>(Arrays.asList(newMockFrequentQuestion(1L)));
@@ -444,7 +465,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         when(frequentQuestionRepository.findAll(pageable)).thenReturn(faqPG);
 
         // when
-        PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
+        PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQs(pageable);
 
         // then
         assertThat(faqDTO.getList().get(0).getId()).isEqualTo(1L);
@@ -459,6 +480,27 @@ class BackOfficeServiceTest extends MockDummyEntity {
         assertThat(faqDTO.getLast()).isEqualTo(true);
         assertThat(faqDTO.getEmpty()).isEqualTo(false);
         Mockito.verify(frequentQuestionRepository, Mockito.times(1)).findAll(pageable);
+    }
+
+    @Test
+    void get_faq_test() {
+        // given
+        Long faqId = 1L;
+        FrequentQuestion faq = newMockFrequentQuestion(faqId);
+
+        // stub
+        when(frequentQuestionRepository.findById(faqId)).thenReturn(Optional.of(faq));
+
+        // when
+        BackOfficeResponse.FAQDTO response = backOfficeService.getFAQ(faqId);
+
+        // then
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getLabel()).isEqualTo("회원");
+        assertThat(response.getTitle()).isEqualTo("이메일이 주소가 변경되었어요.");
+        assertThat(response.getContent()).isEqualTo("가입 이메일은 회원 식별 고유 키로 " +
+                "가입 후 변경이 불가능 하므로 개인 이메일로 가입하기를 권유드립니다.");
+        Mockito.verify(frequentQuestionRepository, Mockito.times(1)).findById(faqId);
     }
 
 //    @Test

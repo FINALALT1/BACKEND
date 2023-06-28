@@ -150,10 +150,20 @@ public class BackOfficeController {
     @MyLog
     @SwaggerResponses.GetNotice
     @GetMapping("/notices")
-    public ResponseDTO<PageDTO<BackOfficeResponse.NoticeDTO>> getNotice(@RequestParam(defaultValue = "0") int page) {
+    public ResponseDTO<PageDTO<BackOfficeResponse.NoticeDTO>> getNotices(@RequestParam(defaultValue = "0") int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        PageDTO<BackOfficeResponse.NoticeDTO> faqDTO = backOfficeService.getNotice(pageable);
-        return new ResponseDTO<>(faqDTO);
+        PageDTO<BackOfficeResponse.NoticeDTO> noticesDTO = backOfficeService.getNotices(pageable);
+        return new ResponseDTO<>(noticesDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "공지사항 상세 조회")
+    @SwaggerResponses.ApiResponsesWithout400
+    @GetMapping("/notice/{id}")
+    public ResponseDTO<BackOfficeResponse.NoticeDTO> getNotice(@PathVariable Long id) {
+        BackOfficeResponse.NoticeDTO noticeDTO = backOfficeService.getNotice(id);
+
+        return new ResponseDTO<>(noticeDTO);
     }
 
     // 공지사항 등록
@@ -187,11 +197,21 @@ public class BackOfficeController {
 
     // FAQ 목록 가져오기
     @MyLog
-    @SwaggerResponses.GetFAQ
+    @SwaggerResponses.GetFAQs
     @GetMapping("/FAQ")
-    public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQ(@RequestParam(defaultValue = "0") int page) {
+    public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQs(@RequestParam(defaultValue = "0") int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
-        PageDTO<BackOfficeResponse.FAQDTO> faqDTO = backOfficeService.getFAQ(pageable);
+        PageDTO<BackOfficeResponse.FAQDTO> faqsDTO = backOfficeService.getFAQs(pageable);
+        return new ResponseDTO<>(faqsDTO);
+    }
+
+    @MyLog
+    @ApiOperation(value = "FAQ 상세 조회")
+    @SwaggerResponses.ApiResponsesWithout400
+    @GetMapping("/faq/{id}")
+    public ResponseDTO<BackOfficeResponse.FAQDTO> getFAQ(@PathVariable Long id) {
+        BackOfficeResponse.FAQDTO faqDTO = backOfficeService.getFAQ(id);
+
         return new ResponseDTO<>(faqDTO);
     }
 
