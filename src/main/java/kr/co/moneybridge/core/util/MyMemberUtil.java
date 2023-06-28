@@ -72,15 +72,16 @@ public class MyMemberUtil {
                 userAgreementRepository.deleteByUserId(id);
                 userRepository.deleteById(id);
             }catch (Exception e){
-                new Exception500("투자자 계정 삭제 실패했습니다" + e.getMessage());
+                throw new Exception500("투자자 계정 삭제 실패했습니다" + e.getMessage());
             }
         } else if(role.equals(Role.PB)){
             // s3에서 액셀데이터도 삭제
             // s3에서 명함사진도 삭제
             // s3에서 프로필 사진도 삭제
             // s3에서 컨텐츠 썸네일도 삭제
-            deleteFiles(portfolioRepository.findFileByPBId(id), pbRepository.findBusinessCardById(id).get(),
-                    pbRepository.findProfileById(id).get(), boardRepository.findThumbnailByPBId(id));
+            deleteFiles(portfolioRepository.findFileByPBId(id), pbRepository.findBusinessCardById(id),
+                    pbRepository.findProfileById(id), boardRepository.findThumbnailsByPBId(id));
+            System.out.println("2");
             try{
                 reservationRepository.findAllByPBId(id).stream().forEach(reservation -> {
                     Optional<Review> review = reviewRepository.findByReservationId(reservation.getId());
@@ -117,24 +118,21 @@ public class MyMemberUtil {
                 pbAgreementRepository.deleteByPBId(id);
                 portfolioRepository.deleteByPBId(id);
                 pbRepository.deleteById(id);
-
             }catch (Exception e){
-                new Exception500("PB 계정 삭제 실패했습니다" + e.getMessage());
+                throw new Exception500("PB 계정 삭제 실패했습니다" + e.getMessage());
             }
         }
     }
 
-    private void deleteFiles(Optional<String> file, String businessCard, String profile, Optional<String> thumbnail){
+    private void deleteFiles(Optional<String> file, Optional<String> businessCard, Optional<String> profile, List<String> thumbnails){
         if(file.isPresent()){
             s3Util.delete(file.get());
         }
-        if(profile != defaultProfile){
-            s3Util.delete(profile);
+        if(profile.get() != defaultProfile){
+            s3Util.delete(profile.get());
         }
-        s3Util.delete(businessCard);
-        if(thumbnail.isPresent()){
-            s3Util.delete(thumbnail.get());
-        }
+        s3Util.delete(businessCard.get());
+        thumbnails.stream().forEach(thumbnail -> s3Util.delete(thumbnail));
     }
 
     public List<Member> findByNameAndPhoneNumberWithoutException(String name, String phoneNumber, Role role) {

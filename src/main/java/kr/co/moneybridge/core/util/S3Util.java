@@ -74,15 +74,15 @@ public class S3Util {
     }
 
     // s3에서 파일 삭제
-    public void delete(String profile) {
+    public void delete(String fileName) {
         // 디폴트 폴더에 있는 파일은 삭제 안함
-        if(profile.startsWith(cloudFrontDomain+"/default")) return;
+        if(fileName.startsWith(cloudFrontDomain+"/default")) return;
 
         int index = cloudFrontDomain.length();
-        if(profile.length() < index) return;
-        String fileName = profile.substring(index + 1);
+        if(fileName.length() < index) return;
+        String key = fileName.substring(index + 1);
 
-        s3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+        s3Client.deleteObject(new DeleteObjectRequest(bucket, key));
     }
 
     // 이미지 리사이징
