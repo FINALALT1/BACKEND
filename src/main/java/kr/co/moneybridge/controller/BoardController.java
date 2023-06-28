@@ -223,9 +223,9 @@ public class BoardController {
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PostMapping("/auth/board/{id}/rereply")
-    public ResponseDTO postReReply(@PathVariable Long id, @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
+    public ResponseDTO postReReply(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id, @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
 
-        replyService.postReReply(id, reReplyInDTO);
+        replyService.postReReply(id, reReplyInDTO, myUserDetails);
 
         return new ResponseDTO<>();
     }
