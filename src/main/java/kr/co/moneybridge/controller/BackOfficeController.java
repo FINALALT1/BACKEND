@@ -198,7 +198,7 @@ public class BackOfficeController {
     // FAQ 목록 가져오기
     @MyLog
     @SwaggerResponses.GetFAQs
-    @GetMapping("/FAQ")
+    @GetMapping("/faqs")
     public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQs(@RequestParam(defaultValue = "0") int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
         PageDTO<BackOfficeResponse.FAQDTO> faqsDTO = backOfficeService.getFAQs(pageable);
