@@ -90,7 +90,7 @@ public class BoardService {
         return boardList;
     }
 
-    //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기(비로그인)
+    //최신컨텐츠2개 + 핫한컨텐츠2개 가져오기(로그인)
     public List<BoardResponse.BoardPageDTO> getLogInNewHotContents(MyUserDetails myUserDetails) {
 
         Member member = myUserDetails.getMember();
