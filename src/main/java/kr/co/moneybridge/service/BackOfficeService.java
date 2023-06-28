@@ -162,7 +162,11 @@ public class BackOfficeService {
     @MyLog
     @Transactional
     public void forceWithdraw(Long memberId, Role role) {
-        myMemberUtil.deleteById(memberId, role);
+        try{
+            myMemberUtil.deleteById(memberId, role);
+        }catch (Exception e){
+
+        }
     }
 
     @MyLog
