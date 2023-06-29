@@ -32,8 +32,8 @@ public class ReservationResponse {
         private String consultNotice;
 
         public MyConsultTimeDTO(PB pb) {
-            this.consultStart = pb.getConsultStart().format(DateTimeFormatter.ofPattern("HH:mm"));
-            this.consultEnd = pb.getConsultEnd().format(DateTimeFormatter.ofPattern("HH:mm"));
+            this.consultStart = (pb.getConsultStart() == null) ? null : pb.getConsultStart().format(DateTimeFormatter.ofPattern("HH:mm"));
+            this.consultEnd = (pb.getConsultEnd() == null) ? null : pb.getConsultEnd().format(DateTimeFormatter.ofPattern("HH:mm"));
             this.consultNotice = pb.getConsultNotice();
         }
     }
