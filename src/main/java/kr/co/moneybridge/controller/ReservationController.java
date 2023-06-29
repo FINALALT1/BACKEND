@@ -201,7 +201,7 @@ public class ReservationController {
         }
 
         // 현재 시간보다 이전 날짜인지 확인
-        if (updateDTO.getTime().matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$")) {
+        if (!updateDTO.getTime().matches("^\\d{4}년 \\d{1,2}월 \\d{1,2}일 (오전|오후) \\d{1,2}시 \\d{1,2}분$")) {
             throw new Exception400(updateDTO.getTime(), "형식에 맞춰 입력해주세요.");
         }
 
