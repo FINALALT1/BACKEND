@@ -242,8 +242,8 @@ public class ReservationService {
                     reservationPS.getLocationAddress(),
                     reservationPS.getGoal(),
                     reservationPS.getQuestion(),
-                    pbPS.getConsultStart().toString(),
-                    pbPS.getConsultEnd().toString(),
+                    (pbPS.getConsultStart() == null) ? null : pbPS.getConsultStart().toString(),
+                    (pbPS.getConsultEnd() == null) ? null : pbPS.getConsultEnd().toString(),
                     pbPS.getConsultNotice(),
                     reviewRepository.countByReservationId(reservationPS.getId()) >= 1
             );
