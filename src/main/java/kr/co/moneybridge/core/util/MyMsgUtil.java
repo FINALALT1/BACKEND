@@ -83,7 +83,7 @@ public class MyMsgUtil {
             message.addRecipients(MimeMessage.RecipientType.TO, email); // 메일 받을 사용자
             message.setSubject(subject); // 이메일 제목
             message.setText(msg, "utf-8", "html"); // 메일 내용, charset타입, subtype
-            message.setFrom(new InternetAddress("moneybridge@naver.com", "Money-Bridge"));
+            message.setFrom(new InternetAddress("sysmetic@naver.com", "Money-Bridge"));
             return message;
         } catch (Exception e) {
             throw new Exception500("이메일 작성 실패 " + e.getMessage());
