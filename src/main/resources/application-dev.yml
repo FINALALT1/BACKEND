@@ -54,8 +54,8 @@ SECRET_REFRESH: "backend"
 
 SYSMETIC_EMAIL_PASSWORD: ${SYSMETIC_EMAIL_PASSWORD}
 
-DEFAULT_THUMBNAIL: "https://d2ky5wm6akosox.cloudfront.net/default/sample.svg"
-DEFAULT_PROFILE: "https://d2ky5wm6akosox.cloudfront.net/default/profile.svg"
+DEFAULT_THUMBNAIL: "https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/sample.svg"
+DEFAULT_PROFILE: "https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/profile.svg"
 
 MB_CLIENT_ID: ${MB_CLIENT_ID}
 MB_CLIENT_SECRET: ${MB_CLIENT_SECRET}

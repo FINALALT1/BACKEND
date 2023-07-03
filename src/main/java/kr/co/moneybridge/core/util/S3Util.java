@@ -29,7 +29,7 @@ import java.util.UUID;
 @Component
 public class S3Util {
     private AmazonS3 s3Client;
-    private String cloudFrontDomain = "https://d2ky5wm6akosox.cloudfront.net";
+    private String s3Domain = "https://moneybridge.s3.ap-northeast-2.amazonaws.com";
 
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
@@ -67,7 +67,7 @@ public class S3Util {
             s3Client.putObject(new PutObjectRequest(bucket, uuidFilename, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead)
                     .withMetadata(objectMetadata));
-            return cloudFrontDomain + "/"+ uuidFilename;
+            return s3Domain + "/"+ uuidFilename;
         } catch (IOException e) {
             throw new Exception500("s3에 저장 실패: " + e.getMessage());
         }
@@ -76,9 +76,9 @@ public class S3Util {
     // s3에서 파일 삭제
     public void delete(String fileName) {
         // 디폴트 폴더에 있는 파일은 삭제 안함
-        if(fileName.startsWith(cloudFrontDomain+"/default")) return;
+        if(fileName.startsWith(s3Domain+"/default")) return;
 
-        int index = cloudFrontDomain.length();
+        int index = s3Domain.length();
         if(fileName.length() < index) return;
         String key = fileName.substring(index + 1);
 
