@@ -16,7 +16,7 @@ spring:
     host: localhost # ec2-3-37-11-7.ap-northeast-2.compute.amazonaws.com #43.201.57.38 # 서버주소 넣어야 함.
     port: 6379
   datasource:
-    url: jdbc:mysql://finalproject.cdd2oclmksvc.ap-northeast-2.rds.amazonaws.com:3306/finalproject?useSSL=false&setTimezone=Asia/Seoul
+    url: jdbc:mysql://mindbridge.c5hgfzyunggm.ap-northeast-2.rds.amazonaws.com:3306/mindbridge?useSSL=false&setTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${RDS_USERNAME}
     password: ${RDS_PASSWORD}
