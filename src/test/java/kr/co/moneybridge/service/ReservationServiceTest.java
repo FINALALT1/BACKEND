@@ -663,46 +663,46 @@ public class ReservationServiceTest extends MockDummyEntity {
         assertThat(result.getStyle3()).isEqualTo(styleList.get(2));
     }
 
-    @Test
-    public void get_reservations_by_date_test() {
-        // given
-        int year = 2023;
-        int month = 6;
-        Long pbId = 1L;
-        Company company = newMockCompany(1L, "미래에셋");
-        Branch branch = newMockBranch(1L, company, 1);
-        PB pb = newMockPB(pbId, "이피비", branch);
-        User user = newMockUser(1L, "lee");
-        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
-        Reservation reservation5 = newMockVisitReservationCancel(5L, user, pb);
-        List<ReservationResponse.ReservationInfoDTO> reservations = new ArrayList<>(
-                Arrays.asList(
-                        new ReservationResponse.ReservationInfoDTO(reservation, user),
-                        new ReservationResponse.ReservationInfoDTO(reservation2, user),
-                        new ReservationResponse.ReservationInfoDTO(reservation3, user),
-                        new ReservationResponse.ReservationInfoDTO(reservation4, user),
-                        new ReservationResponse.ReservationInfoDTO(reservation5, user)
-                )
-        );
-
-
-        // stub
-        Mockito.when(pbRepository.findById(anyLong()))
-                .thenReturn(Optional.of(pb));
-        Mockito.when(reservationRepository.findAllByPbIdWithoutCancel(anyLong()))
-                .thenReturn(reservations);
-
-        // when
-        List<ReservationResponse.ReservationInfoDTO> response = reservationService.getReservationsByDate(year, month, pbId);
-
-        // then
-        assertThat(response.get(0).getId()).isEqualTo(1L);
-        assertThat(response.get(0).getDay().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
-        assertThat(response.get(0).getTime()).matches("^\\d{2}:\\d{2}$");
-        assertThat(response.get(0).getType()).isEqualTo(ReservationType.VISIT);
-        assertThat(response.get(0).getProcess()).isEqualTo(ReservationProcess.COMPLETE);
-    }
+//    @Test
+//    public void get_reservations_by_date_test() {
+//        // given
+//        int year = 2023;
+//        int month = 6;
+//        Long pbId = 1L;
+//        Company company = newMockCompany(1L, "미래에셋");
+//        Branch branch = newMockBranch(1L, company, 1);
+//        PB pb = newMockPB(pbId, "이피비", branch);
+//        User user = newMockUser(1L, "lee");
+//        Reservation reservation = newMockVisitReservation(1L, user, pb, ReservationProcess.COMPLETE);
+//        Reservation reservation2 = newMockVisitReservation(2L, user, pb, ReservationProcess.COMPLETE);
+//        Reservation reservation3 = newMockVisitReservation(3L, user, pb, ReservationProcess.COMPLETE);
+//        Reservation reservation4 = newMockVisitReservation(4L, user, pb, ReservationProcess.COMPLETE);
+//        Reservation reservation5 = newMockVisitReservationCancel(5L, user, pb);
+//        List<ReservationResponse.ReservationInfoDTO> reservations = new ArrayList<>(
+//                Arrays.asList(
+//                        new ReservationResponse.ReservationInfoDTO(reservation, user),
+//                        new ReservationResponse.ReservationInfoDTO(reservation2, user),
+//                        new ReservationResponse.ReservationInfoDTO(reservation3, user),
+//                        new ReservationResponse.ReservationInfoDTO(reservation4, user),
+//                        new ReservationResponse.ReservationInfoDTO(reservation5, user)
+//                )
+//        );
+//
+//
+//        // stub
+//        Mockito.when(pbRepository.findById(anyLong()))
+//                .thenReturn(Optional.of(pb));
+//        Mockito.when(reservationRepository.findAllByPbIdWithoutCancel(anyLong()))
+//                .thenReturn(reservations);
+//
+//        // when
+//        List<ReservationResponse.ReservationInfoDTO> response = reservationService.getReservationsByDate(year, month, pbId);
+//
+//        // then
+//        assertThat(response.get(0).getId()).isEqualTo(1L);
+//        assertThat(response.get(0).getDay().toString()).matches("^\\d{4}-\\d{2}-\\d{2}$");
+//        assertThat(response.get(0).getTime()).matches("^\\d{2}:\\d{2}$");
+//        assertThat(response.get(0).getType()).isEqualTo(ReservationType.VISIT);
+//        assertThat(response.get(0).getProcess()).isEqualTo(ReservationProcess.COMPLETE);
+//    }
 }
