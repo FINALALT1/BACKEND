@@ -24,6 +24,16 @@ import javax.validation.Valid;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
+    @MyLog
+    @ApiOperation(value = "지점 삭제")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/branch/{id}")
+    public ResponseDTO deleteBranch(@PathVariable Long id) {
+        backOfficeService.deleteBranch(id);
+
+        return new ResponseDTO();
+    }
+
     // 지점 등록
     @MyLog
     @SwaggerResponses.AddBranch

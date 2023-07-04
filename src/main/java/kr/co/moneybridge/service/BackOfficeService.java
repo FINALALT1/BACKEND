@@ -65,6 +65,16 @@ public class BackOfficeService {
 
     @MyLog
     @Transactional
+    public void deleteBranch(Long branchId) {
+        try {
+            branchRepository.deleteById(branchId);
+        } catch (Exception e) {
+            throw new Exception500("공지사항 삭제 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
     public void addBranch(BackOfficeRequest.BranchInDTO branchInDTO) {
         Company company = companyRepository.findById(branchInDTO.getCompanyId()).orElseThrow(
                 () -> new Exception400("companyId", "없는 증권회사의 id입니다")
