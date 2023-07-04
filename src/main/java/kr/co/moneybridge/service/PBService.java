@@ -317,8 +317,15 @@ public class PBService {
         List<PBResponse.PBSimpleDTO> pbList = new ArrayList<>();
         List<PBResponse.PBPageDTO> list = pbRepository.findAllPB();
         list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
-        pbList.add(new PBResponse.PBSimpleDTO(list.get(0)));
-        pbList.add(new PBResponse.PBSimpleDTO(list.get(1)));
+        if (list.size() == 0) {
+            return pbList;
+        } else if (list.size() == 1) {
+            pbList.add(new PBResponse.PBSimpleDTO(list.get(0)));
+            return pbList;
+        } else {
+            pbList.add(new PBResponse.PBSimpleDTO(list.get(0)));
+            pbList.add(new PBResponse.PBSimpleDTO(list.get(1)));
+        }
 
         return pbList;
     }

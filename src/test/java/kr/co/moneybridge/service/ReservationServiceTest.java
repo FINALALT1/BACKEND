@@ -662,7 +662,6 @@ public class ReservationServiceTest extends MockDummyEntity {
         assertThat(result.getStyle2()).isEqualTo(styleList.get(1));
         assertThat(result.getStyle3()).isEqualTo(styleList.get(2));
     }
-
     @Test
     public void get_reservations_by_date_test() {
         // given
