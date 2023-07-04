@@ -13,7 +13,7 @@ server:
 
 spring:
   redis:
-    host: localhost #ec2-3-37-11-7.ap-northeast-2.compute.amazonaws.com #43.200.31.72 # 서버주소 넣어야 함.
+    host: ec2-3-37-11-7.ap-northeast-2.compute.amazonaws.com #43.200.31.72 # 서버주소 넣어야 함.
     port: 6379
   datasource:
     url: jdbc:mysql://mindbridge.c5hgfzyunggm.ap-northeast-2.rds.amazonaws.com:3306/mindbridge?useSSL=false&setTimezone=Asia/Seoul
