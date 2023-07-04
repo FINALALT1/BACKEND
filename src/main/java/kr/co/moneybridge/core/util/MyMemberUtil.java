@@ -26,8 +26,7 @@ import java.util.ArrayList;
 @Service
 @RequiredArgsConstructor
 public class MyMemberUtil {
-    @Value("${DEFAULT_PROFILE}")
-    private String defaultProfile;
+    private String defaultProfile = "https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/profile.svg";
     private final UserRepository userRepository;
     private final UserAgreementRepository userAgreementRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
