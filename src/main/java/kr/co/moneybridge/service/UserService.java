@@ -50,8 +50,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    @Value("${DEFAULT_PROFILE}")
-    private String defaultProfile;
+    private String defaultProfile = "https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/profile.svg";
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
