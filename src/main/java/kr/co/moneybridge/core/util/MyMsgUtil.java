@@ -14,7 +14,7 @@ import javax.mail.internet.MimeMessage;
 @Component
 public class MyMsgUtil {
     private final JavaMailSender javaMailSender;
-    private final String header = "<img src=\"https://d2ky5wm6akosox.cloudfront.net/default/email_header.png\" />\n";
+    private final String header = "<img src=\"https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/email_header.png\" />\n";
     @Getter
     public final String subjectReject = "[Money Bridge] 회원가입 승인 거절 안내드립니다.";
     @Getter
