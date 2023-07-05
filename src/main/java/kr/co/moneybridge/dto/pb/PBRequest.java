@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
+import java.time.LocalTime;
 import java.util.List;
 
 public class PBRequest {
@@ -94,6 +95,8 @@ public class PBRequest {
                     .profile(defaultProfile) // 기본 이미지
                     .role(Role.PB)
                     .status(PBStatus.PENDING)
+                    .consultStart(LocalTime.of(9, 0))
+                    .consultEnd(LocalTime.of(18, 0))
                     .build();
         }
     }
