@@ -253,7 +253,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
         passwordInDTO.setRole(Role.USER);
         passwordInDTO.setName("lee");
-        passwordInDTO.setEmail("jisu3148496@naver.com");
+        passwordInDTO.setEmail("jisu31484@naver.com");
         String requestBody = om.writeValueAsString(passwordInDTO);
 
         // stub
@@ -262,7 +262,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
                 .id(1L)
                 .name("lee")
                 .password(passwordEncoder.encode("password1234"))
-                .email("jisu3148496@naver.com")
+                .email("jisu31484@naver.com")
                 .phoneNumber("01012345678")
                 .role(Role.USER)
                 .profile("profile.png")
@@ -282,7 +282,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(jsonPath("$.data.role").value("USER"));
         resultActions.andExpect(jsonPath("$.data.name").value("lee"));
         resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.email").value("jisu3148496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data.email").value("jisu31484@naver.com"));
         resultActions.andExpect(jsonPath("$.data.code").value("J46L4SBJ"));
     }
 
@@ -290,7 +290,8 @@ public class UserControllerUnitTest extends MockDummyEntity {
     public void email_test() throws Exception {
         // Given
         UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();
-        emailInDTO.setEmail("jisu3148496@naver.com");
+        emailInDTO.setRole(Role.USER);
+        emailInDTO.setEmail("jisu31484@naver.com");
         String requestBody = om.writeValueAsString(emailInDTO);
 
         // stub

@@ -40,7 +40,7 @@ public class PBRequest {
     @Setter
     @Getter
     public static class JoinInDTO {
-        @ApiModelProperty(example = "jisu3148496@naver.com", value = "이메일 형식, 30바이트 초과하면 안됨, PB내 중복 불가")
+        @ApiModelProperty(example = "jisu31484@naver.com", value = "이메일 형식, 30바이트 초과하면 안됨, PB내 중복 불가")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         @Size(max = 30, message = "이메일은 30바이트를 초과할 수 없습니다")

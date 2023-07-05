@@ -68,7 +68,7 @@ public class PBControllerTest {
         PB pb = pbRepository.save(PB.builder()
                 .name("김pb")
                 .password(passwordEncoder.encode("password1234"))
-                .email("jisu3148496@naver.com")
+                .email("jisu31484@naver.com")
                 .phoneNumber("01012345678")
                 .branch(branch)
                 .profile("profile.png")
@@ -116,7 +116,7 @@ public class PBControllerTest {
         resultActions.andExpect(status().isOk());
     }
     @DisplayName("PB 마이페이지 가져오기 성공")
-    @WithUserDetails(value = "PB-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "PB-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void getMyPage() throws Exception {
         // when

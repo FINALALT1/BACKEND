@@ -39,6 +39,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -666,7 +667,7 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
         resultActions.andExpect(jsonPath("$.data[0].id").value(1L));
         resultActions.andExpect(jsonPath("$.data[0].userName").value("lee"));
-        resultActions.andExpect(jsonPath("$.data[0].day").value("2023-07-04"));
+        resultActions.andExpect(jsonPath("$.data[0].day").value(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
         resultActions.andExpect(jsonPath("$.data[0].time").value(LocalTime.now().truncatedTo(ChronoUnit.MINUTES).toString()));
         resultActions.andExpect(jsonPath("$.data[0].type").value(ReservationType.VISIT.toString()));
         resultActions.andExpect(jsonPath("$.data[0].process").value(ReservationProcess.COMPLETE.toString()));

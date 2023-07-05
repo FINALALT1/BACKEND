@@ -164,7 +164,7 @@ public class UserServiceTest extends MockDummyEntity {
                 .id(1L)
                 .name("lee")
                 .password(passwordEncoder.encode("password1234"))
-                .email("jisu3148496@naver.com")
+                .email("jisu31484@naver.com")
                 .phoneNumber(newPhoneNumber)
                 .role(Role.USER)
                 .profile("profile.png")
