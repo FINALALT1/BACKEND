@@ -23,6 +23,7 @@ import kr.co.moneybridge.model.board.BoardRepository;
 import kr.co.moneybridge.model.board.BookmarkerRole;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
+import kr.co.moneybridge.model.pb.PBStatus;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
 import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.user.*;
@@ -158,8 +159,21 @@ public class UserService {
     }
 
     @MyLog
-    public UserResponse.EmailOutDTO email(String email) {
-        String code = sendEmail(email);
+    public UserResponse.EmailOutDTO email(UserRequest.EmailInDTO emailInDTO) {
+        Member memberPS = myMemberUtil.findByEmailWithoutException(emailInDTO.getEmail(), emailInDTO.getRole());
+        if(memberPS != null){
+            if(emailInDTO.getRole().equals(Role.USER)){
+                throw new Exception400("email", "이미 투자자로 회원가입된 이메일입니다");
+            }
+            PB pb = (PB)memberPS;
+            if(pb.getStatus().equals(PBStatus.PENDING)){
+                throw new Exception400("email", "회원가입 후 승인을 기다리고 있는 PB 계정입니다");
+            }
+            if(pb.getStatus().equals(PBStatus.ACTIVE)){
+                throw new Exception400("email", "이미 PB로 회원가입된 이메일입니다");
+            }
+        }
+        String code = sendEmail(emailInDTO.getEmail());
         UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
         return emailOutDTO;
     }

@@ -116,12 +116,12 @@ public class UserController {
         return new ResponseDTO<>(passwordOutDTO);
     }
 
-    // 이메일 인증
+    //회원가입시 이메일 인증
     @MyLog
     @SwaggerResponses.Email
     @PostMapping("/email/authentication")
     public ResponseDTO<UserResponse.EmailOutDTO> email(@RequestBody @Valid UserRequest.EmailInDTO emailInDTO, Errors errors) throws Exception {
-        UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO.getEmail());
+        UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO);
         return new ResponseDTO<>(emailOutDTO);
     }
 
