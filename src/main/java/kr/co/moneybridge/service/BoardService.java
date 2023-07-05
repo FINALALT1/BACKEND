@@ -259,7 +259,7 @@ public class BoardService {
         } else {
             //s3 업로드 로직
             try {
-                String thumbnail = s3Util.upload(s3Util.resize(thumbnailFile, 500, 500), "thumbnail");
+                String thumbnail = s3Util.upload(thumbnailFile, "thumbnail");
                 board.updateThumbnail(thumbnail);
                 Long id = boardRepository.save(board).getId();
 
@@ -318,7 +318,7 @@ public class BoardService {
         try {
             //변경할 썸네일 사진 들어온 경우
             if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
-                String thumbnail = s3Util.upload(s3Util.resize(thumbnailFile, 500, 500), "thumbnail");
+                String thumbnail = s3Util.upload(thumbnailFile, "thumbnail");
                 board.updateThumbnail(thumbnail);
                 board.modifyBoard(boardUpdateDTO);
             } else {

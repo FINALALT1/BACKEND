@@ -294,15 +294,17 @@ public class UserServiceTest extends MockDummyEntity {
     @Test
     public void email_test() {
         // given
+        Role role = Role.USER;
         String email = "lee@nate.com";
         UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();
         emailInDTO.setEmail(email);
+        emailInDTO.setRole(role);
 
         when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
-        UserResponse.EmailOutDTO emailOutDTO = userService.email(email);
+        UserResponse.EmailOutDTO emailOutDTO = userService.email(emailInDTO);
 
         // then
         String regex = "^[0-9A-Z]{8}$"; // 이는 8자리 숫자와 대문자를 예상하는 정규식입니다.
