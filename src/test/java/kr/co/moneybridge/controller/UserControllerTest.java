@@ -66,7 +66,7 @@ public class UserControllerTest {
         User user2 = userRepository.save(User.builder()
                 .name("김비밀")
                 .password(passwordEncoder.encode("password1234"))
-                .email("jisu3148496@naver.com")
+                .email("jisu31484@naver.com")
                 .phoneNumber("01012345678")
                 .role(Role.ADMIN)
                 .profile("프로필.png")
@@ -79,7 +79,7 @@ public class UserControllerTest {
     }
 
     @DisplayName("투자자 성향 체크 유효성 검사 최소")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void testPropensity_min_test() throws Exception {
         // given
@@ -101,7 +101,7 @@ public class UserControllerTest {
     }
 
     @DisplayName("투자자 성향 체크 유효성 검사 최대값")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void testPropensity_max_test() throws Exception {
         // given
@@ -123,7 +123,7 @@ public class UserControllerTest {
     }
 
     @DisplayName("투자자 성향 체크 성공")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void testPropensity_test() throws Exception {
         // given
@@ -144,7 +144,7 @@ public class UserControllerTest {
     }
 
     @DisplayName("로그인 계정 정보 받아오기")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void getAccount_test() throws Exception {
         // when
@@ -164,7 +164,7 @@ public class UserControllerTest {
     }
 
     @DisplayName("투자자 마이페이지 가져오기 성공")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void getMyPage_test() throws Exception {
         // when
@@ -193,7 +193,7 @@ public class UserControllerTest {
     }
 
     @DisplayName("개인 정보 수정 성공")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void updateMyInfo_test() throws Exception {
         // given
@@ -213,7 +213,7 @@ public class UserControllerTest {
     }
 
     @DisplayName("개인 정보 가져오기 성공")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void getMyInfo_test() throws Exception {
         // when
@@ -227,11 +227,11 @@ public class UserControllerTest {
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
         resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
         resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.email").value("jisu3148496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data.email").value("jisu31484@naver.com"));
     }
 
     @DisplayName("비밀번호 확인 성공")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void checkPassword_test() throws Exception {
         // given
@@ -292,18 +292,18 @@ public class UserControllerTest {
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
         resultActions.andExpect(jsonPath("$.data[0].name").value("김비밀"));
         resultActions.andExpect(jsonPath("$.data[0].phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data[0].email").value("jisu3148496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data[0].email").value("jisu31484@naver.com"));
     }
 
     @DisplayName("비밀번호 찾기시 이메일 인증 성공")
-    @WithUserDetails(value = "USER-jisu3148496@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "USER-jisu31484@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void password_test() throws Exception {
         // given
         UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
         passwordInDTO.setRole(Role.USER);
         passwordInDTO.setName("김비밀");
-        passwordInDTO.setEmail("jisu3148496@naver.com");
+        passwordInDTO.setEmail("jisu31484@naver.com");
         String requestBody = om.writeValueAsString(passwordInDTO);
 
         // when
@@ -318,7 +318,7 @@ public class UserControllerTest {
         resultActions.andExpect(jsonPath("$.data.role").value("ADMIN"));
         resultActions.andExpect(jsonPath("$.data.name").value("김비밀"));
         resultActions.andExpect(jsonPath("$.data.phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.email").value("jisu3148496@naver.com"));
+        resultActions.andExpect(jsonPath("$.data.email").value("jisu31484@naver.com"));
         String regex = "^[0-9A-Z]{8}$";
         resultActions.andExpect(jsonPath("$.data.code").value(matchesPattern(regex)));
     }
@@ -328,7 +328,8 @@ public class UserControllerTest {
     public void email_test() throws Exception {
         // given
         UserRequest.EmailInDTO emailInDTO = new UserRequest.EmailInDTO();
-        emailInDTO.setEmail("jisu3148496@naver.com");
+        emailInDTO.setRole(Role.USER);
+        emailInDTO.setEmail("jisu314849@naver.com");
         String requestBody = om.writeValueAsString(emailInDTO);
 
         // when
@@ -455,7 +456,7 @@ public class UserControllerTest {
         // given
         UserRequest.LoginInDTO loginInDTO = new UserRequest.LoginInDTO();
         loginInDTO.setRole(Role.USER);
-        loginInDTO.setEmail("jisu3148496@naver.com");
+        loginInDTO.setEmail("jisu31484@naver.com");
         loginInDTO.setPassword("password1234");
         loginInDTO.setRemember(true);
         String requestBody = om.writeValueAsString(loginInDTO);

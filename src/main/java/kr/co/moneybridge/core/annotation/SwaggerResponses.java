@@ -632,7 +632,7 @@ public class SwaggerResponses {
     public @interface Withdraw {
     }
 
-    @ApiOperation(value = "이메일 인증")
+    @ApiOperation(value = "회원가입시 이메일 인증")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
