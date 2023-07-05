@@ -103,10 +103,14 @@ public class UserRequest {
         private String email;
     }
 
-    @ApiModel(description = "이메일 인증시 요청 데이터")
+    @ApiModel(description = "회원가입 이메일 인증시 요청 데이터")
     @Setter
     @Getter
     public static class EmailInDTO {
+        @ApiModelProperty(example = "USER")
+        @NotNull
+        private Role role;
+
         @ApiModelProperty(example = "jisu8496@naver.com")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")

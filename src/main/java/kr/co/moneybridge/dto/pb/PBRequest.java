@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
+import java.time.LocalTime;
 import java.util.List;
 
 public class PBRequest {
@@ -39,7 +40,7 @@ public class PBRequest {
     @Setter
     @Getter
     public static class JoinInDTO {
-        @ApiModelProperty(example = "jisu3148496@naver.com", value = "이메일 형식, 30바이트 초과하면 안됨, PB내 중복 불가")
+        @ApiModelProperty(example = "jisu31484@naver.com", value = "이메일 형식, 30바이트 초과하면 안됨, PB내 중복 불가")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         @Size(max = 30, message = "이메일은 30바이트를 초과할 수 없습니다")
@@ -94,6 +95,8 @@ public class PBRequest {
                     .profile(defaultProfile) // 기본 이미지
                     .role(Role.PB)
                     .status(PBStatus.PENDING)
+                    .consultStart(LocalTime.of(9, 0))
+                    .consultEnd(LocalTime.of(18, 0))
                     .build();
         }
     }
