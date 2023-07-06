@@ -2,7 +2,9 @@ package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
-import kr.co.moneybridge.core.exception.*;
+import kr.co.moneybridge.core.exception.Exception403;
+import kr.co.moneybridge.core.exception.Exception404;
+import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
@@ -18,7 +20,6 @@ import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -210,9 +211,21 @@ public class BoardService {
             } catch (Exception e) {
                 throw new Exception500("북마크 실패: " + e.getMessage());
             }
-
         } else {
-            throw new Exception401("권한이 없습니다.");
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("존재하지 않는 유저입니다."));
+            if (user.getHasDoneBoardBookmark().equals(false)) {
+                user.updateHasDoneBoardBookmark(true);
+            }
+            try {
+                BoardBookmark boardBookmarkAdmin = BoardBookmark.builder()
+                        .bookmarkerId(member.getId())
+                        .bookmarkerRole(BookmarkerRole.ADMIN)
+                        .board(board)
+                        .build();
+                boardBookmarkRepository.save(boardBookmarkAdmin);
+            } catch (Exception e) {
+                throw new Exception500("북마크 실패: " + e.getMessage());
+            }
         }
     }
 
