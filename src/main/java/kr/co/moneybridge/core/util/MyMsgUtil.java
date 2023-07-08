@@ -69,7 +69,7 @@ public class MyMsgUtil {
                 + "<br>"
                 + "<div style=\"width: 890px; border: 1px solid #153445; display: flex; justify-content: center; align-items: center;\">"
                 + "<br><div style=\"font-size: 130%;\" >"
-                + "<h4 style=\"color: #3A7391;\"><br>회원가입 인증 코드입니다. \n</h4>"
+                + "<h4 style=\"color: #3A7391;\"><br>인증 코드입니다. \n</h4>"
                 + "CODE : <strong style=\"color: #91580F;\">"
                 + code +"<br></strong><br>"
                 + "</div>"
