@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class BoardService {
-    private String defaultThumbnail = "https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/sample.svg";
+    private String defaultThumbnail = "https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/post.png";
     private final BoardRepository boardRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
     private final UserRepository userRepository;
