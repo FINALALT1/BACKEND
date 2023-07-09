@@ -52,7 +52,7 @@ public class Board {
         this.createdAt = LocalDateTime.now();
     }
 
-    @PreUpdate
+//    @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
@@ -66,6 +66,7 @@ public class Board {
         this.content = boardUpdateDTO.getContent();
         this.tag1 = boardUpdateDTO.getTag1();
         this.tag2 = boardUpdateDTO.getTag2();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void updateThumbnail(String thumbnail) { this.thumbnail = thumbnail; }
