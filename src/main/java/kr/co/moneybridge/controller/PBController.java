@@ -121,7 +121,7 @@ public class PBController {
         return new ResponseDTO<>(pageDTO);
     }
 
-    @ApiOperation("PB 리스트 가져오기(거리순)")
+    @ApiOperation("PB 리스트 가져오기(거리순)-비로그인")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "latitude", value = "127.0000", dataType = "Double", paramType = "query", required = true),
             @ApiImplicitParam(name = "longitude", value = "81.1111", dataType = "Double", paramType = "query", required = true),
@@ -151,7 +151,38 @@ public class PBController {
         return new ResponseDTO<>(pageDTO);
     }
 
-    @ApiOperation("PB 리스트 가져오기(경력순)")
+    @ApiOperation("PB 리스트 가져오기(거리순) - 로그인")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "latitude", value = "127.0000", dataType = "Double", paramType = "query", required = true),
+            @ApiImplicitParam(name = "longitude", value = "81.1111", dataType = "Double", paramType = "query", required = true),
+            @ApiImplicitParam(name = "speciality", value = "ETF", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "page", value = "0")})
+    @GetMapping("/auth/list/pb/distance")
+    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getLoginDistancePBList(@RequestParam(value = "latitude") Double latitude,
+                                                                             @RequestParam(value = "longitude") Double longitude,
+                                                                             @RequestParam(value = "speciality", required = false) PBSpeciality speciality,
+                                                                             @RequestParam(value = "company", required = false) Long company,
+                                                                             @RequestParam(defaultValue = "0") int page,
+                                                                             @AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        Pageable pageable = PageRequest.of(page, 10);
+        PageDTO<PBResponse.PBPageDTO> pageDTO;
+
+        if (speciality != null && company != null) {
+            throw new Exception404("잘못된 요청입니다.");
+        } else if (speciality != null) {
+            pageDTO = pbService.getLoginSpecialityPBWithDistance(myUserDetails, latitude, longitude, speciality, pageable);
+        } else if (company != null) {
+            pageDTO = pbService.getLoginCompanyPBWithDistance(myUserDetails, latitude, longitude, company, pageable);
+        } else {
+            pageDTO = pbService.getLoginPBWithDistance(myUserDetails, latitude, longitude, pageable);
+        }
+
+        return new ResponseDTO<>(pageDTO);
+    }
+
+    @ApiOperation("PB 리스트 가져오기(경력순) - 비로그인")
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "speciality", value = "ETF", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query"),
@@ -172,6 +203,33 @@ public class PBController {
             pageDTO = pbService.getCompanyPBWithCareer(company, pageable);
         } else {
             pageDTO = pbService.getPBWithCareer(pageable);
+        }
+
+        return new ResponseDTO<>(pageDTO);
+    }
+
+    @ApiOperation("PB 리스트 가져오기(경력순) - 로그인")
+    @SwaggerResponses.DefaultApiResponses
+    @ApiImplicitParams({@ApiImplicitParam(name = "speciality", value = "ETF", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "company", value = "1", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "page", value = "0")})
+    @GetMapping("/auth/list/pb/career")
+    public ResponseDTO<PageDTO<PBResponse.PBPageDTO>> getLoginCareerPBList(@RequestParam(value = "speciality", required = false) PBSpeciality speciality,
+                                                                           @RequestParam(value = "company", required = false) Long company,
+                                                                           @RequestParam(defaultValue = "0") int page,
+                                                                           @AuthenticationPrincipal MyUserDetails myUserDetails) {
+
+        Pageable pageable = PageRequest.of(page, 10);
+        PageDTO<PBResponse.PBPageDTO> pageDTO;
+
+        if (speciality != null && company != null) {
+            throw new Exception404("잘못된 요청입니다.");
+        } else if (speciality != null) {
+            pageDTO = pbService.getLoginSpecialityPBWithCareer(myUserDetails, speciality, pageable);
+        } else if (company != null) {
+            pageDTO = pbService.getLoginCompanyPBWithCareer(myUserDetails, company, pageable);
+        } else {
+            pageDTO = pbService.getLoginPBWithCareer(myUserDetails, pageable);
         }
 
         return new ResponseDTO<>(pageDTO);
