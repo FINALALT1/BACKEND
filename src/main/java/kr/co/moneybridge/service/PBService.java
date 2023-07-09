@@ -214,6 +214,25 @@ public class PBService {
         return new PageDTO<>(list, pbPG);
     }
 
+    //거리순 PB리스트 가져오기(전문분야필터) 로그인
+    public PageDTO<PBResponse.PBPageDTO> getLoginSpecialityPBWithDistance(MyUserDetails myUserDetails, Double latitude, Double longitude, PBSpeciality speciality, Pageable pageable) {
+
+        List<PBResponse.PBPageDTO> list = pbRepository.findByPBListSpeciality(speciality);
+
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+            for (PBResponse.PBPageDTO dto : list) {
+                dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        }
+
+        list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        Page<PBResponse.PBPageDTO> pbPG = new PageImpl(list.subList(start, end), pageable, list.size());
+        return new PageDTO<>(list, pbPG);
+    }
+
     //거리순 PB리스트 가져오기(증권사필터)
     public PageDTO<PBResponse.PBPageDTO> getCompanyPBWithDistance(Double latitude, Double longitude, Long companyId, Pageable pageable) {
 
@@ -225,10 +244,48 @@ public class PBService {
         return new PageDTO<>(list, pbPG);
     }
 
+    //거리순 PB리스트 가져오기(증권사필터) 로그인
+    public PageDTO<PBResponse.PBPageDTO> getLoginCompanyPBWithDistance(MyUserDetails myUserDetails, Double latitude, Double longitude, Long companyId, Pageable pageable) {
+
+        List<PBResponse.PBPageDTO> list = pbRepository.findByPBListCompany(companyId);
+
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+            for (PBResponse.PBPageDTO dto : list) {
+                dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        }
+
+        list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        Page<PBResponse.PBPageDTO> pbPG = new PageImpl(list.subList(start, end), pageable, list.size());
+        return new PageDTO<>(list, pbPG);
+    }
+
     //거리순 전체PB리스트 가져오기
     public PageDTO<PBResponse.PBPageDTO> getPBWithDistance(Double latitude, Double longitude, Pageable pageable) {
 
         List<PBResponse.PBPageDTO> list = pbRepository.findAllPB();
+        list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        Page<PBResponse.PBPageDTO> pbPG = new PageImpl(list.subList(start, end), pageable, list.size());
+        return new PageDTO<>(list, pbPG);
+    }
+
+    //거리순 전체PB리스트 가져오기 로그인
+    public PageDTO<PBResponse.PBPageDTO> getLoginPBWithDistance(MyUserDetails myUserDetails, Double latitude, Double longitude, Pageable pageable) {
+
+        List<PBResponse.PBPageDTO> list = pbRepository.findAllPB();
+
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+            for (PBResponse.PBPageDTO dto : list) {
+                dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        }
+
         list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), list.size());
@@ -255,6 +312,22 @@ public class PBService {
         return new PageDTO<>(list, pbPG);
     }
 
+    //경력순 PB리스트 가져오기(전문분야필터) 로그인
+    public PageDTO<PBResponse.PBPageDTO> getLoginSpecialityPBWithCareer(MyUserDetails myUserDetails, PBSpeciality speciality, Pageable pageable) {
+
+        Page<PBResponse.PBPageDTO> pbPG = pbRepository.findBySpecialityOrderedByCareer(speciality, pageable);
+
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+            for (PBResponse.PBPageDTO dto : pbPG) {
+                dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        }
+        List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
+
+        return new PageDTO<>(list, pbPG);
+    }
+
     //경력순 PB리스트 가져오기(증권사필터)
     public PageDTO<PBResponse.PBPageDTO> getCompanyPBWithCareer(Long companyId, Pageable pageable) {
 
@@ -264,10 +337,40 @@ public class PBService {
         return new PageDTO<>(list, pbPG);
     }
 
+    //경력순 PB리스트 가져오기(증권사필터) 로그인
+    public PageDTO<PBResponse.PBPageDTO> getLoginCompanyPBWithCareer(MyUserDetails myUserDetails, Long companyId, Pageable pageable) {
+
+        Page<PBResponse.PBPageDTO> pbPG = pbRepository.findByCompanyIdOrderedByCareer(companyId, pageable);
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+            for (PBResponse.PBPageDTO dto : pbPG) {
+                dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        }
+        List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
+
+        return new PageDTO<>(list, pbPG);
+    }
+
     //경력순 전체 PB리스트 가져오기
     public PageDTO<PBResponse.PBPageDTO> getPBWithCareer(Pageable pageable) {
 
         Page<PBResponse.PBPageDTO> pbPG = pbRepository.findAllPBWithCareer(pageable);
+        List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
+
+        return new PageDTO<>(list, pbPG);
+    }
+
+    //경력순 전체 PB리스트 가져오기 - 로그인
+    public PageDTO<PBResponse.PBPageDTO> getLoginPBWithCareer(MyUserDetails myUserDetails, Pageable pageable) {
+
+        Page<PBResponse.PBPageDTO> pbPG = pbRepository.findAllPBWithCareer(pageable);
+        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+            for (PBResponse.PBPageDTO dto : pbPG) {
+                dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        }
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
 
         return new PageDTO<>(list, pbPG);
