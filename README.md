@@ -4,7 +4,7 @@
     ![Generic badge](https://img.shields.io/github/license/FINALALT1/BACKEND)
 </a>
 
-# 💰 Money-Bridge 위치 기반 PB 매칭 프로그램 BackEnd 💰
+# 💰 Money-Bridge 위치 기반 PB 매칭 플랫폼 BackEnd 💰
 > PB와 일반 사용자 간에 유선 및 방문 상담을 연결 시스템을 구축한 백엔드 프로젝트로 <br>
 > 고객이 사전에 자신이 어떤 상품에 대해 관심있는지, 어떤 상품과 PB가 매칭 될 수 있는지를 파악하고,<br>
 > PB들은 ‘라운지’라는 공간에서 블로그처럼 시장의 사항들을 공유하며 실제 투자 포트폴리오 및 후기를 제공하여 신뢰도를 높입니다.<br>
