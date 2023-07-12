@@ -232,8 +232,6 @@ public class BoardController {
                                  @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         if (boardInDTO.getContent() == null || boardInDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
-        if (boardInDTO.getTag1() == null || boardInDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
-        if (boardInDTO.getTag2() == null || boardInDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
 
         Long id = boardService.saveBoard(thumbnailFile, boardInDTO, myUserDetails, BoardStatus.ACTIVE);
 
