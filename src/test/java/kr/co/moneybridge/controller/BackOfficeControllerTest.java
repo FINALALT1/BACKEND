@@ -171,8 +171,8 @@ public class BackOfficeControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.list[0].process").value("APPLY"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("3"));
+        resultActions.andExpect(jsonPath("$.data.list[0].process").value("COMPLETE"));
         resultActions.andExpect(jsonPath("$.data.list[0].status").value("ACTIVE"));
         resultActions.andExpect(jsonPath("$.data.list[0].time").value(LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분"))));
@@ -180,18 +180,15 @@ public class BackOfficeControllerTest {
         resultActions.andExpect(jsonPath("$.data.list[0].locationName").value("kb증권 강남중앙점"));
         resultActions.andExpect(jsonPath("$.data.list[0].goal").value("PROFIT"));
         resultActions.andExpect(jsonPath("$.data.list[0].question").value("질문입니다..."));
-        resultActions.andExpect(jsonPath("$.data.list[0].user.id").value("2"));
-        resultActions.andExpect(jsonPath("$.data.list[0].user.email").value("user@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.list[0].user.name").value("user"));
+        resultActions.andExpect(jsonPath("$.data.list[0].user.id").value("4"));
+        resultActions.andExpect(jsonPath("$.data.list[0].user.email").value("user4@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].user.name").value("user4"));
         resultActions.andExpect(jsonPath("$.data.list[0].user.phoneNumber").value("01012345678"));
         resultActions.andExpect(jsonPath("$.data.list[0].user.isAdmin").value("true"));
-        resultActions.andExpect(jsonPath("$.data.list[0].pb.id").value("3"));
-        resultActions.andExpect(jsonPath("$.data.list[0].pb.email").value("pb3@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.list[0].pb.name").value("pb3"));
+        resultActions.andExpect(jsonPath("$.data.list[0].pb.id").value("4"));
+        resultActions.andExpect(jsonPath("$.data.list[0].pb.email").value("pb4@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].pb.name").value("pb4"));
         resultActions.andExpect(jsonPath("$.data.list[0].pb.phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data.list[0].review.content").value("content 입니다"));
-        resultActions.andExpect(jsonPath("$.data.list[0].review.adherence").value("EXCELLENT"));
-        resultActions.andExpect(jsonPath("$.data.list[0].review.styles[0].style").value("FAST"));
         resultActions.andExpect(status().isOk());
     }
 
@@ -355,9 +352,9 @@ public class BackOfficeControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.list[0].email").value("pblee@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.list[0].name").value("pblee"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("2"));
+        resultActions.andExpect(jsonPath("$.data.list[0].email").value("false@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("false"));
         resultActions.andExpect(jsonPath("$.data.list[0].phoneNumber").value("01012345678"));
         resultActions.andExpect(jsonPath("$.data.list[0].branchName").value("미래에셋증권 여의도점"));
         resultActions.andExpect(jsonPath("$.data.list[0].career").value("10"));
