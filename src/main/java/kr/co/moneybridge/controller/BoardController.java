@@ -158,13 +158,7 @@ public class BoardController {
                                  @AuthenticationPrincipal MyUserDetails myUserDetails,
                                  @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
 
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            User user = userService.getUser(myUserDetails.getMember().getId());
-            replyService.postUserReply(replyInDTO, user.getId(), id);
-        } else if (myUserDetails.getMember().getRole().equals(Role.PB)) {
-            PB pb = pbService.getPB(myUserDetails.getMember().getId());
-            replyService.postPbReply(replyInDTO, pb.getId(), id);
-        }
+        replyService.postReply(myUserDetails, id, replyInDTO);
 
         return new ResponseDTO<>();
     }
@@ -238,8 +232,6 @@ public class BoardController {
                                  @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         if (boardInDTO.getContent() == null || boardInDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
-        if (boardInDTO.getTag1() == null || boardInDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
-        if (boardInDTO.getTag2() == null || boardInDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
 
         Long id = boardService.saveBoard(thumbnailFile, boardInDTO, myUserDetails, BoardStatus.ACTIVE);
 
