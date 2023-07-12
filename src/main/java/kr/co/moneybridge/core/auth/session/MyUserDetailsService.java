@@ -20,7 +20,7 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Role role = Role.valueOf(username.split("-")[0]);
-        String email = username.split("-")[1];
+        String email = username.substring(role.toString().length() + 1);
 
         Member member = null;
         try{
