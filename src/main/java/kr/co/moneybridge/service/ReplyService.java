@@ -27,30 +27,55 @@ public class ReplyService {
     private final PBRepository pbRepository;
     private final BoardRepository boardRepository;
 
-    //댓글 작성하기(user)
+//    //댓글 작성하기(user)
+//    @Transactional
+//    public void postUserReply(ReplyRequest.ReplyInDTO replyInDTO, Long userId, Long boardId) {
+//
+//        User user = userRepository.findById(userId).orElseThrow(() -> new Exception400("user", "해당 유저 찾울 수 없습니다."));
+//        Board board = boardRepository.findById(boardId).orElseThrow(() -> new Exception400("board", "해당 컨텐츠 찾울 수 없습니다."));
+//
+//        try {
+//            Reply reply = replyInDTO.toEntity(user.getId(), board, ReplyAuthorRole.USER);
+//            replyRepository.save(reply);
+//        } catch (Exception e) {
+//            throw new Exception500("댓글 저장 실패");
+//        }
+//    }
+//
+//    //댓글 작성하기(pb)
+//    @Transactional
+//    public void postPbReply(ReplyRequest.ReplyInDTO replyInDTO, Long pbId, Long boardId) {
+//
+//        PB pb = pbRepository.findById(pbId).orElseThrow(() -> new Exception400("pb", "해당 유저 찾울 수 없습니다."));
+//        Board board = boardRepository.findById(boardId).orElseThrow(() -> new Exception400("board", "해당 컨텐츠 찾울 수 없습니다."));
+//
+//        try {
+//            Reply reply = replyInDTO.toEntity(pb.getId(), board, ReplyAuthorRole.PB);
+//            replyRepository.save(reply);
+//        } catch (Exception e) {
+//            throw new Exception500("댓글 저장 실패");
+//        }
+//    }
+
+    //댓글 작성하기
     @Transactional
-    public void postUserReply(ReplyRequest.ReplyInDTO replyInDTO, Long userId, Long boardId) {
+    public void postReply(MyUserDetails myUserDetails, Long boardId, ReplyRequest.ReplyInDTO replyInDTO) {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new Exception400("user", "해당 유저 찾울 수 없습니다."));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new Exception400("board", "해당 컨텐츠 찾울 수 없습니다."));
-
-        try {
-            Reply reply = replyInDTO.toEntity(user.getId(), board, ReplyAuthorRole.USER);
-            replyRepository.save(reply);
-        } catch (Exception e) {
-            throw new Exception500("댓글 저장 실패");
+        Member member = myUserDetails.getMember();
+        Reply reply;
+        if (member.getRole().equals(Role.USER)) {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception400("user", "해당 유저 찾울 수 없습니다."));
+            reply = replyInDTO.toEntity(user.getId(), board, ReplyAuthorRole.USER);
+        } else if (member.getRole().equals(Role.PB)) {
+            PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception400("pb", "해당 유저 찾울 수 없습니다."));
+            reply = replyInDTO.toEntity(pb.getId(), board, ReplyAuthorRole.PB);
+        } else {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception400("user", "해당 유저 찾울 수 없습니다."));
+            reply = replyInDTO.toEntity(user.getId(), board, ReplyAuthorRole.ADMIN);
         }
-    }
-
-    //댓글 작성하기(pb)
-    @Transactional
-    public void postPbReply(ReplyRequest.ReplyInDTO replyInDTO, Long pbId, Long boardId) {
-
-        PB pb = pbRepository.findById(pbId).orElseThrow(() -> new Exception400("pb", "해당 유저 찾울 수 없습니다."));
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new Exception400("board", "해당 컨텐츠 찾울 수 없습니다."));
 
         try {
-            Reply reply = replyInDTO.toEntity(pb.getId(), board, ReplyAuthorRole.PB);
             replyRepository.save(reply);
         } catch (Exception e) {
             throw new Exception500("댓글 저장 실패");

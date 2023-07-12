@@ -158,13 +158,7 @@ public class BoardController {
                                  @AuthenticationPrincipal MyUserDetails myUserDetails,
                                  @RequestBody ReplyRequest.ReplyInDTO replyInDTO) {
 
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            User user = userService.getUser(myUserDetails.getMember().getId());
-            replyService.postUserReply(replyInDTO, user.getId(), id);
-        } else if (myUserDetails.getMember().getRole().equals(Role.PB)) {
-            PB pb = pbService.getPB(myUserDetails.getMember().getId());
-            replyService.postPbReply(replyInDTO, pb.getId(), id);
-        }
+        replyService.postReply(myUserDetails, id, replyInDTO);
 
         return new ResponseDTO<>();
     }
