@@ -22,6 +22,12 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             "WHERE r.board.id = :boardId AND r.authorRole = 'PB'")
     List<BoardResponse.ReplyOutDTO> findPBRepliesByBoardId(@Param("boardId") Long boardId);
 
+    @Query("SELECT NEW kr.co.moneybridge.dto.board.BoardResponse$ReplyOutDTO(r, u) " +
+            "FROM Reply r " +
+            "INNER JOIN User u ON r.authorId = u.id " +
+            "WHERE r.board.id = :boardId AND r.authorRole = 'ADMIN'")
+    List<BoardResponse.ReplyOutDTO> findAdminRepliesByBoardId(@Param("boardId") Long boardId);
+
     @Modifying
     @Query("DELETE FROM Reply r WHERE r.board.id = :boardId")
     void deleteByBoardId(@Param("boardId") Long boardId);

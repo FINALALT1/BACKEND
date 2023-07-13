@@ -282,8 +282,6 @@ public class BoardController {
                                 @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         if (boardUpdateDTO.getContent() == null || boardUpdateDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
-        if (boardUpdateDTO.getTag1() == null || boardUpdateDTO.getTag1().isEmpty()) throw new Exception400("tag", "태그 없음");
-        if (boardUpdateDTO.getTag2() == null || boardUpdateDTO.getTag2().isEmpty()) throw new Exception400("tag", "태그 없음");
 
         boardService.putBoard(thumbnailFile, myUserDetails, boardUpdateDTO, id);
 
