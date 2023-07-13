@@ -16,6 +16,23 @@ public class BackOfficeRequest {
     @ApiModel
     @Getter
     @Setter
+    public static class UpdateBranchDTO {
+        @ApiModelProperty(example = "1", value = "증권사 id")
+        private Long companyId;
+
+        @ApiModelProperty(example = "서울영업부", value = "지점명")
+        private String name;
+
+        @ApiModelProperty(example = "서울특별시 영등포구 국제금융로2길 24 BNK금융타워", value = "검색할 주소(도로명/지번)- 건물명까지만 검색됨. 몇 층 몇 호인지는 상세주소에 적기")
+        private String address; // 주소
+
+        @ApiModelProperty(example = "6층", value = "건물명 이후 주소(몇 층 몇 호)")
+        private String specificAddress; // 상세주소
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
     public static class AddFAQDTO {
         @ApiModelProperty(example = "회원", value = "유형")
         @NotEmpty

@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.pb;
 
+import kr.co.moneybridge.dto.backOffice.FullAddress;
 import lombok.*;
 
 import javax.persistence.*;
@@ -33,19 +34,23 @@ public class Branch {
 
     @Column(nullable = false)
     private Double longitude; // 경도
-//    @Column(nullable = false)
-//    private LocalDateTime createdAt;
 
-//    private LocalDateTime updatedAt;
-
-//    @PrePersist
-//    protected void onCreate() {
-//        this.createdAt = LocalDateTime.now();
-//    }
-//
-//    @PreUpdate
-//    protected void onUpdate() {
-//        this.updatedAt = LocalDateTime.now();
-//    }
-
+    public void updateCompany(Company company) {
+        this.company = company;
+    }
+    public void updateNameOfCompany(String companyName) {
+        this.name = companyName + " " + this.name.split(" ")[1];
+    }
+    public void updateName(String name) {
+        this.name = name;
+    }
+    public void updateNameOnly(String name) {
+        this.name = this.name.split(" ")[0] + " " + name;
+    }
+    public void updateAddress(FullAddress address, String specificAddress){
+        this.roadAddress = address.getRoadAddress() + " " + specificAddress;
+        this.streetAddress = address.getStreetAddress() + " " + specificAddress;
+        this.latitude = address.getLatitude();
+        this.longitude = address.getLongitude();
+    }
 }
