@@ -28,4 +28,10 @@ public interface ReReplyRepository extends JpaRepository<ReReply, Long> {
             "JOIN PB pb ON rr.authorId = pb.id " +
             "WHERE rr.authorRole = 'PB' AND rr.reply.id = :replyId")
     List<BoardResponse.ReReplyOutDTO> findPBReReplyByReplyId(@Param("replyId") Long replyId);
+
+    @Query("SELECT new kr.co.moneybridge.dto.board.BoardResponse$ReReplyOutDTO(rr, u) " +
+            "FROM ReReply rr " +
+            "JOIN User u ON rr.authorId = u.id " +
+            "WHERE rr.authorRole = 'ADMIN' AND rr.reply.id = :replyId")
+    List<BoardResponse.ReReplyOutDTO> findAdminReReplyByReplyId(@Param("replyId") Long replyId);
 }

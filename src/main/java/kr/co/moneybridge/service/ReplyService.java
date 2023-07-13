@@ -96,7 +96,8 @@ public class ReplyService {
             PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
             reReply = reReplyInDTO.toEntity(reply, pb, ReplyAuthorRole.PB);
         } else {
-            throw new Exception404("댓글 권한 없습니다.");
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            reReply = reReplyInDTO.toEntity(reply, user, ReplyAuthorRole.ADMIN);
         }
 
         try {

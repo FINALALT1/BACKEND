@@ -155,9 +155,12 @@ public class BoardService {
 
         List<BoardResponse.ReplyOutDTO> replyList = new ArrayList<>();
         List<BoardResponse.ReplyOutDTO> userReplyList = replyRepository.findUserRepliesByBoardId(id);
-        List<BoardResponse.ReplyOutDTO> PBReplyList = replyRepository.findPBRepliesByBoardId(id);
+        List<BoardResponse.ReplyOutDTO> pbReplyList = replyRepository.findPBRepliesByBoardId(id);
+        List<BoardResponse.ReplyOutDTO> adminReplyList = replyRepository.findAdminRepliesByBoardId(id);
+
         replyList.addAll(userReplyList);
-        replyList.addAll(PBReplyList);
+        replyList.addAll(pbReplyList);
+        replyList.addAll(adminReplyList);
 
         for (BoardResponse.ReplyOutDTO replyOutDTO : replyList) {
             replyOutDTO.setReReply(getReReplies(replyOutDTO.getId()));
@@ -172,8 +175,10 @@ public class BoardService {
         List<BoardResponse.ReReplyOutDTO> reReplyList = new ArrayList<>();
         List<BoardResponse.ReReplyOutDTO> userReReplyList = reReplyRepository.findUserReReplyByReplyId(replyId);
         List<BoardResponse.ReReplyOutDTO> pbReReplyList = reReplyRepository.findPBReReplyByReplyId(replyId);
+        List<BoardResponse.ReReplyOutDTO> adminReReplyList = reReplyRepository.findAdminReReplyByReplyId(replyId);
         reReplyList.addAll(userReReplyList);
         reReplyList.addAll(pbReReplyList);
+        reReplyList.addAll(adminReReplyList);
 
         return reReplyList;
     }
@@ -485,6 +490,13 @@ public class BoardService {
             } else {
                 throw new Exception404("잘못된 요청입니다.");
             }
+        } else {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(user.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.ADMIN)) {
+                reply.updateContent(replyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
         }
     }
 
@@ -505,6 +517,13 @@ public class BoardService {
         } else if (member.getRole().equals(Role.PB)) {
             PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
             if (reply.getAuthorId().equals(pb.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                replyRepository.delete(reply);
+            } else {
+                throw new Exception404("삭제 권한 없습니다.");
+            }
+        } else {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reply.getAuthorId().equals(user.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.ADMIN)) {
                 replyRepository.delete(reply);
             } else {
                 throw new Exception404("삭제 권한 없습니다.");
@@ -534,6 +553,13 @@ public class BoardService {
             } else {
                 throw new Exception404("잘못된 요청입니다.");
             }
+        } else {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reReply.getAuthorId().equals(user.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.ADMIN)) {
+                reReply.updateReReply(reReplyInDTO.getContent());
+            } else {
+                throw new Exception404("잘못된 요청입니다.");
+            }
         }
     }
 
@@ -554,6 +580,13 @@ public class BoardService {
         } else if (member.getRole().equals(Role.PB)) {
             PB pb = pbRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 PB 찾을 수 없습니다."));
             if (reReply.getAuthorId().equals(pb.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.PB)) {
+                reReplyRepository.delete(reReply);
+            } else {
+                throw new Exception404("삭제 권한 없습니다.");
+            }
+        } else {
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            if (reReply.getAuthorId().equals(user.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.ADMIN)) {
                 reReplyRepository.delete(reReply);
             } else {
                 throw new Exception404("삭제 권한 없습니다.");
