@@ -65,6 +65,44 @@ public class BackOfficeService {
 
     @MyLog
     @Transactional
+    public void updateBranch(Long branchId, BackOfficeRequest.UpdateBranchDTO updateBranchDTO) {
+        Branch branchPS = branchRepository.findById(branchId).orElseThrow(
+                () -> new Exception404("존재하지 않는 지점입니다.")
+        );
+        try {
+            // 증권사랑 이름 변경
+            if(updateBranchDTO.getCompanyId() != null){
+                Company company = companyRepository.findById(updateBranchDTO.getCompanyId()).orElseThrow(
+                        () -> new Exception400("companyId", "없는 증권회사의 id입니다")
+                );
+                branchPS.updateCompany(company);
+                if(updateBranchDTO.getName() == null ||
+                        (updateBranchDTO.getName() != null && updateBranchDTO.getName().isEmpty())){
+                    branchPS.updateNameOfCompany(company.getName());
+                } else {
+                    branchPS.updateName(company.getName() + " " + updateBranchDTO.getName());
+                }
+            } else if(updateBranchDTO.getName() != null && !updateBranchDTO.getName().isEmpty()){
+                branchPS.updateNameOnly(updateBranchDTO.getName());
+            }
+
+            // 주소 변경
+            if(updateBranchDTO.getAddress() != null && !updateBranchDTO.getAddress().isEmpty()){
+                FullAddress address = geoCodingUtil.getFullAddress(updateBranchDTO.getAddress());
+                String specificAddress =  updateBranchDTO.getSpecificAddress() == null ||
+                        (updateBranchDTO.getSpecificAddress() != null && updateBranchDTO.getSpecificAddress().isEmpty()) ?
+                        "" : updateBranchDTO.getSpecificAddress();
+
+                branchPS.updateAddress(address, specificAddress);
+            }
+
+        } catch (Exception e) {
+            throw new Exception500("지점 수정 실패 : " + e);
+        }
+    }
+
+    @MyLog
+    @Transactional
     public void deleteBranch(Long branchId) {
         try {
             branchRepository.deleteById(branchId);

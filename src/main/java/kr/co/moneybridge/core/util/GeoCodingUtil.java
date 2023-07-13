@@ -46,7 +46,6 @@ public class GeoCodingUtil {
 
         String url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query="+address;
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        System.out.println(response.getBody().toString());
 
         // 2) 응답에서 지번주소, 도로명주소, 위도 경도 찾아서 FullAddress 반환
         JSONTokener tokener = new JSONTokener(response.getBody());
