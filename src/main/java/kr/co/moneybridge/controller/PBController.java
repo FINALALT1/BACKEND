@@ -57,13 +57,14 @@ public class PBController {
     @SwaggerResponses.SearchBranch
     @GetMapping("/branch")
     public ResponseDTO<PageDTO<PBResponse.BranchDTO>> searchBranch(@RequestParam Long companyId,
-                                                                   @RequestParam(required = false) String keyword) {
+                                                                   @RequestParam(required = false) String keyword,
+                                                                   @RequestParam(defaultValue = "0") int page) {
         keyword = keyword == null ? "" : keyword.replaceAll("\\s", "");
         if (keyword.isEmpty()) {
             List<PBResponse.BranchDTO> empty = new ArrayList<>();
             return new ResponseDTO<>(new PageDTO<>(empty, new PageImpl<>(empty))); // 빈칸 검색시
         }
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
         PageDTO<PBResponse.BranchDTO> pageDTO = pbService.searchBranch(companyId, keyword, pageable);
         return new ResponseDTO<>(pageDTO);
     }
