@@ -25,6 +25,19 @@ public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
     @MyLog
+    @ApiOperation(value = "지점 수정하기")
+    @SwaggerResponses.DefaultApiResponses
+    @PatchMapping("/admin/branch/{id}")
+    public ResponseDTO updateBranch(@PathVariable Long id, @RequestBody @Valid BackOfficeRequest.UpdateBranchDTO updateBranchDTO, Errors errors) {
+        if(updateBranchDTO.getSpecificAddress() != null && !updateBranchDTO.getSpecificAddress().isEmpty()
+                && (updateBranchDTO.getAddress() == null || (updateBranchDTO.getAddress() != null && updateBranchDTO.getAddress().isEmpty()))){
+            throw new Exception400("address", "specificAddress는 address와 함께 입력해야 합니다");
+        }
+        backOfficeService.updateBranch(id, updateBranchDTO);
+        return new ResponseDTO();
+    }
+
+    @MyLog
     @ApiOperation(value = "지점 삭제")
     @SwaggerResponses.ApiResponsesWithout400
     @DeleteMapping("/admin/branch/{id}")
