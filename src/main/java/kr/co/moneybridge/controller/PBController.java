@@ -56,17 +56,14 @@ public class PBController {
     @MyLog
     @SwaggerResponses.SearchBranch
     @GetMapping("/branch")
-    public ResponseDTO<PageDTO<PBResponse.BranchDTO>> searchBranch(@RequestParam Long companyId,
-                                                                   @RequestParam(required = false) String keyword,
-                                                                   @RequestParam(defaultValue = "0") int page) {
+    public ResponseDTO<PBResponse.BranchListDTO> searchBranch(@RequestParam Long companyId,
+                                                                   @RequestParam(required = false) String keyword) {
         keyword = keyword == null ? "" : keyword.replaceAll("\\s", "");
         if (keyword.isEmpty()) {
-            List<PBResponse.BranchDTO> empty = new ArrayList<>();
-            return new ResponseDTO<>(new PageDTO<>(empty, new PageImpl<>(empty))); // 빈칸 검색시
+            return new ResponseDTO<>(new PBResponse.BranchListDTO(new ArrayList<>())); // 빈칸 검색시
         }
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
-        PageDTO<PBResponse.BranchDTO> pageDTO = pbService.searchBranch(companyId, keyword, pageable);
-        return new ResponseDTO<>(pageDTO);
+        PBResponse.BranchListDTO list = pbService.searchBranch(companyId, keyword);
+        return new ResponseDTO<>(list);
     }
 
     // 증권사 리스트 가져오기 - 메인페이지, 회원가입시

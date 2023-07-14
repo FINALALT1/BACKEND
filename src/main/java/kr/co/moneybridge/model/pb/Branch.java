@@ -48,9 +48,20 @@ public class Branch {
         this.name = this.name.split(" ")[0] + " " + name;
     }
     public void updateAddress(FullAddress address, String specificAddress){
-        this.roadAddress = address.getRoadAddress() + " " + specificAddress;
-        this.streetAddress = address.getStreetAddress() + " " + specificAddress;
+        if(specificAddress.isEmpty()){
+            this.roadAddress = address.getRoadAddress();
+            this.streetAddress = address.getStreetAddress();
+        } else {
+            this.roadAddress = address.getRoadAddress() + ", " + specificAddress;
+            this.streetAddress = address.getStreetAddress() + ", " + specificAddress;
+        }
         this.latitude = address.getLatitude();
         this.longitude = address.getLongitude();
+    }
+    public void updateRoadAddress(String roadAddress){
+        this.roadAddress = roadAddress;
+    }
+    public void updateStreetAddress(String streetAddress){
+        this.streetAddress = streetAddress;
     }
 }

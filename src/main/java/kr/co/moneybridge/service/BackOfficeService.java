@@ -63,6 +63,21 @@ public class BackOfficeService {
     private final S3Util s3Util;
     private final GeoCodingUtil geoCodingUtil;
 
+//    @MyLog
+//    @Transactional
+//    public void fixBranch(){
+//        List<Branch> list = branchRepository.findAll();
+//        list.stream().forEach(branch -> {
+//            String originRoadAddress = branch.getRoadAddress();
+//            FullAddress address = geoCodingUtil.getFullAddress(originRoadAddress);
+//            String specificAddress = originRoadAddress.substring(address.getRoadAddress().length()).trim();
+//            if(!specificAddress.isEmpty()) {
+//                branch.updateRoadAddress(address.getRoadAddress() + ", " + specificAddress);
+//                branch.updateStreetAddress(address.getStreetAddress() + ", " + specificAddress);
+//            }
+//        });
+//    }
+
     @MyLog
     @Transactional
     public void updateBranch(Long branchId, BackOfficeRequest.UpdateBranchDTO updateBranchDTO) {

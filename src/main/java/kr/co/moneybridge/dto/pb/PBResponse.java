@@ -7,6 +7,7 @@ import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserPropensity;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -105,6 +106,17 @@ public class PBResponse {
             this.speciality2 = pb.getSpeciality2();
             this.reserveCount = reserveCount;
             this.reviewCount = reviewCount;
+        }
+    }
+    @ApiModel(description = "지점 검색 리스트 응답 데이터")
+    @Setter
+    @Getter
+    public static class BranchListDTO {
+        @ApiModelProperty
+        private List<BranchDTO> list;
+
+        public BranchListDTO(List<BranchDTO> list) {
+            this.list = list;
         }
     }
 

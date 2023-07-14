@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 import java.util.Optional;
 
 @Import(BCryptPasswordEncoder.class)
@@ -54,14 +55,14 @@ public class BranchRepositoryTest extends DummyEntity {
         Long companyId = 1L;
         String keyword = "지번주소";
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-        Page<Branch> branchPG = branchRepository.findByCompanyIdAndKeyword(companyId, keyword, pageable);
+        List<Branch> branches = branchRepository.findByCompanyIdAndKeyword(companyId, keyword);
 
         // then
-        Assertions.assertThat(branchPG.getContent().get(0).getId()).isEqualTo(1L);
-        Assertions.assertThat(branchPG.getContent().get(0).getName()).isEqualTo("미래에셋증권 여의도점");
-        Assertions.assertThat(branchPG.getContent().get(0).getCompany().getName()).isEqualTo("미래에셋증권");
-        Assertions.assertThat(branchPG.getContent().get(0).getRoadAddress()).isEqualTo("미래에셋증권 도로명주소");
-        Assertions.assertThat(branchPG.getContent().get(0).getStreetAddress()).isEqualTo("미래에셋증권 지번주소");
+        Assertions.assertThat(branches.get(0).getId()).isEqualTo(1L);
+        Assertions.assertThat(branches.get(0).getName()).isEqualTo("미래에셋증권 여의도점");
+        Assertions.assertThat(branches.get(0).getCompany().getName()).isEqualTo("미래에셋증권");
+        Assertions.assertThat(branches.get(0).getRoadAddress()).isEqualTo("미래에셋증권 도로명주소");
+        Assertions.assertThat(branches.get(0).getStreetAddress()).isEqualTo("미래에셋증권 지번주소");
     }
 
     @Test
