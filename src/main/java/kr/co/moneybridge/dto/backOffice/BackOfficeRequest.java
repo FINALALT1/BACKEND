@@ -128,8 +128,8 @@ public class BackOfficeRequest {
             return Branch.builder()
                     .company(company)
                     .name(company.getName() + " " + name)
-                    .roadAddress(address.getRoadAddress() + " " + specificAddress)
-                    .streetAddress(address.getStreetAddress() + " " + specificAddress)
+                    .roadAddress(address.getRoadAddress() + ", " + specificAddress)
+                    .streetAddress(address.getStreetAddress() + ", " + specificAddress)
                     .latitude(address.getLatitude())
                     .longitude(address.getLongitude())
                     .build();

@@ -24,6 +24,14 @@ import javax.validation.Valid;
 public class BackOfficeController {
     private final BackOfficeService backOfficeService;
 
+    // 지점 상세 주소 앞에 쉼표 붙이기 수정용
+//    @MyLog
+//    @PatchMapping("/fix/branch")
+//    public ResponseDTO fixBranch() {
+//        backOfficeService.fixBranch();
+//        return new ResponseDTO();
+//    }
+
     @MyLog
     @ApiOperation(value = "지점 수정하기")
     @SwaggerResponses.DefaultApiResponses
