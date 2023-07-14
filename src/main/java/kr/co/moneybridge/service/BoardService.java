@@ -109,6 +109,10 @@ public class BoardService {
             for (BoardResponse.BoardPageDTO dto : boardList) {
                 dto.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.PB, dto.getId()));
             }
+        } else {
+            for (BoardResponse.BoardPageDTO dto : boardList) {
+                dto.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.ADMIN, dto.getId()));
+            }
         }
 
         return boardList;
@@ -132,8 +136,10 @@ public class BoardService {
         Member member = myUserDetails.getMember();
         if (member.getRole().equals(Role.USER)) {
             boardDetailDTO.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.USER, id));
-        } else {
+        } else if (member.getRole().equals(Role.PB)) {
             boardDetailDTO.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.PB, id));
+        } else {
+            boardDetailDTO.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.ADMIN, id));
         }
         boardDetailDTO.setReply(getReplies(id));
 
@@ -394,7 +400,14 @@ public class BoardService {
             return new PageDTO<>(list, boardPG);
 
         } else {
-            throw new Exception403("권한이 없습니다.");
+            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("존재하지 않는 유저입니다."));
+            Page<BoardResponse.BoardPageDTO> boardPG = boardRepository.findBookmarkBoardsWithAdminId(user.getId(), pageable);
+            List<BoardResponse.BoardPageDTO> list = boardPG.getContent().stream().collect(Collectors.toList());
+            for (BoardResponse.BoardPageDTO dto : list) {
+                dto.setIsBookmarked(true);
+            }
+            return new PageDTO<>(list, boardPG);
+
         }
     }
 
@@ -456,8 +469,10 @@ public class BoardService {
 
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
             bookmarkerRole = BookmarkerRole.USER;
-        } else {
+        } else if (myUserDetails.getMember().getRole().equals(Role.PB)) {
             bookmarkerRole = BookmarkerRole.PB;
+        } else {
+            bookmarkerRole = BookmarkerRole.ADMIN;
         }
 
         for (BoardResponse.BoardPageDTO dto : boardPG) {
