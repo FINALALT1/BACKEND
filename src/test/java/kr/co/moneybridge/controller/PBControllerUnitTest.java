@@ -185,11 +185,10 @@ public class PBControllerUnitTest extends MockDummyEntity {
         String keyword = "지번 주소";
         Branch branch = newMockBranch(1L, newMockCompany(1L, "미래에셋증권"), 0);
         List<PBResponse.BranchDTO> list = Arrays.asList(new PBResponse.BranchDTO(branch));
-        Page<Branch> branchPG =  new PageImpl<>(Arrays.asList(branch));
-        PageDTO<PBResponse.BranchDTO> pageDTO = new PageDTO<>(list, branchPG, Branch.class);
+        PBResponse.BranchListDTO listDTO = new PBResponse.BranchListDTO(list);
 
         //stub
-        Mockito.when(pbService.searchBranch(any(), any(), any())).thenReturn(pageDTO);
+        Mockito.when(pbService.searchBranch(any(), any())).thenReturn(listDTO);
 
         // When
         ResultActions resultActions = mvc.perform(get("/branch?companyId="+companyId+"&keyword="+keyword));

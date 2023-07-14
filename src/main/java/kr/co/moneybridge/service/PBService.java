@@ -106,12 +106,12 @@ public class PBService {
     }
 
     @MyLog
-    public PageDTO<PBResponse.BranchDTO> searchBranch(Long companyId, String keyword, Pageable pageable) {
-        Page<Branch> branchPG = branchRepository.findByCompanyIdAndKeyword(companyId, keyword, pageable);
-        List<PBResponse.BranchDTO> list = branchPG.getContent().stream()
+    public PBResponse.BranchListDTO searchBranch(Long companyId, String keyword) {
+        List<Branch> branches = branchRepository.findByCompanyIdAndKeyword(companyId, keyword);
+        List<PBResponse.BranchDTO> list = branches.stream()
                 .map(branch -> new PBResponse.BranchDTO(branch))
                 .collect(Collectors.toList());
-        return new PageDTO<>(list, branchPG, Branch.class);
+        return new PBResponse.BranchListDTO(list);
     }
 
     @MyLog

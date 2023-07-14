@@ -220,17 +220,17 @@ class PBServiceTest extends MockDummyEntity {
         String keyword = "지번 주소";
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
         Branch branch = newMockBranch(1L, newMockCompany(1L, "미래에셋증권"), 0);
-        Page<Branch> branchPG =  new PageImpl<>(Arrays.asList(branch));
+        List<Branch> branches =  Arrays.asList(branch);
 
         //stub
-        when(branchRepository.findByCompanyIdAndKeyword(any(), any(), any())).thenReturn(branchPG);
+        when(branchRepository.findByCompanyIdAndKeyword(any(), any())).thenReturn(branches);
 
         //when
-        PageDTO<PBResponse.BranchDTO> pageDTO = pbService.searchBranch(companyId, keyword, pageable);
+        PBResponse.BranchListDTO list = pbService.searchBranch(companyId, keyword);
 
         //then
-        assertThat(pageDTO.getList().size()).isEqualTo(branchPG.getContent().size());
-        Mockito.verify(branchRepository, Mockito.times(1)).findByCompanyIdAndKeyword(any(), any(), any());
+        assertThat(list.getList().size()).isEqualTo(branches.size());
+        Mockito.verify(branchRepository, Mockito.times(1)).findByCompanyIdAndKeyword(any(), any());
     }
 
     @Test
