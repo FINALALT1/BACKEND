@@ -53,4 +53,10 @@ public class Branch {
         this.latitude = address.getLatitude();
         this.longitude = address.getLongitude();
     }
+    public void updateRoadAddress(String roadAddress){
+        this.roadAddress = roadAddress;
+    }
+    public void updateStreetAddress(String streetAddress){
+        this.streetAddress = streetAddress;
+    }
 }
