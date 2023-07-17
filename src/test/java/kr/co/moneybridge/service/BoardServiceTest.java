@@ -3,6 +3,7 @@ package kr.co.moneybridge.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
+import kr.co.moneybridge.core.util.BizMessageUtil;
 import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,6 +69,10 @@ class BoardServiceTest extends MockDummyEntity {
     private MultipartFile multipartFile;
     @Mock
     private S3Util s3Util;
+    @Mock
+    private BizMessageUtil biz;
+    @Mock
+    private Environment environment;
     @Spy
     private ObjectMapper om;
 

@@ -32,6 +32,16 @@ public class MyDateUtil {
         );
     }
 
+    public static LocalDateTime StringToLocalDateTimeV2(String string) {
+        if (string == null) {
+            return null;
+        }
+        return LocalDateTime.parse(
+                string,
+                DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+        );
+    }
+
     public static String localTimeToString(LocalTime localTime) {
         if (localTime == null) {
             return null;
