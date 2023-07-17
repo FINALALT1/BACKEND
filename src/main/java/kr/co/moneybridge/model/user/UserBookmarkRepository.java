@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserBookmarkRepository extends JpaRepository<UserBookmark, Long> {
@@ -24,4 +25,7 @@ public interface UserBookmarkRepository extends JpaRepository<UserBookmark, Long
 
     @Query("SELECT ub FROM UserBookmark ub where ub.user.id = :userId AND ub.pb.id = :pbId")
     Optional<UserBookmark> findByUserIdWithPbId(@Param("userId") Long userId, @Param("pbId") Long pbId);
+
+    @Query("select u from UserBookmark ub join ub.user u where ub.pb.id = :pbId")
+    List<User> findByPBId(@Param("pbId") Long pbId);
 }

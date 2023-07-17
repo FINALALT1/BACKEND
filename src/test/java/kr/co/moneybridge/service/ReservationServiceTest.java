@@ -2,6 +2,7 @@ package kr.co.moneybridge.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
+import kr.co.moneybridge.core.util.BizMessageUtil;
 import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
@@ -22,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -50,6 +52,10 @@ public class ReservationServiceTest extends MockDummyEntity {
     private ReviewRepository reviewRepository;
     @Mock
     private StyleRepository styleRepository;
+    @Mock
+    private BizMessageUtil biz;
+    @Mock
+    private Environment environment;
     @Spy
     private ObjectMapper om;
 
@@ -662,6 +668,7 @@ public class ReservationServiceTest extends MockDummyEntity {
         assertThat(result.getStyle2()).isEqualTo(styleList.get(1));
         assertThat(result.getStyle3()).isEqualTo(styleList.get(2));
     }
+
     @Test
     public void get_reservations_by_date_test() {
         // given
