@@ -2,7 +2,6 @@ package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
-import kr.co.moneybridge.core.exception.Exception403;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.BizMessageUtil;
@@ -23,6 +22,7 @@ import kr.co.moneybridge.model.user.UserBookmarkRepository;
 import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +49,7 @@ public class BoardService {
     private final ReReplyRepository reReplyRepository;
     private final S3Util s3Util;
     private final BizMessageUtil biz;
+    private final Environment environment;
 
     //컨텐츠검색(PB명 + 컨텐츠제목)
     public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithTitle(String search, Pageable pageable) {
@@ -296,17 +297,19 @@ public class BoardService {
         }
 
         // 해당 PB를 북마크한 투자자들에게 알림톡 발신
-        List<User> users = userBookmarkRepository.findByPBId(pb.getId());
-        for (User user : users) {
-            biz.sendWebLinkNotification(
-                    user.getPhoneNumber(),
-                    Template.NEW_CONTENT,
-                    biz.getTempMsg005(
-                            user.getName(),
-                            pb.getName(),
-                            board
-                    )
-            );
+        if (environment.acceptsProfiles("prod")) {
+            List<User> users = userBookmarkRepository.findByPBId(pb.getId());
+            for (User user : users) {
+                biz.sendWebLinkNotification(
+                        user.getPhoneNumber(),
+                        Template.NEW_CONTENT,
+                        biz.getTempMsg005(
+                                user.getName(),
+                                pb.getName(),
+                                board
+                        )
+                );
+            }
         }
 
         return id;

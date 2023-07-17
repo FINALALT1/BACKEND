@@ -17,6 +17,7 @@ import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,7 @@ public class ReservationService {
     private final ReviewRepository reviewRepository;
     private final StyleRepository styleRepository;
     private final BizMessageUtil biz;
+    private final Environment environment;
 
     @MyLog
     public ReservationResponse.RecentInfoDTO getRecentReservationInfo(Long pbId) {
@@ -378,15 +380,17 @@ public class ReservationService {
         }
 
         // 담당 PB에게 알림톡 발신
-        biz.sendWebLinkNotification(
-                pbPS.getPhoneNumber(),
-                Template.ADD_RESERVATION,
-                biz.getTempMsg001(
-                        pbPS.getName(),
-                        userPS.getName(),
-                        reservationPS
-                )
-        );
+        if (environment.acceptsProfiles("prod")) {
+            biz.sendWebLinkNotification(
+                    pbPS.getPhoneNumber(),
+                    Template.ADD_RESERVATION,
+                    biz.getTempMsg001(
+                            pbPS.getName(),
+                            userPS.getName(),
+                            reservationPS
+                    )
+            );
+        }
     }
 
     @MyLog
@@ -455,28 +459,30 @@ public class ReservationService {
         }
 
         // 알림톡 발신
-        if (myUserDetails.getMember().getRole().equals(Role.PB)) {
-            // 대상 투자자에게 발신
-            biz.sendNotification(
-                    reservationPS.getUser().getPhoneNumber(),
-                    Template.CANCEL_RESERVATION_BY_PB,
-                    biz.getTempMsg002(
-                            reservationPS.getUser().getName(),
-                            reservationPS.getPb().getName(),
-                            reservationPS.getCreatedAt()
-                    )
-            );
-        } else {
-            // 대상 PB에게 발신
-            biz.sendNotification(
-                    reservationPS.getPb().getPhoneNumber(),
-                    Template.CANCEL_RESERVATION_BY_USER,
-                    biz.getTempMsg003(
-                            reservationPS.getPb().getName(),
-                            reservationPS.getUser().getName(),
-                            reservationPS.getCreatedAt()
-                    )
-            );
+        if (environment.acceptsProfiles("prod")) {
+            if (myUserDetails.getMember().getRole().equals(Role.PB)) {
+                // 대상 투자자에게 발신
+                biz.sendNotification(
+                        reservationPS.getUser().getPhoneNumber(),
+                        Template.CANCEL_RESERVATION_BY_PB,
+                        biz.getTempMsg002(
+                                reservationPS.getUser().getName(),
+                                reservationPS.getPb().getName(),
+                                reservationPS.getCreatedAt()
+                        )
+                );
+            } else {
+                // 대상 PB에게 발신
+                biz.sendNotification(
+                        reservationPS.getPb().getPhoneNumber(),
+                        Template.CANCEL_RESERVATION_BY_USER,
+                        biz.getTempMsg003(
+                                reservationPS.getPb().getName(),
+                                reservationPS.getUser().getName(),
+                                reservationPS.getCreatedAt()
+                        )
+                );
+            }
         }
     }
 
@@ -503,15 +509,17 @@ public class ReservationService {
         }
 
         // 대상 투자자에게 알림톡 발신
-        biz.sendNotification(
-                reservationPS.getUser().getPhoneNumber(),
-                Template.CONFIRM_RESERVATION,
-                biz.getTempMsg004(
-                        reservationPS.getUser().getName(),
-                        reservationPS.getPb().getName(),
-                        reservationPS
-                )
-        );
+        if (environment.acceptsProfiles("prod")) {
+            biz.sendNotification(
+                    reservationPS.getUser().getPhoneNumber(),
+                    Template.CONFIRM_RESERVATION,
+                    biz.getTempMsg004(
+                            reservationPS.getUser().getName(),
+                            reservationPS.getPb().getName(),
+                            reservationPS
+                    )
+            );
+        }
     }
 
     @MyLog
