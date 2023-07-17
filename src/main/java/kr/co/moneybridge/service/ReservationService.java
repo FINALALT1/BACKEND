@@ -3,6 +3,8 @@ package kr.co.moneybridge.service;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.*;
+import kr.co.moneybridge.core.util.BizMessageUtil;
+import kr.co.moneybridge.core.util.Template;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
@@ -22,7 +24,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
     private final StyleRepository styleRepository;
-    private final EntityManager em;
+    private final BizMessageUtil biz;
 
     @MyLog
     public ReservationResponse.RecentInfoDTO getRecentReservationInfo(Long pbId) {
@@ -340,6 +341,7 @@ public class ReservationService {
                 () -> new Exception404("존재하지 않는 투자자입니다.")
         );
 
+        Reservation reservationPS = null;
         try {
             String locationName = null;
             String locationAddress = null;
@@ -351,7 +353,7 @@ public class ReservationService {
                 }
             }
 
-            reservationRepository.save(Reservation.builder()
+            reservationPS = reservationRepository.save(Reservation.builder()
                     .user(userPS)
                     .pb(pbPS)
                     .type(applyDTO.getReservationType())
@@ -374,6 +376,17 @@ public class ReservationService {
         } catch (Exception e) {
             throw new Exception500("상담 예약 저장 실패 : " + e.getMessage());
         }
+
+        // 담당 PB에게 알림톡 발신
+        biz.sendWebLinkNotification(
+                pbPS.getPhoneNumber(),
+                Template.ADD_RESERVATION,
+                biz.getTempMsg001(
+                        pbPS.getName(),
+                        userPS.getName(),
+                        reservationPS
+                )
+        );
     }
 
     @MyLog
@@ -440,6 +453,31 @@ public class ReservationService {
         } catch (Exception e) {
             throw new Exception500("예약 취소 실패 : " + e.getMessage());
         }
+
+        // 알림톡 발신
+        if (myUserDetails.getMember().getRole().equals(Role.PB)) {
+            // 대상 투자자에게 발신
+            biz.sendNotification(
+                    reservationPS.getUser().getPhoneNumber(),
+                    Template.CANCEL_RESERVATION_BY_PB,
+                    biz.getTempMsg002(
+                            reservationPS.getUser().getName(),
+                            reservationPS.getPb().getName(),
+                            reservationPS.getCreatedAt()
+                    )
+            );
+        } else {
+            // 대상 PB에게 발신
+            biz.sendNotification(
+                    reservationPS.getPb().getPhoneNumber(),
+                    Template.CANCEL_RESERVATION_BY_USER,
+                    biz.getTempMsg003(
+                            reservationPS.getPb().getName(),
+                            reservationPS.getUser().getName(),
+                            reservationPS.getCreatedAt()
+                    )
+            );
+        }
     }
 
     @MyLog
@@ -463,6 +501,17 @@ public class ReservationService {
         } catch (Exception e) {
             throw new Exception500("예약 확정 실패 : " + e.getMessage());
         }
+
+        // 대상 투자자에게 알림톡 발신
+        biz.sendNotification(
+                reservationPS.getUser().getPhoneNumber(),
+                Template.CONFIRM_RESERVATION,
+                biz.getTempMsg004(
+                        reservationPS.getUser().getName(),
+                        reservationPS.getPb().getName(),
+                        reservationPS
+                )
+        );
     }
 
     @MyLog

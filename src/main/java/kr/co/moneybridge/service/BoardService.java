@@ -5,7 +5,9 @@ import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception403;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
+import kr.co.moneybridge.core.util.BizMessageUtil;
 import kr.co.moneybridge.core.util.S3Util;
+import kr.co.moneybridge.core.util.Template;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
@@ -17,6 +19,7 @@ import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBRepository;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.model.user.User;
+import kr.co.moneybridge.model.user.UserBookmarkRepository;
 import kr.co.moneybridge.model.user.UserPropensity;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +42,13 @@ public class BoardService {
     private String defaultThumbnail = "https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/post.png";
     private final BoardRepository boardRepository;
     private final BoardBookmarkRepository boardBookmarkRepository;
+    private final UserBookmarkRepository userBookmarkRepository;
     private final UserRepository userRepository;
     private final PBRepository pbRepository;
     private final ReplyRepository replyRepository;
     private final ReReplyRepository reReplyRepository;
     private final S3Util s3Util;
+    private final BizMessageUtil biz;
 
     //컨텐츠검색(PB명 + 컨텐츠제목)
     public PageDTO<BoardResponse.BoardPageDTO> getBoardsWithTitle(String search, Pageable pageable) {
@@ -272,11 +277,10 @@ public class BoardService {
                 .status(boardStatus)
                 .build();
 
+        Long id = null;
         if (thumbnailFile == null || thumbnailFile.isEmpty()) {
             try {
-                Long id = boardRepository.save(board).getId();
-
-                return id;
+                id = boardRepository.save(board).getId();
             } catch (Exception e) {
                 throw new Exception500("컨텐츠 저장 실패 : " + e.getMessage());
             }
@@ -285,14 +289,27 @@ public class BoardService {
             try {
                 String thumbnail = s3Util.upload(thumbnailFile, "thumbnail");
                 board.updateThumbnail(thumbnail);
-                Long id = boardRepository.save(board).getId();
-
-                return id;
+                id = boardRepository.save(board).getId();
             } catch (Exception e) {
                 throw new Exception500("컨텐츠 저장 실패 : " + e.getMessage());
             }
         }
 
+        // 해당 PB를 북마크한 투자자들에게 알림톡 발신
+        List<User> users = userBookmarkRepository.findByPBId(pb.getId());
+        for (User user : users) {
+            biz.sendWebLinkNotification(
+                    user.getPhoneNumber(),
+                    Template.NEW_CONTENT,
+                    biz.getTempMsg005(
+                            user.getName(),
+                            pb.getName(),
+                            board
+                    )
+            );
+        }
+
+        return id;
     }
 
     //임시저장 컨텐츠들 가져오기

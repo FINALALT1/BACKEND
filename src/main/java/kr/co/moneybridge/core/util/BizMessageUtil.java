@@ -3,6 +3,7 @@ package kr.co.moneybridge.core.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.reservation.Reservation;
 import kr.co.moneybridge.model.reservation.ReservationType;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import springfox.documentation.spring.web.json.Json;
 
 import java.time.LocalDateTime;
 
@@ -117,7 +119,7 @@ public class BizMessageUtil {
                 "■ 요청 사항: #{요청 사항}";
     }
 
-    // template_004
+    // template_005
     public String getTempMsg005(String userName, String pbName, Board board) {
         return "안녕하세요 " + userName + "님,\n" +
                 "고객님이 북마크하신 " + pbName + "PB님의 새로운 컨텐츠가 올라왔습니다.\n" +
@@ -130,7 +132,7 @@ public class BizMessageUtil {
     /**
      * 액세스 토큰 발급
      */
-    private void getToken() throws JsonProcessingException {
+    private void getToken() {
         RestTemplate template = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -154,7 +156,12 @@ public class BizMessageUtil {
         String responseBody = response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(responseBody);
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(responseBody);
+        } catch (JsonProcessingException e) {
+            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        }
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
@@ -166,9 +173,9 @@ public class BizMessageUtil {
     }
 
     /**
-     * 기본 알림톡 발송
+     * 기본 알림톡 발신
      */
-    public void sendNotification(String phoneNumber, Template temp, String message) throws JsonProcessingException {
+    public void sendNotification(String phoneNumber, Template temp, String message) {
         // 토큰 만료/미발급시 재발급
         if (getExpirationTime().isBefore(LocalDateTime.now())) {
             getToken();
@@ -202,7 +209,12 @@ public class BizMessageUtil {
         String responseBody = response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(responseBody);
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(responseBody);
+        } catch (JsonProcessingException e) {
+            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        }
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
@@ -211,9 +223,9 @@ public class BizMessageUtil {
     }
 
     /**
-     * 웹링크 버튼 알림톡 발송
+     * 웹링크 버튼 알림톡 발신
      */
-    public void sendWebLinkNotification(String phoneNumber, Template temp, String message) throws JsonProcessingException {
+    public void sendWebLinkNotification(String phoneNumber, Template temp, String message) {
         // 토큰 만료/미발급시 재발급
         if (getExpirationTime().isBefore(LocalDateTime.now())) {
             getToken();
@@ -258,7 +270,12 @@ public class BizMessageUtil {
         String responseBody = response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(responseBody);
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(responseBody);
+        } catch (JsonProcessingException e) {
+            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        }
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
