@@ -25,7 +25,6 @@ import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTimeV2;
 import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToStringV2;
 
 @Component
-@Profile("prod")
 @Slf4j
 public class BizMessageUtil {
     private final String BASE_URL = "https://www.biztalk-api.com";

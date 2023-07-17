@@ -43,6 +43,11 @@ logging:
   level:
     '[kr.co.moneybridge]': DEBUG
     '[org.hibernate.type]': TRACE # 콘솔 쿼리에 ? 에 주입된 값 보기
+biz:
+  oauth2:
+    biz-id: ${BIZ_ID}
+    biz-password: ${BIZ_PASSWORD}
+  sender-key: ${SENDER_KEY}
 
 SECRET_ACCESS: "originwasdonjul"
 SECRET_REFRESH: "backend"
