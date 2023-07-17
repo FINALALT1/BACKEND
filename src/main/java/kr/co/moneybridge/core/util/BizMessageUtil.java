@@ -11,13 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import springfox.documentation.spring.web.json.Json;
 
 import java.time.LocalDateTime;
 
@@ -137,12 +133,12 @@ public class BizMessageUtil {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("bsid", BIZ_ID);
-        requestBody.add("passwd", BIZ_PASSWORD);
-        requestBody.add("expire", "720");
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("bsid", BIZ_ID);
+        requestBody.put("passwd", BIZ_PASSWORD);
+        requestBody.put("expire", "720");
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
+        HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
 
         // API 요청
         ResponseEntity<String> response = template.exchange(
@@ -164,7 +160,7 @@ public class BizMessageUtil {
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
-            log.error("OAuth2 인증 실패 : " + root.path("msg").asText());
+            log.error("OAuth2 인증 실패 : " + code + ", " + root.path("msg").asText());
         }
 
         setAccessToken(root.path("token").asText()); // 액세스 토큰 갱신
@@ -217,7 +213,7 @@ public class BizMessageUtil {
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
-            log.error("비즈톡 G/W 접수 실패 : " + root.path("msg").asText());
+            log.error("비즈톡 G/W 접수 실패 : " + code + ", " + root.path("msg").asText());
         }
     }
 
@@ -278,7 +274,7 @@ public class BizMessageUtil {
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
-            log.error("비즈톡 G/W 접수 실패 : " + root.path("msg").asText());
+            log.error("비즈톡 G/W 접수 실패 : " + code + ", " + root.path("msg").asText());
         }
     }
 }
