@@ -2,9 +2,9 @@ package kr.co.moneybridge.core.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.reservation.Reservation;
+import kr.co.moneybridge.model.reservation.ReservationGoal;
 import kr.co.moneybridge.model.reservation.ReservationType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -69,11 +69,11 @@ public class BizMessageUtil {
                 "■ 예약자: " + res.getInvestor() + "\n" +
                 "■ 담당 PB: " + pbName + "\n" +
                 "■ 상담 희망 일정(1순위): " + localDateTimeToStringV2(res.getCandidateTime1()) + "\n" +
-                "■ 상담 희망 일정(2순위): " + localDateTimeToStringV2(res.getCandidateTime1()) + "\n" +
-                "■ 상담 방식: " + res.getType().name() + "\n" +
+                "■ 상담 희망 일정(2순위): " + localDateTimeToStringV2(res.getCandidateTime2()) + "\n" +
+                "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
-                "■ 상담 목적: " + res.getGoal().name() + "\n" +
-                "■ 요청 사항: " + res.getQuestion();
+                "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
+                "■ 요청 사항: " + (res.getQuestion().isBlank() || res.getQuestion() == null ? "-" : removeHtmlTags(res.getQuestion()));
     }
 
     // template_002
@@ -107,10 +107,10 @@ public class BizMessageUtil {
                 "■ 예약자: " + res.getInvestor() + "\n" +
                 "■ 담당 PB: " + pbName + "\n" +
                 "■ 상담 일정: " + localDateTimeToStringV2(res.getTime()) + "\n" +
-                "■ 상담 방식: " + res.getType().name() + "\n" +
+                "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
-                "■ 상담 목적: " + res.getGoal().name() + "\n" +
-                "■ 요청 사항: " + res.getQuestion();
+                "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
+                "■ 요청 사항: " + (res.getQuestion().isBlank() || res.getQuestion() == null ? "-" : removeHtmlTags(res.getQuestion()));
     }
 
     // template_005
@@ -119,8 +119,54 @@ public class BizMessageUtil {
                 "고객님이 북마크하신 " + pbName + " PB님의 새로운 컨텐츠가 올라왔습니다.\n" +
                 "\n" +
                 "# 게시 정보\n" +
-                "■ 제목: " + board.getTitle() + "\n" +
-                "■ 내용: " + (board.getContent().length() > 20 ? board.getContent().substring(0, 21) + "..." : board.getContent());
+                "■ 제목: " + (board.getTitle().isBlank() || board.getTitle() == null ? "-" : board.getTitle()) + "\n" +
+                "■ 내용: " + contentFormatter(board.getContent());
+    }
+
+    // ReservationGoal을 그에 맞는 String으로 변환
+    private String goalToString(ReservationGoal goal) {
+        String value = "";
+        switch (goal) {
+            case PROFIT:
+                value = "투자 수익 창출";
+                break;
+            case RISK:
+                value = "리스크 관리";
+                break;
+            case TAX:
+                value = "세금 최적화";
+                break;
+            case PRESERVATION:
+                value = "재산 유지와 성장";
+                break;
+        }
+
+        return value;
+    }
+
+    // 컨텐츠 문자열을 내용 유무나 길이, HTML 태그 유무에 따라 변환
+    private String contentFormatter(String inputText) {
+        String value = "";
+
+        if (inputText.isBlank() || inputText == null) {
+            value = "-";
+        } else if (inputText.length() > 20) {
+            value = inputText.substring(0, 21) + "...";
+        } else {
+            value = inputText;
+        }
+
+        return removeHtmlTags(value);
+    }
+
+    // 줄바꿈 태그 및 공백 문자를 고려하면서 HTML 태그 제거
+    private String removeHtmlTags(String inputText) {
+        String plainText = inputText
+                .replaceAll("\\<br ?/?>", "\n") // <br> 태그를 줄바꿈 문자로 대체
+                .replaceAll("\\<.*?\\>", "") // 기타 HTML 태그 제거
+                .replaceAll("&nbsp;", " "); // 공백 문자를 실제 공백으로 대체
+
+        return plainText;
     }
 
     /**
