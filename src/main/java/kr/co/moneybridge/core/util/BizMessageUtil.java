@@ -116,7 +116,7 @@ public class BizMessageUtil {
     // template_005
     public String getTempMsg005(String userName, String pbName, Board board) {
         return "안녕하세요 " + userName + "님,\n" +
-                "고객님이 북마크하신 " + pbName + "PB님의 새로운 컨텐츠가 올라왔습니다.\n" +
+                "고객님이 북마크하신 " + pbName + " PB님의 새로운 컨텐츠가 올라왔습니다.\n" +
                 "\n" +
                 "# 게시 정보\n" +
                 "■ 제목: " + board.getTitle() + "\n" +
