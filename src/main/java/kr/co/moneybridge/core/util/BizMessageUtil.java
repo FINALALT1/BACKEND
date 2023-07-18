@@ -1,6 +1,5 @@
 package kr.co.moneybridge.core.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.exception.Exception500;
@@ -74,7 +73,7 @@ public class BizMessageUtil {
                 "■ 상담 방식: " + res.getType().name() + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
                 "■ 상담 목적: " + res.getGoal().name() + "\n" +
-                "■ 요청 사항: #{요청 사항}";
+                "■ 요청 사항: " + res.getQuestion();
     }
 
     // template_002
@@ -111,7 +110,7 @@ public class BizMessageUtil {
                 "■ 상담 방식: " + res.getType().name() + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
                 "■ 상담 목적: " + res.getGoal().name() + "\n" +
-                "■ 요청 사항: #{요청 사항}";
+                "■ 요청 사항: " + res.getQuestion();
     }
 
     // template_005
@@ -121,7 +120,7 @@ public class BizMessageUtil {
                 "\n" +
                 "# 게시 정보\n" +
                 "■ 제목: " + board.getTitle() + "\n" +
-                "■ 내용: " + board.getContent().substring(0, 31) + "...";
+                "■ 내용: " + (board.getContent().length() > 20 ? board.getContent().substring(0, 21) + "..." : board.getContent());
     }
 
     /**
@@ -154,8 +153,8 @@ public class BizMessageUtil {
         JsonNode root = null;
         try {
             root = mapper.readTree(responseBody);
-        } catch (JsonProcessingException e) {
-            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        } catch (Exception e) {
+            log.error("String to Json 실패 : " + e.getMessage());
         }
 
         int code = root.path("responseCode").asInt();
@@ -207,8 +206,8 @@ public class BizMessageUtil {
         JsonNode root = null;
         try {
             root = mapper.readTree(responseBody);
-        } catch (JsonProcessingException e) {
-            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        } catch (Exception e) {
+            log.error("String to Json 실패 : " + e.getMessage());
         }
 
         int code = root.path("responseCode").asInt();
@@ -268,8 +267,8 @@ public class BizMessageUtil {
         JsonNode root = null;
         try {
             root = mapper.readTree(responseBody);
-        } catch (JsonProcessingException e) {
-            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        } catch (Exception e) {
+            log.error("String to Json 실패 : " + e.getMessage());
         }
 
         int code = root.path("responseCode").asInt();
