@@ -60,6 +60,7 @@ public class BizMessageUtil {
 
     // template_001
     public String getTempMsg001(String pbName, String userName, Reservation res) {
+        log.info("getTempMsg001 실행");
         return "안녕하세요 " + pbName + " PB님,\n" +
                 userName + " 투자자님으로부터\n" +
                 "새로운 예약이 도착했습니다.\n" +
@@ -73,11 +74,12 @@ public class BizMessageUtil {
                 "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
                 "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
-                "■ 요청 사항: " + (res.getQuestion().isBlank() || res.getQuestion() == null ? "-" : removeHtmlTags(res.getQuestion()));
+                "■ 요청 사항: " + ((res.getQuestion().isBlank() || res.getQuestion() == null) ? "-" : removeHtmlTags(res.getQuestion()));
     }
 
     // template_002
     public String getTempMsg002(String userName, String pbName, LocalDateTime date) {
+        log.info("getTempMsg002 실행");
         return "안녕하세요 " + userName + "님,\n" +
                 pbName + " PB님이 예약을 취소하셨습니다.\n" +
                 "\n" +
@@ -89,6 +91,7 @@ public class BizMessageUtil {
 
     // template_003
     public String getTempMsg003(String pbName, String userName, LocalDateTime date) {
+        log.info("getTempMsg003 실행");
         return "안녕하세요 " + pbName + " PB님,\n" +
                 userName + "님이 예약을 취소하셨습니다.\n" +
                 "\n" +
@@ -100,6 +103,7 @@ public class BizMessageUtil {
 
     // template_004
     public String getTempMsg004(String userName, String pbName, Reservation res) {
+        log.info("getTempMsg004 실행");
         return "안녕하세요 " + userName + "님,\n" +
                 pbName + " PB님이 예약을 확정하셨습니다.\n" +
                 "\n" +
@@ -110,21 +114,23 @@ public class BizMessageUtil {
                 "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
                 "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
-                "■ 요청 사항: " + (res.getQuestion().isBlank() || res.getQuestion() == null ? "-" : removeHtmlTags(res.getQuestion()));
+                "■ 요청 사항: " + ((res.getQuestion().isBlank() || res.getQuestion() == null) ? "-" : removeHtmlTags(res.getQuestion()));
     }
 
     // template_005
     public String getTempMsg005(String userName, String pbName, Board board) {
+        log.info("getTempMsg005 실행");
         return "안녕하세요 " + userName + "님,\n" +
                 "고객님이 북마크하신 " + pbName + " PB님의 새로운 컨텐츠가 올라왔습니다.\n" +
                 "\n" +
                 "# 게시 정보\n" +
-                "■ 제목: " + (board.getTitle().isBlank() || board.getTitle() == null ? "-" : board.getTitle()) + "\n" +
+                "■ 제목: " + ((board.getTitle().isBlank() || board.getTitle() == null) ? "-" : board.getTitle()) + "\n" +
                 "■ 내용: " + contentFormatter(board.getContent());
     }
 
     // ReservationGoal을 그에 맞는 String으로 변환
     private String goalToString(ReservationGoal goal) {
+        log.info("goalToString 실행");
         String value = "";
         switch (goal) {
             case PROFIT:
@@ -146,12 +152,13 @@ public class BizMessageUtil {
 
     // 컨텐츠 문자열을 내용 유무나 길이, HTML 태그 유무에 따라 변환
     private String contentFormatter(String inputText) {
+        log.info("contentFormatter 실행");
         String value = "";
 
         if (inputText.isBlank() || inputText == null) {
             value = "-";
-        } else if (inputText.length() > 20) {
-            value = inputText.substring(0, 21) + "...";
+        } else if (inputText.length() >= 20) {
+            value = inputText.substring(0, 20) + "...";
         } else {
             value = inputText;
         }
@@ -161,6 +168,7 @@ public class BizMessageUtil {
 
     // 줄바꿈 태그 및 공백 문자를 고려하면서 HTML 태그 제거
     private String removeHtmlTags(String inputText) {
+        log.info("removeHtmlTags 실행");
         String plainText = inputText
                 .replaceAll("\\<br ?/?>", "\n") // <br> 태그를 줄바꿈 문자로 대체
                 .replaceAll("\\<.*?\\>", "") // 기타 HTML 태그 제거
@@ -173,6 +181,7 @@ public class BizMessageUtil {
      * 액세스 토큰 발급
      */
     private void getToken() {
+        log.info("getToken 실행");
         RestTemplate template = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -216,6 +225,7 @@ public class BizMessageUtil {
      * 기본 알림톡 발신
      */
     public void sendNotification(String phoneNumber, Template temp, String message) {
+        log.info("sendNotification 실행");
         // 토큰 만료/미발급시 재발급
         if (getExpirationTime().isBefore(LocalDateTime.now())) {
             getToken();
@@ -266,6 +276,7 @@ public class BizMessageUtil {
      * 웹링크 버튼 알림톡 발신
      */
     public void sendWebLinkNotification(String phoneNumber, Template temp, String message) {
+        log.info("sendWebLinkNotification 실행");
         // 토큰 만료/미발급시 재발급
         if (getExpirationTime().isBefore(LocalDateTime.now())) {
             getToken();
