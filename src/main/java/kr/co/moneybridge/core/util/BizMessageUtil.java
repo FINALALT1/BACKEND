@@ -74,7 +74,7 @@ public class BizMessageUtil {
                 "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
                 "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
-                "■ 요청 사항: " + ((res.getQuestion().isBlank() || res.getQuestion() == null) ? "-" : removeHtmlTags(res.getQuestion()));
+                "■ 요청 사항: " + ((res.getQuestion() == null || res.getQuestion().isBlank()) ? "-" : removeHtmlTags(res.getQuestion()));
     }
 
     // template_002
@@ -114,7 +114,7 @@ public class BizMessageUtil {
                 "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
                 "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
-                "■ 요청 사항: " + ((res.getQuestion().isBlank() || res.getQuestion() == null) ? "-" : removeHtmlTags(res.getQuestion()));
+                "■ 요청 사항: " + ((res.getQuestion() == null || res.getQuestion().isBlank()) ? "-" : removeHtmlTags(res.getQuestion()));
     }
 
     // template_005
