@@ -1,23 +1,18 @@
 package kr.co.moneybridge.core.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.model.board.Board;
 import kr.co.moneybridge.model.reservation.Reservation;
+import kr.co.moneybridge.model.reservation.ReservationGoal;
 import kr.co.moneybridge.model.reservation.ReservationType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import springfox.documentation.spring.web.json.Json;
 
 import java.time.LocalDateTime;
 
@@ -65,6 +60,7 @@ public class BizMessageUtil {
 
     // template_001
     public String getTempMsg001(String pbName, String userName, Reservation res) {
+        log.info("getTempMsg001 실행");
         return "안녕하세요 " + pbName + " PB님,\n" +
                 userName + " 투자자님으로부터\n" +
                 "새로운 예약이 도착했습니다.\n" +
@@ -74,15 +70,16 @@ public class BizMessageUtil {
                 "■ 예약자: " + res.getInvestor() + "\n" +
                 "■ 담당 PB: " + pbName + "\n" +
                 "■ 상담 희망 일정(1순위): " + localDateTimeToStringV2(res.getCandidateTime1()) + "\n" +
-                "■ 상담 희망 일정(2순위): " + localDateTimeToStringV2(res.getCandidateTime1()) + "\n" +
-                "■ 상담 방식: " + res.getType().name() + "\n" +
+                "■ 상담 희망 일정(2순위): " + localDateTimeToStringV2(res.getCandidateTime2()) + "\n" +
+                "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
-                "■ 상담 목적: " + res.getGoal().name() + "\n" +
-                "■ 요청 사항: #{요청 사항}";
+                "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
+                "■ 요청 사항: " + ((res.getQuestion().isBlank() || res.getQuestion() == null) ? "-" : removeHtmlTags(res.getQuestion()));
     }
 
     // template_002
     public String getTempMsg002(String userName, String pbName, LocalDateTime date) {
+        log.info("getTempMsg002 실행");
         return "안녕하세요 " + userName + "님,\n" +
                 pbName + " PB님이 예약을 취소하셨습니다.\n" +
                 "\n" +
@@ -94,6 +91,7 @@ public class BizMessageUtil {
 
     // template_003
     public String getTempMsg003(String pbName, String userName, LocalDateTime date) {
+        log.info("getTempMsg003 실행");
         return "안녕하세요 " + pbName + " PB님,\n" +
                 userName + "님이 예약을 취소하셨습니다.\n" +
                 "\n" +
@@ -105,6 +103,7 @@ public class BizMessageUtil {
 
     // template_004
     public String getTempMsg004(String userName, String pbName, Reservation res) {
+        log.info("getTempMsg004 실행");
         return "안녕하세요 " + userName + "님,\n" +
                 pbName + " PB님이 예약을 확정하셨습니다.\n" +
                 "\n" +
@@ -112,37 +111,88 @@ public class BizMessageUtil {
                 "■ 예약자: " + res.getInvestor() + "\n" +
                 "■ 담당 PB: " + pbName + "\n" +
                 "■ 상담 일정: " + localDateTimeToStringV2(res.getTime()) + "\n" +
-                "■ 상담 방식: " + res.getType().name() + "\n" +
+                "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
                 "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
-                "■ 상담 목적: " + res.getGoal().name() + "\n" +
-                "■ 요청 사항: #{요청 사항}";
+                "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
+                "■ 요청 사항: " + ((res.getQuestion().isBlank() || res.getQuestion() == null) ? "-" : removeHtmlTags(res.getQuestion()));
     }
 
     // template_005
     public String getTempMsg005(String userName, String pbName, Board board) {
+        log.info("getTempMsg005 실행");
         return "안녕하세요 " + userName + "님,\n" +
-                "고객님이 북마크하신 " + pbName + "PB님의 새로운 컨텐츠가 올라왔습니다.\n" +
+                "고객님이 북마크하신 " + pbName + " PB님의 새로운 컨텐츠가 올라왔습니다.\n" +
                 "\n" +
                 "# 게시 정보\n" +
-                "■ 제목: " + board.getTitle() + "\n" +
-                "■ 내용: " + board.getContent().substring(0, 31) + "...";
+                "■ 제목: " + ((board.getTitle().isBlank() || board.getTitle() == null) ? "-" : board.getTitle()) + "\n" +
+                "■ 내용: " + contentFormatter(board.getContent());
+    }
+
+    // ReservationGoal을 그에 맞는 String으로 변환
+    private String goalToString(ReservationGoal goal) {
+        log.info("goalToString 실행");
+        String value = "";
+        switch (goal) {
+            case PROFIT:
+                value = "투자 수익 창출";
+                break;
+            case RISK:
+                value = "리스크 관리";
+                break;
+            case TAX:
+                value = "세금 최적화";
+                break;
+            case PRESERVATION:
+                value = "재산 유지와 성장";
+                break;
+        }
+
+        return value;
+    }
+
+    // 컨텐츠 문자열을 내용 유무나 길이, HTML 태그 유무에 따라 변환
+    private String contentFormatter(String inputText) {
+        log.info("contentFormatter 실행");
+        String value = "";
+
+        if (inputText.isBlank() || inputText == null) {
+            value = "-";
+        } else if (inputText.length() >= 20) {
+            value = inputText.substring(0, 20) + "...";
+        } else {
+            value = inputText;
+        }
+
+        return removeHtmlTags(value);
+    }
+
+    // 줄바꿈 태그 및 공백 문자를 고려하면서 HTML 태그 제거
+    private String removeHtmlTags(String inputText) {
+        log.info("removeHtmlTags 실행");
+        String plainText = inputText
+                .replaceAll("\\<br ?/?>", "\n") // <br> 태그를 줄바꿈 문자로 대체
+                .replaceAll("\\<.*?\\>", "") // 기타 HTML 태그 제거
+                .replaceAll("&nbsp;", " "); // 공백 문자를 실제 공백으로 대체
+
+        return plainText;
     }
 
     /**
      * 액세스 토큰 발급
      */
     private void getToken() {
+        log.info("getToken 실행");
         RestTemplate template = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("bsid", BIZ_ID);
-        requestBody.add("passwd", BIZ_PASSWORD);
-        requestBody.add("expire", "720");
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("bsid", BIZ_ID);
+        requestBody.put("passwd", BIZ_PASSWORD);
+        requestBody.put("expire", "720");
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
+        HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
 
         // API 요청
         ResponseEntity<String> response = template.exchange(
@@ -158,13 +208,13 @@ public class BizMessageUtil {
         JsonNode root = null;
         try {
             root = mapper.readTree(responseBody);
-        } catch (JsonProcessingException e) {
-            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        } catch (Exception e) {
+            log.error("String to Json 실패 : " + e.getMessage());
         }
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
-            log.error("OAuth2 인증 실패 : " + root.path("msg").asText());
+            log.error("OAuth2 인증 실패 : " + code + ", " + root.path("msg").asText());
         }
 
         setAccessToken(root.path("token").asText()); // 액세스 토큰 갱신
@@ -175,6 +225,7 @@ public class BizMessageUtil {
      * 기본 알림톡 발신
      */
     public void sendNotification(String phoneNumber, Template temp, String message) {
+        log.info("sendNotification 실행");
         // 토큰 만료/미발급시 재발급
         if (getExpirationTime().isBefore(LocalDateTime.now())) {
             getToken();
@@ -211,13 +262,13 @@ public class BizMessageUtil {
         JsonNode root = null;
         try {
             root = mapper.readTree(responseBody);
-        } catch (JsonProcessingException e) {
-            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        } catch (Exception e) {
+            log.error("String to Json 실패 : " + e.getMessage());
         }
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
-            log.error("비즈톡 G/W 접수 실패 : " + root.path("msg").asText());
+            log.error("비즈톡 G/W 접수 실패 : " + code + ", " + root.path("msg").asText());
         }
     }
 
@@ -225,6 +276,7 @@ public class BizMessageUtil {
      * 웹링크 버튼 알림톡 발신
      */
     public void sendWebLinkNotification(String phoneNumber, Template temp, String message) {
+        log.info("sendWebLinkNotification 실행");
         // 토큰 만료/미발급시 재발급
         if (getExpirationTime().isBefore(LocalDateTime.now())) {
             getToken();
@@ -272,13 +324,13 @@ public class BizMessageUtil {
         JsonNode root = null;
         try {
             root = mapper.readTree(responseBody);
-        } catch (JsonProcessingException e) {
-            throw new Exception500("String to Json 실패 : " + e.getMessage());
+        } catch (Exception e) {
+            log.error("String to Json 실패 : " + e.getMessage());
         }
 
         int code = root.path("responseCode").asInt();
         if (code != 1000) {
-            log.error("비즈톡 G/W 접수 실패 : " + root.path("msg").asText());
+            log.error("비즈톡 G/W 접수 실패 : " + code + ", " + root.path("msg").asText());
         }
     }
 }
