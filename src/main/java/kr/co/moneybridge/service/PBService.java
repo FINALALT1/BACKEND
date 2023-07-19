@@ -505,7 +505,7 @@ public class PBService {
         PBResponse.PBProfileDTO pbDTO = pbRepository.findPBProfile(id).orElseThrow(()-> new Exception404("해당 PB 존재하지 않습니다."));
         pbDTO.setAward(awardRepository.getAwards(id));
         pbDTO.setCareer(careerRepository.getCareers(id));
-        pbDTO.setReserveCount(reservationRepository.countByPBIdAndProcess(id, ReservationProcess.COMPLETE));
+        pbDTO.setReserveCount(pbRepository.countReviewsByPbId(id));
         pbDTO.setReviewCount(reviewRepository.countByPBId(id));
 
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
