@@ -72,7 +72,7 @@ public class BizMessageUtil {
                 "■ 상담 희망 일정(1순위): " + localDateTimeToStringV2(res.getCandidateTime1()) + "\n" +
                 "■ 상담 희망 일정(2순위): " + localDateTimeToStringV2(res.getCandidateTime2()) + "\n" +
                 "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
-                "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
+                "■ 미팅 장소: " + decideLocationValue(res) + "\n" +
                 "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
                 "■ 요청 사항: " + ((res.getQuestion() == null || res.getQuestion().isBlank()) ? "-" : removeHtmlTags(res.getQuestion()));
     }
@@ -112,7 +112,7 @@ public class BizMessageUtil {
                 "■ 담당 PB: " + pbName + "\n" +
                 "■ 상담 일정: " + localDateTimeToStringV2(res.getTime()) + "\n" +
                 "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
-                "■ 미팅 장소: " + (res.getType().equals(ReservationType.CALL) ? "-" : res.getLocationName()) + "\n" +
+                "■ 미팅 장소: " + decideLocationValue(res) + "\n" +
                 "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
                 "■ 요청 사항: " + ((res.getQuestion() == null || res.getQuestion().isBlank()) ? "-" : removeHtmlTags(res.getQuestion()));
     }
@@ -175,6 +175,20 @@ public class BizMessageUtil {
                 .replaceAll("&nbsp;", " "); // 공백 문자를 실제 공백으로 대체
 
         return plainText;
+    }
+
+    private String decideLocationValue(Reservation reservation) {
+        String value = "";
+
+        if (reservation.getType().equals(ReservationType.CALL)) { // 유선 상담
+            value = "-";
+        } else if (reservation.getLocationName() == null) { // 방문 상담(유선상으로 결정)
+            value = "유선상으로 결정";
+        } else { // 방문 상담(증권사 소속지점)
+            value = reservation.getLocationName();
+        }
+
+        return value;
     }
 
     /**
