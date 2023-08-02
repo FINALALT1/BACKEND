@@ -25,6 +25,8 @@ public class BoardResponse {
         private String title;
         @ApiModelProperty(example = "김피비", value = "PB 이름")
         private String pbName;
+        @ApiModelProperty(example = "삼성증권", value = "회사명")
+        private String companyName;
         @ApiModelProperty(example = "logo.png", value = "회사 로고")
         private String companyLogo;
         @ApiModelProperty(example = "5", value = "연차")
@@ -42,6 +44,7 @@ public class BoardResponse {
             this.id = board.getId();
             this.title = board.getTitle();
             this.pbName = pb.getName();
+            this.companyName = company.getName();
             this.companyLogo = company.getLogo();
             this.career = pb.getCareer();
             this.tag1 = board.getTag1();
@@ -67,6 +70,7 @@ public class BoardResponse {
         private PBSpeciality speciality1;
         private PBSpeciality speciality2;
         private int career;
+        private Long viewCount;
         private String content;
         private Boolean isBookmarked;
         private List<ReplyOutDTO> reply;
@@ -85,6 +89,64 @@ public class BoardResponse {
             this.speciality1 = pb.getSpeciality1();
             this.speciality2 = pb.getSpeciality2();
             this.career = pb.getCareer();
+            this.viewCount = board.getViewCount();
+            this.content = board.getContent();
+        }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class BoardDetailByAnonDTO {
+
+        @ApiModelProperty(example = "1", value = "컨텐츠 식별자")
+        private Long id;
+        @ApiModelProperty(value = "썸네일 URL")
+        private String thumbnail;
+        @ApiModelProperty(value = "태그 1")
+        private String tag1;
+        @ApiModelProperty(value = "태그 2")
+        private String tag2;
+        @ApiModelProperty(value = "제목")
+        private String title;
+        @ApiModelProperty(example = "2023-01-01T01:01:01", value = "생성일")
+        private LocalDateTime createdAt;
+        @ApiModelProperty(example = "2023-01-01T01:01:01", value = "수정일")
+        private LocalDateTime updatedAt;
+        @ApiModelProperty(example = "1", value = "PB 식별자")
+        private Long pbId;
+        @ApiModelProperty(value = "이름")
+        private String name;
+        @ApiModelProperty(value = "프로필 URL")
+        private String profile;
+        @ApiModelProperty(value = "전문분야 1")
+        private PBSpeciality speciality1;
+        @ApiModelProperty(value = "전문분야 2")
+        private PBSpeciality speciality2;
+        @ApiModelProperty(value = "경력")
+        private int career;
+        @ApiModelProperty(value = "조회수")
+        private Long viewCount;
+        @ApiModelProperty(value = "내용")
+        private String content;
+        @ApiModelProperty(value = "댓글 목록")
+        private List<ReplyOutDTO> reply;
+
+        public BoardDetailByAnonDTO(Board board, PB pb) {
+            this.id = board.getId();
+            this.thumbnail = board.getThumbnail();
+            this.tag1 = board.getTag1();
+            this.tag2 = board.getTag2();
+            this.title = board.getTitle();
+            this.createdAt = board.getCreatedAt();
+            this.updatedAt = board.getUpdatedAt();
+            this.pbId = pb.getId();
+            this.name = pb.getName();
+            this.profile = pb.getProfile();
+            this.speciality1 = pb.getSpeciality1();
+            this.speciality2 = pb.getSpeciality2();
+            this.career = pb.getCareer();
+            this.viewCount = board.getViewCount();
             this.content = board.getContent();
         }
     }
@@ -111,6 +173,7 @@ public class BoardResponse {
             this.authorId = user.getId();
             this.role = reply.getAuthorRole();
         }
+
         public ReplyOutDTO(Reply reply, PB pb) {
             this.id = reply.getId();
             this.name = pb.getName();
@@ -145,6 +208,7 @@ public class BoardResponse {
             this.role = reReply.getAuthorRole();
             this.uniqueValue = reReply.getUniqueValue();
         }
+
         public ReReplyOutDTO(ReReply reReply, PB pb) {
             this.id = reReply.getId();
             this.name = pb.getName();

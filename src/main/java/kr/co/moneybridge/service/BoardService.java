@@ -134,9 +134,10 @@ public class BoardService {
 
         try {
             Board board = boardRepository.findById(boardDetailDTO.getId()).get();
-            board.increaseCount();  //호출 시 클릭수 증가 로직
+            board.increaseViewCount();
+            board.increaseClickCount();  //호출 시 클릭수 증가 로직
         } catch (Exception e) {
-            throw new Exception500("클릭수 증가 에러");
+            throw new Exception500("조회수, 클릭수 증가 에러");
         }
 
         Member member = myUserDetails.getMember();
@@ -147,19 +148,31 @@ public class BoardService {
         } else {
             boardDetailDTO.setIsBookmarked(boardBookmarkRepository.existsByBookmarkerIdAndBookmarkerRoleAndBoardId(member.getId(), BookmarkerRole.ADMIN, id));
         }
+        boardDetailDTO.setViewCount(boardDetailDTO.getViewCount() + 1);
         boardDetailDTO.setReply(getReplies(id));
 
         return boardDetailDTO;
     }
 
     //비회원 컨텐츠 상세보기
-    public BoardResponse.BoardThumbnailDTO getBoardThumbnail(Long id) {
+    @Transactional
+    public BoardResponse.BoardDetailByAnonDTO getBoardDetailByAnon(Long id) {
 
-        Board board = boardRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다."));
-        BoardResponse.BoardThumbnailDTO boardThumbnailDTO = new BoardResponse.BoardThumbnailDTO();
-        boardThumbnailDTO.setThumbnail(board.getThumbnail());
+        Board boardPS = boardRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 컨텐츠입니다."));
 
-        return boardThumbnailDTO;
+        boardPS.increaseViewCount();
+        boardPS.increaseClickCount();
+
+        BoardResponse.BoardDetailByAnonDTO boardDetailByAnonDTO = null;
+        try {
+            boardDetailByAnonDTO = boardRepository.findBoardWithPB(id, BoardStatus.ACTIVE);
+        } catch (Exception e) {
+            throw new Exception500("컨텐츠 조회 실패 : " + e.getMessage());
+        }
+        boardDetailByAnonDTO.setViewCount(boardDetailByAnonDTO.getViewCount() + 1);
+        boardDetailByAnonDTO.setReply(getReplies(id));
+
+        return boardDetailByAnonDTO;
     }
 
     //댓글 가져오기
@@ -274,6 +287,7 @@ public class BoardService {
                 .content(boardInDTO.getContent())
                 .tag1(boardInDTO.getTag1())
                 .tag2(boardInDTO.getTag2())
+                .viewCount(0L)
                 .clickCount(0L)
                 .status(boardStatus)
                 .build();

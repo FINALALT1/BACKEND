@@ -12,10 +12,7 @@ import kr.co.moneybridge.dto.ResponseDTO;
 import kr.co.moneybridge.dto.board.BoardRequest;
 import kr.co.moneybridge.dto.board.BoardResponse;
 import kr.co.moneybridge.dto.board.ReplyRequest;
-import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.board.BoardStatus;
-import kr.co.moneybridge.model.pb.PB;
-import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.service.BoardService;
 import kr.co.moneybridge.service.PBService;
 import kr.co.moneybridge.service.ReplyService;
@@ -117,14 +114,14 @@ public class BoardController {
     }
 
     @ApiOperation("컨텐츠 상세 가져오기(비로그인)")
-    @SwaggerResponses.DefaultApiResponses
-    @ApiImplicitParam(name = "id", value = "1", dataType = "Long")
+    @SwaggerResponses.ApiResponsesForAnon
+    @ApiImplicitParam(name = "id", value = "1")
     @GetMapping("/board/{id}")
-    public ResponseDTO<BoardResponse.BoardThumbnailDTO> getBoardThumbnail(@PathVariable Long id) {
+    public ResponseDTO<BoardResponse.BoardDetailByAnonDTO> getBoardThumbnail(@PathVariable Long id) {
 
-        BoardResponse.BoardThumbnailDTO boardThumbnailDTO = boardService.getBoardThumbnail(id);
+        BoardResponse.BoardDetailByAnonDTO boardDetailByAnonDTO = boardService.getBoardDetailByAnon(id);
 
-        return new ResponseDTO<>(boardThumbnailDTO);
+        return new ResponseDTO<>(boardDetailByAnonDTO);
     }
 
     @ApiOperation("컨텐츠 북마크하기")
@@ -193,8 +190,8 @@ public class BoardController {
     @ApiImplicitParam(name = "rereplyId", value = "1", dataType = "Long")
     @PatchMapping("/auth/board/rereply/{rereplyId}")
     public ResponseDTO updateReReply(@PathVariable(value = "rereplyId") Long reReplyId,
-                                   @AuthenticationPrincipal MyUserDetails myUserDetails,
-                                   @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
+                                     @AuthenticationPrincipal MyUserDetails myUserDetails,
+                                     @RequestBody ReplyRequest.ReReplyInDTO reReplyInDTO) {
 
         boardService.updateReReply(myUserDetails, reReplyId, reReplyInDTO);
 
@@ -206,7 +203,7 @@ public class BoardController {
     @ApiImplicitParam(name = "rereplyId", value = "1", dataType = "Long")
     @DeleteMapping("/auth/board/rereply/{rereplyId}")
     public ResponseDTO deleteReReply(@PathVariable(value = "rereplyId") Long reReplyId,
-                                   @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
         boardService.deleteReReply(myUserDetails, reReplyId);
 
@@ -231,7 +228,8 @@ public class BoardController {
                                  @RequestPart(value = "boardInDTO") @Valid BoardRequest.BoardInDTO boardInDTO,
                                  @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        if (boardInDTO.getContent() == null || boardInDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
+        if (boardInDTO.getContent() == null || boardInDTO.getContent().isEmpty())
+            throw new Exception400("content", "컨텐츠 내용 없음");
 
         Long id = boardService.saveBoard(thumbnailFile, boardInDTO, myUserDetails, BoardStatus.ACTIVE);
 
@@ -276,12 +274,13 @@ public class BoardController {
     @SwaggerResponses.DefaultApiResponses
     @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "1", dataType = "Long", paramType = "query")})
     @PutMapping("/pb/board/{id}")
-    public ResponseDTO putBoard(@RequestPart(value = "thumbnail",required = false) MultipartFile thumbnailFile,
+    public ResponseDTO putBoard(@RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
                                 @RequestPart(value = "boardUpdateDTO") @Valid BoardRequest.BoardUpdateDTO boardUpdateDTO,
                                 @PathVariable Long id,
                                 @AuthenticationPrincipal MyUserDetails myUserDetails) {
 
-        if (boardUpdateDTO.getContent() == null || boardUpdateDTO.getContent().isEmpty()) throw new Exception400("content", "컨텐츠 내용 없음");
+        if (boardUpdateDTO.getContent() == null || boardUpdateDTO.getContent().isEmpty())
+            throw new Exception400("content", "컨텐츠 내용 없음");
 
         boardService.putBoard(thumbnailFile, myUserDetails, boardUpdateDTO, id);
 
