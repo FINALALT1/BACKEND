@@ -57,6 +57,12 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "WHERE b.id = :boardId AND b.status = :status")
     Optional<BoardResponse.BoardDetailDTO> findBoardWithPBReply(@Param("boardId") Long boardId, @Param("status") BoardStatus status);
 
+    @Query("SELECT NEW kr.co.moneybridge.dto.board.BoardResponse$BoardDetailByAnonDTO(b, pb) " +
+            "FROM Board b " +
+            "JOIN PB pb ON b.pb.id = pb.id " +
+            "WHERE b.id = :boardId AND b.status = :status")
+    BoardResponse.BoardDetailByAnonDTO findBoardWithPB(@Param("boardId") Long boardId, @Param("status") BoardStatus status);
+
     @Query("SELECT b FROM Board b WHERE b.pb.id = :pbId AND b.status = :status")
     List<Board> findBoardsByPbId(@Param("pbId") Long pbId, @Param("status") BoardStatus status);
 

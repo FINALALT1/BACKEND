@@ -36,6 +36,9 @@ public class Board {
     private String tag2; // 7자 이내
 
     @Column(nullable = false)
+    private Long viewCount;
+
+    @Column(nullable = false)
     private Long clickCount; // 확장성 생각하면 Long
 
     @Column(nullable = false)
@@ -52,12 +55,16 @@ public class Board {
         this.createdAt = LocalDateTime.now();
     }
 
-//    @PreUpdate
+    //    @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void increaseCount() {
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
+
+    public void increaseClickCount() {
         this.clickCount++;
     }
 
@@ -69,5 +76,7 @@ public class Board {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateThumbnail(String thumbnail) { this.thumbnail = thumbnail; }
+    public void updateThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 }
