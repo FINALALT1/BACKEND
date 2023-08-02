@@ -25,6 +25,8 @@ public class BoardResponse {
         private String title;
         @ApiModelProperty(example = "김피비", value = "PB 이름")
         private String pbName;
+        @ApiModelProperty(example = "삼성증권", value = "회사명")
+        private String companyName;
         @ApiModelProperty(example = "logo.png", value = "회사 로고")
         private String companyLogo;
         @ApiModelProperty(example = "5", value = "연차")
@@ -42,6 +44,7 @@ public class BoardResponse {
             this.id = board.getId();
             this.title = board.getTitle();
             this.pbName = pb.getName();
+            this.companyName = company.getName();
             this.companyLogo = company.getLogo();
             this.career = pb.getCareer();
             this.tag1 = board.getTag1();
@@ -170,6 +173,7 @@ public class BoardResponse {
             this.authorId = user.getId();
             this.role = reply.getAuthorRole();
         }
+
         public ReplyOutDTO(Reply reply, PB pb) {
             this.id = reply.getId();
             this.name = pb.getName();
@@ -204,6 +208,7 @@ public class BoardResponse {
             this.role = reReply.getAuthorRole();
             this.uniqueValue = reReply.getUniqueValue();
         }
+
         public ReReplyOutDTO(ReReply reReply, PB pb) {
             this.id = reReply.getId();
             this.name = pb.getName();
