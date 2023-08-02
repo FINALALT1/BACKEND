@@ -70,7 +70,7 @@ public class BoardResponse {
         private PBSpeciality speciality1;
         private PBSpeciality speciality2;
         private int career;
-        private int viewCount;
+        private Long viewCount;
         private String content;
         private Boolean isBookmarked;
         private List<ReplyOutDTO> reply;
@@ -89,7 +89,7 @@ public class BoardResponse {
             this.speciality1 = pb.getSpeciality1();
             this.speciality2 = pb.getSpeciality2();
             this.career = pb.getCareer();
-            this.viewCount = board.getViewCount().intValue();
+            this.viewCount = board.getViewCount();
             this.content = board.getContent();
         }
     }
@@ -126,7 +126,7 @@ public class BoardResponse {
         @ApiModelProperty(value = "경력")
         private int career;
         @ApiModelProperty(value = "조회수")
-        private int viewCount;
+        private Long viewCount;
         @ApiModelProperty(value = "내용")
         private String content;
         @ApiModelProperty(value = "댓글 목록")
@@ -146,7 +146,7 @@ public class BoardResponse {
             this.speciality1 = pb.getSpeciality1();
             this.speciality2 = pb.getSpeciality2();
             this.career = pb.getCareer();
-            this.viewCount = board.getViewCount().intValue();
+            this.viewCount = board.getViewCount();
             this.content = board.getContent();
         }
     }
