@@ -137,6 +137,7 @@ public class DummyEntity {
                 .tag1("시장정보")
                 .tag2("쉽게읽혀요")
                 .clickCount(0L)
+                .viewCount(0L)
                 .status(BoardStatus.ACTIVE)
                 .build();
     }
@@ -150,6 +151,7 @@ public class DummyEntity {
                 .tag1("시장정보")
                 .tag2("쉽게읽혀요")
                 .clickCount(0L)
+                .viewCount(0L)
                 .status(BoardStatus.TEMP)
                 .build();
     }
