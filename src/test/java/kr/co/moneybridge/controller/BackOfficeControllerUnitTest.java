@@ -164,7 +164,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         Review review = newMockReview(1L, reservation);
         List reviewList = Arrays.asList(new BackOfficeResponse.ReservationTotalDTO(reservation,
                 new BackOfficeResponse.UserDTO(reservation.getUser()),
-                new BackOfficeResponse.PBDTO(reservation.getPb()),
+                new BackOfficeResponse.PBDTO(reservation.getPb(), reservation.getCreatedAt()),
                 new BackOfficeResponse.ReviewTotalDTO(review,
                         Arrays.asList(new ReservationResponse.StyleDTO(StyleStyle.FAST)))));
         Page<Reservation> reservationPG = new PageImpl<>(Arrays.asList(reservation));

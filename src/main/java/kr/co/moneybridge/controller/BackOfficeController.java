@@ -110,6 +110,16 @@ public class BackOfficeController {
         return new ResponseDTO<>(pageDTO);
     }
 
+    @MyLog
+    @ApiOperation(value = "상담 삭제하기")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/reservation/{id}")
+    public ResponseDTO deleteReservation(@PathVariable Long id) {
+        backOfficeService.deleteReservation(id);
+
+        return new ResponseDTO<>();
+    }
+
     // 해당 투자자 강제 탈퇴
     @MyLog
     @SwaggerResponses.ForceWithdrawUser
@@ -175,16 +185,6 @@ public class BackOfficeController {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BackOfficeResponse.PBPendingDTO> pageDTO = backOfficeService.getPBPending(pageable);
         return new ResponseDTO<>(pageDTO);
-    }
-
-    @MyLog
-    @ApiOperation(value = "상담 삭제하기")
-    @SwaggerResponses.ApiResponsesWithout400
-    @DeleteMapping("/admin/reservation/{id}")
-    public ResponseDTO deleteReservation(@PathVariable Long id) {
-        backOfficeService.deleteReservation(id);
-
-        return new ResponseDTO<>();
     }
 
     // 공지사항 목록 가져오기

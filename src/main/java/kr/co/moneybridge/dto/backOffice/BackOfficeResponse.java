@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -129,6 +130,9 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "1", value = "PB id")
         private Long id;
 
+        @ApiModelProperty(example = "2023-01-01", value = "상담 신청일")
+        private String createdAt;
+
         @ApiModelProperty(example = "김pb@nate.com", value = "이메일")
         private String email;
 
@@ -138,8 +142,9 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
         private String phoneNumber;
 
-        public PBDTO(PB pb) {
+        public PBDTO(PB pb, LocalDateTime createdAt) {
             this.id = pb.getId();
+            this.createdAt = localDateTimeToString(createdAt);
             this.email = pb.getEmail();
             this.name = pb.getName();
             this.phoneNumber = pb.getPhoneNumber();
@@ -201,7 +206,7 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "1", value = "투자자 id")
         private Long id;
 
-        @ApiModelProperty(example = "2023년 1월 1일 오전 9시 00분", value = "가입일")
+        @ApiModelProperty(example = "2023-01-01", value = "가입일")
         private String createdAt;
 
         @ApiModelProperty(example = "김투자@nate.com", value = "이메일")
