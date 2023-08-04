@@ -32,7 +32,7 @@
 </br>
 
 ## :hammer: 시스템구성도
-<img width="850" alt="시스템구성도" src="https://github.com/FINALALT1/BACKEND/assets/33537820/51b6bb1e-a23f-4c2f-b896-35df640f7438">
+<img width="850" alt="시스템구성도" src="https://github-production-user-asset-6210df.s3.amazonaws.com/90882909/258372817-323b6b0b-47aa-4faf-bde1-df4f45c97ff5.png">
 </br>
 
 ## 👥 팀원 소개 및 개발 일지
