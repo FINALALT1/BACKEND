@@ -2,6 +2,7 @@ package kr.co.moneybridge.dto.backOffice;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
@@ -15,8 +16,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static kr.co.moneybridge.core.util.MyDateUtil.*;
 
 public class BackOfficeResponse {
     @ApiModel(description = "후기 리스트 데이터")
@@ -126,6 +130,9 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "1", value = "PB id")
         private Long id;
 
+        @ApiModelProperty(example = "2023-01-01", value = "상담 신청일")
+        private String createdAt;
+
         @ApiModelProperty(example = "김pb@nate.com", value = "이메일")
         private String email;
 
@@ -135,8 +142,9 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
         private String phoneNumber;
 
-        public PBDTO(PB pb) {
+        public PBDTO(PB pb, LocalDateTime createdAt) {
             this.id = pb.getId();
+            this.createdAt = localDateTimeToString(createdAt);
             this.email = pb.getEmail();
             this.name = pb.getName();
             this.phoneNumber = pb.getPhoneNumber();
@@ -198,6 +206,9 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "1", value = "투자자 id")
         private Long id;
 
+        @ApiModelProperty(example = "2023-01-01", value = "가입일")
+        private String createdAt;
+
         @ApiModelProperty(example = "김투자@nate.com", value = "이메일")
         private String email;
 
@@ -212,6 +223,7 @@ public class BackOfficeResponse {
 
         public MemberOutDTO(Member member) {
             this.id = member.getId();
+            this.createdAt = localDateTimeToString(member.getCreatedAt());
             this.email = member.getEmail();
             this.name = member.getName();
             this.phoneNumber = member.getPhoneNumber();

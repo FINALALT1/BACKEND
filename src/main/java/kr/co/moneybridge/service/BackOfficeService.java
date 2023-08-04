@@ -216,7 +216,7 @@ public class BackOfficeService {
                     }
                     return new BackOfficeResponse.ReservationTotalDTO(reservation,
                             new BackOfficeResponse.UserDTO(reservation.getUser()),
-                            new BackOfficeResponse.PBDTO(reservation.getPb()),
+                            new BackOfficeResponse.PBDTO(reservation.getPb(), reservation.getCreatedAt()),
                             reviewTotalDTO);
                 }).collect(Collectors.toList());
         return new PageDTO<>(list, reservationPG, Reservation.class);
@@ -352,6 +352,26 @@ public class BackOfficeService {
             noticeRepository.deleteById(noticeId);
         } catch (Exception e) {
             throw new Exception500("공지사항 삭제 실패 : " + e.getMessage());
+        }
+    }
+
+    @MyLog
+    @Transactional
+    public void deleteReservation(Long id) {
+        reservationRepository.findById(id).orElseThrow(
+                () -> new Exception404("존재하지 않는 상담입니다.")
+        );
+
+        try {
+            reservationRepository.deleteById(id);
+
+            Optional<Review> reviewOP = reviewRepository.findByReservationId(id);
+            if (reviewOP.isPresent()) {
+                reviewRepository.deleteById(reviewOP.get().getId());
+                styleRepository.deleteByReviewId(reviewOP.get().getId());
+            }
+        } catch (Exception e) {
+            throw new Exception500("상담 또는 상담 후기, 상담 스타일 삭제 실패 : " + e.getMessage());
         }
     }
 

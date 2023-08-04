@@ -110,6 +110,16 @@ public class BackOfficeController {
         return new ResponseDTO<>(pageDTO);
     }
 
+    @MyLog
+    @ApiOperation(value = "상담 삭제하기")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/reservation/{id}")
+    public ResponseDTO deleteReservation(@PathVariable Long id) {
+        backOfficeService.deleteReservation(id);
+
+        return new ResponseDTO<>();
+    }
+
     // 해당 투자자 강제 탈퇴
     @MyLog
     @SwaggerResponses.ForceWithdrawUser
@@ -153,7 +163,7 @@ public class BackOfficeController {
     public ResponseDTO<PageDTO<BackOfficeResponse.MemberOutDTO>> getMembers(@RequestParam(defaultValue = "user") String type,
                                                                    @RequestParam(defaultValue = "0") int page) {
         if(!type.equals("user") && !type.equals("pb")) throw new Exception400("type", "user과 pb만 가능합니다");
-        Pageable pbPageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Pageable pbPageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BackOfficeResponse.MemberOutDTO> pageDTO = backOfficeService.getMembers(type, pbPageable);
         return new ResponseDTO<>(pageDTO);
     }
