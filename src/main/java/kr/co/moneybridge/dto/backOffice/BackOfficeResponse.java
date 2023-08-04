@@ -2,6 +2,7 @@ package kr.co.moneybridge.dto.backOffice;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
@@ -17,6 +18,8 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static kr.co.moneybridge.core.util.MyDateUtil.*;
 
 public class BackOfficeResponse {
     @ApiModel(description = "후기 리스트 데이터")
@@ -198,6 +201,9 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "1", value = "투자자 id")
         private Long id;
 
+        @ApiModelProperty(example = "2023년 1월 1일 오전 9시 00분", value = "가입일")
+        private String createdAt;
+
         @ApiModelProperty(example = "김투자@nate.com", value = "이메일")
         private String email;
 
@@ -212,6 +218,7 @@ public class BackOfficeResponse {
 
         public MemberOutDTO(Member member) {
             this.id = member.getId();
+            this.createdAt = localDateTimeToString(member.getCreatedAt());
             this.email = member.getEmail();
             this.name = member.getName();
             this.phoneNumber = member.getPhoneNumber();
