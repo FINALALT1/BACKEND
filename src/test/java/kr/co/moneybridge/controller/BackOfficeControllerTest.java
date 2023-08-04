@@ -285,9 +285,9 @@ public class BackOfficeControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data.list[0].id").value("1"));
-        resultActions.andExpect(jsonPath("$.data.list[0].email").value("admin@nate.com"));
-        resultActions.andExpect(jsonPath("$.data.list[0].name").value("admin"));
+        resultActions.andExpect(jsonPath("$.data.list[0].id").value("4"));
+        resultActions.andExpect(jsonPath("$.data.list[0].email").value("user4@nate.com"));
+        resultActions.andExpect(jsonPath("$.data.list[0].name").value("user4"));
         resultActions.andExpect(jsonPath("$.data.list[0].phoneNumber").value("01012345678"));
         resultActions.andExpect(jsonPath("$.data.list[0].isAdmin").value("true"));
         resultActions.andExpect(jsonPath("$.data.totalElements").isNumber());
