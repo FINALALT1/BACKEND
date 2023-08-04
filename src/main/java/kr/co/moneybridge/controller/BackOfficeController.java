@@ -177,6 +177,16 @@ public class BackOfficeController {
         return new ResponseDTO<>(pageDTO);
     }
 
+    @MyLog
+    @ApiOperation(value = "상담 삭제하기")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/reservation/{id}")
+    public ResponseDTO deleteReservation(@PathVariable Long id) {
+        backOfficeService.deleteReservation(id);
+
+        return new ResponseDTO<>();
+    }
+
     // 공지사항 목록 가져오기
     @MyLog
     @SwaggerResponses.GetNotice
