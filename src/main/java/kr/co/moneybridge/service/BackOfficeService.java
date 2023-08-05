@@ -216,7 +216,7 @@ public class BackOfficeService {
                     }
                     return new BackOfficeResponse.ReservationTotalDTO(reservation,
                             new BackOfficeResponse.UserDTO(reservation.getUser()),
-                            new BackOfficeResponse.PBDTO(reservation.getPb(), reservation.getCreatedAt()),
+                            new BackOfficeResponse.PBDTO(reservation.getPb()),
                             reviewTotalDTO);
                 }).collect(Collectors.toList());
         return new PageDTO<>(list, reservationPG, Reservation.class);

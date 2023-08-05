@@ -71,6 +71,9 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "질문입니다...", value = "문의 사항")
         private String question;
 
+        @ApiModelProperty(example = "2023-01-01", value = "상담 신청일")
+        private String createdAt;
+
         @ApiModelProperty
         private UserDTO user;
 
@@ -89,6 +92,7 @@ public class BackOfficeResponse {
             this.locationName = reservation.getLocationName() == null ? null : reservation.getLocationName();
             this.goal = reservation.getGoal();
             this.question = reservation.getQuestion() == null ? null : reservation.getQuestion();
+            this.createdAt = localDateTimeToString(reservation.getCreatedAt());
             this.user = user;
             this.pb = pb;
             this.review = review;
@@ -130,9 +134,6 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "1", value = "PB id")
         private Long id;
 
-        @ApiModelProperty(example = "2023-01-01", value = "상담 신청일")
-        private String createdAt;
-
         @ApiModelProperty(example = "김pb@nate.com", value = "이메일")
         private String email;
 
@@ -142,9 +143,8 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
         private String phoneNumber;
 
-        public PBDTO(PB pb, LocalDateTime createdAt) {
+        public PBDTO(PB pb) {
             this.id = pb.getId();
-            this.createdAt = localDateTimeToString(createdAt);
             this.email = pb.getEmail();
             this.name = pb.getName();
             this.phoneNumber = pb.getPhoneNumber();
