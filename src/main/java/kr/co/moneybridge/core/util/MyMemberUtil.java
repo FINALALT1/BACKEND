@@ -134,16 +134,16 @@ public class MyMemberUtil {
         thumbnails.stream().forEach(thumbnail -> s3Util.delete(thumbnail));
     }
 
-    public List<Member> findByNameAndPhoneNumberWithoutException(String name, String phoneNumber, Role role) {
+    public List<Member> findByPhoneNumberWithoutException(String phoneNumber, Role role) {
         List<Member> members = null;
         if(role.equals(Role.USER) || role.equals(Role.ADMIN)){
-            List<User> users = userRepository.findByNameAndPhoneNumber(name, phoneNumber);
+            List<User> users = userRepository.findByPhoneNumber(phoneNumber);
             if(users.isEmpty()){
                 return null;
             }
             members = new ArrayList<>(users);
         } else if(role.equals(Role.PB)) {
-            List<PB> pbs = pbRepository.findByNameAndPhoneNumber(name, phoneNumber);
+            List<PB> pbs = pbRepository.findByPhoneNumber(phoneNumber);
             if (pbs.isEmpty()) {
                 return null;
             }

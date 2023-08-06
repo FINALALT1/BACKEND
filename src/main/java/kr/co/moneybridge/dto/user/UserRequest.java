@@ -74,10 +74,6 @@ public class UserRequest {
         @NotNull
         private Role role;
 
-        @ApiModelProperty(example = "김투자")
-        @NotEmpty
-        private String name;
-
         @ApiModelProperty(example = "01012345678")
         @NotEmpty
         @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
