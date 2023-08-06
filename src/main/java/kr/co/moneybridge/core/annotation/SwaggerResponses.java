@@ -853,4 +853,20 @@ public class SwaggerResponses {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface ApiResponsesWithout400 {
     }
+
+    @ApiOperation(value = "휴대폰 번호 중복 체크")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 404,
+                    message = NOT_FOUND),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", example = "user", value = "투자자는 user, PB는 pb")})
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface PhoneNumber {
+    }
 }

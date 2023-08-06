@@ -178,6 +178,23 @@ public class UserService {
         return emailOutDTO;
     }
 
+    @MyLog
+    public UserResponse.PhoneNumberOutDTO checkPhoneNumber(String type, String phoneNumber) {
+        if (type.equals("user")) {
+            int count = userRepository.countByPhoneNumber(phoneNumber);
+            if (count >= 1) {
+                return new UserResponse.PhoneNumberOutDTO(true);
+            }
+            return new UserResponse.PhoneNumberOutDTO(false);
+        }
+
+        int count = pbRepository.countByPhoneNumber(phoneNumber);
+        if (count >= 1) {
+            return new UserResponse.PhoneNumberOutDTO(true);
+        }
+        return new UserResponse.PhoneNumberOutDTO(false);
+    }
+
     private String sendEmail(String email) {
         String code = createCode();
         MimeMessage message = myMsgUtil.createMessage(email, myMsgUtil.getSubjectAuthenticate(),

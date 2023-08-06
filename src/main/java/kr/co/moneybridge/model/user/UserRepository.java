@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "join Review rev on rev.reservation.id = res.id " +
             "where rev.id = :reviewId")
     User findUserByReviewId(@Param("reviewId") Long reviewId);
+
+    @Query("select count(*) from User u where u.phoneNumber = :phoneNumber")
+    int countByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 }

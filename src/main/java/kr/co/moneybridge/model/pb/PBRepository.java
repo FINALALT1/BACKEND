@@ -152,5 +152,6 @@ public interface PBRepository extends JpaRepository<PB, Long> {
             "ORDER BY pb.id DESC")
     List<PBResponse.PBPageDTO> findBySpeciality1(@Param("speciality1")PBSpeciality speciality1, Pageable pageable);
 
-
+    @Query("select count(*) from PB p where p.phoneNumber = :phoneNumber")
+    int countByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 }

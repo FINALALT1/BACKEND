@@ -279,7 +279,7 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "윤pb", value = "이름")
         private String name;
 
-        @ApiModelProperty(example = "01012345678", value = "핸드폰 번호")
+        @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
         private String phoneNumber;
 
         @ApiModelProperty(example = "미래에셋증권 여의도점", value = "지점명")

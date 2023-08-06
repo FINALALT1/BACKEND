@@ -231,6 +231,18 @@ public class UserResponse {
         }
     }
 
+    @ApiModel(description = "휴대폰 번호 중복 체크 응답 데이터")
+    @Setter
+    @Getter
+    public static class PhoneNumberOutDTO {
+        @ApiModelProperty(example = "true", value = "중복 여부(true or false)")
+        private boolean isDuplicated;
+
+        public PhoneNumberOutDTO(boolean isDuplicated) {
+            this.isDuplicated = isDuplicated;
+        }
+    }
+
     @ApiModel(description = "투자자 회원 가입시 응답 데이터")
     @Setter
     @Getter
