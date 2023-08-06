@@ -277,7 +277,6 @@ public class UserControllerTest {
         // given
         UserRequest.EmailFindInDTO emailFindInDTO = new UserRequest.EmailFindInDTO();
         emailFindInDTO.setRole(Role.USER);
-        emailFindInDTO.setName("김비밀");
         emailFindInDTO.setPhoneNumber("01012345678");
         String requestBody = om.writeValueAsString(emailFindInDTO);
 
@@ -290,9 +289,7 @@ public class UserControllerTest {
         // then
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data[0].name").value("김비밀"));
         resultActions.andExpect(jsonPath("$.data[0].phoneNumber").value("01012345678"));
-        resultActions.andExpect(jsonPath("$.data[0].email").value("jisu31484@naver.com"));
     }
 
     @DisplayName("비밀번호 찾기시 이메일 인증 성공")
@@ -302,7 +299,6 @@ public class UserControllerTest {
         // given
         UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
         passwordInDTO.setRole(Role.USER);
-        passwordInDTO.setName("김비밀");
         passwordInDTO.setEmail("jisu31484@naver.com");
         String requestBody = om.writeValueAsString(passwordInDTO);
 

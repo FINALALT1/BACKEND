@@ -1,5 +1,6 @@
 package kr.co.moneybridge.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.MyLog;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
@@ -156,15 +157,24 @@ public class BackOfficeController {
         return new ResponseDTO<>(countDTO);
     }
 
-    // 회원 리스트 가져오기
+    // 투자자 리스트 가져오기
     @MyLog
-    @SwaggerResponses.GetMembers
-    @GetMapping("/admin/members")
-    public ResponseDTO<PageDTO<BackOfficeResponse.MemberOutDTO>> getMembers(@RequestParam(defaultValue = "user") String type,
-                                                                   @RequestParam(defaultValue = "0") int page) {
-        if(!type.equals("user") && !type.equals("pb")) throw new Exception400("type", "user과 pb만 가능합니다");
-        Pageable pbPageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        PageDTO<BackOfficeResponse.MemberOutDTO> pageDTO = backOfficeService.getMembers(type, pbPageable);
+    @SwaggerResponses.GetUsers
+    @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
+    @GetMapping("/admin/users")
+    public ResponseDTO<PageDTO<BackOfficeResponse.UserOutDTO>> getUsers(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        PageDTO<BackOfficeResponse.UserOutDTO> pageDTO = backOfficeService.getUsers(pageable);
+        return new ResponseDTO<>(pageDTO);
+    }
+
+    @MyLog
+    @SwaggerResponses.GetPBs
+    @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
+    @GetMapping("/admin/pbs")
+    public ResponseDTO<PageDTO<BackOfficeResponse.PBOutDTO>> getPBs(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        PageDTO<BackOfficeResponse.PBOutDTO> pageDTO = backOfficeService.getPBs(pageable);
         return new ResponseDTO<>(pageDTO);
     }
 
@@ -180,7 +190,7 @@ public class BackOfficeController {
     // PB 회원 가입 승인 대기 리스트 가져오기
     @MyLog
     @SwaggerResponses.GetPBPending
-    @GetMapping("/admin/pbs")
+    @GetMapping("/admin/pendings")
     public ResponseDTO<PageDTO<BackOfficeResponse.PBPendingDTO>> getPBPending(@RequestParam(defaultValue = "0") int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageDTO<BackOfficeResponse.PBPendingDTO> pageDTO = backOfficeService.getPBPending(pageable);

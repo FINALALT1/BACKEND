@@ -2,12 +2,12 @@ package kr.co.moneybridge.dto.backOffice;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.moneybridge.core.util.MyDateUtil;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.Notice;
+import kr.co.moneybridge.model.pb.Branch;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.model.reservation.*;
@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -199,10 +198,10 @@ public class BackOfficeResponse {
         }
     }
 
-    @ApiModel(description = "회원 관리 페이지 전체 가져오기 응답 데이터")
+    @ApiModel(description = "회원 관리 페이지 투자자 전체 가져오기 응답 데이터")
     @Getter
     @Setter
-    public static class MemberOutDTO {
+    public static class UserOutDTO {
         @ApiModelProperty(example = "1", value = "투자자 id")
         private Long id;
 
@@ -218,16 +217,52 @@ public class BackOfficeResponse {
         @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
         private String phoneNumber;
 
-        @ApiModelProperty(example = "true", value = "관리자 여부(관리자면 true, 아니면 false(PB는 항상 false))")
+        @ApiModelProperty(example = "true", value = "관리자 여부(관리자면 true, 아니면 false)")
         private Boolean isAdmin;
 
-        public MemberOutDTO(Member member) {
+        public UserOutDTO(Member member) {
             this.id = member.getId();
             this.createdAt = localDateTimeToString(member.getCreatedAt());
             this.email = member.getEmail();
             this.name = member.getName();
             this.phoneNumber = member.getPhoneNumber();
             this.isAdmin = member.getRole() == Role.ADMIN ? true : false;
+        }
+    }
+
+    @ApiModel(description = "회원 관리 페이지 PB 전체 가져오기 응답 데이터")
+    @Getter
+    @Setter
+    public static class PBOutDTO {
+        @ApiModelProperty(example = "1", value = "투자자 id")
+        private Long id;
+
+        @ApiModelProperty(example = "2023-01-01", value = "가입일")
+        private String createdAt;
+
+        @ApiModelProperty(example = "김PB@nate.com", value = "이메일")
+        private String email;
+
+        @ApiModelProperty(example = "김PB", value = "이름")
+        private String name;
+
+        @ApiModelProperty(example = "01012345678", value = "휴대폰 번호")
+        private String phoneNumber;
+
+        @ApiModelProperty(example = "true", value = "관리자 여부(관리자면 true, 아니면 false)")
+        private String businessCard;
+
+        @ApiModelProperty(example = "KB증권 용산점", value = "증권사 지점명")
+        private String branchName;
+
+        public PBOutDTO(PB pb, Branch branch) {
+            this.id = pb.getId();
+            this.createdAt = localDateTimeToString(pb.getCreatedAt());
+            this.email = pb.getEmail();
+            this.name = pb.getName();
+            this.phoneNumber = pb.getPhoneNumber();
+            this.businessCard = pb.getBusinessCard();
+            this.branchName = branch.getName();
         }
     }
 

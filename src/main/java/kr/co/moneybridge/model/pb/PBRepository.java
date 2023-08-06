@@ -1,5 +1,6 @@
 package kr.co.moneybridge.model.pb;
 
+import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.reservation.ReservationProcess;
@@ -24,6 +25,11 @@ public interface PBRepository extends JpaRepository<PB, Long> {
 
     @Query("select p from PB p where p.status = :status")
     Page<PB> findAllByStatus(@Param("status") PBStatus status, Pageable pageable);
+
+    @Query("select new kr.co.moneybridge.dto.backOffice.BackOfficeResponse$PBOutDTO(p, br) from PB p " +
+            "join Branch br " +
+            "where p.status = :status")
+    Page<BackOfficeResponse.PBOutDTO> findPagesByStatus(@Param("status") PBStatus status, Pageable pageable);
 
     @Query("select p from PB p where p.id in :list")
     List<PB> findByIdIn(@Param("list") List<Long> list);

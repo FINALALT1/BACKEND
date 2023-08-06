@@ -224,7 +224,6 @@ public class UserControllerUnitTest extends MockDummyEntity {
         // Given
         UserRequest.EmailFindInDTO emailFindInDTO = new UserRequest.EmailFindInDTO();
         emailFindInDTO.setRole(Role.USER);
-        emailFindInDTO.setName("김투자");
         emailFindInDTO.setPhoneNumber("01012345678");
         String requestBody = om.writeValueAsString(emailFindInDTO);
 
@@ -252,7 +251,6 @@ public class UserControllerUnitTest extends MockDummyEntity {
         // Given
         UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
         passwordInDTO.setRole(Role.USER);
-        passwordInDTO.setName("lee");
         passwordInDTO.setEmail("jisu31484@naver.com");
         String requestBody = om.writeValueAsString(passwordInDTO);
 

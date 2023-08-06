@@ -311,7 +311,7 @@ public class SwaggerResponses {
     public @interface GetMembersCount {
     }
 
-    @ApiOperation(value = "회원 리스트 가져오기")
+    @ApiOperation(value = "투자자 리스트 가져오기")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
@@ -322,13 +322,27 @@ public class SwaggerResponses {
             @ApiResponse(code = 500,
                     message = INTERNAL_SERVER_ERROR)
     })
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", example = "user", value = "user(디폴트) 또는 pb"),
-            @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface GetMembers {
+    public @interface GetUsers {
+    }
+
+    @ApiOperation(value = "PB 리스트 가져오기")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 401,
+                    message = UNAUTHORIZED),
+            @ApiResponse(code = 403,
+                    message = FORBIDDEN),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GetPBs {
     }
 
     @ApiOperation(value = "해당 PB 승인/승인 거부")

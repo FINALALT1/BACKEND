@@ -5,6 +5,7 @@ import kr.co.moneybridge.core.util.MyMemberUtil;
 import kr.co.moneybridge.core.util.MyMsgUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
+import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
@@ -260,38 +261,40 @@ class BackOfficeServiceTest extends MockDummyEntity {
 
     @Test
     @DisplayName("회원(PB) 리스트 가져오기")
-    void getMembersPB() {
+    void getPBs() {
         // given
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
         Company company = newMockCompany(1L, "미래에셋증권");
         Branch branch = newMockBranch(1L, company, 1);
         PB pb = newMockPB(1L, "pblee", branch);
-        Page<PB> pbPG = new PageImpl<>(Arrays.asList(pb));
-        String type = "pb";
+        Page<BackOfficeResponse.PBOutDTO> pbPG = new PageImpl<>(new ArrayList<>(Arrays.asList(
+                new BackOfficeResponse.PBOutDTO(pb, branch)
+        )));
 
         // stub
-        when(pbRepository.findAllByStatus(any(), any())).thenReturn(pbPG);
+        when(pbRepository.findPagesByStatus(any(), any())).thenReturn(pbPG);
 
         // when
-        PageDTO<BackOfficeResponse.MemberOutDTO> pageDTO = backOfficeService.getMembers(type, pageable);
+        PageDTO<BackOfficeResponse.PBOutDTO> pageDTO = backOfficeService.getPBs(pageable);
 
         // then
         assertThat(pageDTO.getList().get(0).getId()).isEqualTo(1);
         assertThat(pageDTO.getList().get(0).getEmail()).isEqualTo("pblee@nate.com");
         assertThat(pageDTO.getList().get(0).getName()).isEqualTo("pblee");
         assertThat(pageDTO.getList().get(0).getPhoneNumber()).isEqualTo("01012345678");
+        assertThat(pageDTO.getList().get(0).getBranchName()).isEqualTo("미래에셋증권 여의도점");
         assertThat(pageDTO.getTotalElements()).isEqualTo(1);
         assertThat(pageDTO.getTotalPages()).isEqualTo(1);
         assertThat(pageDTO.getCurPage()).isEqualTo(0);
         assertThat(pageDTO.getFirst()).isEqualTo(true);
         assertThat(pageDTO.getLast()).isEqualTo(true);
         assertThat(pageDTO.getEmpty()).isEqualTo(false);
-        Mockito.verify(pbRepository, Mockito.times(1)).findAllByStatus(any(), any());
+        Mockito.verify(pbRepository, Mockito.times(1)).findPagesByStatus(any(), any());
     }
 
     @Test
     @DisplayName("회원(투자자) 리스트 가져오기")
-    void getMembersUser() {
+    void getUsers() {
         // given
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
         User user = newMockUser(1L, "user");
@@ -302,7 +305,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         when(userRepository.findAll(pageable)).thenReturn(userPG);
 
         // when
-        PageDTO<BackOfficeResponse.MemberOutDTO> pageDTO = backOfficeService.getMembers(type, pageable);
+        PageDTO<BackOfficeResponse.UserOutDTO> pageDTO = backOfficeService.getUsers(pageable);
 
         // then
         assertThat(pageDTO.getList().get(0).getId()).isEqualTo(1);

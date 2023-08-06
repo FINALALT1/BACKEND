@@ -124,10 +124,10 @@ public class MyMemberUtilTest extends MockDummyEntity {
         String phoneNumber = "01012345678";
 
         // stub
-        when(pbRepository.findByNameAndPhoneNumber(any(), any())).thenReturn(Arrays.asList(pb));
+        when(pbRepository.findByPhoneNumber(any())).thenReturn(Arrays.asList(pb));
 
         // when
-        List<Member> members = myMemberUtil.findByNameAndPhoneNumberWithoutException(name, phoneNumber, Role.PB);
+        List<Member> members = myMemberUtil.findByPhoneNumberWithoutException(phoneNumber, Role.PB);
 
         // then
         Assertions.assertThat(members.get(0)).isEqualTo(pb);
@@ -141,10 +141,10 @@ public class MyMemberUtilTest extends MockDummyEntity {
         String phoneNumber = "01012345678";
 
         // stub
-        when(userRepository.findByNameAndPhoneNumber(any(), any())).thenReturn(Arrays.asList(user));
+        when(userRepository.findByPhoneNumber(any())).thenReturn(Arrays.asList(user));
 
         // when
-        List<Member> members = myMemberUtil.findByNameAndPhoneNumberWithoutException(name, phoneNumber, Role.USER);
+        List<Member> members = myMemberUtil.findByPhoneNumberWithoutException(phoneNumber, Role.USER);
 
         // then
         Assertions.assertThat(members.get(0)).isEqualTo(user);
