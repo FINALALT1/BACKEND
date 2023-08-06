@@ -93,10 +93,6 @@ public class UserRequest {
         @NotNull
         private Role role;
 
-        @ApiModelProperty(example = "사용자")
-        @NotEmpty
-        private String name;
-
         @ApiModelProperty(example = "jisu8496@naver.com")
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")

@@ -150,7 +150,7 @@ public class UserService {
     @MyLog
     public UserResponse.PasswordOutDTO password(UserRequest.PasswordInDTO passwordInDTO) throws Exception {
         Member memberPS = myMemberUtil.findByEmailWithoutException(passwordInDTO.getEmail(), passwordInDTO.getRole());
-        if(memberPS == null || !memberPS.getName().equals(passwordInDTO.getName())){
+        if(memberPS == null){
             return new UserResponse.PasswordOutDTO();
         }
         String code = sendEmail(passwordInDTO.getEmail());
