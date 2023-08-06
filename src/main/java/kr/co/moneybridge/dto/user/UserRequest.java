@@ -74,10 +74,6 @@ public class UserRequest {
         @NotNull
         private Role role;
 
-        @ApiModelProperty(example = "김투자")
-        @NotEmpty
-        private String name;
-
         @ApiModelProperty(example = "01012345678")
         @NotEmpty
         @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
@@ -92,10 +88,6 @@ public class UserRequest {
         @ApiModelProperty(example = "USER")
         @NotNull
         private Role role;
-
-        @ApiModelProperty(example = "사용자")
-        @NotEmpty
-        private String name;
 
         @ApiModelProperty(example = "jisu8496@naver.com")
         @NotEmpty
@@ -115,6 +107,17 @@ public class UserRequest {
         @NotEmpty
         @Email(message = "이메일 형식으로 작성해주세요")
         private String email;
+    }
+
+    @ApiModel(description = "휴대폰 번호 중복 체크 요청 데이터")
+    @Setter
+    @Getter
+    public static class PhoneNumberInDTO {
+        @ApiModelProperty(example = "01012345678")
+        @NotEmpty
+        @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
+                message = "유효하지 않은 휴대폰 번호 형식입니다.")
+        private String phoneNumber;
     }
 
     @ApiModel(description = "탈퇴시 요청 데이터")

@@ -248,18 +248,24 @@ public class BackOfficeService {
     }
 
     @MyLog
-    public PageDTO<BackOfficeResponse.MemberOutDTO> getMembers(String type, Pageable pageable) {
-        if (type.equals("user")) {
-            Page<User> userPG = userRepository.findAll(pageable);
-            List<BackOfficeResponse.MemberOutDTO> list = userPG.getContent().stream().map(user ->
-                    new BackOfficeResponse.MemberOutDTO(user)).collect(Collectors.toList());
-            return new PageDTO<>(list, userPG, User.class);
-        }
+    public PageDTO<BackOfficeResponse.UserOutDTO> getUsers(Pageable pageable) {
+        Page<User> userPG = userRepository.findAll(pageable);
+        List<BackOfficeResponse.UserOutDTO> list =
+                userPG.getContent()
+                        .stream()
+                        .map(user -> new BackOfficeResponse.UserOutDTO(user))
+                        .collect(Collectors.toList());
+        return new PageDTO<>(list, userPG, User.class);
+    }
 
-        Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.ACTIVE, pageable);
-        List<BackOfficeResponse.MemberOutDTO> list = pbPG.getContent().stream().map(pb ->
-                new BackOfficeResponse.MemberOutDTO(pb)).collect(Collectors.toList());
-        return new PageDTO<>(list, pbPG, PB.class);
+    @MyLog
+    public PageDTO<BackOfficeResponse.PBOutDTO> getPBs(Pageable pageable) {
+        Page<BackOfficeResponse.PBOutDTO> pbOutPG = pbRepository.findPagesByStatus(PBStatus.ACTIVE, pageable);
+        List<BackOfficeResponse.PBOutDTO> list =
+                pbOutPG.getContent()
+                        .stream()
+                        .collect(Collectors.toList());
+        return new PageDTO<>(list, pbOutPG);
     }
 
     @MyLog

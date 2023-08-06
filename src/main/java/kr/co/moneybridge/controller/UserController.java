@@ -18,7 +18,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +36,7 @@ public class UserController {
     @SwaggerResponses.TestPropensity
     @PostMapping("/user/propensity")
     public ResponseDTO testPropensity(@RequestBody @Valid UserRequest.TestPropensityInDTO testPropensityInDTO,
-                                            Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                      Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.testPropensity(testPropensityInDTO, myUserDetails.getMember().getId());
         return new ResponseDTO<>();
     }
@@ -84,7 +83,7 @@ public class UserController {
     @SwaggerResponses.CheckPassword
     @PostMapping("/auth/password")
     public ResponseDTO checkPassword(@RequestBody @Valid UserRequest.CheckPasswordInDTO checkPasswordInDTO,
-                                           Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                     Errors errors, @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.checkPassword(checkPasswordInDTO, myUserDetails);
         return new ResponseDTO<>();
     }
@@ -125,12 +124,28 @@ public class UserController {
         return new ResponseDTO<>(emailOutDTO);
     }
 
+    // 휴대폰 번호 중복 체크
+    @MyLog
+    @SwaggerResponses.PhoneNumber
+    @PostMapping("/phonenumber")
+    public ResponseDTO<UserResponse.PhoneNumberOutDTO> checkPhoneNumber(
+            String type,
+            @RequestBody @Valid UserRequest.PhoneNumberInDTO phoneNumberInDTO,
+            Errors errors) {
+        if (!type.equals("user") && !type.equals("pb")) {
+            throw new Exception400(type, "'user' 또는 'pb'만 입력 가능합니다.");
+        }
+        UserResponse.PhoneNumberOutDTO phoneNumberOutDTO = userService.checkPhoneNumber(type, phoneNumberInDTO.getPhoneNumber());
+
+        return new ResponseDTO<>(phoneNumberOutDTO);
+    }
+
     // 탈퇴하기
     @MyLog
     @SwaggerResponses.Withdraw
     @DeleteMapping("/auth/account")
     public ResponseDTO withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
-                                      @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                @AuthenticationPrincipal MyUserDetails myUserDetails) {
         userService.withdraw(withdrawInDTO, myUserDetails);
         return new ResponseDTO<>();
     }
@@ -146,7 +161,7 @@ public class UserController {
         // 회원가입 완료시 자동로그인
         Pair<String, String> tokens = userService.issue(Role.USER, joinInDTO.getEmail(), rawPassword);
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                + "; Max-Age="+MyJwtProvider.EXP_REFRESH+"; SameSite=None; Secure; HttpOnly; Path=/");
+                + "; Max-Age=" + MyJwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .header("refreshToken", tokens.getRight())
@@ -157,14 +172,14 @@ public class UserController {
     @MyLog
     @SwaggerResponses.BackOfficeLogin
     @PostMapping("/backoffice/login")
-    public ResponseEntity<?> backofficeLogin(@RequestBody @Valid UserRequest.BackOfficeLoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
+    public ResponseEntity<?> backofficeLogin(@RequestBody @Valid UserRequest.BackOfficeLoginInDTO loginInDTO, Errors errors, HttpServletResponse response) {
         UserResponse.BackOfficeLoginOutDTO loginOutDTO = userService.backofficeLogin(loginInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(loginOutDTO);
 
         Pair<String, String> tokens = userService.issue(Role.USER, loginInDTO.getEmail(), loginInDTO.getPassword());
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                + "; Max-Age="+MyJwtProvider.EXP_REFRESH+"; SameSite=None; Secure; HttpOnly; Path=/");
+                + "; Max-Age=" + MyJwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .body(responseDTO);
@@ -174,15 +189,15 @@ public class UserController {
     @MyLog
     @SwaggerResponses.Login
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response){
+    public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response) {
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
         ResponseDTO<?> responseDTO = new ResponseDTO<>(loginOutDTO);
 
         Pair<String, String> tokens = userService.issue(loginInDTO.getRole(), loginInDTO.getEmail(), loginInDTO.getPassword());
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
-        if(loginInDTO.getRemember()){ // 브라우저 종료 후에도 로그인 상태 유지하려면
+        if (loginInDTO.getRemember()) { // 브라우저 종료 후에도 로그인 상태 유지하려면
             response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                    + "; Max-Age="+MyJwtProvider.EXP_REFRESH+"; SameSite=None; Secure; HttpOnly; Path=/");
+                    + "; Max-Age=" + MyJwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
         } else {
             response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
                     + "; SameSite=None; Secure; HttpOnly; Path=/");
@@ -199,7 +214,7 @@ public class UserController {
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         Pair<String, String> tokens = userService.reissue(request, getRefreshToken(request));
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                + "; Max-Age="+MyJwtProvider.EXP_REFRESH+"; SameSite=None; Secure; HttpOnly; Path=/");
+                + "; Max-Age=" + MyJwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
         return ResponseEntity.ok()
                 .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
@@ -210,12 +225,12 @@ public class UserController {
     @MyLog
     @SwaggerResponses.Logout
     @PostMapping("/auth/logout")
-    public ResponseDTO logout(HttpServletRequest request){
+    public ResponseDTO logout(HttpServletRequest request) {
         userService.logout(request, getRefreshToken(request));
         return new ResponseDTO<>();
     }
 
-    private String getRefreshToken(HttpServletRequest request){
+    private String getRefreshToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             throw new Exception400("Cookie", "쿠키에 값이 없습니다");

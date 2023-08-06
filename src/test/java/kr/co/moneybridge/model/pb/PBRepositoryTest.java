@@ -249,7 +249,7 @@ public class PBRepositoryTest extends DummyEntity {
         String phoneNumber = "01012345678";
 
         // when
-        List<PB> pbPSs = pbRepository.findByNameAndPhoneNumber(name, phoneNumber);
+        List<PB> pbPSs = pbRepository.findByPhoneNumber(phoneNumber);
         PB pbPS = pbPSs.get(0);
 
         // then

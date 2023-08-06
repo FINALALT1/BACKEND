@@ -29,7 +29,6 @@ import kr.co.moneybridge.model.reservation.ReservationRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +40,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -107,10 +105,10 @@ public class UserService {
         Role role = myUserDetails.getMember().getRole();
         Member memberPS = myMemberUtil.findById(id, role);
 
-        if(updateMyInfoInDTO.getName() != null && !updateMyInfoInDTO.getName().isEmpty()) { // isEmpty()는 null이 아닐 때만 확인 가능
+        if (updateMyInfoInDTO.getName() != null && !updateMyInfoInDTO.getName().isEmpty()) { // isEmpty()는 null이 아닐 때만 확인 가능
             memberPS.updateName(updateMyInfoInDTO.getName());
         }
-        if (updateMyInfoInDTO.getPhoneNumber() != null && !updateMyInfoInDTO.getPhoneNumber().isEmpty()){
+        if (updateMyInfoInDTO.getPhoneNumber() != null && !updateMyInfoInDTO.getPhoneNumber().isEmpty()) {
             memberPS.updatePhoneNumber(updateMyInfoInDTO.getPhoneNumber());
         }
     }
@@ -122,7 +120,7 @@ public class UserService {
 
     @MyLog
     public void checkPassword(UserRequest.CheckPasswordInDTO checkPasswordInDTO, MyUserDetails myUserDetails) {
-        if(!passwordEncoder.matches(checkPasswordInDTO.getPassword(), myUserDetails.getPassword())){
+        if (!passwordEncoder.matches(checkPasswordInDTO.getPassword(), myUserDetails.getPassword())) {
             throw new Exception401("비밀번호가 틀렸습니다");
         }
     }
@@ -137,9 +135,11 @@ public class UserService {
 
     @MyLog
     public List<UserResponse.EmailFindOutDTO> findEmail(UserRequest.EmailFindInDTO emailFindInDTO) {
-        List<Member> membersPS = myMemberUtil.findByNameAndPhoneNumberWithoutException(emailFindInDTO.getName(),
-            emailFindInDTO.getPhoneNumber(), emailFindInDTO.getRole());
-        if(membersPS == null){
+        List<Member> membersPS = myMemberUtil.findByPhoneNumberWithoutException(
+                emailFindInDTO.getPhoneNumber(),
+                emailFindInDTO.getRole()
+        );
+        if (membersPS == null) {
             return Arrays.asList(new UserResponse.EmailFindOutDTO());
         }
         List<UserResponse.EmailFindOutDTO> emailFindOutDTOs = new ArrayList<>();
@@ -150,7 +150,7 @@ public class UserService {
     @MyLog
     public UserResponse.PasswordOutDTO password(UserRequest.PasswordInDTO passwordInDTO) throws Exception {
         Member memberPS = myMemberUtil.findByEmailWithoutException(passwordInDTO.getEmail(), passwordInDTO.getRole());
-        if(memberPS == null || !memberPS.getName().equals(passwordInDTO.getName())){
+        if (memberPS == null) {
             return new UserResponse.PasswordOutDTO();
         }
         String code = sendEmail(passwordInDTO.getEmail());
@@ -161,21 +161,38 @@ public class UserService {
     @MyLog
     public UserResponse.EmailOutDTO email(UserRequest.EmailInDTO emailInDTO) {
         Member memberPS = myMemberUtil.findByEmailWithoutException(emailInDTO.getEmail(), emailInDTO.getRole());
-        if(memberPS != null){
-            if(emailInDTO.getRole().equals(Role.USER)){
+        if (memberPS != null) {
+            if (emailInDTO.getRole().equals(Role.USER)) {
                 throw new Exception400("email", "이미 투자자로 회원가입된 이메일입니다");
             }
-            PB pb = (PB)memberPS;
-            if(pb.getStatus().equals(PBStatus.PENDING)){
+            PB pb = (PB) memberPS;
+            if (pb.getStatus().equals(PBStatus.PENDING)) {
                 throw new Exception400("email", "회원가입 후 승인을 기다리고 있는 PB 계정입니다");
             }
-            if(pb.getStatus().equals(PBStatus.ACTIVE)){
+            if (pb.getStatus().equals(PBStatus.ACTIVE)) {
                 throw new Exception400("email", "이미 PB로 회원가입된 이메일입니다");
             }
         }
         String code = sendEmail(emailInDTO.getEmail());
         UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
         return emailOutDTO;
+    }
+
+    @MyLog
+    public UserResponse.PhoneNumberOutDTO checkPhoneNumber(String type, String phoneNumber) {
+        if (type.equals("user")) {
+            int count = userRepository.countByPhoneNumber(phoneNumber);
+            if (count >= 1) {
+                return new UserResponse.PhoneNumberOutDTO(true);
+            }
+            return new UserResponse.PhoneNumberOutDTO(false);
+        }
+
+        int count = pbRepository.countByPhoneNumber(phoneNumber);
+        if (count >= 1) {
+            return new UserResponse.PhoneNumberOutDTO(true);
+        }
+        return new UserResponse.PhoneNumberOutDTO(false);
     }
 
     private String sendEmail(String email) {
@@ -202,7 +219,7 @@ public class UserService {
     @MyLog
     @Transactional
     public void withdraw(UserRequest.WithdrawInDTO withdrawInDTO, MyUserDetails myUserDetails) {
-        if(!passwordEncoder.matches(withdrawInDTO.getPassword(), myUserDetails.getPassword())){
+        if (!passwordEncoder.matches(withdrawInDTO.getPassword(), myUserDetails.getPassword())) {
             throw new Exception401("비밀번호가 틀렸습니다");
         }
         myMemberUtil.deleteById(myUserDetails.getMember().getId(), myUserDetails.getMember().getRole());
@@ -210,10 +227,10 @@ public class UserService {
 
     @MyLog
     @Transactional
-    public UserResponse.JoinOutDTO joinUser(UserRequest.JoinInDTO joinInDTO){
+    public UserResponse.JoinOutDTO joinUser(UserRequest.JoinInDTO joinInDTO) {
 
         Optional<User> userOP = userRepository.findByEmail(joinInDTO.getEmail());
-        if(userOP.isPresent()){
+        if (userOP.isPresent()) {
             throw new Exception400("email", "이미 투자자로 회원가입된 이메일입니다");
         }
         String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte
@@ -222,12 +239,12 @@ public class UserService {
         try {
             User userPS = userRepository.save(joinInDTO.toEntity(defaultProfile));
             List<UserRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
-            if(agreements != null){
+            if (agreements != null) {
                 agreements.stream().forEach(agreement ->
                         userAgreementRepository.save(agreement.toEntity(userPS)));
             }
             return new UserResponse.JoinOutDTO(userPS);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception500("회원가입 실패 : " + e.getMessage());
         }
     }
@@ -246,7 +263,7 @@ public class UserService {
             String accessToken = myJwtProvider.createAccess(myUserDetails.getMember());
             String refreshToken = myJwtProvider.createRefresh(myUserDetails.getMember());
             return Pair.of(accessToken, refreshToken);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception500("토큰 발급 실패: " + e.getMessage());
         }
     }
@@ -256,7 +273,7 @@ public class UserService {
         User userPS = userRepository.findByEmail(loginInDTO.getEmail()).orElseThrow(
                 () -> new Exception404("해당하는 계정이 없습니다")
         );
-        if(!userPS.getRole().equals(Role.ADMIN)){
+        if (!userPS.getRole().equals(Role.ADMIN)) {
             throw new Exception400("email", "관리자 계정이 아닙니다");
         }
         String code = sendEmail(loginInDTO.getEmail());
@@ -294,7 +311,7 @@ public class UserService {
             throw new Exception500("토큰을 재발급할 수 없습니다. 다시 로그인 해주세요");
         }
         // 6) Redis에 저장된 refresh token이 사용자가 요청한 refresh token과 같아야 함.
-        if(!refreshToken.equals(RefreshTokenValid)){
+        if (!refreshToken.equals(RefreshTokenValid)) {
             log.error("레디스에 저장된 리프레시 토큰이 사용자가 요청한 리프레시 토큰이 다름");
             throw new Exception500("사용할 수 없는 리프레시 토큰입니다. 다시 로그인 해주세요");
         }
@@ -309,7 +326,7 @@ public class UserService {
             String newAccessToken = myJwtProvider.createAccess(memberPS);
             String newRefreshToken = myJwtProvider.createRefresh(memberPS);
             return Pair.of(newAccessToken, newRefreshToken);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new Exception500("토큰 재발급 실패: " + e.getMessage());
         }
     }

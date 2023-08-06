@@ -250,10 +250,9 @@ public class UserServiceTest extends MockDummyEntity {
         // given
         UserRequest.EmailFindInDTO emailFindInDTO = new UserRequest.EmailFindInDTO();
         emailFindInDTO.setRole(Role.USER);
-        emailFindInDTO.setName("lee");
         emailFindInDTO.setPhoneNumber("01012345678");
 
-        when(myMemberUtil.findByNameAndPhoneNumberWithoutException(emailFindInDTO.getName(), emailFindInDTO.getPhoneNumber(),
+        when(myMemberUtil.findByPhoneNumberWithoutException(emailFindInDTO.getPhoneNumber(),
                 emailFindInDTO.getRole())).thenReturn(Arrays.asList(newMockUser(1L, "lee")));
 
         // when
@@ -271,7 +270,6 @@ public class UserServiceTest extends MockDummyEntity {
         String email = "lee@nate.com";
         UserRequest.PasswordInDTO passwordInDTO = new UserRequest.PasswordInDTO();
         passwordInDTO.setRole(Role.USER);
-        passwordInDTO.setName("lee");
         passwordInDTO.setEmail(email);
 
         when(myMemberUtil.findByEmailWithoutException(passwordInDTO.getEmail(), passwordInDTO.getRole()))

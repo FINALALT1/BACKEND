@@ -274,10 +274,10 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         Page<User> userPG = new PageImpl<>(Arrays.asList(user));
 
         // stub
-        Mockito.when(backOfficeService.getMembers(any(), any())).thenReturn(new PageDTO<>(userList, userPG, User.class));
+        Mockito.when(backOfficeService.getUsers(any())).thenReturn(new PageDTO<>(userList, userPG, User.class));
 
         // When
-        ResultActions resultActions = mvc.perform(get("/admin/members"));
+        ResultActions resultActions = mvc.perform(get("/admin/users"));
 
         // Then
         resultActions.andExpect(status().isOk());
@@ -332,7 +332,7 @@ public class BackOfficeControllerUnitTest extends MockDummyEntity {
         Mockito.when(backOfficeService.getPBPending(any())).thenReturn(pageDTO);
 
         // When
-        ResultActions resultActions = mvc.perform(get("/admin/pbs"));
+        ResultActions resultActions = mvc.perform(get("/admin/pendings"));
 
         // Then
         resultActions.andExpect(status().isOk());

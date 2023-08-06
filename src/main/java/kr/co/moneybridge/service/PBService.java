@@ -18,7 +18,6 @@ import kr.co.moneybridge.model.reservation.ReviewRepository;
 import kr.co.moneybridge.model.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -57,18 +56,18 @@ public class PBService {
         User userPS = userRepository.findById(id).orElseThrow(
                 () -> new Exception404("해당 유저를 찾을 수 없습니다"));
 
-        if(userPS.getPropensity() == null){
+        if (userPS.getPropensity() == null) {
             throw new Exception404("투자 성향 정보가 없습니다. 검사 먼저 해주세요");
         }
 
         // 1) 투자 성향 별로 해당하는 PB id 리스트 가져오기
         List<Long> pbIds = null;
         // 공격형 - 전문분야가 부동산만 아니면 됨
-        if(userPS.getPropensity().equals(UserPropensity.SPECULATIVE)){
+        if (userPS.getPropensity().equals(UserPropensity.SPECULATIVE)) {
             pbIds = pbRepository.findIdsBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE));
         }
         // 적극형 - 전문분야가 부동산과 파생만 아니면 됨
-        if(userPS.getPropensity().equals(UserPropensity.AGGRESSIVE)){
+        if (userPS.getPropensity().equals(UserPropensity.AGGRESSIVE)) {
             pbIds = pbRepository.findIdsBySpecialityNotIn(Arrays.asList(PBSpeciality.REAL_ESTATE, PBSpeciality.DERIVATIVE));
         }
         // 그 외 - 전문분야가 채권, 펀드, 랩 중에 하나를 가지면 됨
@@ -82,7 +81,7 @@ public class PBService {
         List<PB> pbs = pbRepository.findByIdIn(randomIds);
 
         List<PBResponse.MyPropensityPBDTO> list = new ArrayList<>();
-        pbs.stream().forEach(pb->{
+        pbs.stream().forEach(pb -> {
             Long reserveCount = reservationRepository.countByPBIdAndProcess(pb.getId(), ReservationProcess.COMPLETE);
             Long reviewCount = reviewRepository.countByPBId(pb.getId());
             Boolean isBookmark = userBookmarkRepository.existsByUserIdAndPBId(id, pb.getId());
@@ -97,7 +96,7 @@ public class PBService {
     public PBResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {
         String email = myUserDetails.getMember().getEmail();
         Optional<PB> pbOP = pbRepository.findByEmail(email);
-        if(!pbOP.isPresent()){
+        if (!pbOP.isPresent()) {
             throw new Exception404("PB 계정이 없습니다");
         }
         return new PBResponse.MyPageOutDTO(pbOP.get(),
@@ -366,8 +365,8 @@ public class PBService {
         Page<PBResponse.PBPageDTO> pbPG = pbRepository.findByCompanyIdOrderedByCareer(companyId, pageable);
         for (PBResponse.PBPageDTO dto : pbPG) {
             Long pbId = dto.getId();
-            dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-            dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+            dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+            dto.setReviewCount(reviewRepository.countByPBId(pbId));
         }
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
 
@@ -382,8 +381,8 @@ public class PBService {
             User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : pbPG) {
                 Long pbId = dto.getId();
-                dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-                dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
             }
         }
@@ -398,8 +397,8 @@ public class PBService {
         Page<PBResponse.PBPageDTO> pbPG = pbRepository.findAllPBWithCareer(pageable);
         for (PBResponse.PBPageDTO dto : pbPG) {
             Long pbId = dto.getId();
-            dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-            dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+            dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+            dto.setReviewCount(reviewRepository.countByPBId(pbId));
         }
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
 
@@ -414,8 +413,8 @@ public class PBService {
             User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : pbPG) {
                 Long pbId = dto.getId();
-                dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-                dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
             }
         }
@@ -435,29 +434,29 @@ public class PBService {
             throw new Exception404("투자성향 분석이 되지않았습니다.");
         } else if (propensity.equals(UserPropensity.CONSERVATIVE)) {
             pbPG = pbRepository.findRecommendedPBList(pageable, PBSpeciality.BOND,
-                                                                PBSpeciality.US_STOCK,
-                                                                PBSpeciality.KOREAN_STOCK,
-                                                                PBSpeciality.FUND,
-                                                                PBSpeciality.DERIVATIVE,
-                                                                PBSpeciality.ETF,
-                                                                PBSpeciality.WRAP);
+                    PBSpeciality.US_STOCK,
+                    PBSpeciality.KOREAN_STOCK,
+                    PBSpeciality.FUND,
+                    PBSpeciality.DERIVATIVE,
+                    PBSpeciality.ETF,
+                    PBSpeciality.WRAP);
         } else if (propensity.equals(UserPropensity.CAUTIOUS)) {
             pbPG = pbRepository.findRecommendedPBList(pageable, PBSpeciality.BOND,
-                                                                PBSpeciality.US_STOCK,
-                                                                PBSpeciality.KOREAN_STOCK,
-                                                                PBSpeciality.FUND,
-                                                                PBSpeciality.ETF,
-                                                                PBSpeciality.WRAP);
+                    PBSpeciality.US_STOCK,
+                    PBSpeciality.KOREAN_STOCK,
+                    PBSpeciality.FUND,
+                    PBSpeciality.ETF,
+                    PBSpeciality.WRAP);
         } else {
             pbPG = pbRepository.findRecommendedPBList(pageable, PBSpeciality.BOND,
-                                                                PBSpeciality.FUND,
-                                                                PBSpeciality.WRAP);
+                    PBSpeciality.FUND,
+                    PBSpeciality.WRAP);
         }
 
         for (PBResponse.PBPageDTO dto : pbPG) {
             Long pbId = dto.getId();
-            dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-            dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+            dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+            dto.setReviewCount(reviewRepository.countByPBId(pbId));
         }
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
 
@@ -474,8 +473,8 @@ public class PBService {
         List<PBResponse.PBPageDTO> list = pbRepository.findAllPB();
         for (PBResponse.PBPageDTO dto : list) {
             Long pbId = dto.getId();
-            dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-            dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+            dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+            dto.setReviewCount(reviewRepository.countByPBId(pbId));
         }
         list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
         if (list.size() == 0) {
@@ -502,11 +501,11 @@ public class PBService {
     //PB 프로필가져오기(회원)
     public PBResponse.PBProfileDTO getPBProfile(MyUserDetails myUserDetails, Long id) {
 
-        PBResponse.PBProfileDTO pbDTO = pbRepository.findPBProfile(id).orElseThrow(()-> new Exception404("해당 PB 존재하지 않습니다."));
+        PBResponse.PBProfileDTO pbDTO = pbRepository.findPBProfile(id).orElseThrow(() -> new Exception404("해당 PB 존재하지 않습니다."));
         pbDTO.setAward(awardRepository.getAwards(id));
         pbDTO.setCareer(careerRepository.getCareers(id));
-        pbDTO.setReserveCount(pbRepository.countReservationsByPbId(id));
-        pbDTO.setReviewCount(reviewRepository.countByPBId(id));
+        pbDTO.setReserveCount(reservationRepository.countByPBIdAndProcess(pbDTO.getId(), ReservationProcess.COMPLETE));
+        pbDTO.setReviewCount(reviewRepository.countByPBId(pbDTO.getId()));
 
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
             Optional<UserBookmark> bookmark = userBookmarkRepository.findByUserIdWithPbId(myUserDetails.getMember().getId(), id);
@@ -581,10 +580,10 @@ public class PBService {
             portfolioRepository.save(portfolio);
         } else {
             portfolio = portfolioOP.get();
-                portfolio.updateCumulativeReturn(updateDTO.getCumulativeReturn());
-                portfolio.updateMaxDrawdown(updateDTO.getMaxDrawdown());
-                portfolio.updateProfitFactor(updateDTO.getProfitFactor());
-                portfolio.updateAverageProfit(updateDTO.getAverageProfit());
+            portfolio.updateCumulativeReturn(updateDTO.getCumulativeReturn());
+            portfolio.updateMaxDrawdown(updateDTO.getMaxDrawdown());
+            portfolio.updateProfitFactor(updateDTO.getProfitFactor());
+            portfolio.updateAverageProfit(updateDTO.getAverageProfit());
         }
 
         //프로필 삭제요청시
@@ -656,8 +655,8 @@ public class PBService {
 
         if (myUserDetails.getMember().getRole().equals(Role.USER)) {
             for (PBResponse.PBPageDTO dto : list) {
-                dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-                dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(dto.getId(), ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(dto.getId()));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(myUserDetails.getMember().getId(), dto.getId()));
             }
         }

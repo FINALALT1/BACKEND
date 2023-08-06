@@ -86,7 +86,7 @@ public class UserRepositoryTest extends DummyEntity {
         String phoneNumber = "01012345678";
 
         // when
-        List<User> userPSs = userRepository.findByNameAndPhoneNumber(name, phoneNumber);
+        List<User> userPSs = userRepository.findByPhoneNumber(phoneNumber);
         User userPS = userPSs.get(0);
 
         // then

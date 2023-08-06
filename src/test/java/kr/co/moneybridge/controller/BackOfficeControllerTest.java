@@ -278,7 +278,7 @@ public class BackOfficeControllerTest {
     public void getMembers() throws Exception {
         // when
         ResultActions resultActions = mvc
-                .perform(get("/admin/members"));
+                .perform(get("/admin/users"));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
 
@@ -345,7 +345,7 @@ public class BackOfficeControllerTest {
     public void getPBPending() throws Exception {
         // when
         ResultActions resultActions = mvc
-                .perform(get("/admin/pbs"));
+                .perform(get("/admin/pendings"));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
 
