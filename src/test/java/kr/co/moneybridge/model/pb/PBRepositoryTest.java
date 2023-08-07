@@ -2,7 +2,7 @@ package kr.co.moneybridge.model.pb;
 
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.core.exception.Exception404;
-import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.core.util.DateUtil;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Role;
@@ -130,8 +130,8 @@ public class PBRepositoryTest extends DummyEntity {
         assertThat(pbPS.getIntro()).isEqualTo("윤피비 입니다");
         assertThat(pbPS.getMsg()).isEqualTo("한줄메시지..");
         assertThat(pbPS.getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
-        assertThat(pbPS.getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
-        assertThat(pbPS.getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        assertThat(pbPS.getConsultStart()).isEqualTo(DateUtil.StringToLocalTime("09:00"));
+        assertThat(pbPS.getConsultEnd()).isEqualTo(DateUtil.StringToLocalTime("18:00"));
         assertThat(pbPS.getConsultNotice()).isEqualTo("월요일 불가능합니다");
         assertThat(pbPS.getStatus()).isEqualTo(PBStatus.ACTIVE);
         assertThat(pbPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
@@ -165,8 +165,8 @@ public class PBRepositoryTest extends DummyEntity {
         assertThat(pbPS.getIntro()).isEqualTo("김대기 입니다");
         assertThat(pbPS.getMsg()).isEqualTo("한줄메시지..");
         assertThat(pbPS.getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
-        assertThat(pbPS.getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
-        assertThat(pbPS.getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        assertThat(pbPS.getConsultStart()).isEqualTo(DateUtil.StringToLocalTime("09:00"));
+        assertThat(pbPS.getConsultEnd()).isEqualTo(DateUtil.StringToLocalTime("18:00"));
         assertThat(pbPS.getConsultNotice()).isEqualTo("월요일 불가능합니다");
         assertThat(pbPS.getStatus()).isEqualTo(PBStatus.PENDING);
         assertThat(pbPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
@@ -199,8 +199,8 @@ public class PBRepositoryTest extends DummyEntity {
         assertThat(pbs.get(0).getIntro()).isEqualTo("김피비 입니다");
         assertThat(pbs.get(0).getMsg()).isEqualTo("한줄메시지..");
         assertThat(pbs.get(0).getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
-        assertThat(pbs.get(0).getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
-        assertThat(pbs.get(0).getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        assertThat(pbs.get(0).getConsultStart()).isEqualTo(DateUtil.StringToLocalTime("09:00"));
+        assertThat(pbs.get(0).getConsultEnd()).isEqualTo(DateUtil.StringToLocalTime("18:00"));
         assertThat(pbs.get(0).getConsultNotice()).isEqualTo("월요일 불가능합니다");
         assertThat(pbs.get(0).getStatus()).isEqualTo(PBStatus.ACTIVE);
         assertThat(pbs.get(0).getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
@@ -270,8 +270,8 @@ public class PBRepositoryTest extends DummyEntity {
         assertThat(pbPS.getIntro()).isEqualTo("김피비 입니다");
         assertThat(pbPS.getMsg()).isEqualTo("한줄메시지..");
         assertThat(pbPS.getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
-        assertThat(pbPS.getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
-        assertThat(pbPS.getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        assertThat(pbPS.getConsultStart()).isEqualTo(DateUtil.StringToLocalTime("09:00"));
+        assertThat(pbPS.getConsultEnd()).isEqualTo(DateUtil.StringToLocalTime("18:00"));
         assertThat(pbPS.getConsultNotice()).isEqualTo("월요일 불가능합니다");
         assertThat(pbPS.getStatus()).isEqualTo(PBStatus.ACTIVE);
         assertThat(pbPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
@@ -305,8 +305,8 @@ public class PBRepositoryTest extends DummyEntity {
         assertThat(pbPS.getIntro()).isEqualTo("김피비 입니다");
         assertThat(pbPS.getMsg()).isEqualTo("한줄메시지..");
         assertThat(pbPS.getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
-        assertThat(pbPS.getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
-        assertThat(pbPS.getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        assertThat(pbPS.getConsultStart()).isEqualTo(DateUtil.StringToLocalTime("09:00"));
+        assertThat(pbPS.getConsultEnd()).isEqualTo(DateUtil.StringToLocalTime("18:00"));
         assertThat(pbPS.getConsultNotice()).isEqualTo("월요일 불가능합니다");
         assertThat(pbPS.getStatus()).isEqualTo(PBStatus.ACTIVE);
         assertThat(pbPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());
@@ -340,8 +340,8 @@ public class PBRepositoryTest extends DummyEntity {
         assertThat(pbPS.getIntro()).isEqualTo("김피비 입니다");
         assertThat(pbPS.getMsg()).isEqualTo("한줄메시지..");
         assertThat(pbPS.getReservationInfo()).isEqualTo("10분 미리 도착해주세요");
-        assertThat(pbPS.getConsultStart()).isEqualTo(MyDateUtil.StringToLocalTime("09:00"));
-        assertThat(pbPS.getConsultEnd()).isEqualTo(MyDateUtil.StringToLocalTime("18:00"));
+        assertThat(pbPS.getConsultStart()).isEqualTo(DateUtil.StringToLocalTime("09:00"));
+        assertThat(pbPS.getConsultEnd()).isEqualTo(DateUtil.StringToLocalTime("18:00"));
         assertThat(pbPS.getConsultNotice()).isEqualTo("월요일 불가능합니다");
         assertThat(pbPS.getStatus()).isEqualTo(PBStatus.ACTIVE);
         assertThat(pbPS.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.now());

@@ -2,9 +2,9 @@ package kr.co.moneybridge.controller;
 
 import com.nimbusds.jose.util.Pair;
 import io.swagger.annotations.ApiOperation;
-import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
-import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
+import kr.co.moneybridge.core.auth.jwt.JwtProvider;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.ResponseDTO;
@@ -32,7 +32,7 @@ public class UserController {
     private final UserService userService;
 
     // 투자 성향 테스트
-    @MyLog
+    @Log
     @SwaggerResponses.TestPropensity
     @PostMapping("/user/propensity")
     public ResponseDTO testPropensity(@RequestBody @Valid UserRequest.TestPropensityInDTO testPropensityInDTO,
@@ -42,7 +42,7 @@ public class UserController {
     }
 
     // 로그인 계정 정보 받아오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetAccount
     @GetMapping("/auth/account")
     public ResponseDTO<UserResponse.AccountOutDTO> getAccount(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     // 투자자 마이페이지 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetMyPageUser
     @GetMapping("/user/mypage")
     public ResponseDTO<UserResponse.MyPageOutDTO> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -60,7 +60,7 @@ public class UserController {
     }
 
     // 개인정보 수정 (투자자  + PB)
-    @MyLog
+    @Log
     @SwaggerResponses.UpdateMyInfo
     @PatchMapping("/auth/myinfo")
     public ResponseDTO updateMyInfo(@RequestBody @Valid UserRequest.UpdateMyInfoInDTO updateMyInfoInDTO,
@@ -70,7 +70,7 @@ public class UserController {
     }
 
     // 개인정보 가져오기 (투자자  + PB)
-    @MyLog
+    @Log
     @SwaggerResponses.GetMyInfo
     @GetMapping("/auth/myinfo")
     public ResponseDTO<UserResponse.MyInfoOutDTO> getMyInfo(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -79,7 +79,7 @@ public class UserController {
     }
 
     // 비밀번호 확인하기
-    @MyLog
+    @Log
     @SwaggerResponses.CheckPassword
     @PostMapping("/auth/password")
     public ResponseDTO checkPassword(@RequestBody @Valid UserRequest.CheckPasswordInDTO checkPasswordInDTO,
@@ -89,7 +89,7 @@ public class UserController {
     }
 
     // 비밀번호 찾기
-    @MyLog
+    @Log
     @SwaggerResponses.UpdatePassword
     @PatchMapping("/password")
     public ResponseDTO updatePassword(@RequestBody @Valid UserRequest.RePasswordInDTO rePasswordInDTO, Errors errors) {
@@ -98,7 +98,7 @@ public class UserController {
     }
 
     // 이메일 찾기
-    @MyLog
+    @Log
     @SwaggerResponses.FindEmail
     @PostMapping("/email")
     public ResponseDTO<List<UserResponse.EmailFindOutDTO>> findEmail(@RequestBody @Valid UserRequest.EmailFindInDTO emailFindInDTO, Errors errors) {
@@ -107,7 +107,7 @@ public class UserController {
     }
 
     // 비밀번호 찾기 + 이메일 인증
-    @MyLog
+    @Log
     @SwaggerResponses.Password
     @PostMapping("/password")
     public ResponseDTO<UserResponse.PasswordOutDTO> password(@RequestBody @Valid UserRequest.PasswordInDTO passwordInDTO, Errors errors) throws Exception {
@@ -116,7 +116,7 @@ public class UserController {
     }
 
     //회원가입시 이메일 인증
-    @MyLog
+    @Log
     @SwaggerResponses.Email
     @PostMapping("/email/authentication")
     public ResponseDTO<UserResponse.EmailOutDTO> email(@RequestBody @Valid UserRequest.EmailInDTO emailInDTO, Errors errors) throws Exception {
@@ -125,7 +125,7 @@ public class UserController {
     }
 
     // 휴대폰 번호 중복 체크
-    @MyLog
+    @Log
     @SwaggerResponses.PhoneNumber
     @PostMapping("/phonenumber")
     public ResponseDTO<UserResponse.PhoneNumberOutDTO> checkPhoneNumber(
@@ -141,7 +141,7 @@ public class UserController {
     }
 
     // 탈퇴하기
-    @MyLog
+    @Log
     @SwaggerResponses.Withdraw
     @DeleteMapping("/auth/account")
     public ResponseDTO withdraw(@RequestBody @Valid UserRequest.WithdrawInDTO withdrawInDTO, Errors errors,
@@ -151,7 +151,7 @@ public class UserController {
     }
 
     // 투자자 회원가입
-    @MyLog
+    @Log
     @SwaggerResponses.JoinUser
     @PostMapping("/join/user")
     public ResponseEntity<?> joinUser(@RequestBody @Valid UserRequest.JoinInDTO joinInDTO, Errors errors, HttpServletResponse response) {
@@ -161,15 +161,15 @@ public class UserController {
         // 회원가입 완료시 자동로그인
         Pair<String, String> tokens = userService.issue(Role.USER, joinInDTO.getEmail(), rawPassword);
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                + "; Max-Age=" + MyJwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
+                + "; Max-Age=" + JwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
         return ResponseEntity.ok()
-                .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header(JwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .header("refreshToken", tokens.getRight())
                 .body(responseDTO);
     }
 
     // 백오피스 로그인
-    @MyLog
+    @Log
     @SwaggerResponses.BackOfficeLogin
     @PostMapping("/backoffice/login")
     public ResponseEntity<?> backofficeLogin(@RequestBody @Valid UserRequest.BackOfficeLoginInDTO loginInDTO, Errors errors, HttpServletResponse response) {
@@ -179,14 +179,14 @@ public class UserController {
         Pair<String, String> tokens = userService.issue(Role.USER, loginInDTO.getEmail(), loginInDTO.getPassword());
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                + "; Max-Age=" + MyJwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
+                + "; Max-Age=" + JwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
         return ResponseEntity.ok()
-                .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header(JwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .body(responseDTO);
     }
 
     // 로그인 (성공시 access 토큰과 refresh 토큰 둘 다 발급)
-    @MyLog
+    @Log
     @SwaggerResponses.Login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response) {
@@ -197,32 +197,32 @@ public class UserController {
         // HttpOnly 플래그 설정 (XSS 방지 - 자바스크립트로 쿠키 접근 불가),
         if (loginInDTO.getRemember()) { // 브라우저 종료 후에도 로그인 상태 유지하려면
             response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                    + "; Max-Age=" + MyJwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
+                    + "; Max-Age=" + JwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
         } else {
             response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
                     + "; SameSite=None; Secure; HttpOnly; Path=/");
         }
         return ResponseEntity.ok()
-                .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header(JwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .body(responseDTO);
     }
 
     // AccessToken, RefreshToken 재발급
-    @MyLog
+    @Log
     @SwaggerResponses.Reissue
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         Pair<String, String> tokens = userService.reissue(request, getRefreshToken(request));
         response.setHeader("Set-Cookie", "refreshToken=" + tokens.getRight()
-                + "; Max-Age=" + MyJwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
+                + "; Max-Age=" + JwtProvider.EXP_REFRESH + "; SameSite=None; Secure; HttpOnly; Path=/");
         ResponseDTO<?> responseDTO = new ResponseDTO<>();
         return ResponseEntity.ok()
-                .header(MyJwtProvider.HEADER_ACCESS, tokens.getLeft())
+                .header(JwtProvider.HEADER_ACCESS, tokens.getLeft())
                 .body(responseDTO);
     }
 
     // 로그아웃
-    @MyLog
+    @Log
     @SwaggerResponses.Logout
     @PostMapping("/auth/logout")
     public ResponseDTO logout(HttpServletRequest request) {

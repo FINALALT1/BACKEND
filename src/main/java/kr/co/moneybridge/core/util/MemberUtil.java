@@ -15,7 +15,6 @@ import kr.co.moneybridge.model.pb.PBStatus;
 import kr.co.moneybridge.model.user.User;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +24,7 @@ import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
-public class MyMemberUtil {
+public class MemberUtil {
     private String defaultProfile = "https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/profile.svg";
     private final UserRepository userRepository;
     private final UserAgreementRepository userAgreementRepository;

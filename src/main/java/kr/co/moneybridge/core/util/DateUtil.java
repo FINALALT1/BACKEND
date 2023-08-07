@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class MyDateUtil {
+public class DateUtil {
     public static String localDateTimeToString(LocalDateTime localDateTime) {
         if (localDateTime == null) {
             return null;

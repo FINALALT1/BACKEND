@@ -27,9 +27,9 @@ import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class MyMemberUtilTest extends MockDummyEntity {
+public class MemberUtilTest extends MockDummyEntity {
     @InjectMocks
-    private MyMemberUtil myMemberUtil;
+    private MemberUtil memberUtil;
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -93,7 +93,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(pbRepository.findByEmail(any())).thenReturn(Optional.of(pb));
 
         // when
-        Member member = myMemberUtil.findByEmail(email, Role.PB);
+        Member member = memberUtil.findByEmail(email, Role.PB);
 
         // then
         Assertions.assertThat(member).isEqualTo(pb);
@@ -109,7 +109,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 
         // when
-        Member member = myMemberUtil.findByEmail(email, Role.USER);
+        Member member = memberUtil.findByEmail(email, Role.USER);
 
         // then
         Assertions.assertThat(member).isEqualTo(user);
@@ -127,7 +127,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(pbRepository.findByPhoneNumber(any())).thenReturn(Arrays.asList(pb));
 
         // when
-        List<Member> members = myMemberUtil.findByPhoneNumberWithoutException(phoneNumber, Role.PB);
+        List<Member> members = memberUtil.findByPhoneNumberWithoutException(phoneNumber, Role.PB);
 
         // then
         Assertions.assertThat(members.get(0)).isEqualTo(pb);
@@ -144,7 +144,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(userRepository.findByPhoneNumber(any())).thenReturn(Arrays.asList(user));
 
         // when
-        List<Member> members = myMemberUtil.findByPhoneNumberWithoutException(phoneNumber, Role.USER);
+        List<Member> members = memberUtil.findByPhoneNumberWithoutException(phoneNumber, Role.USER);
 
         // then
         Assertions.assertThat(members.get(0)).isEqualTo(user);
@@ -161,7 +161,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
 
         // when
-        Member member = myMemberUtil.findById(id, Role.PB);
+        Member member = memberUtil.findById(id, Role.PB);
 
         // then
         Assertions.assertThat(member).isEqualTo(pb);
@@ -177,7 +177,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         // when
-        Member member = myMemberUtil.findById(1L, Role.USER);
+        Member member = memberUtil.findById(1L, Role.USER);
 
         // then
         Assertions.assertThat(member).isEqualTo(user);
@@ -226,7 +226,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
         when(reviewRepository.findByReservationId(reservation1.getId())).thenReturn(reviewOP);
 
         // when
-        myMemberUtil.deleteById(id, Role.USER);
+        memberUtil.deleteById(id, Role.USER);
 
         // then
         verify(userRepository, times(1)).deleteById(id);
@@ -310,7 +310,7 @@ public class MyMemberUtilTest extends MockDummyEntity {
 //        when(s3Util.delete(path)).then(doNothing());
 
         // when
-        myMemberUtil.deleteById(id, Role.PB);
+        memberUtil.deleteById(id, Role.PB);
 
         // then
         verify(portfolioRepository, times(1)).findFileByPBId(id);

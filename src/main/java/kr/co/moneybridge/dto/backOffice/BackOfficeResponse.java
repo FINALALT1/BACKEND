@@ -19,7 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static kr.co.moneybridge.core.util.MyDateUtil.*;
+import static kr.co.moneybridge.core.util.DateUtil.*;
 
 public class BackOfficeResponse {
     @ApiModel(description = "후기 리스트 데이터")

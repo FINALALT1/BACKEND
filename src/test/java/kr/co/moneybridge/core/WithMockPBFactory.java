@@ -2,7 +2,7 @@ package kr.co.moneybridge.core;
 
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
-import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.core.util.DateUtil;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.model.pb.PBStatus;
@@ -30,8 +30,8 @@ public class WithMockPBFactory extends MockDummyEntity implements WithSecurityCo
                 .intro("김pb 입니다")
                 .msg("한줄메시지..")
                 .reservationInfo("10분 미리 도착해주세요")
-                .consultStart(MyDateUtil.StringToLocalTime("09:00"))
-                .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
+                .consultStart(DateUtil.StringToLocalTime("09:00"))
+                .consultEnd(DateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
                 .role(mockPB.role())
                 .status(PBStatus.ACTIVE)

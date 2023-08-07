@@ -1,6 +1,6 @@
 package kr.co.moneybridge.service;
 
-import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
@@ -50,7 +50,7 @@ public class PBService {
     private final PortfolioRepository portfolioRepository;
     private final S3Util s3Util;
 
-    @MyLog
+    @Log
     @Transactional
     public PBResponse.MyPropensityPBOutDTO getMyPropensityPB(Long id) {
         User userPS = userRepository.findById(id).orElseThrow(
@@ -91,7 +91,7 @@ public class PBService {
         return new PBResponse.MyPropensityPBOutDTO(userPS, list);
     }
 
-    @MyLog
+    @Log
     @Transactional
     public PBResponse.MyPageOutDTO getMyPage(MyUserDetails myUserDetails) {
         String email = myUserDetails.getMember().getEmail();
@@ -104,7 +104,7 @@ public class PBService {
                 reviewRepository.countByPBId(pbOP.get().getId()));
     }
 
-    @MyLog
+    @Log
     public PBResponse.BranchListDTO searchBranch(Long companyId, String keyword) {
         List<Branch> branches = branchRepository.findByCompanyIdAndKeyword(companyId, keyword);
         List<PBResponse.BranchDTO> list = branches.stream()
@@ -113,7 +113,7 @@ public class PBService {
         return new PBResponse.BranchListDTO(list);
     }
 
-    @MyLog
+    @Log
     public PBResponse.CompanyNameOutDTO getCompanyNames() {
         List<PBResponse.CompanyNameDTO> list = new ArrayList<>();
         companyRepository.findAll().stream().forEach(company -> {
@@ -122,7 +122,7 @@ public class PBService {
         return new PBResponse.CompanyNameOutDTO(list);
     }
 
-    @MyLog
+    @Log
     public PBResponse.CompanyOutDTO getCompanies() {
         List<PBResponse.CompanyDTO> list = new ArrayList<>();
         companyRepository.findAll().stream().forEach(company -> {
@@ -131,7 +131,7 @@ public class PBService {
         return new PBResponse.CompanyOutDTO(list);
     }
 
-    @MyLog
+    @Log
     @Transactional
     public PBResponse.JoinOutDTO joinPB(MultipartFile businessCard, PBRequest.JoinInDTO joinInDTO) {
         Optional<PB> pbOP = pbRepository.findByEmail(joinInDTO.getEmail());
@@ -561,7 +561,7 @@ public class PBService {
     }
 
     //PB 프로필 수정하기
-    @MyLog
+    @Log
     @Transactional
     public void updateProfile(MyUserDetails myUserDetails, PBRequest.UpdateProfileInDTO updateDTO, MultipartFile profileFile, MultipartFile portfolioFile) {
 

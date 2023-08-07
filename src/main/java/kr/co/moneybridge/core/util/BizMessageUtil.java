@@ -16,8 +16,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 
-import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTimeV2;
-import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToStringV2;
+import static kr.co.moneybridge.core.util.DateUtil.StringToLocalDateTimeV2;
+import static kr.co.moneybridge.core.util.DateUtil.localDateTimeToStringV2;
 
 @Component
 @Slf4j

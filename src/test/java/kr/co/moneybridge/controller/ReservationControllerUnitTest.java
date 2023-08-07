@@ -3,13 +3,13 @@ package kr.co.moneybridge.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.WithMockPB;
 import kr.co.moneybridge.core.WithMockUser;
-import kr.co.moneybridge.core.advice.MyLogAdvice;
-import kr.co.moneybridge.core.advice.MyValidAdvice;
-import kr.co.moneybridge.core.config.MyFilterRegisterConfig;
-import kr.co.moneybridge.core.config.MySecurityConfig;
+import kr.co.moneybridge.core.advice.LogAdvice;
+import kr.co.moneybridge.core.advice.ValidAdvice;
+import kr.co.moneybridge.core.config.FilterRegisterConfig;
+import kr.co.moneybridge.core.config.SecurityConfig;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
-import kr.co.moneybridge.core.util.MyDateUtil;
-import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.core.util.DateUtil;
+import kr.co.moneybridge.core.util.MemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.reservation.ReservationRequest;
@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToStringV2;
+import static kr.co.moneybridge.core.util.DateUtil.localDateTimeToStringV2;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -54,10 +54,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @EnableAspectJAutoProxy
 @Import({
-        MyLogAdvice.class,
-        MyValidAdvice.class,
-        MyFilterRegisterConfig.class,
-        MySecurityConfig.class,
+        LogAdvice.class,
+        ValidAdvice.class,
+        FilterRegisterConfig.class,
+        SecurityConfig.class,
         RedisUtil.class,
 })
 @WebMvcTest(
@@ -73,7 +73,7 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
     @MockBean
     private RedisTemplate redisTemplate;
     @MockBean
-    private MyMemberUtil myMemberUtil;
+    private MemberUtil memberUtil;
 
     @WithMockPB
     @Test
@@ -156,8 +156,8 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
                                 pb.getBranch().getLongitude()
                         ),
                         new ReservationResponse.ConsultInfoDTO(
-                                MyDateUtil.localTimeToString(pb.getConsultStart()),
-                                MyDateUtil.localTimeToString(pb.getConsultEnd()),
+                                DateUtil.localTimeToString(pb.getConsultStart()),
+                                DateUtil.localTimeToString(pb.getConsultEnd()),
                                 pb.getConsultNotice()
                         ),
                         new ReservationResponse.UserInfoDTO(
@@ -178,8 +178,8 @@ public class ReservationControllerUnitTest extends MockDummyEntity {
         resultActions.andExpect(jsonPath("$.data.pbInfo.branchAddress").value(pb.getBranch().getRoadAddress()));
         resultActions.andExpect(jsonPath("$.data.pbInfo.branchLatitude").value(pb.getBranch().getLatitude()));
         resultActions.andExpect(jsonPath("$.data.pbInfo.branchLongitude").value(pb.getBranch().getLongitude()));
-        resultActions.andExpect(jsonPath("$.data.consultInfo.consultStart").value(MyDateUtil.localTimeToString(pb.getConsultStart())));
-        resultActions.andExpect(jsonPath("$.data.consultInfo.consultEnd").value(MyDateUtil.localTimeToString(pb.getConsultEnd())));
+        resultActions.andExpect(jsonPath("$.data.consultInfo.consultStart").value(DateUtil.localTimeToString(pb.getConsultStart())));
+        resultActions.andExpect(jsonPath("$.data.consultInfo.consultEnd").value(DateUtil.localTimeToString(pb.getConsultEnd())));
         resultActions.andExpect(jsonPath("$.data.consultInfo.notice").value(pb.getConsultNotice()));
         resultActions.andExpect(jsonPath("$.data.userInfo.userName").value(user.getName()));
         resultActions.andExpect(jsonPath("$.data.userInfo.userPhoneNumber").value(user.getPhoneNumber()));

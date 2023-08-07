@@ -5,7 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.Date;
 
 @RequiredArgsConstructor
 @Component
-public class MyJwtProvider {
+public class JwtProvider {
     private final RedisUtil redisUtil;
     private static final String SUBJECT = "moneybridge";
     public static final Long EXP_ACCESS = 1000 * 60 * 60 * 12L; // 12시간
@@ -31,7 +31,7 @@ public class MyJwtProvider {
     public void setSecretRefresh(String secret){ SECRET_REFRESH = secret; }
 
     // Access 토큰 생성
-    @MyLog
+    @Log
     public static String createAccess(Member member) {
         return TOKEN_PREFIX + JWT.create()
                 .withSubject(SUBJECT)
@@ -42,7 +42,7 @@ public class MyJwtProvider {
     }
 
     // Refresh 토큰 생성
-    @MyLog
+    @Log
     public String createRefresh(Member member) {
         String refreshToken = JWT.create()
                 .withSubject(SUBJECT)
@@ -60,7 +60,7 @@ public class MyJwtProvider {
     }
 
     // Access 토큰을 검증
-    @MyLog
+    @Log
     public static DecodedJWT verifyAccess(String accessJwt) throws SignatureVerificationException, TokenExpiredException {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET_ACCESS))
                 .build().verify(accessJwt);
@@ -68,7 +68,7 @@ public class MyJwtProvider {
     }
 
     // Refresh 토큰을 검증
-    @MyLog
+    @Log
     public static DecodedJWT verifyRefresh(String jwt) throws SignatureVerificationException, TokenExpiredException {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET_REFRESH))
                 .build().verify(jwt);

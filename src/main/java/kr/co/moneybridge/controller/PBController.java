@@ -3,7 +3,7 @@ package kr.co.moneybridge.controller;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception404;
@@ -15,7 +15,6 @@ import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.service.PBService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,7 +34,7 @@ public class PBController {
     private final PBService pbService;
 
     // 투자 성향에 따라 맞춤 분야별 PB리스트 필터링 3개 (나의 투자 성향 분석페이지 하단의 맞춤 PB리스트)
-    @MyLog
+    @Log
     @SwaggerResponses.GetMyPropensityPB
     @GetMapping("/user/mypage/list/pb")
     public ResponseDTO<PBResponse.MyPropensityPBOutDTO> getMyPropensityPB(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -44,7 +43,7 @@ public class PBController {
     }
 
     // PB 마이페이지 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetMyPagePB
     @GetMapping("/pb/mypage")
     public ResponseDTO<PBResponse.MyPageOutDTO> getMyPage(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -53,7 +52,7 @@ public class PBController {
     }
 
     // 지점 검색
-    @MyLog
+    @Log
     @SwaggerResponses.SearchBranch
     @GetMapping("/branch")
     public ResponseDTO<PBResponse.BranchListDTO> searchBranch(@RequestParam Long companyId,
@@ -67,7 +66,7 @@ public class PBController {
     }
 
     // 증권사 리스트 가져오기 - 메인페이지, 회원가입시
-    @MyLog
+    @Log
     @SwaggerResponses.GetCompanies
     @GetMapping("/companies")
     public ResponseEntity<?> getCompanies(@RequestParam(defaultValue = "true") Boolean includeLogo) {
@@ -83,7 +82,7 @@ public class PBController {
     }
 
     // PB 회원가입
-    @MyLog
+    @Log
     @SwaggerResponses.JoinPB
     @PostMapping("/join/pb")
     public ResponseDTO<PBResponse.JoinOutDTO> joinPB(@RequestPart(value = "businessCard") MultipartFile businessCard,

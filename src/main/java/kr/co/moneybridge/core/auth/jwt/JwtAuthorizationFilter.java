@@ -6,8 +6,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception401;
 import kr.co.moneybridge.core.exception.Exception500;
-import kr.co.moneybridge.core.util.MyFilterResponseUtil;
-import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.core.util.FilterResponseUtil;
+import kr.co.moneybridge.core.util.MemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
@@ -24,24 +24,22 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
-public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
+public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final RedisUtil redisUtil;
-    private final MyMemberUtil myMemberUtil;
-    public MyJwtAuthorizationFilter(AuthenticationManager authenticationManager, RedisUtil redisUtil, MyMemberUtil myMemberUtil) {
+    private final MemberUtil memberUtil;
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, RedisUtil redisUtil, MemberUtil memberUtil) {
         super(authenticationManager);
         this.redisUtil = redisUtil;
-        this.myMemberUtil = myMemberUtil;
+        this.memberUtil = memberUtil;
     }
 
     // SecurityConfig 에 인증을 설정한 API에 대한 request 요청은 모두 이 필터를 거치기 때문에 토큰 정보가 없거나 유효하지 않은 경우 정상적으로 수행되지 않음
     // 헤더(Authorization)에 있는 토큰을 꺼내 이상이 없는 경우 SecurityContext에 저장
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String accessToken = request.getHeader(MyJwtProvider.HEADER_ACCESS);
+        String accessToken = request.getHeader(JwtProvider.HEADER_ACCESS);
 
         String requestURL = request.getRequestURI();
 
@@ -56,25 +54,25 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        String accessJwt = accessToken.replace(MyJwtProvider.TOKEN_PREFIX, "");
+        String accessJwt = accessToken.replace(JwtProvider.TOKEN_PREFIX, "");
         try {
             log.debug("토큰 있음");
             // access token이 Blacklist에 등록되었는지 Redis를 조회하여 확인
             if(redisUtil.hasKeyBlackList(accessJwt)) {
                 // 블랙리스트에 저장된 토큰이라면 에러를 반환
                 log.error("블랙리스트에 등록된 액세스 토큰");
-                MyFilterResponseUtil.serverError(response, new Exception500("이미 로그아웃한 액세스 토큰입니다"));
+                FilterResponseUtil.serverError(response, new Exception500("이미 로그아웃한 액세스 토큰입니다"));
             }
-            DecodedJWT decodedJWT = MyJwtProvider.verifyAccess(accessJwt);
+            DecodedJWT decodedJWT = JwtProvider.verifyAccess(accessJwt);
             Long id = decodedJWT.getClaim("id").asLong();
             Role role = Role.valueOf(decodedJWT.getClaim("role").asString().toUpperCase());
             // 사용자 조회 - 탈퇴 여부 체크
             Member member = null;
             try{
-                member = myMemberUtil.findById(id, role);
+                member = memberUtil.findById(id, role);
             }catch (Exception e){
                 log.error("토큰 정보에서 에러 : " + e.getMessage());
-                MyFilterResponseUtil.unAuthorized(response, new Exception401("인증 실패: " + e.getMessage()));
+                FilterResponseUtil.unAuthorized(response, new Exception401("인증 실패: " + e.getMessage()));
             }
             MyUserDetails myUserDetails = new MyUserDetails(member);
             Authentication authentication =
@@ -92,7 +90,7 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
             log.error("토큰 검증 실패");
         } catch (TokenExpiredException tee) {
             log.debug("토큰 만료됨");
-            MyFilterResponseUtil.unAuthorized(response, new Exception401("Access token expired"));
+            FilterResponseUtil.unAuthorized(response, new Exception401("Access token expired"));
         } finally {
             chain.doFilter(request, response);
         }
