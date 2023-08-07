@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class MyFilterResponseUtil {
+public class FilterResponseUtil {
     public static void unAuthorized(HttpServletResponse resp, Exception e) throws IOException {
         resp.setStatus(401);
         resp.setContentType("application/json; charset=utf-8");

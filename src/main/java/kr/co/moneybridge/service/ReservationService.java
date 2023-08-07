@@ -1,6 +1,6 @@
 package kr.co.moneybridge.service;
 
-import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.*;
 import kr.co.moneybridge.core.util.BizMessageUtil;
@@ -33,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kr.co.moneybridge.core.util.MyDateUtil.*;
+import static kr.co.moneybridge.core.util.DateUtil.*;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -47,7 +47,7 @@ public class ReservationService {
     private final BizMessageUtil biz;
     private final Environment environment;
 
-    @MyLog
+    @Log
     public ReservationResponse.RecentInfoDTO getRecentReservationInfo(Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -73,7 +73,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public ReservationResponse.RecentInfoDTO getRecentReservationInfoByUser(Long userId) {
         User userPS = userRepository.findById(userId).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")
@@ -99,7 +99,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public PageDTO<ReservationResponse.RecentReservationDTO> getRecentReservations(String type, int page, Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -159,7 +159,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public PageDTO<ReservationResponse.RecentReservationByUserDTO> getRecentReservationsByUser(String type, int page, Long userId) {
         User userPS = userRepository.findById(userId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -219,7 +219,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public ReservationResponse.DetailByPBDTO getReservationDetail(Long reservationId, Long pbId) {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
@@ -255,7 +255,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public ReservationResponse.DetailByUserDTO getReservationDetailByUser(Long reservationId, Long userId) {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new Exception404("존재하지 않는 예약입니다.")
@@ -291,7 +291,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public ReservationResponse.BaseDTO getReservationBase(Long pbId, Long userId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -328,7 +328,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void addReservation(Long pbId,
                                ReservationRequest.ApplyDTO applyDTO,
@@ -393,7 +393,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void updateReservation(Long reservationId,
                                   ReservationRequest.UpdateDTO updateDTO,
@@ -430,7 +430,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void cancelReservation(Long reservationId, MyUserDetails myUserDetails) {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
@@ -486,7 +486,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void confirmReservation(Long reservationId, Long pbId, ReservationRequest.ConfirmDTO confirmDTO) {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
@@ -522,7 +522,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void completeReservation(Long reservationId, MyUserDetails myUserDetails) {
         Reservation reservationPS = reservationRepository.findById(reservationId).orElseThrow(
@@ -551,7 +551,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public List<ReservationResponse.ReservationInfoDTO> getReservationsByDate(int year, int month, Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -588,7 +588,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void updateConsultTime(ReservationRequest.UpdateTimeDTO updateTimeDTO, Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
@@ -610,7 +610,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public ReservationResponse.MyConsultTimeDTO getMyConsultTime(Long pbId) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -621,7 +621,7 @@ public class ReservationService {
         return new ReservationResponse.MyConsultTimeDTO(pbPS);
     }
 
-    @MyLog
+    @Log
     public PageDTO<ReservationResponse.ReviewDTO> getReviews(Long pbId, int page) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
@@ -685,7 +685,7 @@ public class ReservationService {
         }
     }
 
-    @MyLog
+    @Log
     public ReservationResponse.MyReviewDTO getMyReview(Long reservationId, Long userId) {
         userRepository.findById(userId).orElseThrow(
                 () -> new Exception404("존재하지 않는 투자자입니다.")
@@ -726,7 +726,7 @@ public class ReservationService {
         return styleDTO;
     }
 
-    @MyLog
+    @Log
     @Transactional
     public ReservationResponse.ReviewIdDTO addReview(ReservationRequest.ReviewDTO reviewDTO, Long userId) {
         User userPS = userRepository.findById(userId).orElseThrow(

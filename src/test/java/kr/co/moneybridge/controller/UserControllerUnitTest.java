@@ -3,12 +3,12 @@ package kr.co.moneybridge.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.Pair;
 import kr.co.moneybridge.core.WithMockUser;
-import kr.co.moneybridge.core.advice.MyLogAdvice;
-import kr.co.moneybridge.core.advice.MyValidAdvice;
-import kr.co.moneybridge.core.config.MyFilterRegisterConfig;
-import kr.co.moneybridge.core.config.MySecurityConfig;
+import kr.co.moneybridge.core.advice.LogAdvice;
+import kr.co.moneybridge.core.advice.ValidAdvice;
+import kr.co.moneybridge.core.config.FilterRegisterConfig;
+import kr.co.moneybridge.core.config.SecurityConfig;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
-import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.core.util.MemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
@@ -48,10 +48,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @EnableAspectJAutoProxy
 @Import({
-        MyLogAdvice.class,
-        MyValidAdvice.class,
-        MyFilterRegisterConfig.class,
-        MySecurityConfig.class,
+        LogAdvice.class,
+        ValidAdvice.class,
+        FilterRegisterConfig.class,
+        SecurityConfig.class,
         RedisUtil.class
 })
 @WebMvcTest(
@@ -67,7 +67,7 @@ public class UserControllerUnitTest extends MockDummyEntity {
     @MockBean
     private RedisTemplate redisTemplate;
     @MockBean
-    private MyMemberUtil myMemberUtil;
+    private MemberUtil memberUtil;
 
     @WithMockUser
     @Test

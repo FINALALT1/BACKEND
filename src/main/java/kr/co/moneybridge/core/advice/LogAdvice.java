@@ -16,15 +16,15 @@ import java.lang.reflect.Method;
 @RequiredArgsConstructor
 @Aspect
 @Component
-public class MyLogAdvice {
+public class LogAdvice {
 
     // private final ErrorLogRepository errorLogRepository;
     // private final LogRepository logRepository;
 
-    @Pointcut("@annotation(kr.co.moneybridge.core.annotation.MyLog)")
+    @Pointcut("@annotation(kr.co.moneybridge.core.annotation.Log)")
     public void myLog(){}
 
-    @Pointcut("@annotation(kr.co.moneybridge.core.annotation.MyErrorLog)")
+    @Pointcut("@annotation(kr.co.moneybridge.core.annotation.ErrorLog)")
     public void myErrorLog(){}
 
     @AfterReturning("myLog()")

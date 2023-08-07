@@ -2,7 +2,7 @@ package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.moneybridge.core.dummy.DummyEntity;
-import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.core.util.DateUtil;
 import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.pb.PBRequest;
 import kr.co.moneybridge.model.Role;
@@ -78,8 +78,8 @@ public class PBControllerTest {
                 .intro("김pb 입니다")
                 .msg("한줄메시지..")
                 .reservationInfo("10분 미리 도착해주세요")
-                .consultStart(MyDateUtil.StringToLocalTime("09:00"))
-                .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
+                .consultStart(DateUtil.StringToLocalTime("09:00"))
+                .consultEnd(DateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
                 .role(Role.PB)
                 .status(PBStatus.ACTIVE)

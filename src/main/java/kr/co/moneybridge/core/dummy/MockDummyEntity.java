@@ -1,6 +1,6 @@
 package kr.co.moneybridge.core.dummy;
 
-import kr.co.moneybridge.core.util.MyDateUtil;
+import kr.co.moneybridge.core.util.DateUtil;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.*;
 import kr.co.moneybridge.model.board.*;
@@ -9,7 +9,6 @@ import kr.co.moneybridge.model.reservation.*;
 import kr.co.moneybridge.model.user.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class MockDummyEntity {
@@ -97,8 +96,8 @@ public class MockDummyEntity {
                 .intro(username + " 입니다")
                 .msg("한줄메시지..")
                 .reservationInfo("10분 미리 도착해주세요")
-                .consultStart(MyDateUtil.StringToLocalTime("09:00"))
-                .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
+                .consultStart(DateUtil.StringToLocalTime("09:00"))
+                .consultEnd(DateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
                 .role(Role.PB)
                 .status(PBStatus.ACTIVE)
@@ -122,8 +121,8 @@ public class MockDummyEntity {
                 .intro(username + " 입니다")
                 .msg("한줄메시지..")
                 .reservationInfo("10분 미리 도착해주세요")
-                .consultStart(MyDateUtil.StringToLocalTime("09:00"))
-                .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
+                .consultStart(DateUtil.StringToLocalTime("09:00"))
+                .consultEnd(DateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
                 .role(Role.PB)
                 .status(pbStatus)
@@ -148,8 +147,8 @@ public class MockDummyEntity {
                 .intro(username + " 입니다")
                 .msg("한줄메시지..")
                 .reservationInfo("10분 미리 도착해주세요")
-                .consultStart(MyDateUtil.StringToLocalTime("09:00"))
-                .consultEnd(MyDateUtil.StringToLocalTime("18:00"))
+                .consultStart(DateUtil.StringToLocalTime("09:00"))
+                .consultEnd(DateUtil.StringToLocalTime("18:00"))
                 .consultNotice("월요일 불가능합니다")
                 .role(Role.PB)
                 .status(PBStatus.ACTIVE)

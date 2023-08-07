@@ -2,7 +2,7 @@ package kr.co.moneybridge.controller;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.dto.PageDTO;
@@ -33,20 +33,20 @@ public class BackOfficeController {
 //        return new ResponseDTO();
 //    }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "지점 수정하기")
     @SwaggerResponses.DefaultApiResponses
     @PatchMapping("/admin/branch/{id}")
     public ResponseDTO updateBranch(@PathVariable Long id, @RequestBody @Valid BackOfficeRequest.UpdateBranchDTO updateBranchDTO, Errors errors) {
-        if(updateBranchDTO.getSpecificAddress() != null && !updateBranchDTO.getSpecificAddress().isEmpty()
-                && (updateBranchDTO.getAddress() == null || (updateBranchDTO.getAddress() != null && updateBranchDTO.getAddress().isEmpty()))){
+        if (updateBranchDTO.getSpecificAddress() != null && !updateBranchDTO.getSpecificAddress().isEmpty()
+                && (updateBranchDTO.getAddress() == null || (updateBranchDTO.getAddress() != null && updateBranchDTO.getAddress().isEmpty()))) {
             throw new Exception400("address", "specificAddress는 address와 함께 입력해야 합니다");
         }
         backOfficeService.updateBranch(id, updateBranchDTO);
         return new ResponseDTO();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "지점 삭제")
     @SwaggerResponses.ApiResponsesWithout400
     @DeleteMapping("/admin/branch/{id}")
@@ -57,7 +57,7 @@ public class BackOfficeController {
     }
 
     // 지점 등록
-    @MyLog
+    @Log
     @SwaggerResponses.AddBranch
     @PostMapping("/admin/branch")
     public ResponseDTO addBranch(@RequestBody @Valid BackOfficeRequest.BranchInDTO branchInDTO, Errors errors) {
@@ -66,7 +66,7 @@ public class BackOfficeController {
     }
 
     // 대댓글 강제 삭제
-    @MyLog
+    @Log
     @SwaggerResponses.DeleteRereply
     @DeleteMapping("/admin/rereply/{id}")
     public ResponseDTO deleteReReply(@PathVariable Long id) {
@@ -75,7 +75,7 @@ public class BackOfficeController {
     }
 
     // 댓글 강제 삭제
-    @MyLog
+    @Log
     @SwaggerResponses.DeleteReply
     @DeleteMapping("/admin/reply/{id}")
     public ResponseDTO deleteReply(@PathVariable Long id) {
@@ -84,7 +84,7 @@ public class BackOfficeController {
     }
 
     // 콘텐츠 강제 삭제
-    @MyLog
+    @Log
     @SwaggerResponses.DeleteBoard
     @DeleteMapping("/admin/board/{id}")
     public ResponseDTO deleteBoard(@PathVariable Long id) {
@@ -93,7 +93,7 @@ public class BackOfficeController {
     }
 
     // 상담 내역의 각 건수 및 승인 대기 중인 PB 수 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetReservationsCount
     @GetMapping("/admin/reservations/count")
     public ResponseDTO<BackOfficeResponse.ReservationTotalCountDTO> getReservationsCount() {
@@ -102,7 +102,7 @@ public class BackOfficeController {
     }
 
     // 상담 내역 리스트 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetReservations
     @GetMapping("/admin/reservations")
     public ResponseDTO<PageDTO<BackOfficeResponse.ReservationTotalDTO>> getReservations(@RequestParam(defaultValue = "0") int page) {
@@ -111,7 +111,7 @@ public class BackOfficeController {
         return new ResponseDTO<>(pageDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "상담 삭제하기")
     @SwaggerResponses.ApiResponsesWithout400
     @DeleteMapping("/admin/reservation/{id}")
@@ -122,7 +122,7 @@ public class BackOfficeController {
     }
 
     // 해당 투자자 강제 탈퇴
-    @MyLog
+    @Log
     @SwaggerResponses.ForceWithdrawUser
     @DeleteMapping("/admin/user/{id}")
     public ResponseDTO forceWithdrawUser(@PathVariable Long id) {
@@ -131,7 +131,7 @@ public class BackOfficeController {
     }
 
     // 해당 PB 강제 탈퇴
-    @MyLog
+    @Log
     @SwaggerResponses.ForceWithdrawPB
     @DeleteMapping("/admin/pb/{id}")
     public ResponseDTO forceWithdrawPB(@PathVariable Long id) {
@@ -140,7 +140,7 @@ public class BackOfficeController {
     }
 
     // 해당 투자자를 관리자로 등록/취소
-    @MyLog
+    @Log
     @SwaggerResponses.AuthorizeAdmin
     @PostMapping("/admin/user/{id}")
     public ResponseDTO authorizeAdmin(@PathVariable Long id, @RequestParam Boolean admin) {
@@ -149,7 +149,7 @@ public class BackOfficeController {
     }
 
     // 회원수 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetMembersCount
     @GetMapping("/admin/members/count")
     public ResponseDTO<BackOfficeResponse.CountDTO> getMembersCount() {
@@ -158,7 +158,7 @@ public class BackOfficeController {
     }
 
     // 투자자 리스트 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetUsers
     @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
     @GetMapping("/admin/users")
@@ -168,7 +168,7 @@ public class BackOfficeController {
         return new ResponseDTO<>(pageDTO);
     }
 
-    @MyLog
+    @Log
     @SwaggerResponses.GetPBs
     @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
     @GetMapping("/admin/pbs")
@@ -179,7 +179,7 @@ public class BackOfficeController {
     }
 
     // 해당 PB 승인/승인 거부
-    @MyLog
+    @Log
     @SwaggerResponses.ApprovePB
     @PostMapping("/admin/pb/{id}")
     public ResponseDTO approvePB(@PathVariable Long id, @RequestParam Boolean approve) {
@@ -188,7 +188,7 @@ public class BackOfficeController {
     }
 
     // PB 회원 가입 승인 대기 리스트 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetPBPending
     @GetMapping("/admin/pendings")
     public ResponseDTO<PageDTO<BackOfficeResponse.PBPendingDTO>> getPBPending(@RequestParam(defaultValue = "0") int page) {
@@ -198,7 +198,7 @@ public class BackOfficeController {
     }
 
     // 공지사항 목록 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetNotice
     @GetMapping("/notices")
     public ResponseDTO<PageDTO<BackOfficeResponse.NoticeDTO>> getNotices(@RequestParam(defaultValue = "0") int page) {
@@ -207,7 +207,7 @@ public class BackOfficeController {
         return new ResponseDTO<>(noticesDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "공지사항 상세 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/notice/{id}")
@@ -218,7 +218,7 @@ public class BackOfficeController {
     }
 
     // 공지사항 등록
-    @MyLog
+    @Log
     @SwaggerResponses.AddNotice
     @PostMapping("/admin/notice")
     public ResponseDTO addNotice(@RequestBody @Valid BackOfficeRequest.AddNoticeDTO addNoticeDTO, Errors errors) {
@@ -226,7 +226,7 @@ public class BackOfficeController {
         return new ResponseDTO<>();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "공지사항 수정하기")
     @SwaggerResponses.DefaultApiResponses
     @PatchMapping("/admin/notice/{id}")
@@ -236,7 +236,7 @@ public class BackOfficeController {
         return new ResponseDTO();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "공지사항 삭제하기")
     @SwaggerResponses.ApiResponsesWithout400
     @DeleteMapping("/admin/notice/{id}")
@@ -247,7 +247,7 @@ public class BackOfficeController {
     }
 
     // FAQ 목록 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetFAQs
     @GetMapping("/faqs")
     public ResponseDTO<PageDTO<BackOfficeResponse.FAQDTO>> getFAQs(@RequestParam(defaultValue = "0") int page) {
@@ -256,7 +256,7 @@ public class BackOfficeController {
         return new ResponseDTO<>(faqsDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "FAQ 상세 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/faq/{id}")
@@ -267,7 +267,7 @@ public class BackOfficeController {
     }
 
     // FAQ 등록
-    @MyLog
+    @Log
     @SwaggerResponses.AddFAQ
     @PostMapping("/admin/faq")
     public ResponseDTO addFAQ(@RequestBody @Valid BackOfficeRequest.AddFAQDTO addFAQDTO, Errors errors) {
@@ -275,7 +275,7 @@ public class BackOfficeController {
         return new ResponseDTO<>();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "FAQ 수정하기")
     @SwaggerResponses.DefaultApiResponses
     @PatchMapping("/admin/faq/{id}")
@@ -285,7 +285,7 @@ public class BackOfficeController {
         return new ResponseDTO();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "FAQ 삭제하기")
     @SwaggerResponses.ApiResponsesWithout400
     @DeleteMapping("/admin/faq/{id}")

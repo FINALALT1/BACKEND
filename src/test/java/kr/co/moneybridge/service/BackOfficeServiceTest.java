@@ -1,11 +1,10 @@
 package kr.co.moneybridge.service;
 
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
-import kr.co.moneybridge.core.util.MyMemberUtil;
-import kr.co.moneybridge.core.util.MyMsgUtil;
+import kr.co.moneybridge.core.util.MemberUtil;
+import kr.co.moneybridge.core.util.MsgUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
-import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
 import kr.co.moneybridge.model.backoffice.FrequentQuestionRepository;
@@ -52,11 +51,11 @@ class BackOfficeServiceTest extends MockDummyEntity {
     @Mock
     PBRepository pbRepository;
     @Mock
-    MyMsgUtil myMsgUtil;
+    MsgUtil msgUtil;
     @Mock
     JavaMailSender javaMailSender;
     @Mock
-    MyMemberUtil myMemberUtil;
+    MemberUtil memberUtil;
     @Mock
     UserRepository userRepository;
     @Mock
@@ -201,7 +200,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         backOfficeService.forceWithdraw(id, Role.USER);
 
         // then
-        verify(myMemberUtil, times(1)).deleteById(id, Role.USER);
+        verify(memberUtil, times(1)).deleteById(id, Role.USER);
     }
 
     @Test
@@ -217,7 +216,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         backOfficeService.forceWithdraw(id, Role.PB);
 
         // then
-        verify(myMemberUtil, times(1)).deleteById(id, Role.PB);
+        verify(memberUtil, times(1)).deleteById(id, Role.PB);
     }
 
     @Test
@@ -334,7 +333,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
 
         // stub
         when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
-        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        when(msgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
@@ -342,9 +341,9 @@ class BackOfficeServiceTest extends MockDummyEntity {
 
         // then
         verify(pbRepository, times(1)).findById(id);
-        verify(myMsgUtil, times(1)).createMessage(any(), any(), any());
+        verify(msgUtil, times(1)).createMessage(any(), any(), any());
         verify(javaMailSender, times(1)).send(any(MimeMessage.class));
-        verify(myMemberUtil, times(1)).deleteById(any(), any());
+        verify(memberUtil, times(1)).deleteById(any(), any());
     }
 
     @Test
@@ -359,7 +358,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
 
         // stub
         when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
-        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        when(msgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
@@ -367,7 +366,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
 
         // then
         verify(pbRepository, times(1)).findById(id);
-        verify(myMsgUtil, times(1)).createMessage(any(), any(), any());
+        verify(msgUtil, times(1)).createMessage(any(), any(), any());
         verify(javaMailSender, times(1)).send(any(MimeMessage.class));
         assertThat(pb.getStatus()).isEqualTo(PBStatus.ACTIVE);
     }

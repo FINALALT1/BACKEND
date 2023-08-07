@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-public class MyFileUtil {
+public class FileUtil {
     public static String write(String uploadFolder, MultipartFile file) {
         UUID uuid = UUID.randomUUID();
         String originalFilename = file.getOriginalFilename();

@@ -15,7 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kr.co.moneybridge.core.util.MyDateUtil.localDateTimeToString;
+import static kr.co.moneybridge.core.util.DateUtil.localDateTimeToString;
 
 public class ReservationResponse {
     @ApiModel(description = "현재 나의 상담 가능 시간 불러오기 응답 데이터")

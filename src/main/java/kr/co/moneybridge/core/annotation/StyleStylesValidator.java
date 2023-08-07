@@ -6,7 +6,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 
-import static kr.co.moneybridge.core.util.MyEnumUtil.isValidStyleStyle;
+import static kr.co.moneybridge.core.util.EnumUtil.isValidStyleStyle;
 
 public class StyleStylesValidator implements ConstraintValidator<ValidStyleStyles, List<StyleStyle>> {
 

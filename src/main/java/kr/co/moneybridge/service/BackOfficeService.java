@@ -1,12 +1,12 @@
 package kr.co.moneybridge.service;
 
-import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.GeoCodingUtil;
-import kr.co.moneybridge.core.util.MyMemberUtil;
-import kr.co.moneybridge.core.util.MyMsgUtil;
+import kr.co.moneybridge.core.util.MemberUtil;
+import kr.co.moneybridge.core.util.MsgUtil;
 import kr.co.moneybridge.core.util.S3Util;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
@@ -47,9 +47,9 @@ public class BackOfficeService {
     private final FrequentQuestionRepository frequentQuestionRepository;
     private final NoticeRepository noticeRepository;
     private final PBRepository pbRepository;
-    private final MyMemberUtil myMemberUtil;
+    private final MemberUtil memberUtil;
     private final JavaMailSender javaMailSender;
-    private final MyMsgUtil myMsgUtil;
+    private final MsgUtil msgUtil;
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
@@ -78,7 +78,7 @@ public class BackOfficeService {
 //        });
 //    }
 
-    @MyLog
+    @Log
     @Transactional
     public void updateBranch(Long branchId, BackOfficeRequest.UpdateBranchDTO updateBranchDTO) {
         Branch branchPS = branchRepository.findById(branchId).orElseThrow(
@@ -116,7 +116,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void deleteBranch(Long branchId) {
         try {
@@ -126,7 +126,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void addBranch(BackOfficeRequest.BranchInDTO branchInDTO) {
         Company company = companyRepository.findById(branchInDTO.getCompanyId()).orElseThrow(
@@ -146,14 +146,14 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void deleteReReply(Long id) {
         // reReply 삭제
         reReplyRepository.deleteById(id);
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void deleteReply(Long id) {
         // reply를 연관관계로 가지고 있는 reReply도 삭제
@@ -163,7 +163,7 @@ public class BackOfficeService {
         replyRepository.deleteById(id);
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void deleteBoard(Long id) {
         // s3에서 컨텐츠 썸네일도 삭제
@@ -189,7 +189,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     public BackOfficeResponse.ReservationTotalCountDTO getReservationsCount() {
         return new BackOfficeResponse.ReservationTotalCountDTO(
                 reservationRepository.countByProcess(ReservationProcess.APPLY),
@@ -199,7 +199,7 @@ public class BackOfficeService {
                 pbRepository.countByStatus(PBStatus.PENDING));
     }
 
-    @MyLog
+    @Log
     @Transactional
     public PageDTO<BackOfficeResponse.ReservationTotalDTO> getReservations(Pageable pageable) {
         Page<Reservation> reservationPG = reservationRepository.findAll(pageable);
@@ -222,17 +222,17 @@ public class BackOfficeService {
         return new PageDTO<>(list, reservationPG, Reservation.class);
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void forceWithdraw(Long memberId, Role role) {
         try{
-            myMemberUtil.deleteById(memberId, role);
+            memberUtil.deleteById(memberId, role);
         }catch (Exception e){
 
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void authorizeAdmin(Long userId, Boolean admin) {
         User userPS = userRepository.findById(userId).orElseThrow(
@@ -241,13 +241,13 @@ public class BackOfficeService {
         userPS.authorize(admin);
     }
 
-    @MyLog
+    @Log
     public BackOfficeResponse.CountDTO getMembersCount() {
         return new BackOfficeResponse.CountDTO(
                 userRepository.count(), pbRepository.countByStatus(PBStatus.ACTIVE));
     }
 
-    @MyLog
+    @Log
     public PageDTO<BackOfficeResponse.UserOutDTO> getUsers(Pageable pageable) {
         Page<User> userPG = userRepository.findAll(pageable);
         List<BackOfficeResponse.UserOutDTO> list =
@@ -258,7 +258,7 @@ public class BackOfficeService {
         return new PageDTO<>(list, userPG, User.class);
     }
 
-    @MyLog
+    @Log
     public PageDTO<BackOfficeResponse.PBOutDTO> getPBs(Pageable pageable) {
         Page<BackOfficeResponse.PBOutDTO> pbOutPG = pbRepository.findPagesByStatus(PBStatus.ACTIVE, pageable);
         List<BackOfficeResponse.PBOutDTO> list =
@@ -268,7 +268,7 @@ public class BackOfficeService {
         return new PageDTO<>(list, pbOutPG);
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void approvePB(Long pbId, Boolean approve) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
@@ -277,25 +277,25 @@ public class BackOfficeService {
         if (!pbPS.getStatus().equals(PBStatus.PENDING)) {
             throw new Exception400("pbId", "이미 승인 완료된 PB입니다.");
         }
-        String subject = myMsgUtil.getSubjectApprove();
-        String msg = myMsgUtil.getMsgApprove();
+        String subject = msgUtil.getSubjectApprove();
+        String msg = msgUtil.getMsgApprove();
         if (approve == false) {
-            myMemberUtil.deleteById(pbId, Role.PB); // 탈퇴와 동일하게 삭제
-            subject = myMsgUtil.getSubjectReject();
-            msg = myMsgUtil.getMsgReject();
+            memberUtil.deleteById(pbId, Role.PB); // 탈퇴와 동일하게 삭제
+            subject = msgUtil.getSubjectReject();
+            msg = msgUtil.getMsgReject();
         } else {
             pbPS.approved();
         }
         // 이메일 알림
         try {
-            MimeMessage message = myMsgUtil.createMessage(pbPS.getEmail(), subject, msg);
+            MimeMessage message = msgUtil.createMessage(pbPS.getEmail(), subject, msg);
             javaMailSender.send(message);
         } catch (Exception e) {
             throw new Exception500("이메일 알림 전송 실패 " + e.getMessage());
         }
     }
 
-    @MyLog
+    @Log
     public PageDTO<BackOfficeResponse.PBPendingDTO> getPBPending(Pageable pageable) {
         Page<PB> pbPG = pbRepository.findAllByStatus(PBStatus.PENDING, pageable);
         List<BackOfficeResponse.PBPendingDTO> list = pbPG.getContent().stream().map(pb ->
@@ -305,7 +305,7 @@ public class BackOfficeService {
     }
 
 
-    @MyLog
+    @Log
     public PageDTO<BackOfficeResponse.NoticeDTO> getNotices(Pageable pageable) {
         Page<Notice> noticePG = noticeRepository.findAll(pageable);
         List<BackOfficeResponse.NoticeDTO> list = noticePG.getContent().stream().map(notice ->
@@ -313,7 +313,7 @@ public class BackOfficeService {
         return new PageDTO<>(list, noticePG, Notice.class);
     }
 
-    @MyLog
+    @Log
     public BackOfficeResponse.NoticeDTO getNotice(Long noticeId) {
         Notice noticePS = noticeRepository.findById(noticeId).orElseThrow(
                 () -> new Exception404("존재하지 않는 공지사항입니다.")
@@ -322,7 +322,7 @@ public class BackOfficeService {
         return new BackOfficeResponse.NoticeDTO(noticePS);
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void addNotice(BackOfficeRequest.AddNoticeDTO addNoticeDTO) {
         try {
@@ -332,7 +332,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void updateNotice(Long noticeId, BackOfficeRequest.UpdateNoticeDTO updateNoticeDTO) {
         Notice noticePS = noticeRepository.findById(noticeId).orElseThrow(
@@ -347,7 +347,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void deleteNotice(Long noticeId) {
         noticeRepository.findById(noticeId).orElseThrow(
@@ -361,7 +361,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void deleteReservation(Long id) {
         reservationRepository.findById(id).orElseThrow(
@@ -381,7 +381,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     public PageDTO<BackOfficeResponse.FAQDTO> getFAQs(Pageable pageable) {
         Page<FrequentQuestion> faqPG = frequentQuestionRepository.findAll(pageable);
         List<BackOfficeResponse.FAQDTO> list = faqPG.getContent().stream().map(faq ->
@@ -389,7 +389,7 @@ public class BackOfficeService {
         return new PageDTO<>(list, faqPG, FrequentQuestion.class);
     }
 
-    @MyLog
+    @Log
     public BackOfficeResponse.FAQDTO getFAQ(Long faqId) {
         FrequentQuestion faqPS = frequentQuestionRepository.findById(faqId).orElseThrow(
                 () -> new Exception404("존재하지 않는 FAQ입니다.")
@@ -398,7 +398,7 @@ public class BackOfficeService {
         return new BackOfficeResponse.FAQDTO(faqPS);
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void addFAQ(BackOfficeRequest.AddFAQDTO addFAQDTO) {
         try {
@@ -408,7 +408,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void updateFAQ(Long faqId, BackOfficeRequest.UpdateFAQDTO updateFAQDTO) {
         FrequentQuestion frequentQuestionPS = frequentQuestionRepository.findById(faqId).orElseThrow(
@@ -424,7 +424,7 @@ public class BackOfficeService {
         }
     }
 
-    @MyLog
+    @Log
     @Transactional
     public void deleteFAQ(Long faqId) {
         frequentQuestionRepository.findById(faqId).orElseThrow(

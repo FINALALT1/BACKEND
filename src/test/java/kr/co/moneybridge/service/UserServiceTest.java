@@ -3,13 +3,13 @@ package kr.co.moneybridge.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nimbusds.jose.util.Pair;
-import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
+import kr.co.moneybridge.core.auth.jwt.JwtProvider;
 import kr.co.moneybridge.core.auth.jwt.MyJwtProviderTest;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.exception.Exception401;
-import kr.co.moneybridge.core.util.MyMemberUtil;
-import kr.co.moneybridge.core.util.MyMsgUtil;
+import kr.co.moneybridge.core.util.MemberUtil;
+import kr.co.moneybridge.core.util.MsgUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
@@ -77,17 +77,17 @@ public class UserServiceTest extends MockDummyEntity {
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock
-    private MyJwtProvider myJwtProvider;
+    private JwtProvider jwtProvider;
     @Mock
     private RedisUtil redisUtil;
     @Mock
-    private MyMemberUtil myMemberUtil;
+    private MemberUtil memberUtil;
     @Mock
     private MyUserDetails myUserDetails;
     @Mock
     private JavaMailSender javaMailSender;
     @Mock
-    private MyMsgUtil myMsgUtil;
+    private MsgUtil msgUtil;
 
     // 진짜 객체를 만들어서 Mockito 환경에 Load
     @Spy
@@ -171,7 +171,7 @@ public class UserServiceTest extends MockDummyEntity {
                 .createdAt(LocalDateTime.now())
                 .build();
         when(myUserDetails.getMember()).thenReturn(mockUser);
-        when(myMemberUtil.findById(any(), any())).thenReturn(mockUser);
+        when(memberUtil.findById(any(), any())).thenReturn(mockUser);
 
         // when
         userService.updateMyInfo(updateMyInfoInDTO, myUserDetails);
@@ -234,14 +234,14 @@ public class UserServiceTest extends MockDummyEntity {
         rePasswordInDTO.setRole(Role.USER);
         rePasswordInDTO.setPassword("1111abcd");
 
-        when(myMemberUtil.findById(rePasswordInDTO.getId(), rePasswordInDTO.getRole()))
+        when(memberUtil.findById(rePasswordInDTO.getId(), rePasswordInDTO.getRole()))
                 .thenReturn(newMockUser(1L, "lee"));
 
         // when
         userService.updatePassword(rePasswordInDTO);
 
         // then
-        verify(myMemberUtil, times(1)).findById(1L, Role.USER);
+        verify(memberUtil, times(1)).findById(1L, Role.USER);
         verify(passwordEncoder, times(1)).encode("1111abcd");
     }
 
@@ -252,7 +252,7 @@ public class UserServiceTest extends MockDummyEntity {
         emailFindInDTO.setRole(Role.USER);
         emailFindInDTO.setPhoneNumber("01012345678");
 
-        when(myMemberUtil.findByPhoneNumberWithoutException(emailFindInDTO.getPhoneNumber(),
+        when(memberUtil.findByPhoneNumberWithoutException(emailFindInDTO.getPhoneNumber(),
                 emailFindInDTO.getRole())).thenReturn(Arrays.asList(newMockUser(1L, "lee")));
 
         // when
@@ -272,9 +272,9 @@ public class UserServiceTest extends MockDummyEntity {
         passwordInDTO.setRole(Role.USER);
         passwordInDTO.setEmail(email);
 
-        when(myMemberUtil.findByEmailWithoutException(passwordInDTO.getEmail(), passwordInDTO.getRole()))
+        when(memberUtil.findByEmailWithoutException(passwordInDTO.getEmail(), passwordInDTO.getRole()))
                 .thenReturn(newMockUser(1L, "lee"));
-        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        when(msgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
@@ -298,7 +298,7 @@ public class UserServiceTest extends MockDummyEntity {
         emailInDTO.setEmail(email);
         emailInDTO.setRole(role);
 
-        when(myMsgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+        when(msgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
@@ -326,7 +326,7 @@ public class UserServiceTest extends MockDummyEntity {
 
         // then
         verify(passwordEncoder, times(1)).matches(password, encodedPassword);
-        verify(myMemberUtil, times(1)).deleteById(1L, Role.USER);
+        verify(memberUtil, times(1)).deleteById(1L, Role.USER);
     }
 
     @Test
@@ -359,17 +359,17 @@ public class UserServiceTest extends MockDummyEntity {
 
         // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(MyJwtProvider.TOKEN_PREFIX + accessJwt);
+        when(mockRequest.getHeader(JwtProvider.HEADER_ACCESS)).thenReturn(JwtProvider.TOKEN_PREFIX + accessJwt);
 
         // MyJwtProvider를 모킹하여 액세스 토큰과 리프레시 토큰을 검증하고, 검증된 JWT의 클레임을 반환하도록 설정
         DecodedJWT mockDecodedJWT = mock(DecodedJWT.class);
 
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
+        ReflectionTestUtils.setField(JwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
+        ReflectionTestUtils.setField(JwtProvider.class, "SECRET_REFRESH", "backend", String.class);
 
-        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
-            myJwtProviderMock.when(() -> MyJwtProvider.verifyAccess(accessJwt)).thenReturn(mockDecodedJWT);
-            myJwtProviderMock.when(() -> MyJwtProvider.verifyRefresh(refreshToken)).thenReturn(mockDecodedJWT);
+        try (MockedStatic<JwtProvider> myJwtProviderMock = Mockito.mockStatic(JwtProvider.class)) {
+            myJwtProviderMock.when(() -> JwtProvider.verifyAccess(accessJwt)).thenReturn(mockDecodedJWT);
+            myJwtProviderMock.when(() -> JwtProvider.verifyRefresh(refreshToken)).thenReturn(mockDecodedJWT);
         } // static 메서드여서
 
         // RedisUtil를 모킹하여 레디스에서 리프레시 토큰을 조회하고, 키에 해당하는 리프레시 토큰을 삭제하고, 액세스 토큰을 블랙리스트에 추가하도록 설정
@@ -385,14 +385,14 @@ public class UserServiceTest extends MockDummyEntity {
         // then
         verify(redisUtil, times(1)).delete(key);
         verify(redisUtil, times(1)).setBlackList(
-                eq(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")),
+                eq(accessJwt.replace(JwtProvider.TOKEN_PREFIX, "")),
                 eq("access_token_blacklist"),
                 remainingTimeCaptor.capture() // 캡쳐합니다.
         );
 
         // 캡쳐한 값을 가져와서 원하는 조건을 만족하는지 검사합니다.
         Long capturedRemainingTimeMillis = remainingTimeCaptor.getValue();
-        assertTrue(capturedRemainingTimeMillis <= MyJwtProvider.EXP_ACCESS && capturedRemainingTimeMillis >= 0);
+        assertTrue(capturedRemainingTimeMillis <= JwtProvider.EXP_ACCESS && capturedRemainingTimeMillis >= 0);
     }
 
         @Test
@@ -410,12 +410,12 @@ public class UserServiceTest extends MockDummyEntity {
 
         // HttpServletRequest를 모킹하여 HEADER_ACCESS 헤더에서 액세스 토큰을 반환하도록 설정
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        when(mockRequest.getHeader(MyJwtProvider.HEADER_ACCESS)).thenReturn(accessJwt);
+        when(mockRequest.getHeader(JwtProvider.HEADER_ACCESS)).thenReturn(accessJwt);
 
         // MyJwtProvider를 모킹하여 액세스 토큰을 디코딩하고, 디코딩된 JWT의 클레임을 반환하도록 설정
         DecodedJWT mockDecodedJWT = mock(DecodedJWT.class);
         try (MockedStatic<JWT> jwtMock = Mockito.mockStatic(JWT.class)) {
-            jwtMock.when(() -> JWT.decode(accessJwt.replace(MyJwtProvider.TOKEN_PREFIX, "")))
+            jwtMock.when(() -> JWT.decode(accessJwt.replace(JwtProvider.TOKEN_PREFIX, "")))
                     .thenReturn(mockDecodedJWT);
         }
 
@@ -429,16 +429,16 @@ public class UserServiceTest extends MockDummyEntity {
         when(mockMember.getId()).thenReturn(1L);
         when(mockMember.getRole()).thenReturn(Role.PB);
 
-        when(myMemberUtil.findById(id, Role.valueOf(role))).thenReturn(mockMember);
+        when(memberUtil.findById(id, Role.valueOf(role))).thenReturn(mockMember);
 
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
+        ReflectionTestUtils.setField(JwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
+        ReflectionTestUtils.setField(JwtProvider.class, "SECRET_REFRESH", "backend", String.class);
 
-        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
-            myJwtProviderMock.when(() -> MyJwtProvider.createAccess(mockMember))
+        try (MockedStatic<JwtProvider> myJwtProviderMock = Mockito.mockStatic(JwtProvider.class)) {
+            myJwtProviderMock.when(() -> JwtProvider.createAccess(mockMember))
                     .thenReturn(accessJwt);
         }
-        when(myJwtProvider.createRefresh(mockMember))
+        when(jwtProvider.createRefresh(mockMember))
                 .thenReturn(refreshToken);
 
         // when
@@ -446,7 +446,7 @@ public class UserServiceTest extends MockDummyEntity {
 
         // then
         Assertions.assertThat(tokens.getLeft().substring(0, prefix.length() + 7)).isEqualTo(
-                MyJwtProvider.TOKEN_PREFIX + prefix.substring(0, prefix.length()));
+                JwtProvider.TOKEN_PREFIX + prefix.substring(0, prefix.length()));
         Assertions.assertThat(tokens.getRight().substring(0, prefix.length())).isEqualTo(
                 prefix.substring(0, prefix.length()));
     }
@@ -480,17 +480,17 @@ public class UserServiceTest extends MockDummyEntity {
         when(mockUserDetails.getMember())
                 .thenReturn(mockMember);
 
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
-        ReflectionTestUtils.setField(MyJwtProvider.class, "SECRET_REFRESH", "backend", String.class);
+        ReflectionTestUtils.setField(JwtProvider.class, "SECRET_ACCESS", "originwasdonjul", String.class);
+        ReflectionTestUtils.setField(JwtProvider.class, "SECRET_REFRESH", "backend", String.class);
 
         // JwtProvider가 액세스 토큰과 리프레시 토큰을 성공적으로 생성하도록 설정합니다.
         String expectedAccessTokenPrefix = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjo";
         String expectedRefreshTokenPrefix = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtb25leWJyaWRnZSIsInJvbGUiOiJQQiIsImlkIjo";
-        try (MockedStatic<MyJwtProvider> myJwtProviderMock = Mockito.mockStatic(MyJwtProvider.class)) {
-            myJwtProviderMock.when(() -> MyJwtProvider.createAccess(mockMember))
+        try (MockedStatic<JwtProvider> myJwtProviderMock = Mockito.mockStatic(JwtProvider.class)) {
+            myJwtProviderMock.when(() -> JwtProvider.createAccess(mockMember))
                     .thenReturn(expectedAccessTokenPrefix + ".signature");
         } // static 메서드여서
-        when(myJwtProvider.createRefresh(mockMember))
+        when(jwtProvider.createRefresh(mockMember))
                 .thenReturn(expectedRefreshTokenPrefix + ".signature");
 
         // when
@@ -549,7 +549,7 @@ public class UserServiceTest extends MockDummyEntity {
 
         // stub 1
         User user = newMockUser(1L, "lee");
-        when(myMemberUtil.findByEmail(any(), any())).thenReturn(user);
+        when(memberUtil.findByEmail(any(), any())).thenReturn(user);
 
         // when
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
@@ -568,7 +568,7 @@ public class UserServiceTest extends MockDummyEntity {
 
         // stub 1
         User user = newMockUserADMIN(1L,"강투자");
-        when(myMemberUtil.findByEmail(any(), any())).thenReturn(user);
+        when(memberUtil.findByEmail(any(), any())).thenReturn(user);
 
         // when
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);

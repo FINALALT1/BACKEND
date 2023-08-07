@@ -1,7 +1,7 @@
 package kr.co.moneybridge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.moneybridge.core.auth.jwt.MyJwtProvider;
+import kr.co.moneybridge.core.auth.jwt.JwtProvider;
 import kr.co.moneybridge.core.dummy.DummyEntity;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.model.Role;
@@ -414,7 +414,7 @@ public class UserControllerTest {
         System.out.println("테스트 : " + responseBody);
 
         // then
-        resultActions.andExpect(header().exists(MyJwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
+        resultActions.andExpect(header().exists(JwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
         resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
@@ -439,7 +439,7 @@ public class UserControllerTest {
         System.out.println("테스트 : " + responseBody);
 
         // then
-        resultActions.andExpect(header().exists(MyJwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
+        resultActions.andExpect(header().exists(JwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
         resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
@@ -464,7 +464,7 @@ public class UserControllerTest {
         System.out.println("테스트 : " + responseBody);
 
         // then
-        resultActions.andExpect(header().exists(MyJwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
+        resultActions.andExpect(header().exists(JwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
         resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
@@ -489,19 +489,19 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
-        String accessToken = loginResult.getResponse().getHeader(MyJwtProvider.HEADER_ACCESS);
+        String accessToken = loginResult.getResponse().getHeader(JwtProvider.HEADER_ACCESS);
         String refreshToken = loginResult.getResponse().getCookie("refreshToken").getValue();
 
         // when
         ResultActions resultActions = mvc
                 .perform(post("/reissue")
-                        .header(MyJwtProvider.HEADER_ACCESS, accessToken)
+                        .header(JwtProvider.HEADER_ACCESS, accessToken)
                         .cookie(new Cookie("refreshToken", refreshToken))
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
         resultActions.andExpect(status().isOk());
-        resultActions.andExpect(header().exists(MyJwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
+        resultActions.andExpect(header().exists(JwtProvider.HEADER_ACCESS)); // Access 토큰이 헤더에 존재하는지 확인
         resultActions.andExpect(cookie().exists("refreshToken")); // Refresh 토큰이 쿠키에 존재하는지 확인
         resultActions.andExpect(jsonPath("$.status").value(200));
         resultActions.andExpect(jsonPath("$.msg").value("ok"));
@@ -525,13 +525,13 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
-        String accessToken = loginResult.getResponse().getHeader(MyJwtProvider.HEADER_ACCESS);
+        String accessToken = loginResult.getResponse().getHeader(JwtProvider.HEADER_ACCESS);
         String refreshToken = loginResult.getResponse().getCookie("refreshToken").getValue();
 
         // when
         ResultActions resultActions = mvc
                 .perform(post("/auth/logout")
-                        .header(MyJwtProvider.HEADER_ACCESS, accessToken)
+                        .header(JwtProvider.HEADER_ACCESS, accessToken)
                         .cookie(new Cookie("refreshToken", refreshToken))
                         .contentType(MediaType.APPLICATION_JSON));
 

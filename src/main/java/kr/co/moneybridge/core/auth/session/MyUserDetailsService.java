@@ -1,6 +1,6 @@
 package kr.co.moneybridge.core.auth.session;
 
-import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.core.util.MemberUtil;
 import kr.co.moneybridge.model.Member;
 import kr.co.moneybridge.model.Role;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class MyUserDetailsService implements UserDetailsService {
-    private final MyMemberUtil myMemberUtil;
+    private final MemberUtil memberUtil;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -24,7 +24,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
         Member member = null;
         try{
-            member = myMemberUtil.findByEmail(email, role);
+            member = memberUtil.findByEmail(email, role);
         }catch (Exception e){
             log.error("회원 인증 실패 : " + e.getMessage());
             throw new InternalAuthenticationServiceException("인증 실패: " + e.getMessage());

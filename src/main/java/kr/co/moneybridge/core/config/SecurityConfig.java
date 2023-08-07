@@ -1,10 +1,10 @@
 package kr.co.moneybridge.core.config;
 
-import kr.co.moneybridge.core.auth.jwt.MyJwtAuthorizationFilter;
+import kr.co.moneybridge.core.auth.jwt.JwtAuthorizationFilter;
 import kr.co.moneybridge.core.exception.Exception401;
 import kr.co.moneybridge.core.exception.Exception403;
-import kr.co.moneybridge.core.util.MyFilterResponseUtil;
-import kr.co.moneybridge.core.util.MyMemberUtil;
+import kr.co.moneybridge.core.util.FilterResponseUtil;
+import kr.co.moneybridge.core.util.MemberUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -22,13 +22,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Slf4j
 @Configuration
-public class MySecurityConfig {
+public class SecurityConfig {
     private final RedisUtil redisUtil;
-    private final MyMemberUtil myMemberUtil;
+    private final MemberUtil memberUtil;
 
-    public MySecurityConfig(RedisUtil redisUtil, MyMemberUtil myMemberUtil) {
+    public SecurityConfig(RedisUtil redisUtil, MemberUtil memberUtil) {
         this.redisUtil = redisUtil;
-        this.myMemberUtil = myMemberUtil;
+        this.memberUtil = memberUtil;
     }
 
     @Bean
@@ -46,7 +46,7 @@ public class MySecurityConfig {
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager, redisUtil, myMemberUtil));
+            builder.addFilter(new JwtAuthorizationFilter(authenticationManager, redisUtil, memberUtil));
             // 시큐리티 관련 필터
             super.configure(builder);
         }
@@ -78,13 +78,13 @@ public class MySecurityConfig {
         // 8. 인증 실패 처리
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
             log.warn("인증되지 않은 사용자가 자원에 접근하려 합니다 : " + authException.getMessage());
-            MyFilterResponseUtil.unAuthorized(response, new Exception401("인증되지 않았습니다"));
+            FilterResponseUtil.unAuthorized(response, new Exception401("인증되지 않았습니다"));
         });
 
         // 10. 권한 실패 처리
         http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
             log.warn("권한이 없는 사용자가 자원에 접근하려 합니다 : " + accessDeniedException.getMessage());
-            MyFilterResponseUtil.forbidden(response, new Exception403("권한이 없습니다"));
+            FilterResponseUtil.forbidden(response, new Exception403("권한이 없습니다"));
         });
 
         // 11. 인증, 권한 필터 설정

@@ -1,7 +1,7 @@
 package kr.co.moneybridge.controller;
 
 import io.swagger.annotations.ApiOperation;
-import kr.co.moneybridge.core.annotation.MyLog;
+import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.exception.Exception400;
@@ -24,16 +24,16 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalDateTime;
-import static kr.co.moneybridge.core.util.MyDateUtil.StringToLocalTime;
-import static kr.co.moneybridge.core.util.MyEnumUtil.*;
+import static kr.co.moneybridge.core.util.DateUtil.StringToLocalDateTime;
+import static kr.co.moneybridge.core.util.DateUtil.StringToLocalTime;
+import static kr.co.moneybridge.core.util.EnumUtil.*;
 
 @RequiredArgsConstructor
 @RestController
 public class ReservationController {
     private final ReservationService reservationService;
 
-    @MyLog
+    @Log
     @ApiOperation(value = "고객 관리 페이지 상담 현황 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/pb/management/recent")
@@ -43,7 +43,7 @@ public class ReservationController {
         return new ResponseDTO<>(recentInfoDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "나의 예약 페이지 상담 현황 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/user/reservations/recent")
@@ -53,7 +53,7 @@ public class ReservationController {
         return new ResponseDTO<>(recentInfoDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "고객 관리 페이지 상담 목록 조회")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/pb/management/reservations")
@@ -75,7 +75,7 @@ public class ReservationController {
         return new ResponseDTO<>(recentReservationsDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "나의 예약 페이지 상담 목록 조회")
     @SwaggerResponses.DefaultApiResponses
     @GetMapping("/user/reservations")
@@ -97,7 +97,7 @@ public class ReservationController {
         return new ResponseDTO<>(recentReservationsDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "예약 확인하기(PB)")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/pb/reservation/{id}")
@@ -108,7 +108,7 @@ public class ReservationController {
         return new ResponseDTO<>(detailByPBDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "예약 확인하기(투자자)")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/user/reservation/{id}")
@@ -119,7 +119,7 @@ public class ReservationController {
         return new ResponseDTO<>(detailByUserDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "상담 예약 사전 정보 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/user/reservation/base/{pbId}")
@@ -130,7 +130,7 @@ public class ReservationController {
         return new ResponseDTO<>(baseDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "상담 예약 신청하기")
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/user/reservation/{pbId}")
@@ -189,7 +189,7 @@ public class ReservationController {
         return new ResponseDTO();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "예약 변경하기")
     @SwaggerResponses.DefaultApiResponses
     @PatchMapping("/pb/reservation/{id}")
@@ -224,7 +224,7 @@ public class ReservationController {
         return new ResponseDTO<>();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "예약 취소하기")
     @SwaggerResponses.ApiResponsesWithout400
     @DeleteMapping("/auth/reservation/{id}")
@@ -235,7 +235,7 @@ public class ReservationController {
         return new ResponseDTO<>();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "예약 확정하기")
     @SwaggerResponses.DefaultApiResponses
     @PatchMapping("/pb/reservation/{id}/confirmed")
@@ -247,7 +247,7 @@ public class ReservationController {
         return new ResponseDTO<>();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "예약 완료하기")
     @SwaggerResponses.ApiResponsesWithout400
     @PatchMapping("/auth/reservation/{id}/completed")
@@ -258,7 +258,7 @@ public class ReservationController {
         return new ResponseDTO<>();
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "월별/일별 예약 정보 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/pb/reservation")
@@ -281,7 +281,7 @@ public class ReservationController {
         return new ResponseDTO<>(reservations);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "PB 상담시간 및 메시지 변경하기")
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/pb/consultTime")
@@ -308,7 +308,7 @@ public class ReservationController {
     }
 
     // 현재 나의 상담 가능 시간 불러오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetMyConsultTime
     @GetMapping("/pb/consultTime")
     public ResponseDTO<ReservationResponse.MyConsultTimeDTO> getMyConsultTime(@AuthenticationPrincipal MyUserDetails myUserDetails) {
@@ -316,7 +316,7 @@ public class ReservationController {
         return new ResponseDTO<>(myConsultTimeDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "상담 후기 리스트 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/pb/reviews")
@@ -337,7 +337,7 @@ public class ReservationController {
         return new ResponseDTO(reviewListOutDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "특정 PB 상담 후기 리스트 조회")
     @SwaggerResponses.ApiResponsesWithout400
     @GetMapping("/auth/reviews/{pbId}")
@@ -351,7 +351,7 @@ public class ReservationController {
     }
 
     // 나의 후기 하나 가져오기
-    @MyLog
+    @Log
     @SwaggerResponses.GetMyReview
     @GetMapping("/user/review/{reservationId}")
     public ResponseDTO<ReservationResponse.MyReviewDTO> getMyReview(@PathVariable Long reservationId,
@@ -370,7 +370,7 @@ public class ReservationController {
         return new ResponseDTO(styleDTO);
     }
 
-    @MyLog
+    @Log
     @ApiOperation(value = "후기 작성하기")
     @SwaggerResponses.DefaultApiResponses
     @PostMapping("/user/review")

@@ -10,7 +10,7 @@ import org.springframework.validation.Errors;
 
 @Aspect
 @Component
-public class MyValidAdvice {
+public class ValidAdvice {
     @Pointcut("@annotation(org.springframework.web.bind.annotation.PostMapping)")
     public void postMapping() {
     }

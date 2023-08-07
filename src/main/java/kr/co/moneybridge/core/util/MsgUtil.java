@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMessage;
 
 @RequiredArgsConstructor
 @Component
-public class MyMsgUtil {
+public class MsgUtil {
     private final JavaMailSender javaMailSender;
     private final String header = "<img src=\"https://moneybridge.s3.ap-northeast-2.amazonaws.com/default/email_header.png\" />\n";
     @Getter
