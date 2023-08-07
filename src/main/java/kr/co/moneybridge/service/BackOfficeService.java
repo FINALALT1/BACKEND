@@ -12,6 +12,8 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.backOffice.FullAddress;
+import kr.co.moneybridge.dto.pb.PBRequest;
+import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
@@ -33,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.internet.MimeMessage;
 import java.util.List;
@@ -80,6 +83,74 @@ public class BackOfficeService {
 
     @Log
     @Transactional
+    public void addCompany(MultipartFile logo, BackOfficeRequest.CompanyInDTO companyInDTO) {
+        // S3에 로고 이미지 저장
+        String path = s3Util.upload(logo, "company-logo");
+        try {
+            companyRepository.save(companyInDTO.toEntity(path));
+        } catch (Exception e) {
+            throw new Exception500("증권사 등록 실패: " + e.getMessage());
+        }
+    }
+
+    @Log
+    @Transactional
+    public void updateCompany(Long id, MultipartFile logo, String companyName) {
+        Company companyPS = companyRepository.findById(id).orElseThrow(
+                () -> new Exception404("존재하지 않는 증권사입니다.")
+        );
+
+        // 로고 이미지 수정
+        if (logo != null && !logo.isEmpty()) {
+            String path = s3Util.upload(logo, "company-logo");
+            if (companyPS.getLogo() != null && !companyPS.getLogo().isBlank()) {
+                s3Util.delete(companyPS.getLogo()); // s3에서 기존 로고 이미지 삭제
+            }
+            companyPS.updateLogo(path);
+        }
+
+        if (companyName != null && !companyName.isBlank()) {
+            companyPS.updateName(companyName);
+        }
+    }
+
+    @Log
+    @Transactional
+    public void deleteCompany(Long id) {
+        companyRepository.findById(id).orElseThrow(
+                () -> new Exception404("존재하지 않는 증권사입니다.")
+        );
+
+        try {
+            branchRepository.deleteByCompanyId(id);
+            companyRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new Exception500("증권사 또는 소속 지점 삭제 실패 : " + e.getMessage());
+        }
+    }
+
+    @Log
+    @Transactional
+    public void addBranch(BackOfficeRequest.BranchInDTO branchInDTO) {
+        Company company = companyRepository.findById(branchInDTO.getCompanyId()).orElseThrow(
+                () -> new Exception400("companyId", "없는 증권회사의 id입니다")
+        );
+
+        try {
+            // 온라인으로만 운영되는 증권사의 경우
+            if (branchInDTO.getAddress() == null || branchInDTO.getAddress().isEmpty()) {
+                branchRepository.save(branchInDTO.toDefaultEntity(company));
+                return;
+            }
+            FullAddress address = geoCodingUtil.getFullAddress(branchInDTO.getAddress());
+            branchRepository.save(branchInDTO.toEntity(company, address));
+        } catch (Exception e) {
+            throw new Exception500("지점 저장 실패 : " + e);
+        }
+    }
+
+    @Log
+    @Transactional
     public void updateBranch(Long branchId, BackOfficeRequest.UpdateBranchDTO updateBranchDTO) {
         Branch branchPS = branchRepository.findById(branchId).orElseThrow(
                 () -> new Exception404("존재하지 않는 지점입니다.")
@@ -123,26 +194,6 @@ public class BackOfficeService {
             branchRepository.deleteById(branchId);
         } catch (Exception e) {
             throw new Exception500("공지사항 삭제 실패 : " + e.getMessage());
-        }
-    }
-
-    @Log
-    @Transactional
-    public void addBranch(BackOfficeRequest.BranchInDTO branchInDTO) {
-        Company company = companyRepository.findById(branchInDTO.getCompanyId()).orElseThrow(
-                () -> new Exception400("companyId", "없는 증권회사의 id입니다")
-        );
-
-        try {
-            // 온라인으로만 운영되는 증권사의 경우
-            if (branchInDTO.getAddress() == null || branchInDTO.getAddress().isEmpty()) {
-                branchRepository.save(branchInDTO.toDefaultEntity(company));
-                return;
-            }
-            FullAddress address = geoCodingUtil.getFullAddress(branchInDTO.getAddress());
-            branchRepository.save(branchInDTO.toEntity(company, address));
-        } catch (Exception e) {
-            throw new Exception500("지점 저장 실패 : " + e);
         }
     }
 

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -32,6 +33,54 @@ public class BackOfficeController {
 //        backOfficeService.fixBranch();
 //        return new ResponseDTO();
 //    }
+
+    // 증권사 등록하기
+    @Log
+    @SwaggerResponses.AddCompany
+    @PostMapping("/admin/company")
+    public ResponseDTO addCompany(
+            @RequestPart(value = "logo") MultipartFile logo,
+            @RequestPart(value = "companyInDTO") @Valid BackOfficeRequest.CompanyInDTO companyInDTO, Errors errors) {
+        if (logo == null || logo.isEmpty()) {
+            throw new Exception400("logo", "로고 이미지 파일을 입력해주세요.");
+        }
+
+        backOfficeService.addCompany(logo, companyInDTO);
+
+        return new ResponseDTO<>();
+    }
+
+    // 증권사 수정하기
+    @Log
+    @SwaggerResponses.UpdateCompany
+    @PatchMapping("/admin/company/{id}")
+    public ResponseDTO updateCompany(
+            @PathVariable Long id,
+            @RequestPart(value = "logo") MultipartFile logo,
+            @RequestPart(value = "companyInDTO") BackOfficeRequest.UpdateCompanyDTO updateCompanyDTO) {
+        backOfficeService.updateCompany(id, logo, updateCompanyDTO.getCompanyName());
+
+        return new ResponseDTO<>();
+    }
+
+    @Log
+    @ApiOperation(value = "증권사 삭제하기")
+    @SwaggerResponses.ApiResponsesWithout400
+    @DeleteMapping("/admin/company/{id}")
+    public ResponseDTO deleteCompany(@PathVariable Long id) {
+        backOfficeService.deleteCompany(id);
+
+        return new ResponseDTO();
+    }
+
+    // 지점 등록
+    @Log
+    @SwaggerResponses.AddBranch
+    @PostMapping("/admin/branch")
+    public ResponseDTO addBranch(@RequestBody @Valid BackOfficeRequest.BranchInDTO branchInDTO, Errors errors) {
+        backOfficeService.addBranch(branchInDTO);
+        return new ResponseDTO<>();
+    }
 
     @Log
     @ApiOperation(value = "지점 수정하기")
@@ -54,15 +103,6 @@ public class BackOfficeController {
         backOfficeService.deleteBranch(id);
 
         return new ResponseDTO();
-    }
-
-    // 지점 등록
-    @Log
-    @SwaggerResponses.AddBranch
-    @PostMapping("/admin/branch")
-    public ResponseDTO addBranch(@RequestBody @Valid BackOfficeRequest.BranchInDTO branchInDTO, Errors errors) {
-        backOfficeService.addBranch(branchInDTO);
-        return new ResponseDTO<>();
     }
 
     // 대댓글 강제 삭제

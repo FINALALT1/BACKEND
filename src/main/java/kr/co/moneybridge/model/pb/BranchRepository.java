@@ -18,4 +18,6 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
     @Query("SELECT b FROM Branch b WHERE b.name = :branchName")
     Optional<Branch> findByName(@Param("branchName") String branchName);
 
+    @Query("delete from Branch b where b.company.id = :id")
+    void deleteByCompanyId(@Param("companyId") Long id);
 }

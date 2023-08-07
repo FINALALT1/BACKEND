@@ -9,6 +9,7 @@ import kr.co.moneybridge.model.pb.Company;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -145,5 +146,29 @@ public class BackOfficeRequest {
                     .longitude(0.0)
                     .build();
         }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class CompanyInDTO {
+        @ApiModelProperty(example = "KB증권", value = "증권사 이름")
+        @NotBlank
+        private String companyName;
+
+        public Company toEntity(String logo) {
+            return Company.builder()
+                    .name(companyName)
+                    .logo(logo)
+                    .build();
+        }
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class UpdateCompanyDTO {
+        @ApiModelProperty(example = "KB증권", value = "증권사 이름")
+        private String companyName;
     }
 }

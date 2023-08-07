@@ -22,6 +22,14 @@ public class Company {
     @Column(nullable = false)
     private String logo; // 로고 이미지
 
+    public void updateLogo(String path) {
+        logo = path;
+    }
+
+    public void updateName(String companyName) {
+        name = companyName;
+    }
+
 //    @Column(nullable = false)
 //    private LocalDateTime createdAt;
 //
