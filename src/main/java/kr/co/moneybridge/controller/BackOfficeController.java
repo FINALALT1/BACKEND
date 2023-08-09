@@ -58,7 +58,7 @@ public class BackOfficeController {
             @PathVariable Long id,
             @RequestPart(value = "logo", required = false) MultipartFile logo,
             @RequestPart(value = "companyInDTO", required = false) BackOfficeRequest.UpdateCompanyDTO updateCompanyDTO) {
-        backOfficeService.updateCompany(id, logo, updateCompanyDTO.getCompanyName());
+        backOfficeService.updateCompany(id, logo, updateCompanyDTO != null ? updateCompanyDTO.getCompanyName() : null);
 
         return new ResponseDTO<>();
     }
