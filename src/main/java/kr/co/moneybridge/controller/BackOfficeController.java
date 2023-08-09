@@ -56,8 +56,8 @@ public class BackOfficeController {
     @PatchMapping("/admin/company/{id}")
     public ResponseDTO updateCompany(
             @PathVariable Long id,
-            @RequestPart(value = "logo") MultipartFile logo,
-            @RequestPart(value = "companyInDTO") BackOfficeRequest.UpdateCompanyDTO updateCompanyDTO) {
+            @RequestPart(value = "logo", required = false) MultipartFile logo,
+            @RequestPart(value = "companyInDTO", required = false) BackOfficeRequest.UpdateCompanyDTO updateCompanyDTO) {
         backOfficeService.updateCompany(id, logo, updateCompanyDTO.getCompanyName());
 
         return new ResponseDTO<>();

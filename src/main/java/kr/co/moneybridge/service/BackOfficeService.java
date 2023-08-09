@@ -12,8 +12,6 @@ import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.backOffice.FullAddress;
-import kr.co.moneybridge.dto.pb.PBRequest;
-import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.dto.reservation.ReservationResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.model.backoffice.FrequentQuestion;
@@ -157,25 +155,25 @@ public class BackOfficeService {
         );
         try {
             // 증권사랑 이름 변경
-            if(updateBranchDTO.getCompanyId() != null){
+            if (updateBranchDTO.getCompanyId() != null) {
                 Company company = companyRepository.findById(updateBranchDTO.getCompanyId()).orElseThrow(
                         () -> new Exception400("companyId", "없는 증권회사의 id입니다")
                 );
                 branchPS.updateCompany(company);
-                if(updateBranchDTO.getName() == null ||
-                        (updateBranchDTO.getName() != null && updateBranchDTO.getName().isEmpty())){
+                if (updateBranchDTO.getName() == null ||
+                        (updateBranchDTO.getName() != null && updateBranchDTO.getName().isEmpty())) {
                     branchPS.updateNameOfCompany(company.getName());
                 } else {
                     branchPS.updateName(company.getName() + " " + updateBranchDTO.getName());
                 }
-            } else if(updateBranchDTO.getName() != null && !updateBranchDTO.getName().isEmpty()){
+            } else if (updateBranchDTO.getName() != null && !updateBranchDTO.getName().isEmpty()) {
                 branchPS.updateNameOnly(updateBranchDTO.getName());
             }
 
             // 주소 변경
-            if(updateBranchDTO.getAddress() != null && !updateBranchDTO.getAddress().isEmpty()){
+            if (updateBranchDTO.getAddress() != null && !updateBranchDTO.getAddress().isEmpty()) {
                 FullAddress address = geoCodingUtil.getFullAddress(updateBranchDTO.getAddress());
-                String specificAddress =  updateBranchDTO.getSpecificAddress() == null ||
+                String specificAddress = updateBranchDTO.getSpecificAddress() == null ||
                         (updateBranchDTO.getSpecificAddress() != null && updateBranchDTO.getSpecificAddress().isEmpty()) ?
                         "" : updateBranchDTO.getSpecificAddress();
 
@@ -276,9 +274,9 @@ public class BackOfficeService {
     @Log
     @Transactional
     public void forceWithdraw(Long memberId, Role role) {
-        try{
+        try {
             memberUtil.deleteById(memberId, role);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
