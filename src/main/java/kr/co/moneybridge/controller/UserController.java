@@ -13,6 +13,8 @@ import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Role;
 import kr.co.moneybridge.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
@@ -188,6 +190,7 @@ public class UserController {
     // 로그인 (성공시 access 토큰과 refresh 토큰 둘 다 발급)
     @Log
     @SwaggerResponses.Login
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserRequest.LoginInDTO loginInDTO, Errors errors, HttpServletResponse response) {
         UserResponse.LoginOutDTO loginOutDTO = userService.login(loginInDTO);
@@ -225,8 +228,16 @@ public class UserController {
     @Log
     @SwaggerResponses.Logout
     @PostMapping("/auth/logout")
-    public ResponseDTO logout(HttpServletRequest request) {
+    public ResponseDTO logout(HttpServletRequest request, HttpServletResponse response) {
         userService.logout(request, getRefreshToken(request));
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", getRefreshToken(request))
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)
+                .build();
+        response.setHeader("Set-Cookie", cookie.toString());
         return new ResponseDTO<>();
     }
 
