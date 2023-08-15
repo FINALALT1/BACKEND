@@ -1,5 +1,7 @@
 package kr.co.moneybridge.model.user;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +26,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select count(*) from User u where u.phoneNumber = :phoneNumber")
     int countByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    @Query("select u from User u where u.email like concat('%', :keyword, '%')")
+    Page<User> findAllByEmail(Pageable pageable, @Param("keyword") String keyword);
+
+    @Query("select u from User u where u.phoneNumber like concat('%', :keyword, '%')")
+    Page<User> findAllByPhoneNumber(Pageable pageable, @Param("keyword") String keyword);
+
+    @Query("select u from User u where u.name like concat('%', :keyword, '%')")
+    Page<User> findAllByName(Pageable pageable, @Param("keyword") String keyword);
 }

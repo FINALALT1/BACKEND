@@ -74,7 +74,7 @@ public class SwaggerResponses {
     public @interface AddCompany {
     }
 
-    @ApiOperation(value = "증권사 등록하기")
+    @ApiOperation(value = "증권사 수정하기")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),

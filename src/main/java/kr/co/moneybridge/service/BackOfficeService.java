@@ -297,8 +297,20 @@ public class BackOfficeService {
     }
 
     @Log
-    public PageDTO<BackOfficeResponse.UserOutDTO> getUsers(Pageable pageable) {
-        Page<User> userPG = userRepository.findAll(pageable);
+    public PageDTO<BackOfficeResponse.UserOutDTO> getUsers(String type, String keyword, Pageable pageable) {
+        Page<User> userPG = null;
+        if (!keyword.equals("")) {
+            if (type.equals("email")) {
+                userPG = userRepository.findAllByEmail(pageable, keyword);
+            } else if (type.equals("phoneNumber")) {
+                userPG = userRepository.findAllByPhoneNumber(pageable, keyword);
+            } else if (type.equals("name")) {
+                userPG = userRepository.findAllByName(pageable, keyword);
+            }
+        } else {
+            userPG = userRepository.findAll(pageable);
+        }
+
         List<BackOfficeResponse.UserOutDTO> list =
                 userPG.getContent()
                         .stream()
