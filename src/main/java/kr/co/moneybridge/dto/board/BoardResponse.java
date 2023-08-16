@@ -7,12 +7,14 @@ import kr.co.moneybridge.model.pb.Company;
 import kr.co.moneybridge.model.pb.PB;
 import kr.co.moneybridge.model.pb.PBSpeciality;
 import kr.co.moneybridge.model.user.User;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
 public class BoardResponse {
 
     @ApiModel(description = "메인페이지 컨텐츠 데이터")
@@ -260,5 +262,17 @@ public class BoardResponse {
     @Setter
     public static class BoardThumbnailDTO {
         private String thumbnail;
+    }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class PhotoPathDTO {
+        @ApiModelProperty(value = "S3 이미지 경로")
+        private String path;
+
+        public PhotoPathDTO(String path) {
+            this.path = path;
+        }
     }
 }
