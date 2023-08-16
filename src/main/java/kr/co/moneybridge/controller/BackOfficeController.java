@@ -77,7 +77,7 @@ public class BackOfficeController {
     // 지점 등록
     @Log
     @SwaggerResponses.AddBranch
-    @PostMapping("/admin/branch")
+    @PostMapping("/branch")
     public ResponseDTO addBranch(@RequestBody @Valid BackOfficeRequest.BranchInDTO branchInDTO, Errors errors) {
         backOfficeService.addBranch(branchInDTO);
         return new ResponseDTO<>();
