@@ -3,7 +3,6 @@ package kr.co.moneybridge.model.pb;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
 import kr.co.moneybridge.dto.pb.PBResponse;
 import kr.co.moneybridge.dto.user.UserResponse;
-import kr.co.moneybridge.model.reservation.ReservationProcess;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,9 +26,28 @@ public interface PBRepository extends JpaRepository<PB, Long> {
     Page<PB> findAllByStatus(@Param("status") PBStatus status, Pageable pageable);
 
     @Query("select new kr.co.moneybridge.dto.backOffice.BackOfficeResponse$PBOutDTO(p, br) from PB p " +
-            "join Branch br " +
+            "join p.branch br " +
             "where p.status = :status")
     Page<BackOfficeResponse.PBOutDTO> findPagesByStatus(@Param("status") PBStatus status, Pageable pageable);
+
+    @Query("select new kr.co.moneybridge.dto.backOffice.BackOfficeResponse$PBOutDTO(p, br) from PB p " +
+            "join p.branch br " +
+            "where p.status = :status " +
+            "and p.email like concat('%', :keyword, '%')")
+    Page<BackOfficeResponse.PBOutDTO> findPagesByStatusAndEmail(@Param("keyword") String keyword, @Param("status") PBStatus status, Pageable pageable);
+
+    @Query("select new kr.co.moneybridge.dto.backOffice.BackOfficeResponse$PBOutDTO(p, br) from PB p " +
+            "join p.branch br " +
+            "where p.status = :status " +
+            "and p.phoneNumber like concat('%', :keyword, '%')")
+    Page<BackOfficeResponse.PBOutDTO> findPagesByStatusAndPhoneNumber(@Param("keyword") String keyword, @Param("status") PBStatus status, Pageable pageable);
+
+    @Query("select new kr.co.moneybridge.dto.backOffice.BackOfficeResponse$PBOutDTO(p, br) from PB p " +
+            "join p.branch br " +
+            "where p.status = :status " +
+            "and p.name like concat('%', :keyword, '%')")
+    Page<BackOfficeResponse.PBOutDTO> findPagesByStatusAndName(@Param("keyword") String keyword, @Param("status") PBStatus status, Pageable pageable);
+
 
     @Query("select p from PB p where p.id in :list")
     List<PB> findByIdIn(@Param("list") List<Long> list);
@@ -150,7 +168,7 @@ public interface PBRepository extends JpaRepository<PB, Long> {
             "JOIN b.company c " +
             "WHERE (pb.speciality1 = :speciality1 OR pb.speciality2 = :speciality1) AND pb.status = 'ACTIVE' " +
             "ORDER BY pb.id DESC")
-    List<PBResponse.PBPageDTO> findBySpeciality1(@Param("speciality1")PBSpeciality speciality1, Pageable pageable);
+    List<PBResponse.PBPageDTO> findBySpeciality1(@Param("speciality1") PBSpeciality speciality1, Pageable pageable);
 
     @Query("select count(*) from PB p where p.phoneNumber = :phoneNumber")
     int countByPhoneNumber(@Param("phoneNumber") String phoneNumber);

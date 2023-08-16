@@ -643,4 +643,12 @@ public class BoardService {
         }
     }
 
+    public BoardResponse.PhotoPathDTO addPhoto(MultipartFile photo) {
+        String photoPath = null;
+        if (photo != null && !photo.isEmpty()) {
+            photoPath = s3Util.upload(photo, "photo");
+        }
+
+        return new BoardResponse.PhotoPathDTO(photoPath);
+    }
 }

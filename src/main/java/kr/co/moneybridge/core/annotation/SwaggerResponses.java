@@ -74,7 +74,7 @@ public class SwaggerResponses {
     public @interface AddCompany {
     }
 
-    @ApiOperation(value = "증권사 등록하기")
+    @ApiOperation(value = "증권사 수정하기")
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
@@ -282,7 +282,7 @@ public class SwaggerResponses {
                     message = INTERNAL_SERVER_ERROR)
     })
     @ApiImplicitParams({
-            @ApiImplicitParam(name="id", example = "1", value="탈퇴시키려는 투자자의 id")})
+            @ApiImplicitParam(name = "id", example = "1", value = "탈퇴시키려는 투자자의 id")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -301,7 +301,7 @@ public class SwaggerResponses {
                     message = INTERNAL_SERVER_ERROR)
     })
     @ApiImplicitParams({
-            @ApiImplicitParam(name="id", example = "1", value="탈퇴시키려는 pb의 id")})
+            @ApiImplicitParam(name = "id", example = "1", value = "탈퇴시키려는 pb의 id")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -322,8 +322,8 @@ public class SwaggerResponses {
                     message = INTERNAL_SERVER_ERROR)
     })
     @ApiImplicitParams({
-            @ApiImplicitParam(name="id", example = "1", value="user의 id"),
-            @ApiImplicitParam(name="admin", example = "true", value = "관리자 등록하려면 true, 취소하려면 false")})
+            @ApiImplicitParam(name = "id", example = "1", value = "user의 id"),
+            @ApiImplicitParam(name = "admin", example = "true", value = "관리자 등록하려면 true, 취소하려면 false")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -347,7 +347,12 @@ public class SwaggerResponses {
     public @interface GetMembersCount {
     }
 
-    @ApiOperation(value = "투자자 리스트 가져오기")
+    @ApiOperation(value = "투자자 리스트 가져오기(검색 포함)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(type = "type", example = "email", value = "검색어 종류(all, email, phoneNumber, name)"),
+            @ApiImplicitParam(type = "keyword", example = "charming", value = "검색어"),
+            @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
+    })
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
@@ -364,7 +369,12 @@ public class SwaggerResponses {
     public @interface GetUsers {
     }
 
-    @ApiOperation(value = "PB 리스트 가져오기")
+    @ApiOperation(value = "PB 리스트 가져오기(검색 포함)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(type = "type", example = "email", value = "검색어 종류(all, email, phoneNumber, name)"),
+            @ApiImplicitParam(type = "keyword", example = "charming", value = "검색어"),
+            @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
+    })
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
@@ -395,8 +405,8 @@ public class SwaggerResponses {
                     message = INTERNAL_SERVER_ERROR)
     })
     @ApiImplicitParams({
-            @ApiImplicitParam(name="id", example = "1", value="pb의 id"),
-            @ApiImplicitParam(name="approve", example = "true", value = "승인하려면 true, 거절하려면 false")})
+            @ApiImplicitParam(name = "id", example = "1", value = "pb의 id"),
+            @ApiImplicitParam(name = "approve", example = "true", value = "승인하려면 true, 거절하려면 false")})
     @ResponseStatus(HttpStatus.OK)
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -589,7 +599,7 @@ public class SwaggerResponses {
     }
 
     @ApiOperation(value = "토큰 재발급", notes = "<b>401 에러 + data가 \"Access token expired\"일 때, 이 API 호출</b>\n<br>" +
-            "인증이 필요한 요청에서 응답 메세지가 다음과 같을 때 이 요청을 보낸다.\n"+
+            "인증이 필요한 요청에서 응답 메세지가 다음과 같을 때 이 요청을 보낸다.\n" +
             "{\n" +
             "&nbsp;&nbsp;\"status\": 401,\n" +
             "&nbsp;&nbsp;\"msg\": \"unAuthorized\",\n" +
@@ -820,11 +830,11 @@ public class SwaggerResponses {
             "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"title\": \"마케팅 정보 수신 동의\",\n" +
             "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"type\": \"OPTIONAL\",\n" +
             "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"isAgreed\": true\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;}\n"+
+            "&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
             "&nbsp;&nbsp;}")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="businessCard", value="명함 사진"),
-            @ApiImplicitParam(name="joinInDTO", value = "joinInDTO")})
+            @ApiImplicitParam(name = "businessCard", value = "명함 사진"),
+            @ApiImplicitParam(name = "joinInDTO", value = "joinInDTO")})
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
@@ -904,5 +914,17 @@ public class SwaggerResponses {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface PhoneNumber {
+    }
+
+    @ApiOperation("게시글 작성시 이미지 등록 API")
+    @ApiResponses({
+            @ApiResponse(code = 400,
+                    message = BAD_REQUEST),
+            @ApiResponse(code = 500,
+                    message = INTERNAL_SERVER_ERROR)
+    })
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface AddPhoto {
     }
 }

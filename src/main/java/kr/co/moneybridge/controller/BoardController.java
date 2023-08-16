@@ -346,4 +346,13 @@ public class BoardController {
 
         return new ResponseDTO<>(pageDTO);
     }
+
+    // 게시글 작성시 사진 S3 업로드 후 경로 응답하기
+    @SwaggerResponses.AddPhoto
+    @PostMapping("/photo")
+    public ResponseDTO<BoardResponse.PhotoPathDTO> addPhoto(@RequestPart(value = "photo") MultipartFile photo) {
+        BoardResponse.PhotoPathDTO photoPathDTO = boardService.addPhoto(photo);
+
+        return new ResponseDTO(photoPathDTO);
+    }
 }

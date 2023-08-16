@@ -1,6 +1,7 @@
 package kr.co.moneybridge.controller;
 
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.annotation.SwaggerResponses;
@@ -76,7 +77,7 @@ public class BackOfficeController {
     // 지점 등록
     @Log
     @SwaggerResponses.AddBranch
-    @PostMapping("/admin/branch")
+    @PostMapping("/branch")
     public ResponseDTO addBranch(@RequestBody @Valid BackOfficeRequest.BranchInDTO branchInDTO, Errors errors) {
         backOfficeService.addBranch(branchInDTO);
         return new ResponseDTO<>();
@@ -200,21 +201,39 @@ public class BackOfficeController {
     // 투자자 리스트 가져오기
     @Log
     @SwaggerResponses.GetUsers
-    @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
     @GetMapping("/admin/users")
-    public ResponseDTO<PageDTO<BackOfficeResponse.UserOutDTO>> getUsers(@RequestParam(defaultValue = "0") int page) {
+    public ResponseDTO<PageDTO<BackOfficeResponse.UserOutDTO>> getUsers(
+            @RequestParam(defaultValue = "all") String type,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") int page) {
+        if (!type.equals("all")
+                && !type.equals("email")
+                && !type.equals("phoneNumber")
+                && !type.equals("name")) {
+            throw new Exception400("type", "all, email, phoneNumber, name 중 하나의 값만 입력 가능합니다.");
+        }
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        PageDTO<BackOfficeResponse.UserOutDTO> pageDTO = backOfficeService.getUsers(pageable);
+        PageDTO<BackOfficeResponse.UserOutDTO> pageDTO = backOfficeService.getUsers(type, keyword, pageable);
         return new ResponseDTO<>(pageDTO);
     }
 
+    // PB 리스트 가져오기
     @Log
     @SwaggerResponses.GetPBs
     @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
     @GetMapping("/admin/pbs")
-    public ResponseDTO<PageDTO<BackOfficeResponse.PBOutDTO>> getPBs(@RequestParam(defaultValue = "0") int page) {
+    public ResponseDTO<PageDTO<BackOfficeResponse.PBOutDTO>> getPBs(
+            @RequestParam(defaultValue = "all") String type,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") int page) {
+        if (!type.equals("all")
+                && !type.equals("email")
+                && !type.equals("phoneNumber")
+                && !type.equals("name")) {
+            throw new Exception400("type", "all, email, phoneNumber, name 중 하나의 값만 입력 가능합니다.");
+        }
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        PageDTO<BackOfficeResponse.PBOutDTO> pageDTO = backOfficeService.getPBs(pageable);
+        PageDTO<BackOfficeResponse.PBOutDTO> pageDTO = backOfficeService.getPBs(type, keyword, pageable);
         return new ResponseDTO<>(pageDTO);
     }
 
