@@ -320,8 +320,20 @@ public class BackOfficeService {
     }
 
     @Log
-    public PageDTO<BackOfficeResponse.PBOutDTO> getPBs(Pageable pageable) {
-        Page<BackOfficeResponse.PBOutDTO> pbOutPG = pbRepository.findPagesByStatus(PBStatus.ACTIVE, pageable);
+    public PageDTO<BackOfficeResponse.PBOutDTO> getPBs(String type, String keyword, Pageable pageable) {
+        Page<BackOfficeResponse.PBOutDTO> pbOutPG = null;
+        if (!keyword.equals("")) {
+            if (type.equals("email")) {
+                pbOutPG = pbRepository.findPagesByStatusAndEmail(keyword, PBStatus.ACTIVE, pageable);
+            } else if (type.equals("phoneNumber")) {
+                pbOutPG = pbRepository.findPagesByStatusAndPhoneNumber(keyword, PBStatus.ACTIVE, pageable);
+            } else if (type.equals("name")) {
+                pbOutPG = pbRepository.findPagesByStatusAndName(keyword, PBStatus.ACTIVE, pageable);
+            }
+        } else {
+            pbOutPG = pbRepository.findPagesByStatus(PBStatus.ACTIVE, pageable);
+        }
+
         List<BackOfficeResponse.PBOutDTO> list =
                 pbOutPG.getContent()
                         .stream()

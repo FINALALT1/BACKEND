@@ -274,7 +274,7 @@ class BackOfficeServiceTest extends MockDummyEntity {
         when(pbRepository.findPagesByStatus(any(), any())).thenReturn(pbPG);
 
         // when
-        PageDTO<BackOfficeResponse.PBOutDTO> pageDTO = backOfficeService.getPBs(pageable);
+        PageDTO<BackOfficeResponse.PBOutDTO> pageDTO = backOfficeService.getPBs("all", "", pageable);
 
         // then
         assertThat(pageDTO.getList().get(0).getId()).isEqualTo(1);

@@ -347,7 +347,12 @@ public class SwaggerResponses {
     public @interface GetMembersCount {
     }
 
-    @ApiOperation(value = "투자자 리스트 가져오기")
+    @ApiOperation(value = "투자자 리스트 가져오기(검색 포함)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(type = "type", example = "email", value = "검색어 종류(all, email, phoneNumber, name)"),
+            @ApiImplicitParam(type = "keyword", example = "charming", value = "검색어"),
+            @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
+    })
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
@@ -364,7 +369,12 @@ public class SwaggerResponses {
     public @interface GetUsers {
     }
 
-    @ApiOperation(value = "PB 리스트 가져오기")
+    @ApiOperation(value = "PB 리스트 가져오기(검색 포함)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(type = "type", example = "email", value = "검색어 종류(all, email, phoneNumber, name)"),
+            @ApiImplicitParam(type = "keyword", example = "charming", value = "검색어"),
+            @ApiImplicitParam(name = "page", example = "0", value = "현재 페이지 번호")
+    })
     @ApiResponses({
             @ApiResponse(code = 400,
                     message = BAD_REQUEST),
