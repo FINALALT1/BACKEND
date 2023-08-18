@@ -468,7 +468,7 @@ public class ReservationService {
                         biz.getTempMsg002(
                                 reservationPS.getUser().getName(),
                                 reservationPS.getPb().getName(),
-                                reservationPS.getCreatedAt()
+                                LocalDateTime.now()
                         )
                 );
             } else {
@@ -479,7 +479,7 @@ public class ReservationService {
                         biz.getTempMsg003(
                                 reservationPS.getPb().getName(),
                                 reservationPS.getUser().getName(),
-                                reservationPS.getCreatedAt()
+                                LocalDateTime.now()
                         )
                 );
             }
