@@ -152,6 +152,22 @@ public class BizMessageUtil {
                 "■ 예약 취소일: " + localDateTimeToStringV2(date);
     }
 
+    // template_008
+    public String getTempMsg008(String userName, String pbName, Reservation res) {
+        log.info("getTempMsg008 실행");
+        return "안녕하세요 " + pbName + " PB님,\n" +
+                userName + "님이 상담 후기를 작성하셨습니다.\n" +
+                "\n" +
+                "# 해당 예약 정보\n" +
+                "■ 예약자: " + res.getInvestor() + "\n" +
+                "■ 담당 PB: " + pbName + "\n" +
+                "■ 상담 일정: " + localDateTimeToStringV2(res.getTime()) + "\n" +
+                "■ 상담 방식: " + (res.getType().equals(ReservationType.VISIT) ? "방문 상담" : "유선 상담") + "\n" +
+                "■ 미팅 장소: " + decideLocationValue(res) + "\n" +
+                "■ 상담 목적: " + goalToString(res.getGoal()) + "\n" +
+                "■ 요청 사항: " + ((res.getQuestion() == null || res.getQuestion().isBlank()) ? "-" : removeHtmlTags(res.getQuestion()));
+    }
+
     // ReservationGoal을 그에 맞는 String으로 변환
     private String goalToString(ReservationGoal goal) {
         log.info("goalToString 실행");
