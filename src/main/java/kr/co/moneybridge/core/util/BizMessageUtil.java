@@ -128,6 +128,30 @@ public class BizMessageUtil {
                 "■ 내용: " + contentFormatter(board.getContent());
     }
 
+    // template_006
+    public String getTempMsg006(String userName, String pbName, LocalDateTime date) {
+        log.info("getTempMsg006 실행");
+        return "안녕하세요 " + userName + "님,\n" +
+                pbName + " PB님이 예약을 취소하셨습니다.\n" +
+                "\n" +
+                "# 취소된 예약 정보\n" +
+                "■ 예약자: " + userName + "\n" +
+                "■ 담당 PB: " + pbName + "\n" +
+                "■ 예약 취소일: " + localDateTimeToStringV2(date);
+    }
+
+    // template_007
+    public String getTempMsg007(String pbName, String userName, LocalDateTime date) {
+        log.info("getTempMsg007 실행");
+        return "안녕하세요 " + pbName + " PB님,\n" +
+                userName + "님이 예약을 취소하셨습니다.\n" +
+                "\n" +
+                "# 취소된 예약 정보\n" +
+                "■ 예약자: " + userName + "\n" +
+                "■ 담당 PB: " + pbName + "\n" +
+                "■ 예약 취소일: " + localDateTimeToStringV2(date);
+    }
+
     // ReservationGoal을 그에 맞는 String으로 변환
     private String goalToString(ReservationGoal goal) {
         log.info("goalToString 실행");
