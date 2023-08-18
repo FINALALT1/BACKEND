@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -186,6 +188,19 @@ public class BoardService {
         replyList.addAll(userReplyList);
         replyList.addAll(pbReplyList);
         replyList.addAll(adminReplyList);
+        // 댓글 최신순 정렬
+        Collections.sort(replyList, new Comparator<BoardResponse.ReplyOutDTO>() {
+            @Override
+            public int compare(BoardResponse.ReplyOutDTO o1, BoardResponse.ReplyOutDTO o2) {
+                if (o1.getCreatedAt().isBefore(o2.getCreatedAt())) {
+                    return 1;
+                } else if (o1.getCreatedAt().isAfter(o2.getCreatedAt())) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
 
         for (BoardResponse.ReplyOutDTO replyOutDTO : replyList) {
             replyOutDTO.setReReply(getReReplies(replyOutDTO.getId()));
@@ -204,6 +219,19 @@ public class BoardService {
         reReplyList.addAll(userReReplyList);
         reReplyList.addAll(pbReReplyList);
         reReplyList.addAll(adminReReplyList);
+        // 대댓글 최신순 정렬
+        Collections.sort(reReplyList, new Comparator<BoardResponse.ReReplyOutDTO>() {
+            @Override
+            public int compare(BoardResponse.ReReplyOutDTO o1, BoardResponse.ReReplyOutDTO o2) {
+                if (o1.getCreatedAt().isBefore(o2.getCreatedAt())) {
+                    return 1;
+                } else if (o1.getCreatedAt().isAfter(o2.getCreatedAt())) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
 
         return reReplyList;
     }
