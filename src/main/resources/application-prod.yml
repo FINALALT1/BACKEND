@@ -53,6 +53,8 @@ biz:
     biz-id: ${BIZ_ID}
     biz-password: ${BIZ_PASSWORD}
   sender-key: ${SENDER_KEY}
+stibee:
+  api-key: ${STIBEE_API_KEY}
 
 SECRET_ACCESS: ${SECRET_ACCESS}
 SECRET_REFRESH: ${SECRET_REFRESH}
