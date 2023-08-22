@@ -6,6 +6,7 @@ import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.S3Util;
+import kr.co.moneybridge.core.util.StibeeUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
@@ -49,6 +50,7 @@ public class PBService {
     private final UserBookmarkRepository userBookmarkRepository;
     private final PortfolioRepository portfolioRepository;
     private final S3Util s3Util;
+    private final StibeeUtil stibeeUtil;
 
     @Log
     @Transactional
@@ -151,19 +153,24 @@ public class PBService {
             throw new Exception400("businessCard", "명함 사진이 없습니다");
         }
         // S3에 사진 저장
+        PB pbPS = null;
         try {
             String path = s3Util.upload(businessCard, "business-card"); // 명함 픽셀 450 * 250
             System.out.println(path);
-            PB pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path, defaultProfile));
+            pbPS = pbRepository.save(joinInDTO.toEntity(branchPS, path, defaultProfile));
             List<PBRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if (agreements != null) {
+                PB finalPbPS = pbPS;
                 agreements.stream().forEach(agreement ->
-                        pbAgreementRepository.save(agreement.toEntity(pbPS)));
+                        pbAgreementRepository.save(agreement.toEntity(finalPbPS)));
             }
-            return new PBResponse.JoinOutDTO(pbPS);
         } catch (Exception e) {
             throw new Exception500("회원가입 실패: " + e.getMessage());
         }
+
+        // 스티비 임시 주소록 구독
+        stibeeUtil.subscribeTemp(joinInDTO.getEmail());
+        return new PBResponse.JoinOutDTO(pbPS);
     }
 
     //북마크한 pb 목록 가져오기

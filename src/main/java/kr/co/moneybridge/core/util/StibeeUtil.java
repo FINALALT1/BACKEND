@@ -15,18 +15,35 @@ import org.springframework.web.client.RestTemplate;
 @Component
 @Slf4j
 public class StibeeUtil {
+    // 주소록(임시)
+    private final String TEMP_LIST_URL = "https://api.stibee.com/v1/lists/276680/subscribers";
     // 주소록(전체)
     private final String TOTAL_LIST_URL = "https://api.stibee.com/v1/lists/269642/subscribers";
     // 주소록(일반)
     private final String USER_LIST_URL = "https://api.stibee.com/v1/lists/272140/subscribers";
     // 주소록(PB)
     private final String PB_LIST_URL = "https://api.stibee.com/v1/lists/272138/subscribers";
+    // 인증 코드 안내(회원가입시)
+    private final String AUTHENTICATION_TEMP_EMAIL_URL = "https://stibee.com/api/v1.0/auto/MDEwOWEzZDctNzZkZS00YjYwLWE3ZTItMDRmODFjMGIyMzll";
+    // 인증 코드 안내
     private final String AUTHENTICATION_EMAIL_URL = "https://stibee.com/api/v1.0/auto/ZmQ4N2ZmNWMtYTZlYy00MGM2LWFkZGItZDY4YWZlYmM3ZDdi";
+    // 회원가입 승인 완료 안내
+    private final String JOIN_APPROVE_EMAIL_URL = "https://stibee.com/api/v1.0/auto/NDg1YzZmYjgtZTEzZi00MzY4LTgyYTktZWNhNjJmN2MxNGU2";
+    // 회원가입 승인 거절 안내
+    private final String JOIN_REJECT_EMAIL_URL = "https://stibee.com/api/v1.0/auto/ZDhjZGVjZGEtZDQyNC00YWEwLWIxNDItYmNmYTliNjhjYTg1";
     // API 요청에 필요한 토큰
     private final String API_KEY;
 
     public StibeeUtil(@Value("${STIBEE_API_KEY}") String API_KEY) {
         this.API_KEY = API_KEY;
+    }
+
+    /**
+     * 스티비 주소록 구독자 추가(회원가입, 비밀번호 찾기)
+     */
+    public void subscribeTemp(String email) {
+        // 임시 주소록에 구독자 추가
+        subscribeRequest(TEMP_LIST_URL, email, "temp");
     }
 
     /**
@@ -179,6 +196,35 @@ public class StibeeUtil {
     }
 
     /**
+     * 스티비 인증 코드 안내 이메일 발송(회원가입, 비밀번호 찾기)
+     */
+    public void sendAuthenticationTempEmail(String email, String code) {
+        RestTemplate template = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("AccessToken", API_KEY);
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("subscriber", email); // 구독자 이메일
+        requestBody.put("code", code); // 인증 코드
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
+
+        // API 요청
+        try {
+            template.exchange(
+                    AUTHENTICATION_TEMP_EMAIL_URL,
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+        } catch (Exception e) {
+            log.error("API 요청 실패 : " + e.getMessage());
+        }
+    }
+
+    /**
      * 스티비 인증 코드 안내 이메일 발송
      */
     public void sendAuthenticationEmail(String email, String code) {
@@ -198,6 +244,63 @@ public class StibeeUtil {
         try {
             template.exchange(
                     AUTHENTICATION_EMAIL_URL,
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+        } catch (Exception e) {
+            log.error("API 요청 실패 : " + e.getMessage());
+        }
+    }
+
+    /**
+     * 스티비 회원가입 승인 완료 안내 이메일 발송
+     */
+    public void sendJoinApproveEmail(String email) {
+        RestTemplate template = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("AccessToken", API_KEY);
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("subscriber", email); // 구독자 이메일
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
+
+        // API 요청
+        try {
+            template.exchange(
+                    JOIN_APPROVE_EMAIL_URL,
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+        } catch (Exception e) {
+            log.error("API 요청 실패 : " + e.getMessage());
+        }
+    }
+
+    /**
+     * 스티비 회원가입 승인 거절 안내 이메일 발송
+     */
+    public void sendJoinRejectEmail(String email, String msg) {
+        RestTemplate template = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("AccessToken", API_KEY);
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("subscriber", email); // 구독자 이메일
+        requestBody.put("join_reject_msg", msg); // 승인 거절 사유
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
+
+        // API 요청
+        try {
+            template.exchange(
+                    JOIN_REJECT_EMAIL_URL,
                     HttpMethod.POST,
                     request,
                     String.class

@@ -155,7 +155,10 @@ public class UserService {
         if (memberPS == null) {
             return new UserResponse.PasswordOutDTO();
         }
-        String code = sendEmailByStibee(passwordInDTO.getEmail());
+        // 스티비 임시 주소록 구독
+        stibeeUtil.subscribeTemp(passwordInDTO.getEmail());
+        // 인증 코드 안내 임시 이메일 발송
+        String code = sendTempEmailByStibee(passwordInDTO.getEmail());
         UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(memberPS, code);
         return passwordOutDTO;
     }
@@ -175,7 +178,10 @@ public class UserService {
                 throw new Exception400("email", "이미 PB로 회원가입된 이메일입니다");
             }
         }
-        String code = sendEmailByStibee(emailInDTO.getEmail());
+        // 스티비 임시 주소록 구독
+        stibeeUtil.subscribeTemp(emailInDTO.getEmail());
+        // 인증 코드 안내 임시 이메일 발송
+        String code = sendTempEmailByStibee(emailInDTO.getEmail());
         UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
         return emailOutDTO;
     }
@@ -221,6 +227,17 @@ public class UserService {
         return code;
     }
 
+    // 인증 코드 안내 이메일 발송(Stibee, 회원가입시)
+    private String sendTempEmailByStibee(String email) {
+        String code = createCode();
+        try {
+            stibeeUtil.sendAuthenticationTempEmail(email, code);
+        } catch (Exception e) {
+            throw new Exception500("인증 코드 안내 이메일 전송 실패 : " + e.getMessage());
+        }
+        return code;
+    }
+
     public String createCode() {
         Random random = new Random();
         return random.ints('0', 'z' + 1)
@@ -250,17 +267,22 @@ public class UserService {
         String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte
         joinInDTO.setPassword(encPassword);
 
+        User userPS = null;
         try {
-            User userPS = userRepository.save(joinInDTO.toEntity(defaultProfile));
+            userPS = userRepository.save(joinInDTO.toEntity(defaultProfile));
             List<UserRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if (agreements != null) {
+                User finalUserPS = userPS;
                 agreements.stream().forEach(agreement ->
-                        userAgreementRepository.save(agreement.toEntity(userPS)));
+                        userAgreementRepository.save(agreement.toEntity(finalUserPS)));
             }
-            return new UserResponse.JoinOutDTO(userPS);
         } catch (Exception e) {
             throw new Exception500("회원가입 실패 : " + e.getMessage());
         }
+
+        // 스티비 주소록 구독
+        stibeeUtil.subscribe(Role.USER.name(), joinInDTO.getEmail(), joinInDTO.getName());
+        return new UserResponse.JoinOutDTO(userPS);
     }
 
     @Log
