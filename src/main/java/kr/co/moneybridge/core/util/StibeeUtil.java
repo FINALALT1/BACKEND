@@ -21,7 +21,7 @@ public class StibeeUtil {
     private final String USER_LIST_URL = "https://api.stibee.com/v1/lists/272140/subscribers";
     // 주소록(PB)
     private final String PB_LIST_URL = "https://api.stibee.com/v1/lists/272138/subscribers";
-    private final String SEND_EMAIL_URL = "https://stibee.com/api/v1.0/auto/ZmQ4N2ZmNWMtYTZlYy00MGM2LWFkZGItZDY4YWZlYmM3ZDdi";
+    private final String AUTHENTICATION_EMAIL_URL = "https://stibee.com/api/v1.0/auto/ZmQ4N2ZmNWMtYTZlYy00MGM2LWFkZGItZDY4YWZlYmM3ZDdi";
     // API 요청에 필요한 토큰
     private final String API_KEY;
 
@@ -175,6 +175,35 @@ public class StibeeUtil {
             log.error("주소록 구독 요청 실패 : " + error.path("message").asText());
         } else {
             log.info("주소록 구독 요청 성공 : " + email);
+        }
+    }
+
+    /**
+     * 인증 코드 안내 이메일 발송
+     */
+    public void sendAuthenticationEmail(String email, String code) {
+        RestTemplate template = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("AccessToken", API_KEY);
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("subscriber", email); // 구독자 이메일
+        requestBody.put("code", code); // 인증 코드
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
+
+        // API 요청
+        try {
+            template.exchange(
+                    AUTHENTICATION_EMAIL_URL,
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+        } catch (Exception e) {
+            log.error("API 요청 실패 : " + e.getMessage());
         }
     }
 }

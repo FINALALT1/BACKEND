@@ -14,6 +14,7 @@ import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.MemberUtil;
 import kr.co.moneybridge.core.util.MsgUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
+import kr.co.moneybridge.core.util.StibeeUtil;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
@@ -64,6 +65,7 @@ public class UserService {
     private final UserBookmarkRepository userBookmarkRepository;
     private final PBRepository pbRepository;
     private final MsgUtil msgUtil;
+    private final StibeeUtil stibeeUtil;
 
     @Log
     @Transactional
@@ -153,7 +155,7 @@ public class UserService {
         if (memberPS == null) {
             return new UserResponse.PasswordOutDTO();
         }
-        String code = sendEmail(passwordInDTO.getEmail());
+        String code = sendEmailByStibee(passwordInDTO.getEmail());
         UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(memberPS, code);
         return passwordOutDTO;
     }
@@ -173,7 +175,7 @@ public class UserService {
                 throw new Exception400("email", "이미 PB로 회원가입된 이메일입니다");
             }
         }
-        String code = sendEmail(emailInDTO.getEmail());
+        String code = sendEmailByStibee(emailInDTO.getEmail());
         UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
         return emailOutDTO;
     }
@@ -195,6 +197,7 @@ public class UserService {
         return new UserResponse.PhoneNumberOutDTO(false);
     }
 
+    // 인증 코드 안내 이메일 발송(JavaMailSender)
     private String sendEmail(String email) {
         String code = createCode();
         MimeMessage message = msgUtil.createMessage(email, msgUtil.getSubjectAuthenticate(),
@@ -203,6 +206,17 @@ public class UserService {
             javaMailSender.send(message);
         } catch (Exception e) {
             throw new Exception500("인증 이메일 전송 실패 " + e.getMessage());
+        }
+        return code;
+    }
+
+    // 인증 코드 안내 이메일 발송(Stibee)
+    private String sendEmailByStibee(String email) {
+        String code = createCode();
+        try {
+            stibeeUtil.sendAuthenticationEmail(email, code);
+        } catch (Exception e) {
+            throw new Exception500("인증 코드 안내 이메일 전송 실패 : " + e.getMessage());
         }
         return code;
     }
@@ -276,7 +290,7 @@ public class UserService {
         if (!userPS.getRole().equals(Role.ADMIN)) {
             throw new Exception400("email", "관리자 계정이 아닙니다");
         }
-        String code = sendEmail(loginInDTO.getEmail());
+        String code = sendEmailByStibee(loginInDTO.getEmail());
         return new UserResponse.BackOfficeLoginOutDTO(userPS, code);
     }
 
