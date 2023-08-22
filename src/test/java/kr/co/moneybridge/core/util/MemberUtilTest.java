@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -81,6 +82,12 @@ public class MemberUtilTest extends MockDummyEntity {
 
     @Mock
     private S3Util s3Util;
+
+    @Mock
+    private StibeeUtil stibeeUtil;
+
+    @Mock
+    private Environment environment;
 
     @Test
     void findByEmail_pb_test() {

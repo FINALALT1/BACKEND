@@ -15,6 +15,7 @@ import kr.co.moneybridge.model.user.UserAgreementRepository;
 import kr.co.moneybridge.model.user.UserBookmarkRepository;
 import kr.co.moneybridge.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,13 +44,16 @@ public class MemberUtil {
     private final UserBookmarkRepository userBookmarkRepository;
     private final S3Util s3Util;
     private final StibeeUtil stibeeUtil;
+    private final Environment environment;
 
     @Transactional
     public void deleteById(Long id, Role role) {
         if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
             try {
                 // 스티비 주소록 구독 취소
-                stibeeUtil.withdraw(role.name(), findById(id, role).getEmail());
+                if (environment.acceptsProfiles("prod")) {
+                    stibeeUtil.withdraw(role.name(), findById(id, role).getEmail());
+                }
 
                 reservationRepository.findAllByUserId(id).stream().forEach(reservation -> {
                     Optional<Review> review = reviewRepository.findByReservationId(reservation.getId());
@@ -86,7 +90,9 @@ public class MemberUtil {
             System.out.println("2");
             try {
                 // 스티비 주소록 구독 취소
-                stibeeUtil.withdraw(role.name(), findById(id, role).getEmail());
+                if (environment.acceptsProfiles("prod")) {
+                    stibeeUtil.withdraw(role.name(), findById(id, role).getEmail());
+                }
 
                 reservationRepository.findAllByPBId(id).stream().forEach(reservation -> {
                     Optional<Review> review = reviewRepository.findByReservationId(reservation.getId());
