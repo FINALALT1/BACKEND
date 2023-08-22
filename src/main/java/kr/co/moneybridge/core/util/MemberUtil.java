@@ -52,7 +52,7 @@ public class MemberUtil {
             try {
                 // 스티비 주소록 구독 취소
                 if (environment.acceptsProfiles("prod")) {
-                    stibeeUtil.withdraw(role.name(), findById(id, role).getEmail());
+                    stibeeUtil.withdraw(role.name(), findByIdForStibee(id, role).getEmail());
                 }
 
                 reservationRepository.findAllByUserId(id).stream().forEach(reservation -> {
@@ -91,7 +91,7 @@ public class MemberUtil {
             try {
                 // 스티비 주소록 구독 취소
                 if (environment.acceptsProfiles("prod")) {
-                    stibeeUtil.withdraw(role.name(), findById(id, role).getEmail());
+                    stibeeUtil.withdraw(role.name(), findByIdForStibee(id, role).getEmail());
                 }
 
                 reservationRepository.findAllByPBId(id).stream().forEach(reservation -> {
@@ -207,6 +207,20 @@ public class MemberUtil {
             if (pbPS.getStatus().equals(PBStatus.PENDING)) {
                 throw new Exception404("아직 승인되지 않은 PB 계정입니다");
             }
+            member = pbPS;
+        }
+        return member;
+    }
+
+    public Member findByIdForStibee(Long id, Role role) {
+        Member member = null;
+        if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
+            User userPS = userRepository.findById(id)
+                    .orElseThrow(() -> new Exception404("해당하는 투자자 계정이 없습니다"));
+            member = userPS;
+        } else if (role.equals(Role.PB)) {
+            PB pbPS = pbRepository.findById(id)
+                    .orElseThrow(() -> new Exception404("해당하는 PB 계정이 없습니다"));
             member = pbPS;
         }
         return member;
