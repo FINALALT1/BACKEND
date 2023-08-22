@@ -4,10 +4,7 @@ import kr.co.moneybridge.core.annotation.Log;
 import kr.co.moneybridge.core.exception.Exception400;
 import kr.co.moneybridge.core.exception.Exception404;
 import kr.co.moneybridge.core.exception.Exception500;
-import kr.co.moneybridge.core.util.GeoCodingUtil;
-import kr.co.moneybridge.core.util.MemberUtil;
-import kr.co.moneybridge.core.util.MsgUtil;
-import kr.co.moneybridge.core.util.S3Util;
+import kr.co.moneybridge.core.util.*;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.backOffice.BackOfficeRequest;
 import kr.co.moneybridge.dto.backOffice.BackOfficeResponse;
@@ -35,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,6 +59,7 @@ public class BackOfficeService {
     private final CompanyRepository companyRepository;
     private final S3Util s3Util;
     private final GeoCodingUtil geoCodingUtil;
+    private final StibeeUtil stibeeUtil;
 
 //    @MyLog
 //    @Transactional
@@ -343,29 +340,40 @@ public class BackOfficeService {
 
     @Log
     @Transactional
-    public void approvePB(Long pbId, Boolean approve) {
+    public void approvePB(Long pbId, BackOfficeRequest.ApproveDTO approveDTO) {
         PB pbPS = pbRepository.findById(pbId).orElseThrow(
                 () -> new Exception404("존재하지 않는 PB입니다.")
         );
         if (!pbPS.getStatus().equals(PBStatus.PENDING)) {
             throw new Exception400("pbId", "이미 승인 완료된 PB입니다.");
         }
-        String subject = msgUtil.getSubjectApprove();
-        String msg = msgUtil.getMsgApprove();
-        if (approve == false) {
-            memberUtil.deleteById(pbId, Role.PB); // 탈퇴와 동일하게 삭제
-            subject = msgUtil.getSubjectReject();
-            msg = msgUtil.getMsgReject();
-        } else {
+//        String subject = msgUtil.getSubjectApprove();
+//        String msg = msgUtil.getMsgApprove();
+        // 승인 거절
+        if (!approveDTO.getApprove()) {
+            // 승인 거절 안내 이메일 발송
+            stibeeUtil.sendJoinRejectEmail(
+                    pbPS.getEmail(),
+                    approveDTO.getMsg() == null || approveDTO.getMsg().isBlank()
+                            ? "자세한 승인 거절 사유에 대해서는 Money Bridge 측으로 문의해주세요."
+                            : approveDTO.getMsg()
+            );
+            // 탈퇴와 동일하게 삭제
+            memberUtil.deleteById(pbId, Role.PB);
+//            subject = msgUtil.getSubjectReject();
+//            msg = msgUtil.getMsgReject();
+        } else { // 승인 완료
+            stibeeUtil.subscribe(Role.PB.name(), pbPS.getEmail(), pbPS.getName());
+            stibeeUtil.sendJoinApproveEmail(pbPS.getEmail());
             pbPS.approved();
         }
-        // 이메일 알림
-        try {
-            MimeMessage message = msgUtil.createMessage(pbPS.getEmail(), subject, msg);
-            javaMailSender.send(message);
-        } catch (Exception e) {
-            throw new Exception500("이메일 알림 전송 실패 " + e.getMessage());
-        }
+//        // 이메일 알림
+//        try {
+//            MimeMessage message = msgUtil.createMessage(pbPS.getEmail(), subject, msg);
+//            javaMailSender.send(message);
+//        } catch (Exception e) {
+//            throw new Exception500("이메일 알림 전송 실패 " + e.getMessage());
+//        }
     }
 
     @Log

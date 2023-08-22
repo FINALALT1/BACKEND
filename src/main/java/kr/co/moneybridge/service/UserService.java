@@ -14,6 +14,7 @@ import kr.co.moneybridge.core.exception.Exception500;
 import kr.co.moneybridge.core.util.MemberUtil;
 import kr.co.moneybridge.core.util.MsgUtil;
 import kr.co.moneybridge.core.util.RedisUtil;
+import kr.co.moneybridge.core.util.StibeeUtil;
 import kr.co.moneybridge.dto.user.UserRequest;
 import kr.co.moneybridge.dto.user.UserResponse;
 import kr.co.moneybridge.model.Member;
@@ -64,6 +65,7 @@ public class UserService {
     private final UserBookmarkRepository userBookmarkRepository;
     private final PBRepository pbRepository;
     private final MsgUtil msgUtil;
+    private final StibeeUtil stibeeUtil;
 
     @Log
     @Transactional
@@ -153,7 +155,10 @@ public class UserService {
         if (memberPS == null) {
             return new UserResponse.PasswordOutDTO();
         }
-        String code = sendEmail(passwordInDTO.getEmail());
+        // 스티비 임시 주소록 구독
+        stibeeUtil.subscribeTemp(passwordInDTO.getEmail());
+        // 인증 코드 안내 임시 이메일 발송
+        String code = sendTempEmailByStibee(passwordInDTO.getEmail());
         UserResponse.PasswordOutDTO passwordOutDTO = new UserResponse.PasswordOutDTO(memberPS, code);
         return passwordOutDTO;
     }
@@ -173,7 +178,10 @@ public class UserService {
                 throw new Exception400("email", "이미 PB로 회원가입된 이메일입니다");
             }
         }
-        String code = sendEmail(emailInDTO.getEmail());
+        // 스티비 임시 주소록 구독
+        stibeeUtil.subscribeTemp(emailInDTO.getEmail());
+        // 인증 코드 안내 임시 이메일 발송
+        String code = sendTempEmailByStibee(emailInDTO.getEmail());
         UserResponse.EmailOutDTO emailOutDTO = new UserResponse.EmailOutDTO(code);
         return emailOutDTO;
     }
@@ -195,6 +203,7 @@ public class UserService {
         return new UserResponse.PhoneNumberOutDTO(false);
     }
 
+    // 인증 코드 안내 이메일 발송(JavaMailSender)
     private String sendEmail(String email) {
         String code = createCode();
         MimeMessage message = msgUtil.createMessage(email, msgUtil.getSubjectAuthenticate(),
@@ -203,6 +212,28 @@ public class UserService {
             javaMailSender.send(message);
         } catch (Exception e) {
             throw new Exception500("인증 이메일 전송 실패 " + e.getMessage());
+        }
+        return code;
+    }
+
+    // 인증 코드 안내 이메일 발송(Stibee)
+    private String sendEmailByStibee(String email) {
+        String code = createCode();
+        try {
+            stibeeUtil.sendAuthenticationEmail(email, code);
+        } catch (Exception e) {
+            throw new Exception500("인증 코드 안내 이메일 전송 실패 : " + e.getMessage());
+        }
+        return code;
+    }
+
+    // 인증 코드 안내 이메일 발송(Stibee, 회원가입시)
+    private String sendTempEmailByStibee(String email) {
+        String code = createCode();
+        try {
+            stibeeUtil.sendAuthenticationTempEmail(email, code);
+        } catch (Exception e) {
+            throw new Exception500("인증 코드 안내 이메일 전송 실패 : " + e.getMessage());
         }
         return code;
     }
@@ -236,17 +267,22 @@ public class UserService {
         String encPassword = passwordEncoder.encode(joinInDTO.getPassword()); // 60Byte
         joinInDTO.setPassword(encPassword);
 
+        User userPS = null;
         try {
-            User userPS = userRepository.save(joinInDTO.toEntity(defaultProfile));
+            userPS = userRepository.save(joinInDTO.toEntity(defaultProfile));
             List<UserRequest.AgreementDTO> agreements = joinInDTO.getAgreements();
             if (agreements != null) {
+                User finalUserPS = userPS;
                 agreements.stream().forEach(agreement ->
-                        userAgreementRepository.save(agreement.toEntity(userPS)));
+                        userAgreementRepository.save(agreement.toEntity(finalUserPS)));
             }
-            return new UserResponse.JoinOutDTO(userPS);
         } catch (Exception e) {
             throw new Exception500("회원가입 실패 : " + e.getMessage());
         }
+
+        // 스티비 주소록 구독
+        stibeeUtil.subscribe(Role.USER.name(), joinInDTO.getEmail(), joinInDTO.getName());
+        return new UserResponse.JoinOutDTO(userPS);
     }
 
     @Log
@@ -276,7 +312,7 @@ public class UserService {
         if (!userPS.getRole().equals(Role.ADMIN)) {
             throw new Exception400("email", "관리자 계정이 아닙니다");
         }
-        String code = sendEmail(loginInDTO.getEmail());
+        String code = sendEmailByStibee(loginInDTO.getEmail());
         return new UserResponse.BackOfficeLoginOutDTO(userPS, code);
     }
 

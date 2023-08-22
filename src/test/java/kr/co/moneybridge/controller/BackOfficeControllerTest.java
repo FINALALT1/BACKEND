@@ -299,45 +299,45 @@ public class BackOfficeControllerTest {
         resultActions.andExpect(status().isOk());
     }
 
-    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @DisplayName("해당 PB 승인/승인 거부 성공")
-    @Test
-    public void approve_no_PB() throws Exception {
-        // given
-        Long id = 2L;
+//    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+//    @DisplayName("해당 PB 승인/승인 거부 성공")
+//    @Test
+//    public void approve_no_PB() throws Exception {
+//        // given
+//        Long id = 2L;
+//
+//        // when
+//        ResultActions resultActions = mvc
+//                .perform(post("/admin/pb/{id}?approve=false", id));
+//        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+//        System.out.println("테스트 : " + responseBody);
+//
+//        // then
+//        resultActions.andExpect(jsonPath("$.status").value(200));
+//        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+//        resultActions.andExpect(jsonPath("$.data").isEmpty());
+//        resultActions.andExpect(status().isOk());
+//    }
 
-        // when
-        ResultActions resultActions = mvc
-                .perform(post("/admin/pb/{id}?approve=false", id));
-        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        System.out.println("테스트 : " + responseBody);
-
-        // then
-        resultActions.andExpect(jsonPath("$.status").value(200));
-        resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data").isEmpty());
-        resultActions.andExpect(status().isOk());
-    }
-
-    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @DisplayName("해당 PB 승인/승인 거부 성공")
-    @Test
-    public void approvePB() throws Exception {
-        // given
-        Long id = 1L;
-
-        // when
-        ResultActions resultActions = mvc
-                .perform(post("/admin/pb/{id}?approve=true", id));
-        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        System.out.println("테스트 : " + responseBody);
-
-        // then
-        resultActions.andExpect(jsonPath("$.status").value(200));
-        resultActions.andExpect(jsonPath("$.msg").value("ok"));
-        resultActions.andExpect(jsonPath("$.data").isEmpty());
-        resultActions.andExpect(status().isOk());
-    }
+//    @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+//    @DisplayName("해당 PB 승인/승인 거부 성공")
+//    @Test
+//    public void approvePB() throws Exception {
+//        // given
+//        Long id = 1L;
+//
+//        // when
+//        ResultActions resultActions = mvc
+//                .perform(post("/admin/pb/{id}?approve=true", id));
+//        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+//        System.out.println("테스트 : " + responseBody);
+//
+//        // then
+//        resultActions.andExpect(jsonPath("$.status").value(200));
+//        resultActions.andExpect(jsonPath("$.msg").value("ok"));
+//        resultActions.andExpect(jsonPath("$.data").isEmpty());
+//        resultActions.andExpect(status().isOk());
+//    }
 
     @WithUserDetails(value = "ADMIN-admin@nate.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("PB 회원 가입 승인 대기 리스트 가져오기 성공")

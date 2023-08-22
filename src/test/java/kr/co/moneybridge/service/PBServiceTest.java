@@ -3,6 +3,7 @@ package kr.co.moneybridge.service;
 import kr.co.moneybridge.core.auth.session.MyUserDetails;
 import kr.co.moneybridge.core.dummy.MockDummyEntity;
 import kr.co.moneybridge.core.util.S3Util;
+import kr.co.moneybridge.core.util.StibeeUtil;
 import kr.co.moneybridge.dto.PageDTO;
 import kr.co.moneybridge.dto.PageDTOV2;
 import kr.co.moneybridge.dto.pb.PBRequest;
@@ -80,6 +81,8 @@ class PBServiceTest extends MockDummyEntity {
     Pageable pageable;
     @Mock
     S3Util s3Util;
+    @Mock
+    StibeeUtil stibeeUtil;
 
     // 진짜 객체를 만들어서 Mockito 환경에 Load
     @Spy

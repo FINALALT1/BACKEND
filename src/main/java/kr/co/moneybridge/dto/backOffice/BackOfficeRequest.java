@@ -171,4 +171,14 @@ public class BackOfficeRequest {
         @ApiModelProperty(example = "KB증권", value = "증권사 이름")
         private String companyName;
     }
+
+    @ApiModel
+    @Getter
+    @Setter
+    public static class ApproveDTO {
+        @ApiModelProperty(example = "false", value = "승인 여부(true, false)")
+        private Boolean approve;
+        @ApiModelProperty(example = "명함 사진 화질 문제", value = "거절 사유")
+        private String msg;
+    }
 }

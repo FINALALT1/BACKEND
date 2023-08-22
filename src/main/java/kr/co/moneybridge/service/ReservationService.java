@@ -464,22 +464,22 @@ public class ReservationService {
                 // 대상 투자자에게 발신
                 biz.sendNotification(
                         reservationPS.getUser().getPhoneNumber(),
-                        Template.CANCEL_RESERVATION_BY_PB,
-                        biz.getTempMsg002(
+                        Template.CANCEL_RESERVATION_BY_PB_V2,
+                        biz.getTempMsg006(
                                 reservationPS.getUser().getName(),
                                 reservationPS.getPb().getName(),
-                                reservationPS.getCreatedAt()
+                                LocalDateTime.now()
                         )
                 );
             } else {
                 // 대상 PB에게 발신
                 biz.sendNotification(
                         reservationPS.getPb().getPhoneNumber(),
-                        Template.CANCEL_RESERVATION_BY_USER,
-                        biz.getTempMsg003(
+                        Template.CANCEL_RESERVATION_BY_USER_V2,
+                        biz.getTempMsg007(
                                 reservationPS.getPb().getName(),
                                 reservationPS.getUser().getName(),
-                                reservationPS.getCreatedAt()
+                                LocalDateTime.now()
                         )
                 );
             }
@@ -739,8 +739,9 @@ public class ReservationService {
             throw new Exception400(String.valueOf(reviewDTO.getReservationId()), "해당 상담에 이미 작성된 후기가 존재합니다.");
         }
 
+        Review reviewPS = null;
         try {
-            Review reviewPS = reviewRepository.save(
+            reviewPS = reviewRepository.save(
                     Review.builder()
                             .reservation(reservationPS)
                             .adherence(reviewDTO.getAdherence())
@@ -756,10 +757,23 @@ public class ReservationService {
                 );
             }
             userPS.updateHasDoneReview(true);
-
-            return new ReservationResponse.ReviewIdDTO(reviewPS.getId());
         } catch (Exception e) {
             throw new Exception500("상담 후기 저장 실패 : " + e.getMessage());
         }
+
+        // 대상 투자자에게 알림톡 발신
+        if (environment.acceptsProfiles("prod")) {
+            biz.sendNotification(
+                    reservationPS.getPb().getPhoneNumber(),
+                    Template.NEW_REVIEW,
+                    biz.getTempMsg008(
+                            reservationPS.getUser().getName(),
+                            reservationPS.getPb().getName(),
+                            reservationPS
+                    )
+            );
+        }
+
+        return new ReservationResponse.ReviewIdDTO(reviewPS.getId());
     }
 }

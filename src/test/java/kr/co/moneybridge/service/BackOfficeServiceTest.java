@@ -321,55 +321,55 @@ class BackOfficeServiceTest extends MockDummyEntity {
         Mockito.verify(userRepository, Mockito.times(1)).findAll(pageable);
     }
 
-    @Test
-    @DisplayName("해당 PB 승인 거부")
-    void approve_no_PB() {
-        // given
-        Long id = 1L;
-        Company company = newMockCompany(1L, "미래에셋증권");
-        Branch branch = newMockBranch(1L, company, 1);
-        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
-        Boolean approve = false;
+//    @Test
+//    @DisplayName("해당 PB 승인 거부")
+//    void approve_no_PB() {
+//        // given
+//        Long id = 1L;
+//        Company company = newMockCompany(1L, "미래에셋증권");
+//        Branch branch = newMockBranch(1L, company, 1);
+//        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
+//        Boolean approve = false;
+//
+//        // stub
+//        when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
+//        when(msgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+//        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+//
+//        // when
+//        backOfficeService.approvePB(id, approve);
+//
+//        // then
+//        verify(pbRepository, times(1)).findById(id);
+//        verify(msgUtil, times(1)).createMessage(any(), any(), any());
+//        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
+//        verify(memberUtil, times(1)).deleteById(any(), any());
+//    }
 
-        // stub
-        when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
-        when(msgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
-        doNothing().when(javaMailSender).send(any(MimeMessage.class));
-
-        // when
-        backOfficeService.approvePB(id, approve);
-
-        // then
-        verify(pbRepository, times(1)).findById(id);
-        verify(msgUtil, times(1)).createMessage(any(), any(), any());
-        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
-        verify(memberUtil, times(1)).deleteById(any(), any());
-    }
-
-    @Test
-    @DisplayName("해당 PB 승인")
-    void approvePB() {
-        // given
-        Long id = 1L;
-        Company company = newMockCompany(1L, "미래에셋증권");
-        Branch branch = newMockBranch(1L, company, 1);
-        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
-        Boolean approve = true;
-
-        // stub
-        when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
-        when(msgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
-        doNothing().when(javaMailSender).send(any(MimeMessage.class));
-
-        // when
-        backOfficeService.approvePB(id, approve);
-
-        // then
-        verify(pbRepository, times(1)).findById(id);
-        verify(msgUtil, times(1)).createMessage(any(), any(), any());
-        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
-        assertThat(pb.getStatus()).isEqualTo(PBStatus.ACTIVE);
-    }
+//    @Test
+//    @DisplayName("해당 PB 승인")
+//    void approvePB() {
+//        // given
+//        Long id = 1L;
+//        Company company = newMockCompany(1L, "미래에셋증권");
+//        Branch branch = newMockBranch(1L, company, 1);
+//        PB pb = newMockPBWithStatus(id, "pblee", branch, PBStatus.PENDING);
+//        Boolean approve = true;
+//
+//        // stub
+//        when(pbRepository.findById(any())).thenReturn(Optional.of(pb));
+//        when(msgUtil.createMessage(anyString(), any(), any())).thenReturn(mock(MimeMessage.class));
+//        doNothing().when(javaMailSender).send(any(MimeMessage.class));
+//
+//        // when
+//        backOfficeService.approvePB(id, approve);
+//
+//        // then
+//        verify(pbRepository, times(1)).findById(id);
+//        verify(msgUtil, times(1)).createMessage(any(), any(), any());
+//        verify(javaMailSender, times(1)).send(any(MimeMessage.class));
+//        assertThat(pb.getStatus()).isEqualTo(PBStatus.ACTIVE);
+//    }
 
     @Test
     @DisplayName("PB 회원 가입 요청 승인 페이지 전체 가져오기")

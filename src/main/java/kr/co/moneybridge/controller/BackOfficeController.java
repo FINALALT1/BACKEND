@@ -241,8 +241,12 @@ public class BackOfficeController {
     @Log
     @SwaggerResponses.ApprovePB
     @PostMapping("/admin/pb/{id}")
-    public ResponseDTO approvePB(@PathVariable Long id, @RequestParam Boolean approve) {
-        backOfficeService.approvePB(id, approve);
+    public ResponseDTO approvePB(@PathVariable Long id,
+                                 @RequestBody BackOfficeRequest.ApproveDTO approveDTO) {
+        if (approveDTO.getApprove() == null) {
+            throw new Exception400("approve", "승인 여부를 true 또는 false로 요청해주세요.");
+        }
+        backOfficeService.approvePB(id, approveDTO);
         return new ResponseDTO<>();
     }
 
