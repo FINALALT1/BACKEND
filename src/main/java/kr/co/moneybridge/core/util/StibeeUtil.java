@@ -179,7 +179,7 @@ public class StibeeUtil {
     }
 
     /**
-     * 인증 코드 안내 이메일 발송
+     * 스티비 인증 코드 안내 이메일 발송
      */
     public void sendAuthenticationEmail(String email, String code) {
         RestTemplate template = new RestTemplate();
