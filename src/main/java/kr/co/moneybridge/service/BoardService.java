@@ -599,12 +599,8 @@ public class BoardService {
                 throw new Exception404("삭제 권한 없습니다.");
             }
         } else {
-            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
-            if (reply.getAuthorId().equals(user.getId()) && reply.getAuthorRole().equals(ReplyAuthorRole.ADMIN)) {
-                replyRepository.delete(reply);
-            } else {
-                throw new Exception404("삭제 권한 없습니다.");
-            }
+            userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            replyRepository.delete(reply);
         }
 
     }
@@ -662,12 +658,8 @@ public class BoardService {
                 throw new Exception404("삭제 권한 없습니다.");
             }
         } else {
-            User user = userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
-            if (reReply.getAuthorId().equals(user.getId()) && reReply.getAuthorRole().equals(ReplyAuthorRole.ADMIN)) {
-                reReplyRepository.delete(reReply);
-            } else {
-                throw new Exception404("삭제 권한 없습니다.");
-            }
+            userRepository.findById(member.getId()).orElseThrow(() -> new Exception404("해당 유저 찾을 수 없습니다."));
+            reReplyRepository.delete(reReply);
         }
     }
 
