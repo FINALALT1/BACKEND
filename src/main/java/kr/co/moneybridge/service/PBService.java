@@ -183,8 +183,8 @@ public class PBService {
 
             for (PBResponse.PBPageDTO pbPageDTO : pbPG) {
                 Long pbId = pbPageDTO.getId();
-                pbPageDTO.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-                pbPageDTO.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                pbPageDTO.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                pbPageDTO.setReviewCount(reviewRepository.countByPBId(pbId));
                 pbPageDTO.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), pbId));
             }
 
@@ -216,8 +216,8 @@ public class PBService {
         list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
         for (PBResponse.PBPageDTO pbPageDTO : list) {
             Long pbId = pbPageDTO.getId();
-            pbPageDTO.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-            pbPageDTO.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+            pbPageDTO.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+            pbPageDTO.setReviewCount(reviewRepository.countByPBId(pbId));
         }
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), list.size());
@@ -234,8 +234,8 @@ public class PBService {
             User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : list) {
                 Long pbId = dto.getId();
-                dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-                dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), pbId));
             }
         }
@@ -254,8 +254,8 @@ public class PBService {
         list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
         for (PBResponse.PBPageDTO dto : list) {
             Long pbId = dto.getId();
-            dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-            dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+            dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+            dto.setReviewCount(reviewRepository.countByPBId(pbId));
         }
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), list.size());
@@ -272,8 +272,8 @@ public class PBService {
             User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : list) {
                 Long pbId = dto.getId();
-                dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-                dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), pbId));
             }
         }
@@ -292,8 +292,8 @@ public class PBService {
         list.sort(Comparator.comparing(dto -> calDistance(latitude, longitude, dto.getBranchLat(), dto.getBranchLon())));
         for (PBResponse.PBPageDTO dto : list) {
             Long pbId = dto.getId();
-            dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-            dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+            dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+            dto.setReviewCount(reviewRepository.countByPBId(pbId));
         }
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), list.size());
@@ -310,8 +310,8 @@ public class PBService {
             User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : list) {
                 Long pbId = dto.getId();
-                dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-                dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
             }
         }
@@ -339,8 +339,8 @@ public class PBService {
         Page<PBResponse.PBPageDTO> pbPG = pbRepository.findBySpecialityOrderedByCareer(speciality, pageable);
         for (PBResponse.PBPageDTO dto : pbPG) {
             Long pbId = dto.getId();
-            dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-            dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+            dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+            dto.setReviewCount(reviewRepository.countByPBId(pbId));
         }
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
 
@@ -356,8 +356,8 @@ public class PBService {
             User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : pbPG) {
                 Long pbId = dto.getId();
-                dto.setReserveCount(pbRepository.countReservationsByPbId(pbId));
-                dto.setReviewCount(pbRepository.countReviewsByPbId(pbId));
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
             }
         }
