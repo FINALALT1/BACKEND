@@ -230,13 +230,24 @@ public class PBService {
 
         List<PBResponse.PBPageDTO> list = pbRepository.findByPBListSpeciality(speciality);
 
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+        Role role = myUserDetails.getMember().getRole();
+        Long id = myUserDetails.getMember().getId();
+        if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
+            User user = userRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : list) {
                 Long pbId = dto.getId();
                 dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
                 dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), pbId));
+            }
+        } else if (role.equals(Role.PB)) {
+            pbRepository.findById(id).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+            for (PBResponse.PBPageDTO dto : list) {
+                Long pbId = dto.getId();
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
             }
         }
 
@@ -268,13 +279,24 @@ public class PBService {
 
         List<PBResponse.PBPageDTO> list = pbRepository.findByPBListCompany(companyId);
 
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+        Role role = myUserDetails.getMember().getRole();
+        Long id = myUserDetails.getMember().getId();
+        if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
+            User user = userRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : list) {
                 Long pbId = dto.getId();
                 dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
                 dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), pbId));
+            }
+        } else if (role.equals(Role.PB)) {
+            pbRepository.findById(id).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+            for (PBResponse.PBPageDTO dto : list) {
+                Long pbId = dto.getId();
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
             }
         }
 
@@ -306,13 +328,24 @@ public class PBService {
 
         List<PBResponse.PBPageDTO> list = pbRepository.findAllPB();
 
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+        Role role = myUserDetails.getMember().getRole();
+        Long id = myUserDetails.getMember().getId();
+        if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
+            User user = userRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : list) {
                 Long pbId = dto.getId();
                 dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
                 dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        } else if (role.equals(Role.PB)) {
+            pbRepository.findById(id).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+            for (PBResponse.PBPageDTO dto : list) {
+                Long pbId = dto.getId();
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
             }
         }
 
@@ -352,13 +385,24 @@ public class PBService {
 
         Page<PBResponse.PBPageDTO> pbPG = pbRepository.findBySpecialityOrderedByCareer(speciality, pageable);
 
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+        Role role = myUserDetails.getMember().getRole();
+        Long id = myUserDetails.getMember().getId();
+        if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
+            User user = userRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : pbPG) {
                 Long pbId = dto.getId();
                 dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
                 dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        } else if (role.equals(Role.PB)) {
+            pbRepository.findById(id).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+            for (PBResponse.PBPageDTO dto : pbPG) {
+                Long pbId = dto.getId();
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
             }
         }
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
@@ -384,13 +428,24 @@ public class PBService {
     public PageDTO<PBResponse.PBPageDTO> getLoginCompanyPBWithCareer(MyUserDetails myUserDetails, Long companyId, Pageable pageable) {
 
         Page<PBResponse.PBPageDTO> pbPG = pbRepository.findByCompanyIdOrderedByCareer(companyId, pageable);
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+        Role role = myUserDetails.getMember().getRole();
+        Long id = myUserDetails.getMember().getId();
+        if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
+            User user = userRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : pbPG) {
                 Long pbId = dto.getId();
                 dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
                 dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        } else if (role.equals(Role.PB)) {
+            pbRepository.findById(id).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+            for (PBResponse.PBPageDTO dto : pbPG) {
+                Long pbId = dto.getId();
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
             }
         }
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
@@ -416,13 +471,24 @@ public class PBService {
     public PageDTO<PBResponse.PBPageDTO> getLoginPBWithCareer(MyUserDetails myUserDetails, Pageable pageable) {
 
         Page<PBResponse.PBPageDTO> pbPG = pbRepository.findAllPBWithCareer(pageable);
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
-            User user = userRepository.findById(myUserDetails.getMember().getId()).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
+        Role role = myUserDetails.getMember().getRole();
+        Long id = myUserDetails.getMember().getId();
+        if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
+            User user = userRepository.findById(id).orElseThrow(() -> new Exception404("존재하지 않는 회원입니다."));
             for (PBResponse.PBPageDTO dto : pbPG) {
                 Long pbId = dto.getId();
                 dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
                 dto.setReviewCount(reviewRepository.countByPBId(pbId));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(user.getId(), dto.getId()));
+            }
+        } else if (role.equals(Role.PB)) {
+            pbRepository.findById(id).orElseThrow(
+                    () -> new Exception404("존재하지 않는 PB입니다.")
+            );
+            for (PBResponse.PBPageDTO dto : pbPG) {
+                Long pbId = dto.getId();
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(pbId, ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(pbId));
             }
         }
         List<PBResponse.PBPageDTO> list = pbPG.getContent().stream().collect(Collectors.toList());
@@ -514,7 +580,7 @@ public class PBService {
         pbDTO.setReserveCount(reservationRepository.countByPBIdAndProcess(pbDTO.getId(), ReservationProcess.COMPLETE));
         pbDTO.setReviewCount(reviewRepository.countByPBId(pbDTO.getId()));
 
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+        if (myUserDetails.getMember().getRole().equals(Role.USER) || myUserDetails.getMember().equals(Role.ADMIN)) {
             Optional<UserBookmark> bookmark = userBookmarkRepository.findByUserIdWithPbId(myUserDetails.getMember().getId(), id);
             if (bookmark.isPresent()) pbDTO.setIsBookmarked(true);
         }
@@ -660,7 +726,8 @@ public class PBService {
             list = pbRepository.findBySpeciality1(speciality1, PageRequest.of(0, 2));
         }
 
-        if (myUserDetails.getMember().getRole().equals(Role.USER)) {
+        Role role = myUserDetails.getMember().getRole();
+        if (role.equals(Role.USER) || role.equals(Role.PB) || role.equals(Role.ADMIN)) {
             for (PBResponse.PBPageDTO dto : list) {
                 dto.setReserveCount(reservationRepository.countByPBIdAndProcess(dto.getId(), ReservationProcess.COMPLETE));
                 dto.setReviewCount(reviewRepository.countByPBId(dto.getId()));
