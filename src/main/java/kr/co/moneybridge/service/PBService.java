@@ -727,11 +727,16 @@ public class PBService {
         }
 
         Role role = myUserDetails.getMember().getRole();
-        if (role.equals(Role.USER) || role.equals(Role.PB) || role.equals(Role.ADMIN)) {
+        if (role.equals(Role.USER) || role.equals(Role.ADMIN)) {
             for (PBResponse.PBPageDTO dto : list) {
                 dto.setReserveCount(reservationRepository.countByPBIdAndProcess(dto.getId(), ReservationProcess.COMPLETE));
                 dto.setReviewCount(reviewRepository.countByPBId(dto.getId()));
                 dto.setIsBookmarked(userBookmarkRepository.existsByUserIdAndPBId(myUserDetails.getMember().getId(), dto.getId()));
+            }
+        } else if (role.equals(Role.PB)) {
+            for (PBResponse.PBPageDTO dto : list) {
+                dto.setReserveCount(reservationRepository.countByPBIdAndProcess(dto.getId(), ReservationProcess.COMPLETE));
+                dto.setReviewCount(reviewRepository.countByPBId(dto.getId()));
             }
         }
 
