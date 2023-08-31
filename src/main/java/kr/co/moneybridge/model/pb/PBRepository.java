@@ -172,4 +172,7 @@ public interface PBRepository extends JpaRepository<PB, Long> {
 
     @Query("select count(*) from PB p where p.phoneNumber = :phoneNumber")
     int countByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    @Query("select count(*) from PB p where p.branch.id = :branchId")
+    int countByBranchId(Long branchId);
 }
