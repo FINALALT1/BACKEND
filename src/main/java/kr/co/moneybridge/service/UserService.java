@@ -300,7 +300,7 @@ public class UserService {
             String refreshToken = jwtProvider.createRefresh(myUserDetails.getMember());
             return Pair.of(accessToken, refreshToken);
         } catch (Exception e) {
-            throw new Exception500("토큰 발급 실패: " + e.getMessage());
+            throw new Exception400("email or password", "아이디가 존재하지 않거나 비밀번호가 틀렸습니다.");
         }
     }
 
