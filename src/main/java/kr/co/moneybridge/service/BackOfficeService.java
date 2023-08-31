@@ -185,6 +185,11 @@ public class BackOfficeService {
     @Log
     @Transactional
     public void deleteBranch(Long branchId) {
+        int pbCount = pbRepository.countByBranchId(branchId);
+        if (pbCount >= 1) {
+            throw new Exception400("branchId", "삭제하려는 지점에 소속된 PB가 1명 이상 존재합니다.");
+        }
+
         try {
             branchRepository.deleteById(branchId);
         } catch (Exception e) {
