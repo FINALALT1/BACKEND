@@ -211,6 +211,7 @@ public class BizMessageUtil {
         log.debug("removeHtmlTags 실행");
         String plainText = inputText
                 .replaceAll("\\<br ?/?>", "\n") // <br> 태그를 줄바꿈 문자로 대체
+                .replaceAll("\\<figure.*?\\</figure\\>", "") // <figure> 태그 제거
                 .replaceAll("\\<.*?\\>", "") // 기타 HTML 태그 제거
                 .replaceAll("&nbsp;", " "); // 공백 문자를 실제 공백으로 대체
 
@@ -373,6 +374,84 @@ public class BizMessageUtil {
         button.put("url_mobile", "https://www.moneybridge.co.kr");
         button.put("url_pc", "https://www.moneybridge.co.kr");
         buttonArray.put(button);
+        attach.put("button", buttonArray);
+        requestBody.put("attach", attach);
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
+
+        // API 요청
+        ResponseEntity<String> response = null;
+        try {
+            response = template.exchange(
+                    BASE_URL + "/v2/kko/sendAlimTalk",
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+        } catch (Exception e) {
+            log.error("API 요청 실패 : " + e.getMessage());
+            return;
+        }
+
+        String responseBody = response.getBody();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(responseBody);
+        } catch (Exception e) {
+            log.error("Json to JsonNode 실패 : " + e.getMessage());
+            return;
+        }
+
+        int code = root.path("responseCode").asInt();
+        if (code != 1000) {
+            log.error("비즈톡 G/W 접수 실패 : " + code + ", " + root.path("msg").asText());
+        }
+    }
+
+    /**
+     * 웹링크 버튼 알림톡 발신(신규 컨텐츠 등록시)
+     */
+    public void sendWebLinkNotificationForNewContent(String phoneNumber, Long contentId, Template temp, String message) {
+        log.debug("sendWebLinkNotification 실행");
+        // 토큰 만료/미발급시 재발급
+        if (getExpirationTime().isBefore(LocalDateTime.now())) {
+            getToken();
+        }
+
+        RestTemplate template = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("bt-token", getAccessToken());
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("msgIdx", "MB2023");
+        requestBody.put("countryCode", "82");
+        requestBody.put("resMethod", "PUSH");
+        requestBody.put("senderKey", SENDER_KEY);
+        requestBody.put("tmpltCode", temp.getCode());
+        requestBody.put("message", message);
+        requestBody.put("recipient", phoneNumber);
+
+        JSONObject attach = new JSONObject();
+        JSONArray buttonArray = new JSONArray();
+
+        JSONObject button = new JSONObject();
+        button.put("name", "홈페이지로 이동");
+        button.put("type", "WL");
+        button.put("url_mobile", "https://www.moneybridge.co.kr");
+        button.put("url_pc", "https://www.moneybridge.co.kr");
+        buttonArray.put(button);
+
+        JSONObject button2 = new JSONObject();
+        button.put("name", "해당 컨텐츠로 이동");
+        button.put("type", "WL");
+        button.put("url_mobile", "https://www.moneybridge.co.kr/contents/" + contentId);
+        button.put("url_pc", "https://www.moneybridge.co.kr/contents/" + contentId);
+        buttonArray.put(button2);
+
         attach.put("button", buttonArray);
         requestBody.put("attach", attach);
 
