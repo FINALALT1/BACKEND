@@ -140,7 +140,7 @@ public class BackOfficeService {
             FullAddress address = geoCodingUtil.getFullAddress(branchInDTO.getAddress());
             branchRepository.save(branchInDTO.toEntity(company, address));
         } catch (Exception e) {
-            throw new Exception500("지점 저장 실패 : " + e);
+            throw new Exception400("branchName", "중복된 지점명입니다.");
         }
     }
 
