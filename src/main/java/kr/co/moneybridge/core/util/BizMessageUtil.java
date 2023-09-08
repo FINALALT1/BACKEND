@@ -210,9 +210,8 @@ public class BizMessageUtil {
     private String removeHtmlTags(String inputText) {
         log.debug("removeHtmlTags 실행");
         String plainText = inputText
-                .replaceAll("\\<br ?/?>", "\n") // <br> 태그를 줄바꿈 문자로 대체
-                .replaceAll("\\<figure.*?\\</figure\\>", "") // <figure> 태그 제거
-                .replaceAll("\\<.*?\\>", "") // 기타 HTML 태그 제거
+                .replaceAll("<br ?/?>", "\n") // <br> 태그를 줄바꿈 문자로 대체
+                .replaceAll("<.*?>", "") // 기타 HTML 태그 제거
                 .replaceAll("&nbsp;", " "); // 공백 문자를 실제 공백으로 대체
 
         return plainText;
