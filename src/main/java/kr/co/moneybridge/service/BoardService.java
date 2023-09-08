@@ -342,8 +342,9 @@ public class BoardService {
         if (environment.acceptsProfiles("prod")) {
             List<User> users = userBookmarkRepository.findByPBId(pb.getId());
             for (User user : users) {
-                biz.sendWebLinkNotification(
+                biz.sendWebLinkNotificationForNewContent(
                         user.getPhoneNumber(),
+                        board.getId(),
                         Template.NEW_CONTENT,
                         biz.getTempMsg005(
                                 user.getName(),
