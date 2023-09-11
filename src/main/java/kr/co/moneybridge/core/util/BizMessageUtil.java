@@ -196,13 +196,12 @@ public class BizMessageUtil {
         String value = "";
 
         if (inputText.isBlank() || inputText == null) {
-            value = "-";
-            return value;
+            return "-";
         }
 
-        value = removeHtmlTags(value);
-        if (inputText.length() >= 20) {
-            value = value.substring(0, 20) + "...";
+        value = removeHtmlTags(inputText);
+        if (value.length() >= 20) {
+            return value.substring(0, 20) + "...";
         }
 
         return value;
@@ -211,6 +210,9 @@ public class BizMessageUtil {
     // 줄바꿈 태그 및 공백 문자를 고려하면서 HTML 태그 제거
     private String removeHtmlTags(String inputText) {
         log.debug("removeHtmlTags 실행");
+        if (inputText.isBlank() || inputText == null) {
+            return "-";
+        }
         String plainText = inputText
                 .replaceAll("<br ?/?>", "\n") // <br> 태그를 줄바꿈 문자로 대체
                 .replaceAll("<.*?>", "") // 기타 HTML 태그 제거
