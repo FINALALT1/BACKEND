@@ -197,13 +197,15 @@ public class BizMessageUtil {
 
         if (inputText.isBlank() || inputText == null) {
             value = "-";
-        } else if (inputText.length() >= 20) {
-            value = inputText.substring(0, 20) + "...";
-        } else {
-            value = inputText;
+            return value;
         }
 
-        return removeHtmlTags(value);
+        value = removeHtmlTags(value);
+        if (inputText.length() >= 20) {
+            value = value.substring(0, 20) + "...";
+        }
+
+        return value;
     }
 
     // 줄바꿈 태그 및 공백 문자를 고려하면서 HTML 태그 제거
