@@ -16,14 +16,12 @@
 </br>
 </br>
 ## :page_facing_up: 관련 문서 
-### :books: [기능 명세서](https://flaxen-cornucopia-9a5.notion.site/617b45913d6c432a82c621bdea6d0574?v=b960f65e050d4d31b4b7f1b0ff699b73&pvs=4)
-### :books: [API 문서](https://flaxen-cornucopia-9a5.notion.site/API-7d26b9c5b374432fbb3de51426d51889?pvs=4)
-### :books: [Swagger Docs](https://api.moneybridge.co.kr/swagger-ui.html)
+### :books: [프로젝트 노션](https://yousunzoo.notion.site/0e436500b0bc459f9bcf00dbf259724c?pvs=4)
+### :books: [API Docs(Swagger)](https://api.moneybridge.co.kr/swagger-ui.html)
 </br>
 
-## :bulb: 배포사이트
-### 📈 [메인 사이트](https://main.dheyjmg5ltkpk.amplifyapp.com/)
-### 📉 [백오피스](https://admin-money-bridge.vercel.app)
+## :bulb: 배포 사이트
+### 📈 [Money Bridge](https://www.moneybridge.co.kr/)
 </br>
 
 ## :bar_chart: ERD
@@ -31,7 +29,7 @@
 </br>
 </br>
 
-## :hammer: 시스템구성도
+## :hammer: 아키텍처 구성도
 <img width="850" alt="시스템구성도" src="https://github-production-user-asset-6210df.s3.amazonaws.com/90882909/258372817-323b6b0b-47aa-4faf-bde1-df4f45c97ff5.png">
 </br>
 
